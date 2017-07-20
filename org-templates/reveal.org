@@ -1,0 +1,10 @@
+#+TITLE:
+#+OPTIONS: toc:nil num:nil reveal_progress:t reveal_history:t reveal_title_slide:"<h1>%t</h1>"
+#+REVEAL_TRANS: none
+#+REVEAL_THEME: beige
+#+REVEAL_EXTRA_CSS:
+
+
+# Local Variables:
+# org-hide-emphasis-markers: t
+# End:

@@ -1,0 +1,31 @@
+#+NAME: timesheet_table
+#+begin_src elisp :results table
+  (load-file (expand-file-name "~/.emacs.d/timesheet-helpers.el"))
+
+  (nconc
+   '(("date" "client" "PO" "project" "hours" "tasks" "on location" "billable" "worker"))
+   '(hline)
+   (sort (let ((ast (org-element-parse-buffer 'element)))
+           (org-element-map ast 'clock
+             (lambda (x)
+               (let* ((val (org-element-property :value x))
+                      (task (org-element-property :parent (org-element-property :parent x))))
+                 `(,(let ((year (org-element-property :year-start val))
+                          (month (calendar-month-name
+                                  (org-element-property :month-start val)))
+                          (day (org-element-property :day-start val)))
+                      ;; (insert (org-element-property :raw-value val))
+                      (format "%s %s, %s" month day year))
+                   ,(org-element-property :CLIENT task)
+                   ,(org-element-property :PO task)
+                   ,(get-property :PROJECT task "")
+                   ,(my/round-time (org-element-property :duration x) 25)
+                   ,(org-element-property :title task)
+                   ,(get-property :ON_LOCATION task "")
+                   ,(get-property :BILLABLE task "")
+                   ,(get-property :WORKER task (cadr (split-string user-full-name)))
+                   )))))
+         'compare-timesheet-lists)
+   '(hline)
+   '(("" "" "" "total:" ":=vsum(@2..@-1)" "" "" "" "")))
+#+end_src
