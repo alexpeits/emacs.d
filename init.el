@@ -235,8 +235,6 @@
   (interactive)
   (my/set-theme (elt my/avail-themes my/current-theme)))
 
-(evil-leader/set-key "tt" 'my/toggle-theme)
-
 ;; disable annoying stuff
 (setq ring-bell-function 'ignore)
 (setq inhibit-startup-message t)
@@ -491,6 +489,8 @@
 
     "n"  'my/neotree-toggle-project
 
+    "el" 'my/toggle-flycheck-error-list
+
     "um" 'menu-bar-mode
     "up" 'rainbow-delimiters-mode
     "uh" 'rainbow-mode
@@ -507,6 +507,8 @@
     "tl"  'linum-mode
     "ts" 'flycheck-mode
     "tw" 'toggle-truncate-lines
+    "tt" 'my/toggle-theme
+    "tj" 'my/toggle-jsmodes
 
     "j"  'my/jump-to-definition
 
@@ -717,7 +719,6 @@ tests to exist in `project_root/tests`"
        ((string= mode "web-mode") (js2-mode))
        ((string= mode "js-mode") (js2-mode))))))
 
-(evil-leader/set-key "tj" 'my/toggle-jsmodes)
 
 ;; ----------------
 ;; html
@@ -878,8 +879,6 @@ tests to exist in `project_root/tests`"
 		 (reusable-frames . visible)
 		 (window-height   . 0.33)))
 
-  (evil-leader/set-key
-    "el" 'my/toggle-flycheck-error-list)
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
                         '(javascript-jshint)))
