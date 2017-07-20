@@ -21,6 +21,8 @@
 ;; activate installed packages
 (package-initialize)
 (setq package-enable-at-startup nil)
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
 
 (require 'use-package)
 
@@ -617,7 +619,7 @@ tests to exist in `project_root/tests`"
  haskell-process-auto-import-loaded-modules t
  haskell-process-log t
  haskell-process-type 'stack-ghci
- company-ghc-show-info t)
+ haskellcompany-ghc-show-info t)
 (add-hook 'haskell-mode-hook
           (lambda ()
             (ghc-init)
@@ -828,6 +830,7 @@ tests to exist in `project_root/tests`"
   (add-hook 'after-init-hook 'global-company-mode)
   :config
   (use-package company-irony :ensure t :defer t)
+  (use-package company-quickhelp :ensure t)
   (company-quickhelp-mode 1)
   (diminish 'company-mode " Com")
   (eval-after-load "company"
@@ -862,6 +865,9 @@ tests to exist in `project_root/tests`"
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (use-package flymake-yaml :ensure t)
   (use-package flycheck-mypy :ensure t)
+  (use-package flycheck-irony :ensure t)
+  (use-package flycheck-haskell :ensure t)
+  (use-package flycheck-yamllint :ensure t)
   (eval-after-load 'flycheck
     '(progn
        (set-face-background 'flycheck-warning "unspecified-bg")
