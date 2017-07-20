@@ -177,12 +177,7 @@
          solarizedarkerbright-height-plus-1 1.0
          solarizedarkerbright-height-plus-2 1.0
          solarizedarkerbright-height-plus-3 1.0
-         solarizedarkerbright-height-plus-4 1.0
-         hemingway-use-variable-pitch nil
-         hemingway-height-plus-1 1.0
-         hemingway-height-plus-2 1.0
-         hemingway-height-plus-3 1.0
-         hemingway-height-plus-4 1.0))
+         solarizedarkerbright-height-plus-4 1.0)
 
 (use-package zenburn-theme :ensure t)
 (use-package solarized-theme :ensure t)
@@ -204,8 +199,9 @@
                                                   (org-block-fg . "#a1acae")
                                                   (org-block-bg . "#292929")))))
 
-(defvar my/current-theme 2)
+(defvar my/current-theme 3)
 (defvar my/avail-themes '(my/solarized-black-bright
+                          my/solarized-dark
                           my/solarized-light
                           my/zenburn))
 
@@ -266,7 +262,6 @@
   ;;  Restore popwin-mode after a Helm session finishes.
   (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
   )
-
 
 ; font size & scaling
 (setq text-scale-mode-step 1.05)
@@ -333,13 +328,6 @@
   (setq imenu-list-size 30)
   )
 
-;; (use-package spaceline
-;;   :ensure t
-;;   :config
-;;   (require 'spaceline-config)
-;;   (spaceline-emacs-theme)
-;;   (setq spaceline-highlight-face-func 'spaceline-highlight-face-modified))
-
 ;; ----------------
 ;; term, comint & eshell
 ;; ----------------
@@ -365,7 +353,6 @@
   (interactive)
   (let ((eshell-buffer-maximum-lines 0))
     (eshell-truncate-buffer)))
-
 
 (add-hook 'eshell-mode-hook
           (lambda ()
@@ -648,6 +635,7 @@ tests to exist in `project_root/tests`"
 ;; ----------------
 
 (use-package nvm
+  :if (file-exists-p "~/.nvm")
   :ensure t
   :config
 
@@ -679,6 +667,7 @@ tests to exist in `project_root/tests`"
       ))
   )
 
+(use-package tern :ensure t)
 (require 'js-doc)
 (add-hook 'js2-mode-hook (lambda ()
                            (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
@@ -693,7 +682,9 @@ tests to exist in `project_root/tests`"
   (let ((hook (intern-soft (format "%s-mode-hook" mode)))
         (handler (intern-soft (format "my-jump-handlers-%s-mode" mode))))
     (add-hook hook `(lambda ()
-                      (if (null my/current-node-version) (my/nvm-use-ver))
+                      (if (and (file-exists-p "~/.nvm")
+                               (null my/current-node-version))
+                          (my/nvm-use-ver))
                       (setq evil-shift-width 2)
                       (tern-mode)
                       (add-to-list (quote ,handler) 'tern-find-definition)))))
@@ -829,6 +820,7 @@ tests to exist in `project_root/tests`"
   (setq company-idle-delay 0.3)
   (add-hook 'after-init-hook 'global-company-mode)
   :config
+  (use-package company-tern :ensure t)
   (use-package company-irony :ensure t :defer t)
   (use-package company-quickhelp :ensure t)
   (company-quickhelp-mode 1)
@@ -973,11 +965,11 @@ tests to exist in `project_root/tests`"
 ;; (global-set-key (kbd "C-x C-f") 'my/helm-find-files)
 ;; (diminish 'helm-mode "")
 
-(use-package helm-projectile
-  :ensure t
-  :config
-  (helm-projectile-on)
-  )
+;; (use-package helm-projectile
+;;   :ensure t
+;;   :config
+;;   (helm-projectile-on)
+;;   )
 
 (use-package projectile
   :ensure t
