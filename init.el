@@ -177,7 +177,7 @@
          solarizedarkerbright-height-plus-1 1.0
          solarizedarkerbright-height-plus-2 1.0
          solarizedarkerbright-height-plus-3 1.0
-         solarizedarkerbright-height-plus-4 1.0)
+         solarizedarkerbright-height-plus-4 1.0))
 
 (use-package zenburn-theme :ensure t)
 (use-package solarized-theme :ensure t)
