@@ -544,6 +544,8 @@ tests to exist in `project_root/tests`"
 
 (use-package pyvenv) ;; this has to be downloaded
 
+(setq python-shell-interpreter "ipython")
+
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
 
