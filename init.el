@@ -154,6 +154,15 @@
 ;; DocView
 (setq doc-view-continuous t)
 
+;; buffer-move
+(use-package buffer-move
+  :ensure t
+  :config
+  (global-set-key (kbd "C-s-h") 'buf-move-left)
+  (global-set-key (kbd "C-s-j") 'buf-move-down)
+  (global-set-key (kbd "C-s-k") 'buf-move-up)
+  (global-set-key (kbd "C-s-l") 'buf-move-right))
+
 ;; ----------------
 ;; UI & themes
 ;; ----------------
