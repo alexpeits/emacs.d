@@ -163,6 +163,14 @@
   (global-set-key (kbd "C-s-k") 'buf-move-up)
   (global-set-key (kbd "C-s-l") 'buf-move-right))
 
+;; eyebrowse
+(use-package eyebrowse
+  :ensure t
+  :config
+  (setq eyebrowse-mode-line-separator " "
+        eyebrowse-new-workspace t)
+  (eyebrowse-mode t))
+
 ;; ----------------
 ;; UI & themes
 ;; ----------------
@@ -208,11 +216,11 @@
                                                   (org-block-fg . "#a1acae")
                                                   (org-block-bg . "#292929")))))
 
-(defvar my/current-theme 3)
 (defvar my/avail-themes '(my/solarized-black-bright
                           my/solarized-dark
                           my/solarized-light
                           my/zenburn))
+(defvar my/current-theme 3)
 
 (defun my/set-theme (&optional theme-name)
   (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
@@ -678,7 +686,6 @@ tests to exist in `project_root/tests`"
       ))
   )
 
-(use-package tern :ensure t)
 (require 'js-doc)
 (add-hook 'js2-mode-hook (lambda ()
                            (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
@@ -697,7 +704,7 @@ tests to exist in `project_root/tests`"
                                (null my/current-node-version))
                           (my/nvm-use-ver))
                       (setq evil-shift-width 2)
-                      (tern-mode)
+                      (use-package tern :ensure t :config (tern-mode))
                       (add-to-list (quote ,handler) 'tern-find-definition)))))
 
 (setq ;; js2-mode
