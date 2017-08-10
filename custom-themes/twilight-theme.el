@@ -60,6 +60,7 @@
 (let ((tw-bg-2        "#000000")
       (tw-bg-1        "#111111")
       (tw-bg          "#141414")
+      (tw-bg+1        "#191919")
       (tw-bg+2        "#212121")
       (tw-bg+3        "#313131")
       (tw-bg+4        "#4b474c")
@@ -79,6 +80,7 @@
       (tw-med-org     "#efa510")
       (tw-light-org   "#f2b73f")
       (tw-pale-org    "#cda869")
+      (tw-dark-grn-2  "#4b5335")
       (tw-dark-grn-1  "#5a6340")
       (tw-dark-grn    "#646d4a")
       (tw-med-grn     "#8f9d6a")
@@ -95,8 +97,8 @@
 
   (custom-theme-set-faces
    'twilight
-   `(default ((t (:background ,tw-bg :foreground ,tw-fg))))
-   `(cursor ((t (:background ,tw-pale-org))))
+   `(default ((t (:background ,tw-bg+1 :foreground ,tw-fg))))
+   `(cursor ((t (:background ,tw-fg))))
    `(buffers-tab ((t (:background ,tw-bg :foreground ,tw-fg-c))))
 
    `(font-lock-warning-face ((t (:background ,tw-mg :foreground ,tw-bg-2))))
@@ -121,10 +123,8 @@
    `(linum ((t (:background ,tw-bg :foreground ,tw-bg+3))))
    `(linum-highlight-face ((t (:inherit linum :foreground ,tw-pale-org))))
    `(hl-line ((t (:background ,tw-bg+2))))
-   `(mode-line ((t (:background ,tw-bg+3 :foreground ,tw-fg-c
-                    :box (:line-width 1 :color ,tw-fg-c)))))
-   `(mode-line-inactive ((t (:background ,tw-bg+4 :foreground ,tw-bg+8
-                    :box (:line-width 1 :color ,tw-bg+4)))))
+   `(mode-line ((t (:background ,tw-bg+3 :foreground ,tw-fg-c))))
+   `(mode-line-inactive ((t (:background ,tw-bg+4 :foreground ,tw-bg+8))))
    `(mode-line-buffer-id ((t (:foreground ,tw-med-grn))))
    `(gui-element ((t (:background ,tw-fg-d :foreground ,tw-bg-2))))
    `(region ((t (:background ,tw-bg+3))))
@@ -206,6 +206,7 @@
    `(font-latex-doctex-preprocessor-face ((t (:foreground ,tw-blu :inherit bold))))
    `(font-latex-italic-face ((t (:foreground ,tw-blu :inherit italic))))
    `(font-latex-math-face ((t (:foreground ,tw-med-grn))))
+   `(font-latex-script-char-face ((t (:foreground ,tw-dark-grn-2))))
    `(font-latex-sectioning-5-face ((t (:foreground ,tw-med-org :inherit variable-pitch))))
    `(font-latex-sedate-face ((t (:foreground ,tw-blu))))
    `(font-latex-slide-title-face ((t (:foreground ,tw-blu))))

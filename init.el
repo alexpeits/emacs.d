@@ -220,7 +220,7 @@
                           my/solarized-dark
                           my/solarized-light
                           my/zenburn))
-(defvar my/current-theme 3)
+(defvar my/current-theme 1)
 
 (defun my/set-theme (&optional theme-name)
   (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
