@@ -196,8 +196,8 @@
          solarizedarkerbright-height-plus-3 1.0
          solarizedarkerbright-height-plus-4 1.0))
 
-(use-package zenburn-theme :ensure t)
-(use-package solarized-theme :ensure t)
+(use-package solarized-theme :ensure t :defer t)
+(use-package zenburn-theme :ensure t :defer t)
 (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3B3B3B")))
 (defvar my/themes '((my/zenburn . ((theme . zenburn)
                                    (org-block-begin-end-bg . "#454545")
@@ -1100,7 +1100,8 @@ tests to exist in `project_root/tests`"
 
 (if (display-graphic-p)
     (progn
-      (my/set-theme))
+      (load-theme 'solarized-dark t)
+      )
   (progn
     (load-theme 'monokai)
     (set-face-attribute 'mode-line nil :background "#404040")
