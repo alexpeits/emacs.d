@@ -111,20 +111,29 @@ Removes the automatic guessing of the initial value based on thing at point. "
     (set-text-properties 0 (length input) nil input)
     (helm-find-files-1 input)))
 
-;; helm-projectile-persp-switch-project!
-(defun my/switch-project ()
+(defun my/counsel-find-file-other-window-horizontally (fname)
   (interactive)
-  (persp-switch (let ((temp-charset "1234567890abcdefghijklmnopqrstuvwxyz")
-                      (random-string ""))
-                  (dotimes (i 6 random-string)
-                    (setq random-string
-                          (concat
-                           random-string
-                           (char-to-string (elt temp-charset (random (length temp-charset)))))
-                          ))
-                  ))
-  (helm-projectile-switch-project)
-  (persp-rename (projectile-project-name)))
+  (let ((split-height-threshold 0)
+        (split-width-threshold nil))
+    (find-file-other-window fname)))
+
+(defun my/counsel-find-file-other-window-vertically (fname)
+  (interactive)
+  (let ((split-height-threshold nil)
+        (split-width-threshold 0))
+    (find-file-other-window fname)))
+
+(defun my/counsel-projectile-find-file-other-window-horizontally (fname)
+  (interactive)
+  (let ((split-height-threshold 0)
+        (split-width-threshold nil))
+    (counsel-projectile--find-file-other-window-action fname)))
+
+(defun my/counsel-projectile-find-file-other-window-vertically (fname)
+  (interactive)
+  (let ((split-height-threshold nil)
+        (split-width-threshold 0))
+    (counsel-projectile--find-file-other-window-action fname)))
 
 (defun my/helm-file-switch-other-window-horizontally ()
   (interactive)

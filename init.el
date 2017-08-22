@@ -1,10 +1,16 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/custom"))
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/custom-themes/"))
-(setenv "PATH" (concat "/home/alex/.local/bin" path-separator (getenv "PATH")))
-;; (setenv "PATH" (concat "/home/alex/.cabal/bin" path-separator (getenv "PATH")))
-(add-to-list 'exec-path "/home/alex/.local/bin")
-;; (add-to-list 'exec-path "/home/alex/.cabal/bin")
+(setenv "PATH" (concat
+                "/usr/local/bin" path-separator
+                "~/bin" path-separator
+                "~/.local/bin" path-separator
+                "~/.cargo/bin" path-separator
+                (getenv "PATH")))
+(add-to-list 'exec-path "/usr/local/bin")
+(add-to-list 'exec-path "~/bin")
+(add-to-list 'exec-path "~/.local/bin")
+(add-to-list 'exec-path "~/.cargo/bin")
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com")
 
@@ -146,6 +152,7 @@
 
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '(".env.dev\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env.example\\'" . conf-mode))
 
 ;; add extension for restclient.el
@@ -158,10 +165,18 @@
 (use-package buffer-move
   :ensure t
   :config
-  (global-set-key (kbd "C-s-h") 'buf-move-left)
-  (global-set-key (kbd "C-s-j") 'buf-move-down)
-  (global-set-key (kbd "C-s-k") 'buf-move-up)
-  (global-set-key (kbd "C-s-l") 'buf-move-right))
+  ;; TODO!
+  (if (eq system-type 'darwin)
+      (progn
+        (global-set-key (kbd "<C-s-268632072>") 'buf-move-left)
+        (global-set-key (kbd "<C-s-268632074>") 'buf-move-down)
+        (global-set-key (kbd "<C-s-268632075>") 'buf-move-up)
+        (global-set-key (kbd "<C-s-268632076>") 'buf-move-right))
+    (progn
+      (global-set-key (kbd "C-s-h") 'buf-move-left)
+      (global-set-key (kbd "C-s-j") 'buf-move-down)
+      (global-set-key (kbd "C-s-k") 'buf-move-up)
+      (global-set-key (kbd "C-s-l") 'buf-move-right))))
 
 ;; eyebrowse
 (use-package eyebrowse
@@ -196,9 +211,9 @@
          solarizedarkerbright-height-plus-3 1.0
          solarizedarkerbright-height-plus-4 1.0))
 
-(use-package solarized-theme :ensure t :defer t)
-(use-package zenburn-theme :ensure t :defer t)
-(defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3B3B3B")))
+;; (use-package solarized-theme :ensure t :defer t)
+;; (use-package zenburn-theme :ensure t :defer t)
+;; (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3B3B3B")))
 (defvar my/themes '((my/zenburn . ((theme . zenburn)
                                    (org-block-begin-end-bg . "#454545")
                                    (org-block-fg . "#dcdccc")
@@ -216,10 +231,13 @@
                                                   (org-block-fg . "#a1acae")
                                                   (org-block-bg . "#292929")))))
 
-(defvar my/avail-themes '(my/solarized-black-bright
-                          my/solarized-dark
-                          my/solarized-light
-                          my/zenburn))
+(defvar my/avail-themes
+  '(
+    ;; my/solarized-black-bright
+    my/solarized-dark
+    ;; my/solarized-light
+    my/zenburn
+    ))
 (defvar my/current-theme 1)
 
 (defun my/set-theme (&optional theme-name)
@@ -288,6 +306,8 @@
 ;; highlight trailing whitespace
 (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
+(setq initial-frame-alist '((width . 223) (height . 73)))
+
 (use-package smartparens
   :ensure t
   :defer t
@@ -351,7 +371,9 @@
 
 (add-hook 'term-mode-hook (lambda ()
                             (linum-mode 0)
-                            (define-key term-raw-map (kbd "M-o") 'other-window)))
+                            (define-key term-raw-map (kbd "M-o") 'other-window)
+                            (set-face-background 'term (face-attribute 'default :background))))
+
 
 ;; automatically close term buffers on EOF
 (defun oleh-term-exec-hook ()
@@ -429,6 +451,7 @@
   ;; emacs mode is default in some modes
   (dolist (mode '(term-mode
                   eshell-mode
+                  shell-mode
                   haskell-error-mode
                   haskell-interactive-mode))
     (my/make-emacs-mode mode))
@@ -484,7 +507,10 @@
                      (execute-kbd-macro "gv"))))
 
   ;; evilnc toggles instead of commenting/uncommenting
-  (setq evilnc-invert-comment-line-by-line t)
+  (use-package evil-nerd-commenter
+    :ensure t
+    :config
+    (setq evilnc-invert-comment-line-by-line t))
 
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
@@ -523,6 +549,7 @@
     "ph" 'persp-prev
     "pr" 'persp-rename
     "pq" 'persp-kill
+    "ps" 'counsel-projectile-ag
 
     "ss" 'swiper
 
@@ -561,7 +588,15 @@ tests to exist in `project_root/tests`"
 
 (use-package pyvenv) ;; this has to be downloaded
 
-(setq python-shell-interpreter "ipython")
+(defun my/set-python-interpreter ()
+  (setq python-shell-interpreter
+        (if (executable-find "ipython")
+            "ipython"
+          "python")))
+
+(my/set-python-interpreter)
+(add-hook 'pyvenv-post-activate-hooks 'my/set-python-interpreter)
+(add-hook 'pyvenv-post-deactivate-hooks 'my/set-python-interpreter)
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
@@ -571,14 +606,43 @@ tests to exist in `project_root/tests`"
 (my|define-jump-handlers cython-mode anaconda-mode-goto)
 (my/make-emacs-mode 'inferior-python-mode)
 (my/make-emacs-mode 'anaconda-mode-view-mode)
-(add-hook 'python-mode-hook (lambda ()
-                              (anaconda-mode)
-                              (diminish 'anaconda-mode " An")
-                              (anaconda-eldoc-mode)
-                              (diminish 'anaconda-eldoc-mode "")
-                              (evil-leader/set-key "ct" 'my/projectile-test-python-project)
-                              (add-to-list 'my-jump-handlers-python-mode
-					   '(anaconda-mode-find-definitions :async t))))
+(defun my/mode-line-venv ()
+  (if (string= major-mode "python-mode")
+      (let ((venv (if (null pyvenv-virtual-env-name)
+                      ""
+                    pyvenv-virtual-env-name)))
+        (concat
+         " ["
+         (propertize venv 'face 'font-lock-function-name-face)
+         "]"))
+    ""))
+;; (setq-default mode-line-format
+;;               (append mode-line-format my/mode-line-venv))
+
+(setq-default mode-line-format
+              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+                mode-line-client mode-line-modified mode-line-remote
+                mode-line-frame-identification mode-line-buffer-identification " "
+                mode-line-position
+                (vc-mode vc-mode)
+                (:eval (my/mode-line-venv))
+                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (anaconda-mode)
+            (diminish 'anaconda-mode " An")
+            (anaconda-eldoc-mode)
+            (diminish 'anaconda-eldoc-mode "")
+            (setq-default flycheck-disabled-checkers
+                          (append flycheck-disabled-checkers
+                                  '(python-pycompile)))
+            (evil-leader/set-key
+              "ct" 'my/projectile-test-python-project
+              "vw" 'pyvenv-workon
+              "vd" 'pyvenv-deactivate)
+            (add-to-list 'my-jump-handlers-python-mode
+                         '(anaconda-mode-find-definitions :async t))))
 
 ;; ----------------
 ;; c/c++
@@ -616,7 +680,8 @@ tests to exist in `project_root/tests`"
 ;; haskell
 ;; ----------------
 
-;; (setq haskell-process-type 'stack-ghci)
+(use-package ghc :ensure t :defer t)
+(use-package hindent :ensure t :defer t)
 (autoload 'ghc-init "ghc" nil t)
 (autoload 'ghc-debug "ghc" nil t)
 (setq
@@ -625,6 +690,7 @@ tests to exist in `project_root/tests`"
  haskell-process-auto-import-loaded-modules t
  haskell-process-log t
  haskell-process-type 'stack-ghci
+ ;; haskell-process-type 'auto
  haskellcompany-ghc-show-info t)
 (add-hook 'haskell-mode-hook
           (lambda ()
@@ -648,6 +714,28 @@ tests to exist in `project_root/tests`"
             ))
 (eval-after-load 'haskell-mode '(progn (defun ghc-check-syntax ())))
 
+
+;; ----------------
+;; rust
+;; ----------------
+
+(use-package rust-mode
+  :ensure t
+  :config
+  (use-package cargo :ensure t)
+  (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (cargo-minor-mode)
+              ;; (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)
+              (racer-mode)
+              (eldoc-mode)))
+  (defvar my/rust-sysroot  "~/.rustup/toolchains/stable-x86_64-apple-darwin")
+  (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
+  (setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path my/rust-src-path)
+  (setenv "RUST_SRC_PATH" my/rust-src-path)
+  )
 
 ;; ----------------
 ;; js
@@ -830,24 +918,26 @@ tests to exist in `project_root/tests`"
 ;; ----------------
 ;; company & completions
 ;; ----------------
+
 (use-package company
   :ensure t
-  :defer t
   :init
   (setq company-dabbrev-downcase nil)
   (setq company-idle-delay 0.3)
   (add-hook 'after-init-hook 'global-company-mode)
   :config
   (use-package company-tern :ensure t)
-  (use-package company-irony :ensure t :defer t)
+  ;; (use-package company-irony :ensure t :defer t)
   (use-package company-quickhelp :ensure t)
+  (use-package company-anaconda :ensure t)
   (company-quickhelp-mode 1)
   (diminish 'company-mode " Com")
   (eval-after-load "company"
     '(progn
        (add-to-list 'company-backends 'company-anaconda)
-       (add-to-list 'company-backends '(company-irony-c-headers company-c-headers company-irony))
+       ;; (add-to-list 'company-backends '(company-irony-c-headers company-c-headers company-irony))
        (add-to-list 'company-backends 'company-ghc)
+       (add-to-list 'company-backends 'company-racer)
        (add-to-list 'company-backends 'company-tern)
        (add-to-list 'company-backends 'company-files)
        (define-key company-active-map (kbd "C-k") 'company-select-previous)
@@ -877,6 +967,7 @@ tests to exist in `project_root/tests`"
   (use-package flycheck-mypy :ensure t)
   (use-package flycheck-irony :ensure t)
   (use-package flycheck-haskell :ensure t)
+  (use-package flycheck-rust :ensure t)
   (use-package flycheck-yamllint :ensure t)
   (eval-after-load 'flycheck
     '(progn
@@ -884,6 +975,7 @@ tests to exist in `project_root/tests`"
        (set-face-foreground 'flycheck-warning "unspecified-fg")
        (add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
        (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
+       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
        (add-hook 'flycheck-mode-hook #'flycheck-yamllint-setup)
       ))
   (define-key global-map (kbd "C-c ! t") 'flycheck-mode)
@@ -1026,12 +1118,29 @@ tests to exist in `project_root/tests`"
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile-find-file)
+  (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
   (setq projectile-switch-project-action 'counsel-projectile-find-file)
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
           (t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
+  (ivy-set-actions
+   'counsel-find-file
+   '(("s"
+      my/counsel-find-file-other-window-horizontally
+      "split horizontally")
+     ("v"
+      my/counsel-find-file-other-window-vertically
+      "split vertically")))
+  (ivy-set-actions
+   'counsel-projectile-find-file
+   '(("s"
+      my/counsel-projectile-find-file-other-window-horizontally
+      "split horizontally")
+     ("v"
+      my/counsel-projectile-find-file-other-window-vertically
+      "split vertically")))
   )
 
 ;; ----------------
@@ -1080,7 +1189,7 @@ tests to exist in `project_root/tests`"
              'org-babel-load-languages
              '((python . t)
                (ipython . t)
-               (dot . t)
+               ;; (dot . t)
                (restclient . t)
                ;; other languages..
                ))
@@ -1097,16 +1206,17 @@ tests to exist in `project_root/tests`"
 
 (require 'myfonts)
 (setq x-underline-at-descent-line t)
+(my/set-theme)
 
-(if (display-graphic-p)
-    (progn
-      (load-theme 'solarized-dark t)
-      )
-  (progn
-    (load-theme 'monokai)
-    (set-face-attribute 'mode-line nil :background "#404040")
-    (set-face-attribute 'mode-line-inactive nil :background "#282828")
-    ))
+;(if (display-graphic-p)
+    ;(progn
+      ;(my/set-theme)
+      ;)
+  ;(progn
+    ;(load-theme 'monokai)
+    ;(set-face-attribute 'mode-line nil :background "#404040")
+    ;(set-face-attribute 'mode-line-inactive nil :background "#282828")
+    ;))
 
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)
