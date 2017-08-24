@@ -41,6 +41,14 @@
   `(dolist (hook ,hooks)
      (add-hook hook (lambda () ,@body))))
 
+(defmacro my/control-function-window-split (f height width)
+  `(lambda (&rest args)
+     (interactive)
+     (let ((split-height-threshold ,height)
+           (split-width-threshold ,width))
+       (apply (quote ,f) args))))
+
+
 ;; ----------------
 ;; various
 ;; ----------------
@@ -60,6 +68,20 @@
   :config
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode "")
+  )
+
+;; dired
+(with-eval-after-load 'dired
+  (define-key dired-mode-map
+    (kbd "C-c v")
+    (my/control-function-window-split
+     dired-find-file-other-window
+     nil 0))
+  (define-key dired-mode-map
+    (kbd "C-c s")
+    (my/control-function-window-split
+     dired-find-file-other-window
+     0 nil))
   )
 
 ;; highlight numbers
@@ -313,6 +335,11 @@
   :defer t
   :commands (sp-split-sexp sp-newline sp-up-sexp)
   :init
+
+  (defun my/smartparens-pair-newline-and-indent (id action context)
+    (my/smartparens-pair-newline id action context)
+    (indent-according-to-mode))
+
   (setq sp-paredit-bindings t
         sp-show-pair-delay 0.2
         ;; fix paren highlighting in normal mode
@@ -442,7 +469,7 @@
   (setq evil-want-C-i-jump nil)
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
   (evil-mode 1)
-
+  
   (defun my/make-emacs-mode (mode)
     "Make `mode' use emacs keybindings."
     (delete mode evil-insert-state-modes)
@@ -453,7 +480,8 @@
                   eshell-mode
                   shell-mode
                   haskell-error-mode
-                  haskell-interactive-mode))
+                  haskell-interactive-mode
+                  dired-mode))
     (my/make-emacs-mode mode))
 
   ;; don't need C-n, C-p
@@ -473,6 +501,14 @@
 
   ;; move state to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
+
+  (defadvice evil-search-next
+      (after advice-for-evil-search-next activate)
+    (evil-scroll-line-to-center (line-number-at-pos)))
+
+  (defadvice evil-search-previous
+      (after advice-for-evil-search-previous activate)
+    (evil-scroll-line-to-center (line-number-at-pos)))
 
   ;; this is needed to be able to use C-h
   (global-set-key (kbd "C-h") 'undefined)
@@ -963,6 +999,11 @@ tests to exist in `project_root/tests`"
   :init (global-flycheck-mode)
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode)
+  (defun my/toggle-flycheck-error-list ()
+    (interactive)
+    (-if-let (window (flycheck-get-error-list-window))
+        (quit-window nil window)
+      (flycheck-list-errors)))
   (use-package flymake-yaml :ensure t)
   (use-package flycheck-mypy :ensure t)
   (use-package flycheck-irony :ensure t)
@@ -1085,24 +1126,37 @@ tests to exist in `project_root/tests`"
   :ensure t
   :config
   (projectile-mode)
+  (setq projectile-completion-system 'ivy)
+  (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name))))
   )
 
 (use-package perspective :config (persp-mode))
 (use-package persp-projectile :ensure t)
 
+(defun my/swiper (fuzzy)
+  (interactive "P")
+  (if (null fuzzy)
+      (swiper)
+    (let* ((temp-builders (copy-alist ivy-re-builders-alist))
+          (ivy-re-builders-alist (add-to-list 'temp-builders
+                                              '(swiper . ivy--regex-fuzzy))))
+      (swiper))))
+
 (use-package ivy
   :ensure t
+
   :init
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
   (use-package counsel-projectile :ensure t)
+
   :config
   (ivy-mode 1)
   (diminish 'ivy-mode "")
-  (setq ivy-use-virtual-buffers t)
+  (setq ivy-use-virtual-buffers nil)
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
-  (global-set-key "\C-s" 'swiper)
+  (global-set-key (kbd "C-s") 'my/swiper)
   (global-set-key (kbd "C-c C-r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -1116,6 +1170,15 @@ tests to exist in `project_root/tests`"
   (global-set-key (kbd "C-x l") 'counsel-locate)
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
+  (global-set-key
+   (kbd "C-x b")
+   (lambda (prefix)
+     (interactive "P")
+     (if (null prefix)
+         (if (projectile-project-p)
+             (counsel-projectile-switch-to-buffer)
+           (ivy-switch-buffer))
+       (ivy-switch-buffer))))
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile-find-file)
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
@@ -1127,19 +1190,27 @@ tests to exist in `project_root/tests`"
   (setq ivy-magic-tilde nil)
   (ivy-set-actions
    'counsel-find-file
-   '(("s"
-      my/counsel-find-file-other-window-horizontally
+   `(("s"
+      ,(my/control-function-window-split
+        find-file-other-window
+        0 nil)
       "split horizontally")
      ("v"
-      my/counsel-find-file-other-window-vertically
+      ,(my/control-function-window-split
+        find-file-other-window
+        nil 0)
       "split vertically")))
   (ivy-set-actions
    'counsel-projectile-find-file
-   '(("s"
-      my/counsel-projectile-find-file-other-window-horizontally
+   `(("s"
+      ,(my/control-function-window-split
+        counsel-projectile--find-file-other-window-action
+        nil 0)
       "split horizontally")
      ("v"
-      my/counsel-projectile-find-file-other-window-vertically
+      ,(my/control-function-window-split
+        counsel-projectile--find-file-other-window-action
+        nil 0)
       "split vertically")))
   )
 
@@ -1166,6 +1237,14 @@ tests to exist in `project_root/tests`"
 ;; time duration (avoid showing days)
 (setq org-time-clocksum-format
     '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+
+(defun my/org-insert-template ()
+  (interactive)
+  (let* ((templ-dir (expand-file-name "~/.emacs.d/org-templates/"))
+         (ls (directory-files templ-dir nil "^[^.]"))
+         (file (completing-read "Template: " ls))
+         (path (concat templ-dir file)))
+    (insert-file-contents path)))
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 (add-hook 'org-mode-hook

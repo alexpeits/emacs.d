@@ -6,18 +6,9 @@
     (newline)
     (indent-according-to-mode)))
 
-(defun my/smartparens-pair-newline-and-indent (id action context)
-  (my/smartparens-pair-newline id action context)
-  (indent-according-to-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Various
-
-(defun my/shell-command-to-string ()
-  (interactive)
-  (let ((cmd (read-string "Command: ")))
-  (insert (shell-command-to-string cmd)))
-  )
 
 (defun face-p (face-symbol)
   "XE ad Emacs compatibility, checks if the FACE-SYMBOL exists."
@@ -75,26 +66,6 @@ sets `my-jump-handlers' in buffers of that mode."
     (message "No jump handler was able to find this symbol.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; major modes
-
-(defun my/org-insert-template ()
-  (interactive)
-  (let* ((templ-dir (expand-file-name "~/.emacs.d/org-templates/"))
-         (ls (directory-files templ-dir nil "^[^.]"))
-         (file (completing-read "Template: " ls))
-         (path (concat templ-dir file)))
-    (insert-file-contents path)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; error checking
-
-(defun my/toggle-flycheck-error-list ()
-  (interactive)
-  (-if-let (window (flycheck-get-error-list-window))
-      (quit-window nil window)
-    (flycheck-list-errors)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm
 
 (defun my/helm-find-files (arg)
@@ -110,30 +81,6 @@ Removes the automatic guessing of the initial value based on thing at point. "
                       (t (expand-file-name (helm-current-directory))))))
     (set-text-properties 0 (length input) nil input)
     (helm-find-files-1 input)))
-
-(defun my/counsel-find-file-other-window-horizontally (fname)
-  (interactive)
-  (let ((split-height-threshold 0)
-        (split-width-threshold nil))
-    (find-file-other-window fname)))
-
-(defun my/counsel-find-file-other-window-vertically (fname)
-  (interactive)
-  (let ((split-height-threshold nil)
-        (split-width-threshold 0))
-    (find-file-other-window fname)))
-
-(defun my/counsel-projectile-find-file-other-window-horizontally (fname)
-  (interactive)
-  (let ((split-height-threshold 0)
-        (split-width-threshold nil))
-    (counsel-projectile--find-file-other-window-action fname)))
-
-(defun my/counsel-projectile-find-file-other-window-vertically (fname)
-  (interactive)
-  (let ((split-height-threshold nil)
-        (split-width-threshold 0))
-    (counsel-projectile--find-file-other-window-action fname)))
 
 (defun my/helm-file-switch-other-window-horizontally ()
   (interactive)
@@ -170,26 +117,5 @@ Removes the automatic guessing of the initial value based on thing at point. "
        (let ((split-height-threshold nil)
              (split-width-threshold 0))
          (helm-switch-to-buffers-other-window candidate))))))
-
-;;;;;;;;;;
-;; helpers
-
-(defun my/round-time (time mult)
-  "Return a hh:mm formatted time duration as a decimal (string)
-denoting hours,rounding it to the nearest multiple of `mult'.
-
-For example, the duration 4:47, with rounding to a quarter of
-an hour (mult=25), gives 4,75 hours, and 4:55 gives 5.00"
-  (let* ((hm (mapcar 'string-to-int (split-string time ":")))
-         (h (car hm))
-         (m (cadr hm))
-         (perc (round (* 100 (/ m 60.0))))
-         (rperc (* mult (/ (+ perc (/ mult 2)) mult))))
-    (format "%d.%02d"
-            (if (and (= 0 (mod rperc 100))
-                     (> rperc perc))
-                (1+ h)
-              h)
-            (mod rperc 100))))
 
 (provide 'myfuncs)

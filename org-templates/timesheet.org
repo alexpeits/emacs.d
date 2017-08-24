@@ -19,7 +19,7 @@
                    ,(org-element-property :CLIENT task)
                    ,(org-element-property :PO task)
                    ,(get-property :PROJECT task "")
-                   ,(my/round-time (org-element-property :duration x) 25)
+                   ,(round-time (org-element-property :duration x) 25)
                    ,(org-element-property :title task)
                    ,(get-property :ON_LOCATION task "")
                    ,(get-property :BILLABLE task "")

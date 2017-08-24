@@ -20,3 +20,21 @@
 
 (defun compare-timesheet-lists (a b)
   (apply 'compare-dates (mapcar 'first (list a b))))
+
+(defun round-time (time mult)
+  "Return a hh:mm formatted time duration as a decimal (string)
+denoting hours,rounding it to the nearest multiple of `mult'.
+
+For example, the duration 4:47, with rounding to a quarter of
+an hour (mult=25), gives 4,75 hours, and 4:55 gives 5.00"
+  (let* ((hm (mapcar 'string-to-int (split-string time ":")))
+         (h (car hm))
+         (m (cadr hm))
+         (perc (round (* 100 (/ m 60.0))))
+         (rperc (* mult (/ (+ perc (/ mult 2)) mult))))
+    (format "%d.%02d"
+            (if (and (= 0 (mod rperc 100))
+                     (> rperc perc))
+                (1+ h)
+              h)
+            (mod rperc 100))))
