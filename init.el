@@ -48,7 +48,7 @@
            (split-width-threshold ,width))
        (apply (quote ,f) args))))
 
-(defmacro my/select-window-execute (f winf)
+(defmacro my/execute-f-with-hook (f winf)
   `(lambda (&rest args)
      (interactive)
      (,winf)
@@ -64,8 +64,7 @@
     (use-package saveplace
        :ensure t
        :config
-       (setq-default save-place t)
-    )
+       (setq-default save-place t))
   (save-place-mode 1))
 
 ;; undo tree
@@ -103,16 +102,15 @@
      0 nil))
   (define-key dired-mode-map
     (kbd "C-c n")
-    'my/dired-find-file-ace)
-  )
+    'my/dired-find-file-ace))
 
 ;; highlight numbers
 (use-package highlight-numbers
   :ensure t
   :config
-  (my/add-hooks '(prog-mode-hook css-mode-hook) (highlight-numbers-mode))
-  )
+  (my/add-hooks '(prog-mode-hook css-mode-hook) (highlight-numbers-mode)))
 
+;; neotree
 (use-package neotree
   :ensure t
   :config
@@ -128,8 +126,7 @@
         (let ((project-dir (projectile-project-root))
               (file-name (buffer-file-name)))
           (neotree-dir project-dir)
-          (neotree-find file-name))))
-  )
+          (neotree-find file-name)))))
 
 ;; visual effect after closing delimiter
 (setq show-paren-delay 0.3)
@@ -153,6 +150,9 @@
 ;; i love this
 (defalias 'yes-or-no-p #'y-or-n-p)
 
+;; use spaces
+setq-default indent-tabs-mode nil)
+
 ;; always scroll to the end of compilation buffers
 (setq compilation-scroll-output t)
 
@@ -161,6 +161,7 @@
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
+;; used in help
 (define-key 'help-command (kbd "C-l") 'find-library)
 (define-key 'help-command (kbd "C-k") 'find-function-on-key)
 (define-key 'help-command (kbd "C-f") 'find-function)
@@ -186,13 +187,11 @@
       (setq buffer (car list))))
           (message "Refreshed open files"))
 
-
 ;; read file as string
 (defun my/read-file-contents (path)
   (with-temp-buffer
     (insert-file-contents (expand-file-name path))
     (buffer-string)))
-
 
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
@@ -209,7 +208,6 @@
 (use-package buffer-move
   :ensure t
   :config
-  ;; TODO!
   (if (eq system-type 'darwin)
       (progn
         (global-set-key (kbd "<C-s-268632072>") 'buf-move-left)
@@ -235,7 +233,6 @@
 ;; ----------------
 
 
-(setq-default indent-tabs-mode nil)
 (setq spacemacs-theme-org-height nil
       spacemacs-theme-comment-bg nil)
 (when window-system
@@ -327,10 +324,9 @@
   ;; (global-linum-mode t)
   ;; (add-hook 'prog-mode-hook (lambda () (linum-mode t)))
   ;; (setq linum-format "%4d ")
-  (setq linum-format 'dynamic)
-  )
+  (setq linum-format 'dynamic))
 
-;; always open helm buffers at bottom
+;; popwin, mainly to always open helm buffers at bottom
 (use-package popwin
   :ensure t
   :config
@@ -339,8 +335,7 @@
                                             (popwin:display-buffer helm-buffer t)
                                             (popwin-mode -1)))
   ;;  Restore popwin-mode after a Helm session finishes.
-  (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1)))
-  )
+  (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1))))
 
 ; font size & scaling
 (setq text-scale-mode-step 1.05)
@@ -350,6 +345,7 @@
 ;; highlight trailing whitespace
 (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
+;; window size when emacs is opened
 (setq initial-frame-alist '((width . 223) (height . 73)))
 
 (use-package smartparens
@@ -397,32 +393,29 @@
   (define-key smartparens-mode-map (kbd "C-M-d") 'sp-down-sexp)
 
   (define-key smartparens-mode-map (kbd "C-M-n") 'sp-backward-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-p") 'sp-up-sexp)
-  )
+  (define-key smartparens-mode-map (kbd "C-M-p") 'sp-up-sexp))
 
 (use-package which-key
   :ensure t
   :config
   (which-key-mode)
-  (diminish 'which-key-mode "")
-  )
+  (diminish 'which-key-mode ""))
 
 (use-package imenu-list
   :ensure t
   :config
   (global-set-key (kbd "C-\\") #'imenu-list-minor-mode)
-  (setq imenu-list-size 30)
-  )
+  (setq imenu-list-size 30))
 
 ;; ----------------
 ;; term, comint & eshell
 ;; ----------------
 
-(add-hook 'term-mode-hook (lambda ()
-                            (linum-mode 0)
-                            (define-key term-raw-map (kbd "M-o") 'other-window)
-                            (set-face-background 'term (face-attribute 'default :background))))
-
+(add-hook 'term-mode-hook
+          (lambda ()
+            (linum-mode 0)
+            (define-key term-raw-map (kbd "M-o") 'other-window)
+            (set-face-background 'term (face-attribute 'default :background))))
 
 ;; automatically close term buffers on EOF
 (defun oleh-term-exec-hook ()
@@ -436,6 +429,7 @@
 
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
+;; eshell
 (defun eshell/clear ()
   "Clear the eshell buffer."
   (interactive)
@@ -446,6 +440,7 @@
           (lambda ()
             (define-key eshell-mode-map (kbd "C-l") 'eshell/clear)))
 
+;; comint
 (setq comint-prompt-read-only t)
 
 (defun my/comint-clear-buffer ()
@@ -482,8 +477,7 @@
 (use-package evil-leader
   :ensure t
   :config
-  (global-evil-leader-mode)
-  )
+  (global-evil-leader-mode))
 
 (use-package evil
   :ensure t
@@ -564,12 +558,13 @@
                      (call-interactively 'evil-shift-right)
                      (execute-kbd-macro "gv"))))
 
-  ;; evilnc toggles instead of commenting/uncommenting
   (use-package evil-nerd-commenter
     :ensure t
     :config
+    ;; evilnc toggles instead of commenting/uncommenting
     (setq evilnc-invert-comment-line-by-line t))
 
+  ;; search with star while in v-mode
   (use-package evil-visualstar
     :ensure t
     :config
@@ -579,7 +574,6 @@
   (evil-leader/set-key
     "]"  'find-tag-other-window
     ";"  'evilnc-comment-or-uncomment-lines
-    ")"  'my/fix-theme
     "h"  'help
 
     "n"  'my/neotree-toggle-project
@@ -596,10 +590,9 @@
     "ws" 'evil-window-split
     "wv" 'evil-window-vsplit
 
-    "tb" 'my/toggle-bg
     "tg" 'global-diff-hl-mode
     "th" 'global-hl-line-mode
-    "tl"  'linum-mode
+    "tl" 'linum-mode
     "ts" 'flycheck-mode
     "tw" 'toggle-truncate-lines
     "tt" 'my/toggle-theme
@@ -614,8 +607,6 @@
     "pq" 'persp-kill
     "ps" 'counsel-projectile-ag
 
-    "ss" 'swiper
-
     "Ts" 'helm-themes
     "ff" 'helm-find
     "fa" 'helm-ag
@@ -626,29 +617,12 @@
   :ensure t
   :config
   (global-evil-surround-mode 1)
-  (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
-  )
+  (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region))
 
 
 ;; ----------------
 ;; python
 ;; ----------------
-(defun my/projectile-test-python-project (verbose)
-  "Tests a python project (requires it to be a project and
-tests to exist in `project_root/tests`"
-  (interactive "P")
-  (let* ((root (projectile-project-root))
-         (testdir (concat (file-name-as-directory root) "tests"))
-         (buff (get-buffer-create "*python-test*"))
-         (verbosity (cond ((null verbose) "")
-                          (t "-v "))))
-    (display-buffer buff)
-    (projectile-with-default-dir root
-      (shell-command (concat "python -m unittest discover " verbosity testdir) buff)
-      (let ((compilation-window-height 10))
-        (with-current-buffer buff
-          (compilation-mode))))))
-
 (use-package pyvenv) ;; this has to be downloaded
 
 (defun my/set-python-interpreter ()
@@ -679,17 +653,15 @@ tests to exist in `project_root/tests`"
          (propertize venv 'face 'font-lock-function-name-face)
          "]"))
     ""))
-;; (setq-default mode-line-format
-;;               (append mode-line-format my/mode-line-venv))
 
-;; (setq-default mode-line-format
-;;               '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
-;;                 mode-line-client mode-line-modified mode-line-remote
-;;                 mode-line-frame-identification mode-line-buffer-identification " "
-;;                 mode-line-position
-;;                 (vc-mode vc-mode)
-;;                 (:eval (my/mode-line-venv))
-;;                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+(setq-default mode-line-format
+              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+                mode-line-client mode-line-modified mode-line-remote
+                mode-line-frame-identification mode-line-buffer-identification " "
+                mode-line-position
+                (vc-mode vc-mode)
+                (:eval (my/mode-line-venv))
+                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
 (add-hook 'python-mode-hook
           (lambda ()
@@ -701,7 +673,6 @@ tests to exist in `project_root/tests`"
                           (append flycheck-disabled-checkers
                                   '(python-pycompile)))
             (evil-leader/set-key
-              "ct" 'my/projectile-test-python-project
               "vw" 'pyvenv-workon
               "vd" 'pyvenv-deactivate)
             (add-to-list 'my-jump-handlers-python-mode
@@ -730,8 +701,7 @@ tests to exist in `project_root/tests`"
   (add-hook 'irony-mode-hook (lambda ()
                                (my-irony-mode-hook)
                                (irony-cdb-autosetup-compile-options)))
-  (use-package company-irony-c-headers :ensure t :defer t)
-  )
+  (use-package company-irony-c-headers :ensure t :defer t))
 
 (my|define-jump-handlers c-mode)
 (my|define-jump-handlers c++-mode)
@@ -753,7 +723,6 @@ tests to exist in `project_root/tests`"
  haskell-process-auto-import-loaded-modules t
  haskell-process-log t
  haskell-process-type 'stack-ghci
- ;; haskell-process-type 'auto
  haskellcompany-ghc-show-info t)
 (add-hook 'haskell-mode-hook
           (lambda ()
@@ -797,8 +766,7 @@ tests to exist in `project_root/tests`"
   (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
   (setq racer-cmd "~/.cargo/bin/racer")
   (setq racer-rust-src-path my/rust-src-path)
-  (setenv "RUST_SRC_PATH" my/rust-src-path)
-  )
+  (setenv "RUST_SRC_PATH" my/rust-src-path))
 
 ;; ----------------
 ;; js
@@ -834,8 +802,7 @@ tests to exist in `project_root/tests`"
       (unless (null my/current-node-version) (my/remove-node-from-path my/current-node-version))
       (my/add-node-to-path choice)
       (setq my/current-node-version choice)
-      ))
-  )
+      )))
 
 (require 'js-doc)
 (add-hook 'js2-mode-hook (lambda ()
@@ -918,23 +885,10 @@ tests to exist in `project_root/tests`"
 ;; Clojure
 ;; ----------------
 
-(defun my/clojure-toggle-ignore-this-sexp ()
-  (interactive)
-  (let ((sym "#_"))
-    (save-excursion
-      (sp-backward-up-sexp)
-      (if (re-search-backward sym (- (point) 2) t)
-          (delete-char 2)
-        (insert sym))
-      (if (fboundp 'cider-format-defun)
-          (cider-format-defun)))))
-
-
 (add-hook
  'clojure-mode-hook
  (lambda ()
    (eldoc-mode)
-   (define-key clojure-mode-map (kbd "C-x C-M-i") #'my/clojure-toggle-ignore-this-sexp)
    ;; (sp-local-pair 'clojure-mode "(" nil :actions '(:rem insert))
    ))
 
@@ -972,8 +926,7 @@ tests to exist in `project_root/tests`"
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  )
+         ("\\.markdown\\'" . markdown-mode)))
 
 (use-package yaml-mode :ensure t)
 
@@ -1011,9 +964,7 @@ tests to exist in `project_root/tests`"
        (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
        (define-key company-active-map (kbd "C-l") 'company-complete-selection)
        (define-key company-active-map (kbd "C-f") 'company-show-location)
-       (setq company-minimum-prefix-length 3)
-       ))
-  )
+       (setq company-minimum-prefix-length 3))))
 
 
 ;; ----------------
@@ -1061,8 +1012,7 @@ tests to exist in `project_root/tests`"
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (setq-default flycheck-temp-prefix ".flycheck")
-  (setq-default flycheck-emacs-lisp-load-path 'inherit)
-  )
+  (setq-default flycheck-emacs-lisp-load-path 'inherit))
 
 
 ;; ----------------
@@ -1074,80 +1024,14 @@ tests to exist in `project_root/tests`"
   (flx-ido-mode 1)
   ;; disable ido faces to see flx highlights.
   (setq ido-enable-flex-matching t)
-  (setq ido-use-faces nil)
-  )
+  (setq ido-use-faces nil))
 
 
 ;; ----------------
 ;; helm
 ;; ----------------
 (use-package helm :ensure t)
-;; (use-package helm-config)
 (use-package helm-themes)
-;; (use-package helm-mode :config (helm-mode 1))
-;; (use-package helm-adaptive :config (helm-adaptive-mode 1))
-;; (use-package helm-utils :config (helm-popup-tip-mode 1))
-;; (use-package helm-sys :config (helm-top-poll-mode 1))
-;; (use-package helm-fuzzy-find :ensure t)
-;; (use-package helm-ag :ensure t)
-
-;; (setq helm-M-x-fuzzy-match t)
-;; (setq helm-locate-fuzzy-match t)
-
-;; ;; Global-map
-;; (global-set-key (kbd "M-x")                          'undefined)
-;; (global-set-key (kbd "M-x")                          'helm-M-x)
-;; (global-set-key (kbd "C-c <SPC>")                    'helm-all-mark-rings)
-;; (global-set-key (kbd "C-x r b")                      'helm-filtered-bookmarks)
-;; (global-set-key (kbd "C-:")                          'helm-eval-expression-with-eldoc)
-;; (global-set-key (kbd "C-,")                          'helm-calcul-expression)
-;; (global-set-key (kbd "C-x C-d")                      'helm-browse-project)
-;; (global-set-key (kbd "C-c i")                        'helm-imenu-in-all-buffers)
-;; (define-key global-map [remap jump-to-register]      'helm-register)
-;; (define-key global-map [remap list-buffers]          'helm-mini)
-;; (define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
-;; (define-key global-map [remap find-tag]              'helm-etags-select)
-;; (define-key global-map [remap xref-find-definitions] 'helm-etags-select)
-;; (define-key global-map (kbd "M-g a")                 'helm-do-grep-ag)
-;; (define-key global-map (kbd "M-g g")                 'helm-grep-do-git-grep)
-;; (define-key global-map (kbd "M-g i")                 'helm-gid)
-;; (define-key global-map (kbd "C-x r p") 'helm-projects-history)
-;; (define-key helm-map (kbd "C-j") 'helm-next-line)
-;; (define-key helm-map (kbd "C-k") 'helm-previous-line)
-;; (define-key helm-map (kbd "C-h") 'helm-find-files-up-one-level)
-;; (define-key helm-map (kbd "C-l") (kbd "RET"))
-
-;; ;; splitting
-;; (define-key helm-map (kbd "C-c s") 'my/helm-file-switch-other-window-horizontally)
-;; (define-key helm-map (kbd "C-c v") 'my/helm-file-switch-other-window-vertically)
-;; (define-key helm-buffer-map (kbd "C-c s") 'my/helm-buffer-switch-other-window-horizontally)
-;; (define-key helm-buffer-map (kbd "C-c v") 'my/helm-buffer-switch-other-window-vertically)
-
-;; (with-eval-after-load 'helm-files
-;;   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-;;   (define-key helm-find-files-map
-;;     (kbd "S-<tab>") 'helm-find-files-up-one-level)
-;;   (define-key helm-find-files-map
-;;     (kbd "<backtab>") 'helm-find-files-up-one-level)
-;;   ;; For terminal.
-;;   (define-key helm-map (kbd "TAB") 'helm-execute-persistent-action)
-;;   (define-key helm-find-files-map
-;;     (kbd "S-TAB") 'helm-find-files-up-one-level)
-;;   (define-key helm-map (kbd "C-z") 'helm-select-action))
-
-;; (when linum-mode
-;;   (add-hook 'helm-after-initialize-hook (lambda ()
-;;                                           (with-helm-buffer
-;;                                             (linum-mode 0)))))
-
-;; (global-set-key (kbd "C-x C-f") 'my/helm-find-files)
-;; (diminish 'helm-mode "")
-
-;; (use-package helm-projectile
-;;   :ensure t
-;;   :config
-;;   (helm-projectile-on)
-;;   )
 
 (use-package projectile
   :ensure t
@@ -1157,7 +1041,7 @@ tests to exist in `project_root/tests`"
   (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name))))
   )
 
-(use-package perspective :config (persp-mode))
+(use-package perspective :config (persp-mode))  ;; download
 (use-package persp-projectile :ensure t)
 
 (defun my/swiper (fuzzy)
@@ -1227,7 +1111,7 @@ tests to exist in `project_root/tests`"
         nil 0)
       "split vertically")
      ("n"
-      ,(my/select-window-execute
+      ,(my/execute-f-with-hook
         find-file
         ace-select-window)
       "select window")
@@ -1245,7 +1129,7 @@ tests to exist in `project_root/tests`"
         nil 0)
       "split vertically")
      ("n"
-      ,(my/select-window-execute
+      ,(my/execute-f-with-hook
         counsel-projectile--find-file-action
         ace-select-window)
       "select window")
@@ -1324,15 +1208,15 @@ tests to exist in `project_root/tests`"
 (require 'myfonts)
 (setq x-underline-at-descent-line t)
 (my/set-theme)
-(use-package spaceline
-  :ensure t
-  :init
-  (require 'spaceline-config)
-  (setq powerline-utf-8-separator-left 65279
-        powerline-utf-8-separator-right 65279
-        powerline-default-separator 'utf-8
-        spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-spacemacs-theme))
+;; (use-package spaceline
+;;   :ensure t
+;;   :init
+;;   (require 'spaceline-config)
+;;   (setq powerline-utf-8-separator-left 65279
+;;         powerline-utf-8-separator-right 65279
+;;         powerline-default-separator 'utf-8
+;;         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
+;;   (spaceline-spacemacs-theme))
 
 ;(if (display-graphic-p)
     ;(progn
