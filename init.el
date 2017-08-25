@@ -48,6 +48,12 @@
            (split-width-threshold ,width))
        (apply (quote ,f) args))))
 
+(defmacro my/select-window-execute (f winf)
+  `(lambda (&rest args)
+     (interactive)
+     (,winf)
+     (apply (quote ,f) args)))
+
 
 ;; ----------------
 ;; various
@@ -67,10 +73,23 @@
   :ensure t
   :config
   (global-undo-tree-mode)
-  (diminish 'undo-tree-mode "")
-  )
+  (diminish 'undo-tree-mode ""))
+
+;; ace-window
+(use-package ace-window
+  :ensure t
+  :config
+  (setq aw-dispatch-always t)
+  (global-set-key (kbd "M-p") 'ace-window))
 
 ;; dired
+(defun my/dired-find-file-ace ()
+  (interactive)
+  (let ((find-file-run-dired t)
+        (fname (dired-get-file-for-visit)))
+    (ace-select-window)
+    (find-file fname)))
+
 (with-eval-after-load 'dired
   (define-key dired-mode-map
     (kbd "C-c v")
@@ -82,6 +101,9 @@
     (my/control-function-window-split
      dired-find-file-other-window
      0 nil))
+  (define-key dired-mode-map
+    (kbd "C-c n")
+    'my/dired-find-file-ace)
   )
 
 ;; highlight numbers
@@ -469,7 +491,7 @@
   (setq evil-want-C-i-jump nil)
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
   (evil-mode 1)
-  
+
   (defun my/make-emacs-mode (mode)
     "Make `mode' use emacs keybindings."
     (delete mode evil-insert-state-modes)
@@ -547,6 +569,11 @@
     :ensure t
     :config
     (setq evilnc-invert-comment-line-by-line t))
+
+  (use-package evil-visualstar
+    :ensure t
+    :config
+    (global-evil-visualstar-mode))
 
   (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
@@ -655,14 +682,14 @@ tests to exist in `project_root/tests`"
 ;; (setq-default mode-line-format
 ;;               (append mode-line-format my/mode-line-venv))
 
-(setq-default mode-line-format
-              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
-                mode-line-client mode-line-modified mode-line-remote
-                mode-line-frame-identification mode-line-buffer-identification " "
-                mode-line-position
-                (vc-mode vc-mode)
-                (:eval (my/mode-line-venv))
-                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+;; (setq-default mode-line-format
+;;               '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+;;                 mode-line-client mode-line-modified mode-line-remote
+;;                 mode-line-frame-identification mode-line-buffer-identification " "
+;;                 mode-line-position
+;;                 (vc-mode vc-mode)
+;;                 (:eval (my/mode-line-venv))
+;;                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
 (add-hook 'python-mode-hook
           (lambda ()
@@ -1149,7 +1176,6 @@ tests to exist in `project_root/tests`"
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
   (use-package counsel-projectile :ensure t)
-
   :config
   (ivy-mode 1)
   (diminish 'ivy-mode "")
@@ -1199,19 +1225,31 @@ tests to exist in `project_root/tests`"
       ,(my/control-function-window-split
         find-file-other-window
         nil 0)
-      "split vertically")))
+      "split vertically")
+     ("n"
+      ,(my/select-window-execute
+        find-file
+        ace-select-window)
+      "select window")
+     ))
   (ivy-set-actions
    'counsel-projectile-find-file
    `(("s"
       ,(my/control-function-window-split
         counsel-projectile--find-file-other-window-action
-        nil 0)
+        0 nil)
       "split horizontally")
      ("v"
       ,(my/control-function-window-split
         counsel-projectile--find-file-other-window-action
         nil 0)
-      "split vertically")))
+      "split vertically")
+     ("n"
+      ,(my/select-window-execute
+        counsel-projectile--find-file-action
+        ace-select-window)
+      "select window")
+     ))
   )
 
 ;; ----------------
@@ -1286,6 +1324,15 @@ tests to exist in `project_root/tests`"
 (require 'myfonts)
 (setq x-underline-at-descent-line t)
 (my/set-theme)
+(use-package spaceline
+  :ensure t
+  :init
+  (require 'spaceline-config)
+  (setq powerline-utf-8-separator-left 65279
+        powerline-utf-8-separator-right 65279
+        powerline-default-separator 'utf-8
+        spaceline-highlight-face-func 'spaceline-highlight-face-modified)
+  (spaceline-spacemacs-theme))
 
 ;(if (display-graphic-p)
     ;(progn
