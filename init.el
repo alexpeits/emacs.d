@@ -151,7 +151,7 @@
 (defalias 'yes-or-no-p #'y-or-n-p)
 
 ;; use spaces
-setq-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil)
 
 ;; always scroll to the end of compilation buffers
 (setq compilation-scroll-output t)
@@ -274,12 +274,12 @@ setq-default indent-tabs-mode nil)
 
 (defvar my/avail-themes
   '(
-    ;; my/solarized-black-bright
-    my/solarized-dark
+    my/solarized-black-bright
+    ;; my/solarized-dark
     ;; my/solarized-light
     my/zenburn
     ))
-(defvar my/current-theme 1)
+(defvar my/current-theme 0)
 
 (defun my/set-theme (&optional theme-name)
   (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
