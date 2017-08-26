@@ -6,7 +6,6 @@
     (newline)
     (indent-according-to-mode)))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Various
 
@@ -17,53 +16,6 @@
     (memq face-symbol (funcall (symbol-function 'face-list))))
    ((fboundp 'facep)      ;Xemacs
     (funcall (symbol-function 'facep) face-symbol))))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Jump to definition
-
-(defvar my-default-jump-handlers '()
-  "List of jump handlers available in every mode.")
-
-(defvar-local my-jump-handlers '()
-  "List of jump handlers local to this buffer.")
-
-(defmacro my|define-jump-handlers (mode &rest handlers)
-  "Defines jump handlers for the given MODE.
-This defines a variable `my-jump-handlers-MODE' to which
-handlers can be added, and a function added to MODE-hook which
-sets `my-jump-handlers' in buffers of that mode."
-  (let ((mode-hook (intern (format "%S-hook" mode)))
-        (func (intern (format "my//init-jump-handlers-%S" mode)))
-        (handlers-list (intern (format "my-jump-handlers-%S" mode))))
-    `(progn
-       (defvar ,handlers-list ',handlers
-         ,(format (concat "List of mode-specific jump handlers for %S. "
-                          "These take priority over those in "
-                          "`my-default-jump-handlers'.")
-                  mode))
-       (defun ,func ()
-         (setq my-jump-handlers
-               (append ,handlers-list
-                       my-default-jump-handlers)))
-       (add-hook ',mode-hook ',func)
-       )))
-
-(defun my/jump-to-definition ()
-  (interactive)
-  (catch 'done
-    (let ((old-buffer (current-buffer))
-          (old-point (point)))
-      (dolist (-handler my-jump-handlers)
-        (let ((handler (if (listp -handler) (car -handler) -handler))
-              (async (when (listp -handler)
-                       (plist-get (cdr -handler) :async))))
-          (ignore-errors
-            (call-interactively handler))
-          (when (or async
-                    (not (eq old-point (point)))
-                    (not (equal old-buffer (current-buffer))))
-            (throw 'done t)))))
-    (message "No jump handler was able to find this symbol.")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helm

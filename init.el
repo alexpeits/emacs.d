@@ -1,5 +1,6 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/custom"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/config"))
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/custom-themes/"))
 (setenv "PATH" (concat
                 "/usr/local/bin" path-separator
@@ -32,28 +33,12 @@
 
 (require 'use-package)
 
-(require 'myfuncs)
-(require 'myengines)
+(require 'my-engines)
+(require 'my-utils)
+(require 'my-ui)
+(require 'my-buffers-windows)
 
 (use-package cl :ensure t)
-
-(defmacro my/add-hooks (hooks &rest body)
-  `(dolist (hook ,hooks)
-     (add-hook hook (lambda () ,@body))))
-
-(defmacro my/control-function-window-split (f height width)
-  `(lambda (&rest args)
-     (interactive)
-     (let ((split-height-threshold ,height)
-           (split-width-threshold ,width))
-       (apply (quote ,f) args))))
-
-(defmacro my/execute-f-with-hook (f winf)
-  `(lambda (&rest args)
-     (interactive)
-     (,winf)
-     (apply (quote ,f) args)))
-
 
 ;; ----------------
 ;; various
@@ -74,75 +59,16 @@
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode ""))
 
-;; ace-window
-(use-package ace-window
-  :ensure t
-  :config
-  (setq aw-dispatch-always t)
-  (global-set-key (kbd "M-p") 'ace-window))
-
-;; dired
-(defun my/dired-find-file-ace ()
-  (interactive)
-  (let ((find-file-run-dired t)
-        (fname (dired-get-file-for-visit)))
-    (ace-select-window)
-    (find-file fname)))
-
-(with-eval-after-load 'dired
-  (define-key dired-mode-map
-    (kbd "C-c v")
-    (my/control-function-window-split
-     dired-find-file-other-window
-     nil 0))
-  (define-key dired-mode-map
-    (kbd "C-c s")
-    (my/control-function-window-split
-     dired-find-file-other-window
-     0 nil))
-  (define-key dired-mode-map
-    (kbd "C-c n")
-    'my/dired-find-file-ace))
-
-;; highlight numbers
-(use-package highlight-numbers
-  :ensure t
-  :config
-  (my/add-hooks '(prog-mode-hook css-mode-hook) (highlight-numbers-mode)))
-
-;; neotree
-(use-package neotree
-  :ensure t
-  :config
-  (setq neo-smart-open t)
-  (setq neo-theme 'nerd)
-
-  (defun my/neotree-toggle-project ()
-    "Open NeoTree using the git root."
-    (interactive)
-    (neotree-toggle)
-    (if (and (neo-global--window-exists-p)
-             (projectile-project-p))
-        (let ((project-dir (projectile-project-root))
-              (file-name (buffer-file-name)))
-          (neotree-dir project-dir)
-          (neotree-find file-name)))))
-
-;; visual effect after closing delimiter
-(setq show-paren-delay 0.3)
-
-;; show column in modeline
-(setq column-number-mode t)
-
 ;; use column width 80 to fill (e.g. with gq)
 (setq-default fill-column 80)
 
 ;; store all backup and autosave files in
 ;; one dir
+(defvar my/tempdir "~/.temp")
 (setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
+      `((".*" . ,my/tempdir)))
 (setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+      `((".*" ,my/tempdir t)))
 
 ;; only with this set to nil can org-mode export & open too
 (setq process-connection-type nil)
@@ -172,27 +98,6 @@
 (dolist (hook '(text-mode-hook change-log-mode-hook log-edit-mode-hook))
   (add-hook hook (lambda () (flyspell-mode 1))))
 
-;; what it says
-(defun my/revert-all-buffers ()
-  "Refreshes all open buffers from their respective files"
-  (interactive)
-  (let* ((list (buffer-list))
-         (buffer (car list)))
-    (while buffer
-      (when (and (buffer-file-name buffer)
-                 (not (buffer-modified-p buffer)))
-        (set-buffer buffer)
-        (revert-buffer t t t))
-      (setq list (cdr list))
-      (setq buffer (car list))))
-          (message "Refreshed open files"))
-
-;; read file as string
-(defun my/read-file-contents (path)
-  (with-temp-buffer
-    (insert-file-contents (expand-file-name path))
-    (buffer-string)))
-
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '(".env.dev\\'" . conf-mode))
@@ -203,147 +108,6 @@
 
 ;; DocView
 (setq doc-view-continuous t)
-
-;; buffer-move
-(use-package buffer-move
-  :ensure t
-  :config
-  (if (eq system-type 'darwin)
-      (progn
-        (global-set-key (kbd "<C-s-268632072>") 'buf-move-left)
-        (global-set-key (kbd "<C-s-268632074>") 'buf-move-down)
-        (global-set-key (kbd "<C-s-268632075>") 'buf-move-up)
-        (global-set-key (kbd "<C-s-268632076>") 'buf-move-right))
-    (progn
-      (global-set-key (kbd "C-s-h") 'buf-move-left)
-      (global-set-key (kbd "C-s-j") 'buf-move-down)
-      (global-set-key (kbd "C-s-k") 'buf-move-up)
-      (global-set-key (kbd "C-s-l") 'buf-move-right))))
-
-;; eyebrowse
-(use-package eyebrowse
-  :ensure t
-  :config
-  (setq eyebrowse-mode-line-separator " "
-        eyebrowse-new-workspace t)
-  (eyebrowse-mode t))
-
-;; ----------------
-;; UI & themes
-;; ----------------
-
-
-(setq spacemacs-theme-org-height nil
-      spacemacs-theme-comment-bg nil)
-(when window-system
-   (setq solarized-use-variable-pitch nil
-         solarized-height-plus-1 1.0
-         solarized-height-plus-2 1.0
-         solarized-height-plus-3 1.0
-         solarized-height-plus-4 1.0
-         solarizedarker-use-variable-pitch nil
-         solarizedarker-height-plus-1 1.0
-         solarizedarker-height-plus-2 1.0
-         solarizedarker-height-plus-3 1.0
-         solarizedarker-height-plus-4 1.0
-         solarizedarkerbright-use-variable-pitch nil
-         solarizedarkerbright-height-plus-1 1.0
-         solarizedarkerbright-height-plus-2 1.0
-         solarizedarkerbright-height-plus-3 1.0
-         solarizedarkerbright-height-plus-4 1.0))
-
-;; (use-package solarized-theme :ensure t :defer t)
-;; (use-package zenburn-theme :ensure t :defer t)
-;; (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3B3B3B")))
-(defvar my/themes '((my/zenburn . ((theme . zenburn)
-                                   (org-block-begin-end-bg . "#454545")
-                                   (org-block-fg . "#dcdccc")
-                                   (org-block-bg . "#3E3E3E")))
-                    (my/solarized-dark . ((theme . solarized-dark)
-                                          (org-block-begin-end-bg . "#073642")
-                                          (org-block-fg . "#839496")
-                                          (org-block-bg . "#002f3b")))
-                    (my/solarized-light . ((theme . solarized-light)
-                                           (org-block-begin-end-bg . "#eee8d5")
-                                           (org-block-fg . "#657b83")
-                                           (org-block-bg . "#f7f0dc")))
-                    (my/solarized-black-bright . ((theme . solarized-black-bright)
-                                                  (org-block-begin-end-bg . "#303030")
-                                                  (org-block-fg . "#a1acae")
-                                                  (org-block-bg . "#292929")))))
-
-(defvar my/avail-themes
-  '(
-    my/solarized-black-bright
-    ;; my/solarized-dark
-    ;; my/solarized-light
-    my/zenburn
-    ))
-(defvar my/current-theme 0)
-
-(defun my/set-theme (&optional theme-name)
-  (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
-         (config (cdr (assoc theme-name my/themes)))
-         (theme (cdr (assoc 'theme config)))
-         (org-block-begin-end-bg (cdr (assoc 'org-block-begin-end-bg config)))
-         (org-block-fg (cdr (assoc 'org-block-fg config)))
-         (org-block-bg (cdr (assoc 'org-block-bg config))))
-    ;; disable all currently enabled themes (otherwise faces get messed up)
-    (mapc 'disable-theme custom-enabled-themes)
-    (load-theme theme t)
-    ;; set these faces for the specific theme
-    (unless (some #'null '(org-block-begin-end-bg org-block-fg org-block-bg))
-      (custom-theme-set-faces
-       theme
-       `(org-block ((t :background ,org-block-bg :foreground ,org-block-fg)))
-       `(org-block-begin-line ((t :background ,org-block-begin-end-bg)))
-       `(org-block-end-line ((t :background ,org-block-begin-end-bg)))))))
-
-(defun my/toggle-theme ()
-  (interactive)
-  (let ((next-theme (mod (1+ my/current-theme) (length my/avail-themes))))
-    (my/set-theme (elt my/avail-themes next-theme))
-    (setq my/current-theme next-theme)))
-
-(defun my/refresh-theme ()
-  (interactive)
-  (my/set-theme (elt my/avail-themes my/current-theme)))
-
-;; disable annoying stuff
-(setq ring-bell-function 'ignore)
-(setq inhibit-startup-message t)
-(setq inhibit-splash-screen t)
-(setq initial-scratch-message nil)
-(menu-bar-mode -1)
-(toggle-scroll-bar -1)
-(tool-bar-mode -1)
-
-;; linum
-(use-package linum
-  :config
-  ;; (global-linum-mode t)
-  ;; (add-hook 'prog-mode-hook (lambda () (linum-mode t)))
-  ;; (setq linum-format "%4d ")
-  (setq linum-format 'dynamic))
-
-;; popwin, mainly to always open helm buffers at bottom
-(use-package popwin
-  :ensure t
-  :config
-  (push '("^\*helm.+\*$" :regexp t) popwin:special-display-config)
-  (add-hook 'helm-after-initialize-hook (lambda ()
-                                            (popwin:display-buffer helm-buffer t)
-                                            (popwin-mode -1)))
-  ;;  Restore popwin-mode after a Helm session finishes.
-  (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1))))
-
-; font size & scaling
-(setq text-scale-mode-step 1.05)
-(define-key global-map (kbd "C-+") 'text-scale-increase)
-(define-key global-map (kbd "C--") 'text-scale-decrease)
-
-;; highlight trailing whitespace
-(add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
 ;; window size when emacs is opened
 (setq initial-frame-alist '((width . 223) (height . 73)))
@@ -452,7 +216,6 @@
           (lambda ()
             (define-key comint-mode-map (kbd "C-l") 'my/comint-clear-buffer)))
 
-
 ;; ----------------
 ;; VCS
 ;; ----------------
@@ -470,14 +233,58 @@
       (global-diff-hl-mode)
       (diff-hl-flydiff-mode)))
 
-
 ;; ----------------
 ;; evil
 ;; ----------------
 (use-package evil-leader
   :ensure t
   :config
-  (global-evil-leader-mode))
+  (global-evil-leader-mode)
+  (evil-leader/set-leader "<SPC>")
+  (evil-leader/set-key
+    "]"  'find-tag-other-window
+    ";"  'evilnc-comment-or-uncomment-lines
+
+    "bb" 'helm-buffers-list
+    "bn" 'next-buffer
+    "bp" 'previous-buffer
+
+    "el" 'my/toggle-flycheck-error-list
+
+    "fa" 'helm-ag
+    "ff" 'helm-find
+
+    "h"  'help
+
+    "j"  'my/jump-to-definition
+
+    "n"  'my/neotree-toggle-project
+
+    "pl" 'persp-next
+    "ph" 'persp-prev
+    "pp" 'projectile-persp-switch-project
+    "pq" 'persp-kill
+    "pr" 'persp-rename
+    "ps" 'counsel-projectile-ag
+
+    "tf" 'my/toggle-font
+    "tg" 'global-diff-hl-mode
+    "tj" 'my/toggle-jsmodes
+    "tl" 'linum-mode
+    "th" 'global-hl-line-mode
+    "ts" 'flycheck-mode
+    "tt" 'my/toggle-theme
+    "tw" 'toggle-truncate-lines
+
+    "uh" 'rainbow-mode
+    "um" 'menu-bar-mode
+    "up" 'rainbow-delimiters-mode
+
+    "ws" 'evil-window-split
+    "wv" 'evil-window-vsplit
+
+    "Ts" 'helm-themes
+    ))
 
 (use-package evil
   :ensure t
@@ -542,7 +349,7 @@
   (define-key evil-visual-state-map (kbd ";") 'evil-ex)
   (evil-ex-define-cmd "sv" 'split-window-below)
 
-  (define-key evil-normal-state-map (kbd "C-p") 'helm-projectile-find-file)
+  (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile-find-file)
 
   (define-key evil-insert-state-map (kbd "C-M-i") 'company-complete)
 
@@ -569,48 +376,6 @@
     :ensure t
     :config
     (global-evil-visualstar-mode))
-
-  (evil-leader/set-leader "<SPC>")
-  (evil-leader/set-key
-    "]"  'find-tag-other-window
-    ";"  'evilnc-comment-or-uncomment-lines
-    "h"  'help
-
-    "n"  'my/neotree-toggle-project
-
-    "el" 'my/toggle-flycheck-error-list
-
-    "um" 'menu-bar-mode
-    "up" 'rainbow-delimiters-mode
-    "uh" 'rainbow-mode
-
-    "bn" 'next-buffer
-    "bp" 'previous-buffer
-    "bb" 'helm-buffers-list
-    "ws" 'evil-window-split
-    "wv" 'evil-window-vsplit
-
-    "tg" 'global-diff-hl-mode
-    "th" 'global-hl-line-mode
-    "tl" 'linum-mode
-    "ts" 'flycheck-mode
-    "tw" 'toggle-truncate-lines
-    "tt" 'my/toggle-theme
-    "tj" 'my/toggle-jsmodes
-
-    "j"  'my/jump-to-definition
-
-    "pp" 'projectile-persp-switch-project
-    "pl" 'persp-next
-    "ph" 'persp-prev
-    "pr" 'persp-rename
-    "pq" 'persp-kill
-    "ps" 'counsel-projectile-ag
-
-    "Ts" 'helm-themes
-    "ff" 'helm-find
-    "fa" 'helm-ag
-    )
   )
 
 (use-package evil-surround
@@ -1014,128 +779,6 @@
   (setq-default flycheck-temp-prefix ".flycheck")
   (setq-default flycheck-emacs-lisp-load-path 'inherit))
 
-
-;; ----------------
-;; ido mode
-;; ----------------
-(use-package flx-ido
-  :ensure  t
-  :config
-  (flx-ido-mode 1)
-  ;; disable ido faces to see flx highlights.
-  (setq ido-enable-flex-matching t)
-  (setq ido-use-faces nil))
-
-
-;; ----------------
-;; helm
-;; ----------------
-(use-package helm :ensure t)
-(use-package helm-themes)
-
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-mode)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name))))
-  )
-
-(use-package perspective :config (persp-mode))  ;; download
-(use-package persp-projectile :ensure t)
-
-(defun my/swiper (fuzzy)
-  (interactive "P")
-  (if (null fuzzy)
-      (swiper)
-    (let* ((temp-builders (copy-alist ivy-re-builders-alist))
-          (ivy-re-builders-alist (add-to-list 'temp-builders
-                                              '(swiper . ivy--regex-fuzzy))))
-      (swiper))))
-
-(use-package ivy
-  :ensure t
-
-  :init
-  (use-package counsel :ensure t)
-  (use-package swiper :ensure t)
-  (use-package counsel-projectile :ensure t)
-  :config
-  (ivy-mode 1)
-  (diminish 'ivy-mode "")
-  (setq ivy-use-virtual-buffers nil)
-  (setq enable-recursive-minibuffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (global-set-key (kbd "C-s") 'my/swiper)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
-  (global-set-key (kbd "<f6>") 'ivy-resume)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "<f1> l") 'counsel-find-library)
-  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  (global-set-key (kbd "C-c j") 'counsel-git-grep)
-  (global-set-key (kbd "C-c k") 'counsel-ag)
-  (global-set-key (kbd "C-x l") 'counsel-locate)
-  (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
-  (global-set-key (kbd "C-x r b") 'counsel-bookmark)
-  (global-set-key
-   (kbd "C-x b")
-   (lambda (prefix)
-     (interactive "P")
-     (if (null prefix)
-         (if (projectile-project-p)
-             (counsel-projectile-switch-to-buffer)
-           (ivy-switch-buffer))
-       (ivy-switch-buffer))))
-  (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-  (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile-find-file)
-  (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
-  (setq projectile-switch-project-action 'counsel-projectile-find-file)
-  (setq ivy-re-builders-alist
-        '((swiper . ivy--regex-plus)
-          (t . ivy--regex-fuzzy)))
-  (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
-  (setq ivy-magic-tilde nil)
-  (ivy-set-actions
-   'counsel-find-file
-   `(("s"
-      ,(my/control-function-window-split
-        find-file-other-window
-        0 nil)
-      "split horizontally")
-     ("v"
-      ,(my/control-function-window-split
-        find-file-other-window
-        nil 0)
-      "split vertically")
-     ("n"
-      ,(my/execute-f-with-hook
-        find-file
-        ace-select-window)
-      "select window")
-     ))
-  (ivy-set-actions
-   'counsel-projectile-find-file
-   `(("s"
-      ,(my/control-function-window-split
-        counsel-projectile--find-file-other-window-action
-        0 nil)
-      "split horizontally")
-     ("v"
-      ,(my/control-function-window-split
-        counsel-projectile--find-file-other-window-action
-        nil 0)
-      "split vertically")
-     ("n"
-      ,(my/execute-f-with-hook
-        counsel-projectile--find-file-action
-        ace-select-window)
-      "select window")
-     ))
-  )
-
 ;; ----------------
 ;; org mode
 ;; ----------------
@@ -1205,28 +848,9 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
-(require 'myfonts)
 (setq x-underline-at-descent-line t)
 (my/set-theme)
-;; (use-package spaceline
-;;   :ensure t
-;;   :init
-;;   (require 'spaceline-config)
-;;   (setq powerline-utf-8-separator-left 65279
-;;         powerline-utf-8-separator-right 65279
-;;         powerline-default-separator 'utf-8
-;;         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-;;   (spaceline-spacemacs-theme))
-
-;(if (display-graphic-p)
-    ;(progn
-      ;(my/set-theme)
-      ;)
-  ;(progn
-    ;(load-theme 'monokai)
-    ;(set-face-attribute 'mode-line nil :background "#404040")
-    ;(set-face-attribute 'mode-line-inactive nil :background "#282828")
-    ;))
+(my/set-font)
 
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)
