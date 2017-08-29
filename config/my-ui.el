@@ -38,6 +38,14 @@
 ;; highlight trailing whitespace
 (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
 
+;; 80-column rule
+(use-package whitespace
+  :ensure t
+  :config
+  (setq whitespace-line-column 79)
+  (setq whitespace-style '(face lines-tail))
+  (add-hook 'prog-mode-hook 'whitespace-mode))
+
 ;; theme
 (setq spacemacs-theme-org-height nil
       spacemacs-theme-comment-bg nil)

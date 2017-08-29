@@ -1,5 +1,20 @@
 (require 'my-utils)
 
+;; ----------------
+;; projectile
+;; ----------------
+
+(use-package projectile
+  :ensure t
+  :init
+  (use-package perspective :ensure t :config (persp-mode))
+  (use-package persp-projectile :ensure t)
+  :config
+  (projectile-mode)
+  (setq projectile-completion-system 'ivy)
+  (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name)))))
+
+
 ;; ----------------------
 ;; ivy / counsel / swiper
 ;; ----------------------
@@ -50,7 +65,8 @@
        (ivy-switch-buffer))))
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
-  (setq projectile-switch-project-action 'counsel-projectile-find-file)
+  ;; (add-hook 'projectile-after-switch-project-hook 'counsel-projectile-find-file)
+  ;; (setq projectile-switch-project-action 'counsel-projectile-find-file)
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
           (t . ivy--regex-fuzzy)))
@@ -94,19 +110,6 @@
      ))
   )
 
-;; ----------------
-;; projectile
-;; ----------------
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-mode)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name))))
-  )
-
-(use-package perspective :config (persp-mode))  ;; download
-(use-package persp-projectile :ensure t)
 
 ;; ----------------
 ;; helm
@@ -121,7 +124,8 @@
   :ensure t
   :config
   (setq aw-dispatch-always t)
-  (global-set-key (kbd "M-p") 'ace-window))
+  ;; (global-set-key (kbd "M-p") 'ace-window)
+  )
 
 ;; ----------------
 ;; dired

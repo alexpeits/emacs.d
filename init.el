@@ -118,6 +118,11 @@
   :commands (sp-split-sexp sp-newline sp-up-sexp)
   :init
 
+  (defun my/smartparens-pair-newline (id action context)
+    (save-excursion
+      (newline)
+      (indent-according-to-mode)))
+
   (defun my/smartparens-pair-newline-and-indent (id action context)
     (my/smartparens-pair-newline id action context)
     (indent-according-to-mode))
@@ -224,7 +229,9 @@
   :ensure t
   :defer t
   :init
-  (global-set-key (kbd "C-x g") 'magit-status))
+  (global-set-key (kbd "C-x g") 'magit-status)
+  (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
+  )
 
 (if (display-graphic-p)
     (use-package diff-hl
@@ -267,6 +274,7 @@
     "pr" 'persp-rename
     "ps" 'counsel-projectile-ag
 
+    "t8" 'whitespace-mode
     "tf" 'my/toggle-font
     "tg" 'global-diff-hl-mode
     "tj" 'my/toggle-jsmodes
@@ -419,14 +427,14 @@
          "]"))
     ""))
 
-(setq-default mode-line-format
-              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
-                mode-line-client mode-line-modified mode-line-remote
-                mode-line-frame-identification mode-line-buffer-identification " "
-                mode-line-position
-                (vc-mode vc-mode)
-                (:eval (my/mode-line-venv))
-                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+;; (setq-default mode-line-format
+;;               '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+;;                 mode-line-client mode-line-modified mode-line-remote
+;;                 mode-line-frame-identification mode-line-buffer-identification " "
+;;                 mode-line-position
+;;                 (vc-mode vc-mode)
+;;                 (:eval (my/mode-line-venv))
+;;                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
 (add-hook 'python-mode-hook
           (lambda ()
@@ -851,6 +859,16 @@
 (setq x-underline-at-descent-line t)
 (my/set-theme)
 (my/set-font)
+(use-package spaceline
+  :ensure t
+  :init
+  (require 'spaceline-config)
+  (setq powerline-utf-8-separator-left 65279
+        powerline-utf-8-separator-right 65279
+        powerline-default-separator 'utf-8
+        powerline-height 20
+        spaceline-highlight-face-func 'spaceline-highlight-face-modified)
+  (spaceline-spacemacs-theme))
 
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)
