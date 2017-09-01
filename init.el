@@ -62,6 +62,10 @@
 ;; use column width 80 to fill (e.g. with gq)
 (setq-default fill-column 80)
 
+;; diminish various minor modes
+(diminish 'auto-revert-mode "")
+(diminish 'eldoc-mode "")
+
 ;; store all backup and autosave files in
 ;; one dir
 (defvar my/tempdir "~/.temp")
@@ -111,6 +115,23 @@
 
 ;; window size when emacs is opened
 (setq initial-frame-alist '((width . 223) (height . 73)))
+
+(defun my/indent-buffer ()
+  "Indent the currently visited buffer."
+  (interactive)
+  (indent-region (point-min) (point-max)))
+
+(defun my/indent-region-or-buffer ()
+  "Indent a region if selected, otherwise the whole buffer."
+  (interactive)
+  (save-excursion
+    (if (region-active-p)
+        (progn
+          (indent-region (region-beginning) (region-end))
+          (message "Indented selected region."))
+      (progn
+        (indent-buffer)
+        (message "Indented buffer.")))))
 
 (use-package smartparens
   :ensure t
@@ -424,24 +445,26 @@
         (concat
          " ["
          (propertize venv 'face 'font-lock-function-name-face)
+         ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
          "]"))
     ""))
 
-;; (setq-default mode-line-format
-;;               '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
-;;                 mode-line-client mode-line-modified mode-line-remote
-;;                 mode-line-frame-identification mode-line-buffer-identification " "
-;;                 mode-line-position
-;;                 (vc-mode vc-mode)
-;;                 (:eval (my/mode-line-venv))
-;;                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+(setq-default mode-line-format
+              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+                mode-line-client mode-line-modified mode-line-remote
+                mode-line-frame-identification mode-line-buffer-identification " "
+                mode-line-position
+                (vc-mode vc-mode)
+                (:eval (my/mode-line-venv))
+                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
 (add-hook 'python-mode-hook
           (lambda ()
             (anaconda-mode)
-            (diminish 'anaconda-mode " An")
+            (diminish 'anaconda-mode "")
             (anaconda-eldoc-mode)
             (diminish 'anaconda-eldoc-mode "")
+            (define-key python-mode-map (kbd "C-c C-j") 'counsel-imenu)
             (setq-default flycheck-disabled-checkers
                           (append flycheck-disabled-checkers
                                   '(python-pycompile)))
@@ -720,7 +743,7 @@
   (use-package company-quickhelp :ensure t)
   (use-package company-anaconda :ensure t)
   (company-quickhelp-mode 1)
-  (diminish 'company-mode " Com")
+  (diminish 'company-mode " C")
   (eval-after-load "company"
     '(progn
        (add-to-list 'company-backends 'company-anaconda)
@@ -806,6 +829,11 @@
       ;; org-src-window-setup 'current-window
       )
 
+;; mobileorg
+(setq org-directory "~/org"
+      org-mobile-inbox-for-pull "~/org/flagged.org"
+      org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+
 ;; format string used when creating CLOCKSUM lines and when generating a
 ;; time duration (avoid showing days)
 (setq org-time-clocksum-format
@@ -820,36 +848,39 @@
     (insert-file-contents path)))
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-(add-hook 'org-mode-hook
-          (lambda ()
-            (require 'my-org-blog)
-            (define-key org-mode-map (kbd "TAB") 'org-cycle)
-            (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
+(add-hook
+ 'org-mode-hook
+ (lambda ()
+   (use-package ox-twbs :ensure t)
+   (use-package ox-reveal :ensure t)
+   (use-package org-bullets
+     :ensure t
+     :config
+     (org-bullets-mode 1))
+   (require 'my-org-blog)
 
-            (add-to-list
-             'org-structure-template-alist
-             '("pf" "#+BEGIN_SRC ipython :session :file %file :exports both\n?\n#+END_SRC"))
-            (add-to-list
-             'org-structure-template-alist
-             '("po" "#+BEGIN_SRC ipython :session :exports both\n?\n#+END_SRC"))
-            (add-to-list
-             'org-structure-template-alist
-             '("pr" "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW"))
+   (define-key org-mode-map (kbd "TAB") 'org-cycle)
+   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
 
-            (org-bullets-mode 1)
-            (org-babel-do-load-languages
-             'org-babel-load-languages
-             '((python . t)
-               (ipython . t)
-               ;; (dot . t)
-               (restclient . t)
-               ;; other languages..
-               ))
-            (use-package ox-twbs :ensure t)
-            (use-package ox-reveal :ensure t)
-            (evil-leader/set-key
-              "oc" 'org-table-delete-column
-              "or" 'org-table-kill-row)))
+   (add-to-list
+    'org-structure-template-alist
+    '("pf" "#+BEGIN_SRC ipython :session :file %file :exports both\n?\n#+END_SRC"))
+   (add-to-list
+    'org-structure-template-alist
+    '("po" "#+BEGIN_SRC ipython :session :exports both\n?\n#+END_SRC"))
+   (add-to-list
+    'org-structure-template-alist
+    '("pr" "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW"))
+
+   (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((python . t)
+      (ipython . t)
+      ;; (dot . t)
+      (restclient . t)
+      ;; other languages..
+      ))))
+
 
 ;; ----------------------------------------------------------------------------------------------
 
@@ -859,16 +890,16 @@
 (setq x-underline-at-descent-line t)
 (my/set-theme)
 (my/set-font)
-(use-package spaceline
-  :ensure t
-  :init
-  (require 'spaceline-config)
-  (setq powerline-utf-8-separator-left 65279
-        powerline-utf-8-separator-right 65279
-        powerline-default-separator 'utf-8
-        powerline-height 20
-        spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-spacemacs-theme))
+;; (use-package spaceline
+  ;; :ensure t
+  ;; :init
+  ;; (require 'spaceline-config)
+  ;; (setq powerline-utf-8-separator-left 65279
+        ;; powerline-utf-8-separator-right 65279
+        ;; powerline-default-separator 'utf-8
+        ;; powerline-height 20
+        ;; spaceline-highlight-face-func 'spaceline-highlight-face-modified)
+  ;; (spaceline-spacemacs-theme))
 
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)

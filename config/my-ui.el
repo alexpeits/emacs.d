@@ -44,6 +44,7 @@
   :config
   (setq whitespace-line-column 79)
   (setq whitespace-style '(face lines-tail))
+  (diminish 'whitespace-mode "")
   (add-hook 'prog-mode-hook 'whitespace-mode))
 
 ;; theme

@@ -12,7 +12,7 @@
   :config
   (projectile-mode)
   (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name)))))
+  (setq projectile-mode-line '(:eval (format " Pr[%s]" (projectile-project-name)))))
 
 
 ;; ----------------------
@@ -44,6 +44,7 @@
   (global-set-key (kbd "C-c C-r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
+  (global-set-key (kbd "C-c C-j") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "<f1> l") 'counsel-find-library)
   (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
