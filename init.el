@@ -743,7 +743,7 @@
   (use-package company-quickhelp :ensure t)
   (use-package company-anaconda :ensure t)
   (company-quickhelp-mode 1)
-  (diminish 'company-mode " C")
+  (diminish 'company-mode "")
   (eval-after-load "company"
     '(progn
        (add-to-list 'company-backends 'company-anaconda)

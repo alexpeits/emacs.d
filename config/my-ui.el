@@ -30,6 +30,9 @@
   ;; (setq linum-format "%4d ")
   (setq linum-format 'dynamic))
 
+;; hl-line
+(add-hook 'prog-mode-hook 'hl-line-mode)
+
 ; font size & scaling
 (setq text-scale-mode-step 1.05)
 (define-key global-map (kbd "C-+") 'text-scale-increase)
