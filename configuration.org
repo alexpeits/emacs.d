@@ -434,12 +434,12 @@ sets `my-jump-handlers' in buffers of that mode."
 
 (defvar my/avail-themes
   '(
+    my/zenburn
+    my/solarized-light
     my/solarized-black-bright
     ;; my/solarized-dark
-    ;; my/solarized-light
-    my/zenburn
     ))
-(defvar my/current-theme 1)
+(defvar my/current-theme 0)
 
 (defun my/set-theme (&optional theme-name)
   (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
@@ -1373,8 +1373,6 @@ sets `my-jump-handlers' in buffers of that mode."
    (add-to-list
     'org-structure-template-alist
     '("pr" "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW"))))
-
-
 #+END_SRC
    
 
