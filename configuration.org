@@ -384,7 +384,8 @@ sets `my-jump-handlers' in buffers of that mode."
   (setq whitespace-line-column 79)
   (setq whitespace-style '(face lines-tail))
   (diminish 'whitespace-mode "")
-  (add-hook 'prog-mode-hook 'whitespace-mode))
+  ;; (add-hook 'prog-mode-hook 'whitespace-mode)
+  (setq whitespace-global-modes '(python-mode)))
 
 #+END_SRC
    
@@ -817,7 +818,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 
 * Haskell
-   
+  
 #+BEGIN_SRC emacs-lisp
 (use-package ghc :ensure t :defer t)
 (use-package hindent :ensure t :defer t)
@@ -900,7 +901,7 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
 
 
-* Other major modes
+* Other programming languages
    
 ** C/C++
    
@@ -1305,6 +1306,23 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
 
 
+* Other major modes
+
+** Ledger
+
+#+BEGIN_SRC emacs-lisp
+(use-package ledger-mode
+  :ensure t
+  :init
+  (setq ledger-mode-should-check-version nil
+        ledger-report-links-in-register nil
+        ledger-binary-path "hledger")
+  :config
+  (add-to-list 'evil-emacs-state-modes 'ledger-report-mode)
+  :mode "\\.hledger\\..*\\'")
+#+END_SRC
+
+
 * Org-mode
    
 #+BEGIN_SRC emacs-lisp
@@ -1312,6 +1330,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key "\C-cb" 'org-iswitchb)
+
 (setq org-log-done 'time
       org-confirm-babel-evaluate nil
       org-clock-into-drawer nil
@@ -1319,16 +1338,14 @@ sets `my-jump-handlers' in buffers of that mode."
       org-src-preserve-indentation t
       org-src-tab-acts-natively t
       org-src-window-setup 'other-window
+      ;; org-src-window-setup 'current-window
       org-directory (expand-file-name "~/org/")
       org-default-notes-file (concat org-directory "capture.org")
       org-ellipsis "…"
-      ;; org-src-window-setup 'current-window
-      )
-
-;; mobileorg
-(setq org-directory "~/org"
+      ;; org-mobile
       org-mobile-inbox-for-pull "~/org/flagged.org"
-      org-mobile-directory "~/Dropbox/Apps/MobileOrg")
+      org-mobile-directory "~/Dropbox/Apps/MobileOrg"
+      )
 
 ;; format string used when creating CLOCKSUM lines and when generating a
 ;; time duration (avoid showing days)
@@ -1349,7 +1366,6 @@ sets `my-jump-handlers' in buffers of that mode."
    (ipython . t)
    ;; (dot . t)
    (restclient . t)
-   ;; other languages..
    ))
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
@@ -1389,5 +1405,8 @@ sets `my-jump-handlers' in buffers of that mode."
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)
 (set-face-attribute 'trailing-whitespace nil :background "#602020")
+
+;; startup layout
+(find-file-other-window "~/.emacs.d/configuration.org")
 #+END_SRC
 
