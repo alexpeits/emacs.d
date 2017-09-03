@@ -824,6 +824,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (use-package hindent :ensure t :defer t)
 (autoload 'ghc-init "ghc" nil t)
 (autoload 'ghc-debug "ghc" nil t)
+(my|define-jump-handlers haskell-mode)
 (setq
  ghc-report-errors nil
  haskell-process-suggest-remove-import-lines t
@@ -842,6 +843,8 @@ sets `my-jump-handlers' in buffers of that mode."
             (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
             (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
             (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
+            (add-to-list 'my-jump-handlers-haskell-mode
+                         'haskell-mode-jump-to-def)
             ))
 (add-hook 'haskell-cabal-mode-hook
           (lambda ()
