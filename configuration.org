@@ -518,12 +518,8 @@ sets `my-jump-handlers' in buffers of that mode."
 * Font
 
 #+BEGIN_SRC emacs-lisp
-(defvar my/avail-fonts
-  '(
-    "Menlo for Powerline-10.5"
-    "Ubuntu Mono-12"
-    "Menlo for Powerline-9"
-    ))
+;; avail-fonts in ~/.emacs.d/hosts in the corresponding host file
+(defvar my/avail-fonts '("Monospace-12"))
 (defvar my/current-font 0)
 
 (defun my/set-font (&optional font)
@@ -1438,7 +1434,21 @@ sets `my-jump-handlers' in buffers of that mode."
    
 
 * Setup
+  
+Some per-workstation setup
+
+#+BEGIN_SRC emacs-lisp
+(defvar host (substring (shell-command-to-string "hostname") 0 -1))
+(defvar host-dir (concat "~/.emacs.d/hosts/" host))
+(add-to-list 'load-path host-dir)
+
+(let ((init-host-feature (intern (concat "init-" host))))
+  (require init-host-feature nil 'noerror))
+#+END_SRC
    
+
+Global setup
+
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
@@ -1452,6 +1462,8 @@ sets `my-jump-handlers' in buffers of that mode."
 (set-face-attribute 'trailing-whitespace nil :background "#602020")
 
 ;; startup layout
-(find-file-other-window "~/.emacs.d/configuration.org")
+(let ((split-height-threshold nil)
+      (split-width-threshold 0))
+  (find-file-other-window "~/.emacs.d/configuration.org"))
 #+END_SRC
 
