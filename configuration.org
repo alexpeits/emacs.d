@@ -550,6 +550,7 @@ sets `my-jump-handlers' in buffers of that mode."
       :ensure t
       :config
       (global-diff-hl-mode)
+      (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
       (diff-hl-flydiff-mode)))
 
 #+END_SRC
