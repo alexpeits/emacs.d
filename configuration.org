@@ -435,7 +435,7 @@ sets `my-jump-handlers' in buffers of that mode."
 * Theme
    
 #+BEGIN_SRC emacs-lisp
-(defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D")))
+;; (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D")))
 (setq spacemacs-theme-org-height nil
       spacemacs-theme-comment-bg nil)
 (when window-system
@@ -457,11 +457,10 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
-;; (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3B3B3B")))
 (defvar my/themes '((my/zenburn . ((theme . zenburn)
-                                   (org-block-begin-end-bg . "#454545")
+                                   (org-block-begin-end-bg . "#474747")
                                    (org-block-fg . "#dcdccc")
-                                   (org-block-bg . "#3E3E3E")))
+                                   (org-block-bg . "#424242")))
                     (my/solarized-dark . ((theme . solarized-dark)
                                           (org-block-begin-end-bg . "#073642")
                                           (org-block-fg . "#839496")
@@ -733,6 +732,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (my|define-jump-handlers cython-mode anaconda-mode-goto)
 (my/make-emacs-mode 'inferior-python-mode)
 (my/make-emacs-mode 'anaconda-mode-view-mode)
+
 (defun my/mode-line-venv ()
   (if (string= major-mode "python-mode")
       (let ((venv (if (null pyvenv-virtual-env-name)
@@ -744,15 +744,6 @@ sets `my-jump-handlers' in buffers of that mode."
          ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
          "]"))
     ""))
-
-(setq-default mode-line-format
-              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
-                mode-line-client mode-line-modified mode-line-remote
-                mode-line-frame-identification mode-line-buffer-identification " "
-                mode-line-position
-                (vc-mode vc-mode)
-                (:eval (my/mode-line-venv))
-                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
 (add-hook 'python-mode-hook
           (lambda ()
@@ -1364,6 +1355,20 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
 
 
+* Modeline
+  
+#+BEGIN_SRC emacs-lisp
+(setq-default mode-line-format
+              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+                mode-line-client mode-line-modified mode-line-remote
+                mode-line-frame-identification mode-line-buffer-identification " "
+                mode-line-position
+                (vc-mode vc-mode)
+                (:eval (my/mode-line-venv))
+                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+#+END_SRC
+
+
 * Org-mode
    
 #+BEGIN_SRC emacs-lisp
@@ -1381,12 +1386,20 @@ sets `my-jump-handlers' in buffers of that mode."
       org-src-window-setup 'other-window
       ;; org-src-window-setup 'current-window
       org-directory (expand-file-name "~/org/")
-      org-default-notes-file (concat org-directory "capture.org")
+      org-default-notes-file (concat org-directory "notes.org")
       org-ellipsis "…"
       ;; org-mobile
       org-mobile-inbox-for-pull "~/org/flagged.org"
       org-mobile-directory "~/Dropbox/Apps/MobileOrg"
       )
+
+;; org-capture
+(setq org-capture-templates
+      '(("c"
+         "Code comment"
+         entry
+         (file+headline org-default-notes-file "Code comments")
+         "\n* %?\n\n#+BEGIN_SRC %^{Language}\n%i\n#+END_SRC\n%a\n")))
 
 ;; format string used when creating CLOCKSUM lines and when generating a
 ;; time duration (avoid showing days)
@@ -1460,6 +1473,7 @@ Global setup
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)
 (set-face-attribute 'trailing-whitespace nil :background "#602020")
+(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
 ;; startup layout
 (let ((split-height-threshold nil)
