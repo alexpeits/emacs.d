@@ -461,6 +461,10 @@ sets `my-jump-handlers' in buffers of that mode."
                                    (org-block-begin-end-bg . "#474747")
                                    (org-block-fg . "#dcdccc")
                                    (org-block-bg . "#424242")))
+                    (my/monokai . ((theme . monokai)
+                                   (org-block-begin-end-bg . "#303125")
+                                   (org-block-fg . "#f8f8f2")
+                                   (org-block-bg . "#2b2c20")))
                     (my/solarized-dark . ((theme . solarized-dark)
                                           (org-block-begin-end-bg . "#073642")
                                           (org-block-fg . "#839496")
@@ -479,6 +483,7 @@ sets `my-jump-handlers' in buffers of that mode."
     my/zenburn
     my/solarized-light
     my/solarized-black-bright
+    ;; my/monokai
     ;; my/solarized-dark
     ))
 (defvar my/current-theme 0)
@@ -517,7 +522,7 @@ sets `my-jump-handlers' in buffers of that mode."
 * Font
 
 #+BEGIN_SRC emacs-lisp
-;; avail-fonts in ~/.emacs.d/hosts in the corresponding host file
+;; can set avail-fonts in ~/.emacs.d/hosts in the corresponding host file
 (defvar my/avail-fonts '("Monospace-12"))
 (defvar my/current-font 0)
 
@@ -595,7 +600,7 @@ sets `my-jump-handlers' in buffers of that mode."
     "tg" 'global-diff-hl-mode
     "tj" 'my/toggle-jsmodes
     "tl" 'linum-mode
-    "th" 'global-hl-line-mode
+    "th" 'hl-line-mode
     "ts" 'flycheck-mode
     "tt" 'my/toggle-theme
     "tw" 'toggle-truncate-lines
@@ -860,7 +865,9 @@ sets `my-jump-handlers' in buffers of that mode."
  haskell-process-suggest-remove-import-lines t
  haskell-process-auto-import-loaded-modules t
  haskell-process-log t
- haskell-process-type 'stack-ghci
+ ;; haskell-process-type 'stack-ghci
+ haskell-process-path-ghci "stack"
+ haskell-process-args-ghci '("ghci")
  haskellcompany-ghc-show-info t)
 (add-hook 'haskell-mode-hook
           (lambda ()
@@ -1356,6 +1363,16 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
 
 
+** PDF tools
+
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+  :ensure t
+  :init
+  (pdf-tools-install))
+#+END_SRC
+
+
 * Modeline
   
 #+BEGIN_SRC emacs-lisp
@@ -1400,7 +1417,7 @@ sets `my-jump-handlers' in buffers of that mode."
          "Code comment"
          entry
          (file+headline org-default-notes-file "Code comments")
-         "\n* %?\n\n#+BEGIN_SRC %^{Language}\n%i\n#+END_SRC\n%a\n")))
+         "\n\n* %?\n\n#+BEGIN_SRC %^{Language}\n%i\n#+END_SRC\n\n%a\n")))
 
 ;; format string used when creating CLOCKSUM lines and when generating a
 ;; time duration (avoid showing days)
@@ -1468,6 +1485,7 @@ Global setup
 (load custom-file 'noerror)
 
 (setq x-underline-at-descent-line t)
+
 (my/set-theme)
 (my/set-font)
 
@@ -1475,6 +1493,16 @@ Global setup
 (set-face-attribute 'show-paren-match nil :weight 'normal)
 (set-face-attribute 'trailing-whitespace nil :background "#602020")
 (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+(if (custom-theme-p 'monokai)
+    (custom-theme-set-faces
+     'monokai
+     '(hl-line ((t :background "#2c2e28")))
+     '(fringe ((t :background "#293024")))))
+(if (custom-theme-p 'solarized-black-bright)
+    (custom-theme-set-faces
+     'solarized-black-bright
+     '(hl-line ((t :background "#303030")))
+     '(fringe ((t :background "#303030")))))
 
 ;; startup layout
 (let ((split-height-threshold nil)
