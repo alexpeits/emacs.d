@@ -1406,7 +1406,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
-  :if (not is-mac)
+  :unless is-mac
   :ensure t
   :init
   (pdf-tools-install))
