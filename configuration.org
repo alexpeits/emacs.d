@@ -1219,12 +1219,12 @@ sets `my-jump-handlers' in buffers of that mode."
    'counsel-projectile-find-file
    `(("s"
       ,(my/control-function-window-split
-        counsel-projectile--find-file-other-window-action
+        counsel-projectile-action-find-file-other-window
         0 nil)
       "split horizontally")
      ("v"
       ,(my/control-function-window-split
-        counsel-projectile--find-file-other-window-action
+        counsel-projectile-action-find-file-other-window
         nil 0)
       "split vertically")
      ("n"
