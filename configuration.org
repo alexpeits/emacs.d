@@ -17,6 +17,9 @@
 (add-to-list 'exec-path "~/.cargo/bin")
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com")
+
+(defvar is-mac (eq system-type 'darwin)
+  "Whether emacs is running in mac or not")
 #+END_SRC
    
 
@@ -1341,7 +1344,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (use-package buffer-move
   :ensure t
   :config
-  (if (eq system-type 'darwin)
+  (if is-mac
       (progn
         (global-set-key (kbd "<C-s-268632072>") 'buf-move-left)
         (global-set-key (kbd "<C-s-268632074>") 'buf-move-down)
@@ -1403,6 +1406,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
+  :if (not is-mac)
   :ensure t
   :init
   (pdf-tools-install))
