@@ -457,39 +457,62 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
-(defvar my/themes '((my/zenburn . ((theme . zenburn)
-                                   (org-block-begin-end-bg . "#474747")
-                                   (org-block-fg . "#dcdccc")
-                                   (org-block-bg . "#424242")))
-                    (my/monokai . ((theme . monokai)
-                                   (org-block-begin-end-bg . "#303125")
-                                   (org-block-fg . "#f8f8f2")
-                                   (org-block-bg . "#2b2c20")))
-                    (my/oceanicnext . ((theme . base16-oceanicnext)
-                                       (org-block-begin-end-bg . "#2b3b3b")
-                                       (org-block-fg . "#c0c5ce")
-                                       (org-block-bg . "#1f2f39")))
-                    (my/solarized-dark . ((theme . solarized-dark)
-                                          (org-block-begin-end-bg . "#073642")
-                                          (org-block-fg . "#839496")
-                                          (org-block-bg . "#002f3b")))
-                    (my/solarized-light . ((theme . solarized-light)
-                                           (org-block-begin-end-bg . "#eee8d5")
-                                           (org-block-fg . "#657b83")
-                                           (org-block-bg . "#f7f0dc")))
-                    (my/solarized-black-bright . ((theme . solarized-black-bright)
-                                                  (org-block-begin-end-bg . "#303030")
-                                                  (org-block-fg . "#a1acae")
-                                                  (org-block-bg . "#292929")))))
+(defvar my/themes
+  '(
+    (my/zenburn
+     .
+     ((theme . zenburn)
+      (faces . ((org-block-begin-line (:background "#474747"))
+                (org-block-end-line (:background "#474747"))
+                (org-block (:background "#424242" :foreground "#dcdccc"))))))
+    (my/solarized-dark
+     .
+     ((theme . solarized-dark)
+      (faces . ((org-block-begin-line (:background "#073642"))
+                (org-block-end-line (:background "#073642"))
+                (org-block (:background "#002f3b" :foreground "#839496"))))))
+    (my/solarized-light
+     .
+     ((theme . solarized-light)
+      (faces . ((org-block-begin-line (:background "#eee8d5"))
+                (org-block-end-line (:background "#eee8d5"))
+                (org-block (:background "#f7f0dc" :foreground "#657b83"))))))
+    (my/solarized-black-bright
+     .
+     ((theme . solarized-black-bright)
+      (faces . ((org-block-begin-line (:background "#303030"))
+                (org-block-end-line (:background "#303030"))
+                (org-block (:background "#292929" :foreground "#a1acae"))
+                (hl-line (:background "#303030"))
+                (fringe (:background "#303030"))))))
+    (my/monokai
+     .
+     ((theme . monokai)
+      (faces . ((org-block-begin-line (:background "#303125"))
+                (org-block-end-line (:background "#303125"))
+                (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
+                (hl-line (:background "#2c2e28"))
+                (fringe (:background "#293024"))))))
+    (my/oceanicnext
+     .
+     ((theme . base16-oceanicnext)
+      (faces . ((org-block-begin-line (:background "#2b3b3b"))
+                (org-block-end-line (:background "#2b3b3b"))
+                (org-block (:background "#1f2f39" :foreground "#c0c5ce"))
+                (cursor (:background "#c0c5ce"))
+                (fringe (:background "#23343e"))))))
+    (my/spacemacs-light . ((theme . spacemacs-light)))
+    ))
 
 (defvar my/avail-themes
   '(
     my/zenburn
-    my/oceanicnext
+    ;; my/solarized-dark
     my/solarized-light
     my/solarized-black-bright
     ;; my/monokai
-    ;; my/solarized-dark
+    ;; my/oceanicnext
+    ;; my/spacemacs-light
     ))
 (defvar my/current-theme 0)
 
@@ -497,19 +520,20 @@ sets `my-jump-handlers' in buffers of that mode."
   (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
          (config (cdr (assoc theme-name my/themes)))
          (theme (cdr (assoc 'theme config)))
+         (faces (cdr (assoc 'faces config)))
          (org-block-begin-end-bg (cdr (assoc 'org-block-begin-end-bg config)))
          (org-block-fg (cdr (assoc 'org-block-fg config)))
          (org-block-bg (cdr (assoc 'org-block-bg config))))
     ;; disable all currently enabled themes (otherwise faces get messed up)
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme theme t)
-    ;; set these faces for the specific theme
-    (unless (some #'null '(org-block-begin-end-bg org-block-fg org-block-bg))
-      (custom-theme-set-faces
-       theme
-       `(org-block ((t :background ,org-block-bg :foreground ,org-block-fg)))
-       `(org-block-begin-line ((t :background ,org-block-begin-end-bg)))
-       `(org-block-end-line ((t :background ,org-block-begin-end-bg)))))))
+    (dolist (fc faces)
+      (let ((face (nth 0 fc))
+            (props (nth 1 fc)))
+        (unless (null face)
+          (custom-theme-set-faces
+           theme
+           `(,face ((t ,@props)))))))))
 
 (defun my/toggle-theme ()
   (interactive)
@@ -1498,20 +1522,6 @@ Global setup
 (set-face-attribute 'show-paren-match nil :weight 'normal)
 (set-face-attribute 'trailing-whitespace nil :background "#602020")
 (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-(if (custom-theme-p 'monokai)
-    (custom-theme-set-faces
-     'monokai
-     '(hl-line ((t :background "#2c2e28")))
-     '(fringe ((t :background "#293024")))))
-(if (custom-theme-p 'solarized-black-bright)
-    (custom-theme-set-faces
-     'solarized-black-bright
-     '(hl-line ((t :background "#303030")))
-     '(fringe ((t :background "#303030")))))
-(if (custom-theme-p 'base16-oceanicnext)
-    (custom-theme-set-faces
-     'base16-oceanicnext
-     '(cursor ((t :background "#c0c5ce")))))
 
 ;; startup layout
 (let ((split-height-threshold nil)
