@@ -1018,22 +1018,23 @@ sets `my-jump-handlers' in buffers of that mode."
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
-;; (use-package rust-mode
-  ;; :ensure t
-  ;; :config
-  ;; (use-package cargo :ensure t)
-  ;; (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
-  ;; (add-hook 'rust-mode-hook
-            ;; (lambda ()
-              ;; (cargo-minor-mode)
-              ;; (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)
-              ;; (racer-mode)
-              ;; (eldoc-mode)))
-  ;; (defvar my/rust-sysroot  "~/.rustup/toolchains/stable-x86_64-apple-darwin")
-  ;; (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
-  ;; (setq racer-cmd "~/.cargo/bin/racer")
-  ;; (setq racer-rust-src-path my/rust-src-path)
-  ;; (setenv "RUST_SRC_PATH" my/rust-src-path))
+(use-package rust-mode
+  :disabled t
+  :ensure t
+  :config
+  (use-package cargo :ensure t)
+  (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (cargo-minor-mode)
+              (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)
+              (racer-mode)
+              (eldoc-mode)))
+  (defvar my/rust-sysroot  "~/.rustup/toolchains/stable-x86_64-apple-darwin")
+  (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
+  (setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path my/rust-src-path)
+  (setenv "RUST_SRC_PATH" my/rust-src-path))
 #+END_SRC
     
     
