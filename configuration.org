@@ -224,6 +224,7 @@ sets `my-jump-handlers' in buffers of that mode."
   :ensure t
   :defer t
   :commands (sp-split-sexp sp-newline sp-up-sexp)
+
   :init
 
   (defun my/smartparens-pair-newline (id action context)
@@ -235,15 +236,16 @@ sets `my-jump-handlers' in buffers of that mode."
     (my/smartparens-pair-newline id action context)
     (indent-according-to-mode))
 
-  (setq sp-paredit-bindings t
-        sp-show-pair-delay 0.2
+  (setq sp-show-pair-delay 0.2
         ;; fix paren highlighting in normal mode
         sp-show-pair-from-inside t
         sp-cancel-autoskip-on-backward-movement nil
         sp-highlight-pair-overlay nil
         sp-highlight-wrap-overlay nil
         sp-highlight-wrap-tag-overlay nil)
+
   (my/add-hooks '(prog-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
+
   :config
   (require 'smartparens-config)
   (show-smartparens-global-mode +1)
@@ -255,22 +257,27 @@ sets `my-jump-handlers' in buffers of that mode."
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
   (sp-pair "[" nil :post-handlers
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
+
   (diminish 'smartparens-mode "")
 
-  ;; keymaps
-  (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-{") 'sp-backward-barf-sexp)
-  (define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
-  (define-key smartparens-mode-map (kbd "C-}") 'sp-forward-barf-sexp)
+  ;; keybindings
+  (sp-use-paredit-bindings)
+  (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
+  (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-{") 'sp-backward-barf-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-}") 'sp-forward-barf-sexp)
 
-  (define-key smartparens-mode-map (kbd "C-M-b") 'sp-backward-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-f") 'sp-forward-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-b") 'sp-backward-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-f") 'sp-forward-sexp)
 
-  (define-key smartparens-mode-map (kbd "C-M-u") 'sp-backward-up-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-d") 'sp-down-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-u") 'sp-backward-up-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-d") 'sp-down-sexp)
 
-  (define-key smartparens-mode-map (kbd "C-M-n") 'sp-backward-down-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-p") 'sp-up-sexp))
+  ;; (define-key smartparens-mode-map (kbd "C-M-n") 'sp-backward-down-sexp)
+  ;; (define-key smartparens-mode-map (kbd "C-M-p") 'sp-up-sexp)
+)
 
 (use-package which-key
   :ensure t
@@ -1395,10 +1402,10 @@ sets `my-jump-handlers' in buffers of that mode."
 ** PDF tools
 
 #+BEGIN_SRC emacs-lisp
-;; (use-package pdf-tools
-;;   :ensure t
-;;   :init
-;;   (pdf-tools-install))
+(use-package pdf-tools
+  :ensure t
+  :init
+  (pdf-tools-install))
 #+END_SRC
 
 
