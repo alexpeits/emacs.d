@@ -905,14 +905,13 @@ sets `my-jump-handlers' in buffers of that mode."
  haskell-process-auto-import-loaded-modules t
  haskell-process-log t
  haskell-process-type 'stack-ghci
- ;; haskell-process-path-ghci "stack"
- ;; haskell-process-args-ghci '("ghci")
  haskell-company-ghc-show-info t)
+
 (add-hook 'haskell-mode-hook
           (lambda ()
             (ghc-init)
             (hindent-mode)
-            ;; (eldoc-mode)
+            (eldoc-mode)
             (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
             (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
             (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
@@ -924,7 +923,7 @@ sets `my-jump-handlers' in buffers of that mode."
             ))
 (add-hook 'haskell-cabal-mode-hook
           (lambda ()
-            ;; (eldoc-mode)
+            (eldoc-mode)
             (define-key haskell-cabal-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
             (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
             (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
