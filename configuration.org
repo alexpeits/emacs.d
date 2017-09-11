@@ -18,28 +18,6 @@
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com")
 #+END_SRC
-
-   
-* Package management
-   
-#+BEGIN_SRC emacs-lisp
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/")
-             '("MELPA Stable" . "https://stable.melpa.org/packages/"))
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
-;; activate installed packages
-(package-initialize)
-(setq package-enable-at-startup nil)
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-
-(require 'use-package)
-
-(use-package cl :ensure t)
-#+END_SRC
    
 
 * Various utility functions
@@ -129,6 +107,28 @@ sets `my-jump-handlers' in buffers of that mode."
             (throw 'done t)))))
     (message "No jump handler was able to find this symbol.")))
 
+#+END_SRC
+
+   
+* Package management
+   
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/")
+             '("MELPA Stable" . "https://stable.melpa.org/packages/"))
+(when (< emacs-major-version 24)
+  ;; For important compatibility libraries like cl-lib
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
+;; activate installed packages
+(package-initialize)
+(setq package-enable-at-startup nil)
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+
+(require 'use-package)
+
+(use-package cl :ensure t)
 #+END_SRC
    
 
@@ -465,6 +465,10 @@ sets `my-jump-handlers' in buffers of that mode."
                                    (org-block-begin-end-bg . "#303125")
                                    (org-block-fg . "#f8f8f2")
                                    (org-block-bg . "#2b2c20")))
+                    (my/oceanicnext . ((theme . base16-oceanicnext)
+                                       (org-block-begin-end-bg . "#2b3b3b")
+                                       (org-block-fg . "#c0c5ce")
+                                       (org-block-bg . "#1f2f39")))
                     (my/solarized-dark . ((theme . solarized-dark)
                                           (org-block-begin-end-bg . "#073642")
                                           (org-block-fg . "#839496")
@@ -481,6 +485,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (defvar my/avail-themes
   '(
     my/zenburn
+    my/oceanicnext
     my/solarized-light
     my/solarized-black-bright
     ;; my/monokai
@@ -1366,10 +1371,10 @@ sets `my-jump-handlers' in buffers of that mode."
 ** PDF tools
 
 #+BEGIN_SRC emacs-lisp
-(use-package pdf-tools
-  :ensure t
-  :init
-  (pdf-tools-install))
+;; (use-package pdf-tools
+;;   :ensure t
+;;   :init
+;;   (pdf-tools-install))
 #+END_SRC
 
 
@@ -1503,6 +1508,10 @@ Global setup
      'solarized-black-bright
      '(hl-line ((t :background "#303030")))
      '(fringe ((t :background "#303030")))))
+(if (custom-theme-p 'base16-oceanicnext)
+    (custom-theme-set-faces
+     'base16-oceanicnext
+     '(cursor ((t :background "#c0c5ce")))))
 
 ;; startup layout
 (let ((split-height-threshold nil)
