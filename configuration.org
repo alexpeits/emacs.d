@@ -1306,8 +1306,8 @@ sets `my-jump-handlers' in buffers of that mode."
   (interactive)
   (let ((find-file-run-dired t)
         (fname (dired-get-file-for-visit)))
-    (ace-select-window)
-    (find-file fname)))
+    (if (ace-select-window)
+        (find-file fname))))
 
 (with-eval-after-load 'dired
   (define-key dired-mode-map
