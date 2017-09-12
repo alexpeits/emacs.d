@@ -511,6 +511,13 @@ sets `my-jump-handlers' in buffers of that mode."
                 (org-block (:background "#1f2f39" :foreground "#c0c5ce"))
                 (cursor (:background "#c0c5ce"))
                 (fringe (:background "#23343e"))))))
+    (my/tomorrow-night
+     .
+     ((theme . base16-tomorrow-night)
+      (faces . ((org-block-begin-line (:background "#222425"))
+                (org-block-end-line (:background "#222425"))
+                (org-block (:background "#202223" :foreground "#c5c8c6"))
+                (cursor (:background "#c5c8c6"))))))
     (my/spacemacs-light . ((theme . spacemacs-light)))
     ))
 
@@ -521,7 +528,8 @@ sets `my-jump-handlers' in buffers of that mode."
     my/solarized-light
     my/solarized-black-bright
     ;; my/monokai
-    ;; my/oceanicnext
+    my/oceanicnext
+    ;; my/tomorrow-night
     ;; my/spacemacs-light
     ))
 (defvar my/current-theme 0)
