@@ -105,7 +105,7 @@ var disqus_config = function () {
          :sitemap-sort-files anti-chronologically
          :sitemap-file-entry-format "%d | %t"
          :sitemap-date-format "%Y.%m.%d"
-         ;; :sitemap-function my-blog-sitemap
+         :sitemap-function my-blog-sitemap2
          :sitemap-format-entry my-blog-sitemap-format-entry
          :html-head ,website-html-head
          :html-preamble ,website-html-preamble
@@ -189,6 +189,13 @@ var disqus_config = function () {
           (end (progn (re-search-forward "^#\\+END_PREVIEW$")
                       (match-beginning 0))))
       (buffer-substring beg end))))
+
+(defun my-blog-sitemap2 (sitemap-filename files)
+  (message "**")
+  (dolist (f (cdr files))
+    (message (car f)))
+  (message "**")
+  (org-publish-sitemap-default sitemap-filename files))
 
 (defun my-blog-sitemap (sitemap-filename project-files)
   (message project-files)
@@ -285,17 +292,17 @@ var disqus_config = function () {
          (rss-pubdate (format-time-string
                        (car org-time-stamp-formats)
                        (org-publish-find-date file-abs project-plist))))
-    (message "*****")
-    (message sitemap-sans-extension)
-    (message pubdir)
-    (message target-file-abs)
-    (message link)
-    (message title)
-    (message date)
-    (message preview)
-    (message rss-permalink)
-    (message rss-pubdate)
-    (message "*****")
+    ;; (message "*****")
+    ;; (message sitemap-sans-extension)
+    ;; (message pubdir)
+    ;; (message target-file-abs)
+    ;; (message link)
+    ;; (message title)
+    ;; (message date)
+    ;; (message preview)
+    ;; (message rss-permalink)
+    ;; (message rss-pubdate)
+    ;; (message "*****")
     (concat
      (cond ((string-match-p regexp title)
             (string-match regexp title)
@@ -306,6 +313,7 @@ var disqus_config = function () {
            (t (concat "* [[file:" link "][" title "]]\n")))
      (concat date "\n\n")
      preview
+     "\n"
      (concat "[[file:" link "][Read More...]]\n"))
     ))
 
