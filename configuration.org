@@ -247,7 +247,10 @@ sets `my-jump-handlers' in buffers of that mode."
         sp-highlight-wrap-overlay nil
         sp-highlight-wrap-tag-overlay nil)
 
+  (use-package evil-smartparens :ensure t)
   (my/add-hooks '(prog-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
+  (setq my/lisp-mode-hooks '(emacs-lisp-mode-hook clojure-mode-hook))
+  (my/add-hooks my/lisp-mode-hooks (smartparens-strict-mode) (evil-smartparens-mode))
 
   :config
   (require 'smartparens-config)
@@ -691,6 +694,7 @@ sets `my-jump-handlers' in buffers of that mode."
                   shell-mode
                   haskell-error-mode
                   haskell-interactive-mode
+                  cider-repl-mode
                   dired-mode))
     (my/make-emacs-mode mode))
 
