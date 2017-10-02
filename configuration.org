@@ -550,7 +550,7 @@ sets `my-jump-handlers' in buffers of that mode."
     my/solarized-light
     my/solarized-black-bright
     ;; my/monokai
-    my/oceanicnext
+    ;; my/oceanicnext
     ;; my/tomorrow-night
     my/spacemacs-light
     ))
@@ -877,16 +877,19 @@ sets `my-jump-handlers' in buffers of that mode."
       )))
 
 (require 'js-doc)
+(use-package js2-mode :ensure t)
+(use-package rjsx-mode :ensure t)
 (add-hook 'js2-mode-hook (lambda ()
                            (define-key js2-mode-map "\C-c m d" 'js-doc-insert-function-doc)
                            (define-key js2-mode-map "\C-c m @" 'js-doc-insert-tag)))
 
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
 (my|define-jump-handlers js2-mode)
+(my|define-jump-handlers rjsx-mode)
 (my|define-jump-handlers web-mode)
 
-(dolist (mode '("js2"))
+(dolist (mode '("js2" "rjsx"))
   (let ((hook (intern-soft (format "%s-mode-hook" mode)))
         (handler (intern-soft (format "my-jump-handlers-%s-mode" mode))))
     (add-hook hook `(lambda ()
@@ -1347,6 +1350,8 @@ sets `my-jump-handlers' in buffers of that mode."
   (define-key dired-mode-map
     (kbd "C-c n")
     'my/dired-find-file-ace))
+
+(require 'dired-x)
 #+END_SRC
 
 ** Neotree
