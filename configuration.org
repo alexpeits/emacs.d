@@ -467,7 +467,8 @@ sets `my-jump-handlers' in buffers of that mode."
 * Theme
    
 #+BEGIN_SRC emacs-lisp
-;; (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D")))
+(unless is-mac
+  (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D"))))
 (setq spacemacs-theme-org-height nil
       spacemacs-theme-comment-bg nil)
 (when window-system
@@ -1288,17 +1289,17 @@ sets `my-jump-handlers' in buffers of that mode."
    'counsel-projectile-find-file
    `(("s"
       ,(my/control-function-window-split
-        counsel-projectile-action-find-file-other-window
+        counsel-projectile-find-file-action-other-window
         0 nil)
       "split horizontally")
      ("v"
       ,(my/control-function-window-split
-        counsel-projectile-action-find-file-other-window
+        counsel-projectile-find-file-action-other-window
         nil 0)
       "split vertically")
      ("n"
       ,(my/execute-f-with-hook
-        counsel-projectile-action-find-file
+        counsel-projectile-find-file-action
         ace-select-window)
       "select window")
      ))
