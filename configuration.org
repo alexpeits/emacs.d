@@ -457,9 +457,9 @@ sets `my-jump-handlers' in buffers of that mode."
   :config
   (setq whitespace-line-column 79)
   (setq whitespace-style '(face lines-tail))
-  (diminish 'whitespace-mode "")
   (setq whitespace-global-modes '(python-mode))
-  (global-whitespace-mode +1))
+  (global-whitespace-mode +1)
+  (diminish 'global-whitespace-mode ""))
 
 #+END_SRC
    
