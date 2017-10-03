@@ -480,8 +480,7 @@ sets `my-jump-handlers' in buffers of that mode."
 #+BEGIN_SRC emacs-lisp
 (unless is-mac
   (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D"))))
-(setq spacemacs-theme-org-height nil
-      spacemacs-theme-comment-bg nil)
+(setq spacemacs-theme-org-height nil)
 (when window-system
    (setq solarized-use-variable-pitch nil
          solarized-height-plus-1 1.0
@@ -693,7 +692,7 @@ sets `my-jump-handlers' in buffers of that mode."
     "ws" 'evil-window-split
     "wv" 'evil-window-vsplit
 
-    "Ts" 'helm-themes
+    "Ts" 'counsel-load-theme
     ))
 
 (use-package evil
@@ -1237,8 +1236,8 @@ sets `my-jump-handlers' in buffers of that mode."
   (if (null fuzzy)
       (swiper)
     (let* ((temp-builders (copy-alist ivy-re-builders-alist))
-          (ivy-re-builders-alist (add-to-list 'temp-builders
-                                              '(swiper . ivy--regex-fuzzy))))
+           (ivy-re-builders-alist (add-to-list 'temp-builders
+                                               '(swiper . ivy--regex-fuzzy))))
       (swiper))))
 
 (use-package ivy
@@ -1325,7 +1324,7 @@ sets `my-jump-handlers' in buffers of that mode."
     
 #+BEGIN_SRC emacs-lisp
 (use-package helm :ensure t)
-(use-package helm-themes)
+;; (use-package helm-themes)
 #+END_SRC
     
 ** Ace-window
