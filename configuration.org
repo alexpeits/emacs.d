@@ -453,6 +453,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; 80-column rule
 (use-package whitespace
+  :disabled t
   :ensure t
   :config
   (setq whitespace-line-column 79)
@@ -460,6 +461,13 @@ sets `my-jump-handlers' in buffers of that mode."
   (setq whitespace-global-modes '(python-mode))
   (global-whitespace-mode +1)
   (diminish 'global-whitespace-mode ""))
+
+(use-package fill-column-indicator
+  :ensure t
+  :init
+  (setq fci-handle-truncate-lines nil)
+  (setq fci-mode-hooks '(python-mode-hook))
+  (my/add-hooks fci-mode-hooks (fci-mode)))
 
 #+END_SRC
    
@@ -665,7 +673,7 @@ sets `my-jump-handlers' in buffers of that mode."
     "pr" 'persp-rename
     "ps" 'counsel-projectile-ag
 
-    "t8" 'whitespace-mode
+    "t8" 'fci-mode
     "tf" 'my/toggle-font
     "tg" 'global-diff-hl-mode
     "tj" 'my/toggle-jsmodes
@@ -701,6 +709,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (dolist (mode '(term-mode
                   eshell-mode
                   shell-mode
+                  special-mode
                   haskell-error-mode
                   haskell-interactive-mode
                   cider-repl-mode
