@@ -463,11 +463,14 @@ sets `my-jump-handlers' in buffers of that mode."
   (diminish 'global-whitespace-mode ""))
 
 (use-package fill-column-indicator
+  :if (>= emacs-major-version 25)
   :ensure t
   :init
   (setq fci-handle-truncate-lines nil)
   (setq fci-mode-hooks '(python-mode-hook))
-  (my/add-hooks fci-mode-hooks (fci-mode)))
+  (my/add-hooks
+   fci-mode-hooks
+   (unless is-mac (setq fci-rule-color "#474747")) (fci-mode)))
 
 #+END_SRC
    
