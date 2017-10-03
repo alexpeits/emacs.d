@@ -1353,6 +1353,7 @@ sets `my-jump-handlers' in buffers of that mode."
     'my/dired-find-file-ace))
 
 (require 'dired-x)
+(if is-mac (setq dired-use-ls-dired nil))
 #+END_SRC
 
 ** Neotree
