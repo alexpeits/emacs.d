@@ -978,6 +978,64 @@ sets `my-jump-handlers' in buffers of that mode."
             ))
 (eval-after-load 'haskell-mode '(progn (defun ghc-check-syntax ())))
 
+(defvar my/hoogle-cmd "/home/alex/.local/bin/hoogle")
+(defvar my/hoogle-server-port 26543)
+(defvar my/hoogle-server-process nil)
+(defvar my/hoogle-server-process-name "emacs-hoogle")
+(defvar my/hoogle-server-process-buffer-name (format "*%s*" my/hoogle-server-process-name))
+
+(defun my/select-hoogle-db ()
+  (let* ((base-comp '("/home/alex/.hoogle/hoogle"))
+         (completions
+          (if (projectile-project-p)
+              (progn
+                (let ((proj-db (projectile-expand-root ".stack-work/hoogle")))
+                  (if (file-exists-p proj-db)
+                      (append (list proj-db) base-comp)
+                    base-comp)))
+            base-comp)))
+    (completing-read
+     "hoogle database:"
+     completions
+     nil nil nil nil (car completions)))
+  )
+
+(defun my/hoogle-server-start ()
+  (interactive)
+  (let ((db (my/select-hoogle-db)))
+    (unless (my/hoogle-server-running-p)
+      (setq my/hoogle-server-process
+            (start-process
+             my/hoogle-server-process-name
+             (get-buffer-create my/hoogle-server-process-buffer-name)
+             "hoogle" "server"
+             "-p" (number-to-string my/hoogle-server-port)
+             (format "--database=%s" db)
+             "--local")))))
+
+(defun my/hoogle-server-stop ()
+  (interactive)
+  (when (my/hoogle-server-running-p)
+    (kill-process (get-buffer-create my/hoogle-server-process-buffer-name))
+    (setq my/hoogle-server-process nil)))
+
+(defun my/hoogle-server-running-p ()
+  (condition-case _err
+      (process-live-p my/hoogle-server-process)
+    (error nil)))
+
+(defun my/hoogle-lookup ()
+  (interactive)
+  (if (my/hoogle-server-running-p)
+      (browse-url (format "http://localhost:%i/?hoogle=%s"
+                          my/hoogle-server-port
+                          (read-string "hoogle: " (haskell-ident-at-point))))
+    (haskell-mode-toggle-interactive-prompt-state)
+    (unwind-protect
+        (when (y-or-n-p "Hoogle server not running, start server? ")
+          (my/hoogle-server-start)
+          (my/hoogle-lookup))
+      (haskell-mode-toggle-interactive-prompt-state t))))
 #+END_SRC
 
 
@@ -1484,7 +1542,11 @@ sets `my-jump-handlers' in buffers of that mode."
   :unless is-mac
   :ensure t
   :init
-  (pdf-tools-install))
+  (pdf-tools-install)
+  :config
+  ;; temporary - will investigate breaking changes
+  (add-hook 'pdf-tools-enabled-hook
+            (lambda () (setq pdf-view-midnight-colors '("#dcdccc" . "#494949")))))
 #+END_SRC
 
 
