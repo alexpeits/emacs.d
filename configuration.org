@@ -7,14 +7,14 @@
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/custom-themes/"))
 (setenv "PATH" (concat
                 "/usr/local/bin" path-separator
-                "~/bin" path-separator
-                "~/.local/bin" path-separator
-                "~/.cargo/bin" path-separator
+                (expand-file-name "~/bin") path-separator
+                (expand-file-name "~/.local/bin") path-separator
+                (expand-file-name "~/.cargo/bin") path-separator
                 (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path "~/bin")
-(add-to-list 'exec-path "~/.local/bin")
-(add-to-list 'exec-path "~/.cargo/bin")
+(add-to-list 'exec-path (expand-file-name "~/bin"))
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com")
 
@@ -959,6 +959,7 @@ sets `my-jump-handlers' in buffers of that mode."
             (ghc-init)
             (hindent-mode)
             (eldoc-mode)
+            (define-key haskell-mode-map (kbd "C-c C-h") 'my/hoogle-lookup)
             (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
             (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
             (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
@@ -983,6 +984,13 @@ sets `my-jump-handlers' in buffers of that mode."
 (defvar my/hoogle-server-process nil)
 (defvar my/hoogle-server-process-name "emacs-hoogle")
 (defvar my/hoogle-server-process-buffer-name (format "*%s*" my/hoogle-server-process-name))
+
+(defun my/hoogle-generate-local ()
+  (interactive)
+  (if (projectile-project-p)
+      (projectile-run-compilation
+       "stack exec -- hoogle generate --local --download --database=.stack-work/hoogle")
+    (error "Not in a project")))
 
 (defun my/select-hoogle-db ()
   (let* ((base-comp '("/home/alex/.hoogle/hoogle"))
