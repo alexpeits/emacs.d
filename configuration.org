@@ -560,7 +560,7 @@ sets `my-jump-handlers' in buffers of that mode."
     my/solarized-dark
     my/solarized-light
     my/solarized-black-bright
-    ;; my/monokai
+    my/monokai
     ;; my/oceanicnext
     ;; my/tomorrow-night
     my/spacemacs-light
@@ -959,8 +959,9 @@ sets `my-jump-handlers' in buffers of that mode."
             (ghc-init)
             (hindent-mode)
             (eldoc-mode)
-            (define-key haskell-mode-map (kbd "C-c C-h") 'my/hoogle-lookup)
-            (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
+            (define-key haskell-mode-map (kbd "C-c C-h") 'my/hoogle-lookup-browser)
+            (define-key haskell-mode-map (kbd "C-c h") 'my/hoogle-lookup)
+            (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-file)
             (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
             (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
             (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
@@ -984,6 +985,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (defvar my/hoogle-server-process nil)
 (defvar my/hoogle-server-process-name "emacs-hoogle")
 (defvar my/hoogle-server-process-buffer-name (format "*%s*" my/hoogle-server-process-name))
+(defvar my/haskell-hoogle-url "http://haskell.org/hoogle/?q=%s")
 
 (defun my/hoogle-generate-local ()
   (interactive)
@@ -991,6 +993,16 @@ sets `my-jump-handlers' in buffers of that mode."
       (projectile-run-compilation
        "stack exec -- hoogle generate --local --download --database=.stack-work/hoogle")
     (error "Not in a project")))
+
+(defun my/get-hoogle-db ()
+  (let ((global-db "/home/alex/.hoogle/.hoogle"))
+    (if (projectile-project-p)
+        (progn
+          (let ((local-db (projectile-expand-root ".stack-work/hoogle")))
+            (if (file-exists-p local-db)
+                local-db
+              global-db)))
+      global-db)))
 
 (defun my/select-hoogle-db ()
   (let* ((base-comp '("/home/alex/.hoogle/hoogle"))
@@ -1005,8 +1017,7 @@ sets `my-jump-handlers' in buffers of that mode."
     (completing-read
      "hoogle database:"
      completions
-     nil nil nil nil (car completions)))
-  )
+     nil nil nil nil (car completions))))
 
 (defun my/hoogle-server-start ()
   (interactive)
@@ -1032,7 +1043,7 @@ sets `my-jump-handlers' in buffers of that mode."
       (process-live-p my/hoogle-server-process)
     (error nil)))
 
-(defun my/hoogle-lookup ()
+(defun my/hoogle-lookup-browser ()
   (interactive)
   (if (my/hoogle-server-running-p)
       (browse-url (format "http://localhost:%i/?hoogle=%s"
@@ -1044,6 +1055,27 @@ sets `my-jump-handlers' in buffers of that mode."
           (my/hoogle-server-start)
           (my/hoogle-lookup))
       (haskell-mode-toggle-interactive-prompt-state t))))
+
+(defun my/hoogle-lookup (query &optional info)
+  (interactive
+   (let ((def (haskell-ident-at-point)))
+     (if (and def (symbolp def)) (setq def (symbol-name def)))
+     (list (read-string (if def
+                            (format "Hoogle query (default %s): " def)
+                          "Hoogle query: ")
+                        nil nil def)
+           current-prefix-arg)))
+  (if (null my/hoogle-cmd)
+      (browse-url (format haskell-hoogle-url (url-hexify-string query)))
+    (let ((command (concat my/hoogle-cmd
+                           " --database=" (my/get-hoogle-db)
+                           (if info " -i " "")
+                           " --color " (shell-quote-argument query))))
+      (with-help-window "*hoogle*"
+        (with-current-buffer standard-output
+          (insert (shell-command-to-string command))
+          (ansi-color-apply-on-region (point-min) (point-max)))))))
+
 #+END_SRC
 
 
@@ -1256,7 +1288,7 @@ sets `my-jump-handlers' in buffers of that mode."
        (set-face-background 'flycheck-warning "unspecified-bg")
        (set-face-foreground 'flycheck-warning "unspecified-fg")
        (add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
-       (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
+       ;; (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
        (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
        (add-hook 'flycheck-mode-hook #'flycheck-yamllint-setup)
       ))
@@ -1323,7 +1355,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (global-set-key (kbd "C-c C-r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-c C-j") 'counsel-imenu)
+  (global-set-key (kbd "C-c i") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "<f1> l") 'counsel-find-library)
   (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
@@ -1621,7 +1653,8 @@ sets `my-jump-handlers' in buffers of that mode."
  'org-babel-load-languages
  '((python . t)
    (ipython . t)
-   ;; (dot . t)
+   (haskell . t)
+   (dot . t)
    (restclient . t)
    ))
 
