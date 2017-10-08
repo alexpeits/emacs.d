@@ -1053,7 +1053,7 @@ sets `my-jump-handlers' in buffers of that mode."
     (unwind-protect
         (when (y-or-n-p "Hoogle server not running, start server? ")
           (my/hoogle-server-start)
-          (my/hoogle-lookup))
+          (my/hoogle-lookup-browser))
       (haskell-mode-toggle-interactive-prompt-state t))))
 
 (defun my/hoogle-lookup (query &optional info)
