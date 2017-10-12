@@ -45,18 +45,27 @@
 
 ;; what it says
 (defun my/revert-all-buffers ()
-  "Refreshes all open buffers from their respective files"
+  "Refresh all open file buffers without confirmation.
+Buffers in modified (not yet saved) state in emacs will not be reverted. They
+will be reverted though if they were modified outside emacs.
+Buffers visiting files which do not exist any more or are no longer readable
+will be killed."
   (interactive)
-  (let* ((list (buffer-list))
-         (buffer (car list)))
-    (while buffer
-      (when (and (buffer-file-name buffer)
-                 (not (buffer-modified-p buffer)))
-        (set-buffer buffer)
-        (revert-buffer t t t))
-      (setq list (cdr list))
-      (setq buffer (car list))))
-          (message "Refreshed open files"))
+  (dolist (buf (buffer-list))
+    (let ((filename (buffer-file-name buf)))
+      ;; Revert only buffers containing files, which are not modified;
+      ;; do not try to revert non-file buffers like *Messages*.
+      (when (and filename
+                 (not (buffer-modified-p buf)))
+        (if (file-readable-p filename)
+            ;; If the file exists and is readable, revert the buffer.
+            (with-current-buffer buf
+              (revert-buffer :ignore-auto :noconfirm :preserve-modes))
+          ;; Otherwise, kill the buffer.
+          (let (kill-buffer-query-functions) ; No query done when killing buffer
+            (kill-buffer buf)
+            (message "Killed non-existing/unreadable file buffer: %s" filename))))))
+  (message "Finished reverting buffers containing unmodified files."))
 
 ;; read file as string
 (defun my/read-file-contents (path)
@@ -480,6 +489,7 @@ sets `my-jump-handlers' in buffers of that mode."
 #+BEGIN_SRC emacs-lisp
 (unless is-mac
   (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D"))))
+
 (setq spacemacs-theme-org-height nil)
 (when window-system
    (setq solarized-use-variable-pitch nil
@@ -500,6 +510,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
+
 (defvar my/themes
   '(
     (my/zenburn
@@ -674,6 +685,8 @@ sets `my-jump-handlers' in buffers of that mode."
     "pq" 'persp-kill
     "pr" 'persp-rename
     "ps" 'counsel-projectile-ag
+
+    "sd" 'pwd
 
     "t8" 'fci-mode
     "tf" 'my/toggle-font
@@ -1416,6 +1429,21 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
 
 
+* Remote connections, docker etc
+
+#+BEGIN_SRC emacs-lisp
+(use-package docker-tramp
+  :ensure t
+  :config
+  (let* ((-tramp-version (mapcar #'string-to-int (split-string tramp-version "\\.")))
+         (-major (car -tramp-version))
+         (-minor (cadr -tramp-version)))
+    (if (and (<= -major 2)
+             (<= -minor 2))
+        (require 'docker-tramp-compat))))
+#+END_SRC
+
+
 * Other window management
 
 ** Helm
@@ -1557,6 +1585,49 @@ sets `my-jump-handlers' in buffers of that mode."
   (setq ido-use-faces nil))
 #+END_SRC
 
+Make non-active buffer names in modeline darker (as per [[https://emacs.stackexchange.com/a/22682/14525][this]] stackoverflow answer)
+
+#+BEGIN_SRC emacs-lisp
+(defvar ml-selected-window nil)
+
+(defun ml-record-selected-window ()
+  (setq ml-selected-window (selected-window)))
+
+(defun ml-update-all ()
+  (force-mode-line-update t))
+
+(add-hook 'post-command-hook 'ml-record-selected-window)
+
+(add-hook 'buffer-list-update-hook 'ml-update-all)
+
+(defface ml-active-window-face
+   '((t (:foreground "#F0DFAF" :weight bold)))
+   "Face for active buffer identification.")
+
+(defface ml-inactive-window-face
+   '((t (:foreground "#ccbb8e")))
+   "Face for inactive buffer identification.")
+
+(defun ml-propertized-buffer-identification (fmt)
+  "Return a list suitable for `mode-line-buffer-identification'.
+FMT is a format specifier such as \"%12b\".  This function adds
+text properties for face, help-echo, and local-map to it."
+  (list (propertize fmt
+        'face
+          (if (eq ml-selected-window (selected-window))
+            'ml-active-window-face
+            'ml-inactive-window-face)
+        'help-echo
+        (purecopy "Buffer name
+mouse-1: Previous buffer\nmouse-3: Next buffer")
+        'mouse-face 'mode-line-highlight
+        'local-map mode-line-buffer-identification-keymap)))
+
+(setq-default mode-line-buffer-identification
+  '(:eval (ml-propertized-buffer-identification "%12b")))
+
+#+END_SRC
+
 
 * Other major modes
 
@@ -1687,12 +1758,11 @@ sets `my-jump-handlers' in buffers of that mode."
 Some per-workstation setup
 
 #+BEGIN_SRC emacs-lisp
-(defvar host (substring (shell-command-to-string "hostname") 0 -1))
-(defvar host-dir (concat "~/.emacs.d/hosts/" host))
-(add-to-list 'load-path host-dir)
+(defvar workstation-dir (expand-file-name "~/.emacs.d/workstation/"))
+(add-to-list 'load-path workstation-dir)
 
-(let ((init-host-feature (intern (concat "init-" host))))
-  (require init-host-feature nil 'noerror))
+(let ((init-workstation (intern "local-workstation")))
+  (require init-workstation nil 'noerror))
 #+END_SRC
    
 
