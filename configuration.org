@@ -847,6 +847,12 @@ sets `my-jump-handlers' in buffers of that mode."
          "]"))
     ""))
 
+(defun my/set-pdb-trace ()
+  (interactive)
+  (evil-open-above 0)
+  (insert "import pdb; pdb.set_trace()")
+  (evil-normal-state))
+
 (add-hook 'python-mode-hook
           (lambda ()
             (anaconda-mode)
@@ -859,7 +865,8 @@ sets `my-jump-handlers' in buffers of that mode."
                                   '(python-pycompile)))
             (evil-leader/set-key
               "vw" 'pyvenv-workon
-              "vd" 'pyvenv-deactivate)
+              "vd" 'pyvenv-deactivate
+              "md" 'my/insert-pdb-trace)
             (add-to-list 'my-jump-handlers-python-mode
                          '(anaconda-mode-find-definitions :async t))))
 
@@ -1786,5 +1793,23 @@ Global setup
 ;; (let ((split-height-threshold nil)
 ;;       (split-width-threshold 0))
 ;;   (find-file-other-window "~/.emacs.d/configuration.org"))
+#+END_SRC
+
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(define-key evil-emacs-state-map [escape] 'evil-exit-emacs-state)
+
+(evil-define-state emacs
+  "Emacs state that can be exited with the escape key."
+  :tag " <E> "
+  :message "-- EMACS --"
+  :input-method t
+  ;; :intercept-esc nil
+  )
+
+(defadvice evil-insert-state (around emacs-state-instead-of-insert-state activate)
+  (evil-emacs-state))
+
+(setq evil-emacs-state-cursor '(bar . 2))
 #+END_SRC
 
