@@ -325,6 +325,9 @@ sets `my-jump-handlers' in buffers of that mode."
   :config
   (global-set-key (kbd "C-c d") 'dash-at-point))
 
+(use-package hideshow
+  :config
+  (add-hook 'prog-mode-hook #'hs-minor-mode))
 #+END_SRC
 
 
