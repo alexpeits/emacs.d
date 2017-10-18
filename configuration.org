@@ -634,6 +634,8 @@ sets `my-jump-handlers' in buffers of that mode."
 
 
 * VCS
+  
+** Magit
    
 #+BEGIN_SRC emacs-lisp
 (use-package magit
@@ -642,8 +644,17 @@ sets `my-jump-handlers' in buffers of that mode."
   :init
   (global-set-key (kbd "C-x g") 'magit-status)
   (global-set-key (kbd "C-x M-g") 'magit-dispatch-popup)
-  )
+  (add-hook 'magit-blame-mode-hook
+            (lambda ()
+              (if (or (not (boundp 'magit-blame-mode))
+                      magit-blame-mode)
+                  (evil-emacs-state)
+                (evil-exit-emacs-state)))))
+#+END_SRC
 
+** Diff-hl
+
+#+BEGIN_SRC emacs-lisp
 (if (display-graphic-p)
     (use-package diff-hl
       :ensure t
@@ -1474,6 +1485,16 @@ sets `my-jump-handlers' in buffers of that mode."
   )
 #+END_SRC
     
+** Avy
+
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :ensure t
+  :config
+  (setq avy-background t)
+  (global-set-key (kbd "M-i") 'avy-goto-line))
+#+END_SRC
+
 ** Dired
 
 #+BEGIN_SRC emacs-lisp
@@ -1799,7 +1820,7 @@ Global setup
 #+END_SRC
 
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (defcustom hybrid-mode-default-state 'normal
   "Value of `evil-default-state' for hybrid-mode."
   :group 'my
