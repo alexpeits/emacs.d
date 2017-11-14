@@ -167,7 +167,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (setq-default fill-column 79)
 
 ;; diminish various minor modes in modeline
-(diminish 'auto-revert-mode "")
+(add-hook 'auto-revert-mode-hook (lambda () (diminish 'auto-revert-mode "")))
 (add-hook 'eldoc-mode-hook
           (lambda () (diminish 'eldoc-mode "")))
 
@@ -327,6 +327,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 (use-package hideshow
   :config
+  (diminish 'hs-minor-mode "")
   (add-hook 'prog-mode-hook #'hs-minor-mode))
 #+END_SRC
 
@@ -441,7 +442,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (setq inhibit-splash-screen t)
 (setq initial-scratch-message nil)
 (menu-bar-mode -1)
-(toggle-scroll-bar -1)
+(scroll-bar-mode -1)
 (tool-bar-mode -1)
 
 ;; linum
@@ -478,7 +479,7 @@ sets `my-jump-handlers' in buffers of that mode."
   :if (>= emacs-major-version 25)
   :ensure t
   :init
-  (setq fci-handle-truncate-lines nil)
+  (setq fci-handle-truncate-lines t)
   (setq fci-mode-hooks '(python-mode-hook))
   (my/add-hooks
    fci-mode-hooks
@@ -527,7 +528,8 @@ sets `my-jump-handlers' in buffers of that mode."
      ((theme . solarized-dark)
       (faces . ((org-block-begin-line (:background "#073642"))
                 (org-block-end-line (:background "#073642"))
-                (org-block (:background "#002f3b" :foreground "#839496"))))))
+                (org-block (:background "#002f3b" :foreground "#839496"))
+                (hl-line (:background "#053440"))))))
     (my/solarized-light
      .
      ((theme . solarized-light)
@@ -739,6 +741,7 @@ sets `my-jump-handlers' in buffers of that mode."
                   eshell-mode
                   shell-mode
                   special-mode
+                  xref--xref-buffer-mode
                   haskell-error-mode
                   haskell-interactive-mode
                   cider-repl-mode
@@ -760,7 +763,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
   (evil-define-key 'normal neotree-mode-map (kbd "|") 'neotree-enter-vertical-split)
   (evil-define-key 'normal neotree-mode-map (kbd "-") 'neotree-enter-horizontal-split)
-
+  
   ;; move state to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
 
@@ -856,10 +859,11 @@ sets `my-jump-handlers' in buffers of that mode."
                     pyvenv-virtual-env-name)))
         (concat
          " ["
-         (propertize venv 'face 'font-lock-function-name-face)
+         ;; (propertize venv 'face 'font-lock-function-name-face)
+         (propertize venv 'face '(:underline t))
          ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
          "]"))
-    ""))
+    "[-]"))
 
 (defun my/set-pdb-trace ()
   (interactive)
@@ -1305,6 +1309,7 @@ sets `my-jump-handlers' in buffers of that mode."
   :defer t
   :init (global-flycheck-mode)
   :config
+  (diminish 'flycheck-mode "")
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (defun my/toggle-flycheck-error-list ()
     (interactive)
@@ -1356,7 +1361,11 @@ sets `my-jump-handlers' in buffers of that mode."
   :config
   (projectile-mode)
   (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line '(:eval (format " Pr[%s]" (projectile-project-name)))))
+  (setq projectile-mode-line '(:eval
+                               (propertize
+                                (format " {%s}" (projectile-project-name))
+                                'face
+                                'font-lock-function-name-face))))
 #+END_SRC
 
 
@@ -1379,6 +1388,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
   (use-package counsel-projectile :ensure t)
+  (use-package ivy-bibtex :ensure t)
   :config
   (ivy-mode 1)
   (diminish 'ivy-mode "")
@@ -1471,7 +1481,11 @@ sets `my-jump-handlers' in buffers of that mode."
     
 #+BEGIN_SRC emacs-lisp
 (use-package helm :ensure t)
-;; (use-package helm-themes)
+
+(use-package helm-xref
+  :ensure t
+  :config
+  (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
 #+END_SRC
     
 ** Ace-window
@@ -1481,7 +1495,7 @@ sets `my-jump-handlers' in buffers of that mode."
   :ensure t
   :config
   (setq aw-dispatch-always t)
-  ;; (global-set-key (kbd "M-p") 'ace-window)
+  (global-set-key (kbd "C-c o") 'ace-window)
   )
 #+END_SRC
     
@@ -1633,10 +1647,12 @@ Make non-active buffer names in modeline darker (as per [[https://emacs.stackexc
 
 (defface ml-active-window-face
    '((t (:foreground "#F0DFAF" :weight bold)))
+   ;; '((t (:foreground "#99a7a7" :weight bold)))
    "Face for active buffer identification.")
 
 (defface ml-inactive-window-face
    '((t (:foreground "#ccbb8e")))
+   ;; '((t (:foreground "#808888")))
    "Face for inactive buffer identification.")
 
 (defun ml-propertized-buffer-identification (fmt)
@@ -1657,6 +1673,14 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
 (setq-default mode-line-buffer-identification
   '(:eval (ml-propertized-buffer-identification "%12b")))
 
+#+END_SRC
+
+Create compilation buffer
+
+#+BEGIN_SRC emacs-lisp
+(defun my/switch-to-compilation-buffer ()
+  (interactive)
+  (switch-to-buffer "*compilation*"))
 #+END_SRC
 
 
