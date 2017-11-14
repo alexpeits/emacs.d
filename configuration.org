@@ -855,7 +855,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (defun my/mode-line-venv ()
   (if (string= major-mode "python-mode")
       (let ((venv (if (null pyvenv-virtual-env-name)
-                      ""
+                      "-"
                     pyvenv-virtual-env-name)))
         (concat
          " ["
@@ -863,7 +863,7 @@ sets `my-jump-handlers' in buffers of that mode."
          (propertize venv 'face '(:underline t))
          ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
          "]"))
-    "[-]"))
+    "[]"))
 
 (defun my/set-pdb-trace ()
   (interactive)
