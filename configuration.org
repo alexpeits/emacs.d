@@ -523,6 +523,19 @@ sets `my-jump-handlers' in buffers of that mode."
       (faces . ((org-block-begin-line (:background "#474747"))
                 (org-block-end-line (:background "#474747"))
                 (org-block (:background "#424242" :foreground "#dcdccc"))))))
+    (my/peacock
+     .
+     ((theme . doom-peacock)
+      (faces . ((cursor (:background "#ede0ce"))
+                (mode-line (:background "#4c4a46" :box nil))
+                (mode-line-inactive (:background "#3b3936" :foreground "#8d8d8d" :box nil))
+                (hl-line (:background "#2f2f2f"))
+                (fringe (:background "#2f2f2f"))
+                (vertical-border (:foreground "#383838"))
+                (org-block (:background "#32302c" :foreground "#ede0ce"))
+                (org-block-begin-line (:background "#3f3c39" :foreground "#ede0ce"))
+                (org-block-end-line (:background "#3f3c39" :foreground "#ede0ce"))))))
+
     (my/solarized-dark
      .
      ((theme . solarized-dark)
@@ -573,6 +586,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (defvar my/avail-themes
   '(
     my/zenburn
+    my/peacock
     my/solarized-dark
     my/solarized-light
     my/solarized-black-bright
@@ -744,6 +758,7 @@ sets `my-jump-handlers' in buffers of that mode."
                   xref--xref-buffer-mode
                   haskell-error-mode
                   haskell-interactive-mode
+                  intero-repl-mode
                   cider-repl-mode
                   dired-mode
                   treemacs-mode))
@@ -978,7 +993,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 * Haskell
   
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ghc :ensure t :defer t)
 (use-package hindent :ensure t :defer t)
 (autoload 'ghc-init "ghc" nil t)
@@ -1114,6 +1129,14 @@ sets `my-jump-handlers' in buffers of that mode."
           (insert (shell-command-to-string command))
           (ansi-color-apply-on-region (point-min) (point-max)))))))
 
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package intero
+  :ensure t
+  :defer t)
+
+(add-hook 'haskell-mode-hook 'intero-mode)
 #+END_SRC
 
 
@@ -1655,23 +1678,23 @@ Make non-active buffer names in modeline darker (as per [[https://emacs.stackexc
    ;; '((t (:foreground "#808888")))
    "Face for inactive buffer identification.")
 
-(defun ml-propertized-buffer-identification (fmt)
-  "Return a list suitable for `mode-line-buffer-identification'.
-FMT is a format specifier such as \"%12b\".  This function adds
-text properties for face, help-echo, and local-map to it."
-  (list (propertize fmt
-        'face
-          (if (eq ml-selected-window (selected-window))
-            'ml-active-window-face
-            'ml-inactive-window-face)
-        'help-echo
-        (purecopy "Buffer name
-mouse-1: Previous buffer\nmouse-3: Next buffer")
-        'mouse-face 'mode-line-highlight
-        'local-map mode-line-buffer-identification-keymap)))
-
-(setq-default mode-line-buffer-identification
-  '(:eval (ml-propertized-buffer-identification "%12b")))
+;; (defun ml-propertized-buffer-identification (fmt)
+;;   "Return a list suitable for `mode-line-buffer-identification'.
+;; FMT is a format specifier such as \"%12b\".  This function adds
+;; text properties for face, help-echo, and local-map to it."
+;;   (list (propertize fmt
+;;         'face
+;;           (if (eq ml-selected-window (selected-window))
+;;             'ml-active-window-face
+;;             'ml-inactive-window-face)
+;;         'help-echo
+;;         (purecopy "Buffer name
+;; mouse-1: Previous buffer\nmouse-3: Next buffer")
+;;         'mouse-face 'mode-line-highlight
+;;         'local-map mode-line-buffer-identification-keymap)))
+;; 
+;; (setq-default mode-line-buffer-identification
+;;   '(:eval (ml-propertized-buffer-identification "%12b")))
 
 #+END_SRC
 
