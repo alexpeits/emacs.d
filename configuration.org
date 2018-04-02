@@ -73,7 +73,7 @@ will be killed."
     (insert-file-contents (expand-file-name path))
     (buffer-string)))
 
-;; Jump to definition
+;; Jump to definition, copied from spacemacs
 
 (defvar my-default-jump-handlers '()
   "List of jump handlers available in every mode.")
@@ -121,7 +121,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 #+END_SRC
 
-   
+
 * Package management
    
 #+BEGIN_SRC emacs-lisp
@@ -341,32 +341,38 @@ sets `my-jump-handlers' in buffers of that mode."
   (engine-mode t)
 
   (defengine github
-    "https://github.com/search?ref=simplesearch&q=%s")
+    "https://github.com/search?ref=simplesearch&q=%s"
+    :keybinding "c")
 
   (defengine google
     "http://www.google.com/search?ie=utf-8&oe=utf-8&q=%s"
     :keybinding "g")
 
   (defengine google-images
-    "http://www.google.com/images?hl=en&source=hp&biw=1440&bih=795&gbv=2&aq=f&aqi=&aql=&oq=&q=%s")
+    "http://www.google.com/images?hl=en&source=hp&biw=1440&bih=795&gbv=2&aq=f&aqi=&aql=&oq=&q=%s"
+    :keybinding "i")
 
   (defengine google-maps
     "http://maps.google.com/maps?q=%s")
 
   (defengine rfcs
-    "http://pretty-rfc.herokuapp.com/search?q=%s")
+    "http://pretty-rfc.herokuapp.com/search?q=%s"
+    :keybinding "r")
 
   (defengine wikipedia
-    "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s")
+    "http://www.wikipedia.org/search-redirect.php?language=en&go=Go&search=%s"
+    :keybinding "w")
 
   (defengine wiktionary
     "https://www.wikipedia.org/search-redirect.php?family=wiktionary&language=en&go=Go&search=%s")
 
   (defengine wolfram-alpha
-    "http://www.wolframalpha.com/input/?i=%s")
+    "http://www.wolframalpha.com/input/?i=%s"
+    :keybinding "m")
 
   (defengine youtube
-    "http://www.youtube.com/results?aq=f&oq=&search_query=%s")
+    "http://www.youtube.com/results?aq=f&oq=&search_query=%s"
+    :keybinding "v")
 
   (defengine hoogle
     "http://www.haskell.org/hoogle/?q=%s"
@@ -481,9 +487,11 @@ sets `my-jump-handlers' in buffers of that mode."
   :init
   (setq fci-handle-truncate-lines t)
   (setq fci-mode-hooks '(python-mode-hook))
+  (defun my/set-fci-rule-color ()
+    (setq fci-rule-color (face-attribute 'my/fci-rule :background)))
   (my/add-hooks
    fci-mode-hooks
-   (unless is-mac (setq fci-rule-color "#474747")) (fci-mode)))
+   (my/set-fci-rule-color) (fci-mode)))
 
 #+END_SRC
    
@@ -492,7 +500,8 @@ sets `my-jump-handlers' in buffers of that mode."
    
 #+BEGIN_SRC emacs-lisp
 (unless is-mac
-  (defvar zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D"))))
+  (defvar zenburn-override-colors-alist)
+  (setq zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D"))))
 
 (setq spacemacs-theme-org-height nil)
 (when window-system
@@ -514,6 +523,10 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
+(defface my/fci-rule '((t :background "#474747"))
+  "Dummy face for vertical rule, only background color is used in runtime")
+(defface my/mode-line-project '((t :inherit font-lock-function-name-face))
+  "Mode line project name face")
 
 (defvar my/themes
   '(
@@ -548,7 +561,8 @@ sets `my-jump-handlers' in buffers of that mode."
      ((theme . solarized-light)
       (faces . ((org-block-begin-line (:background "#eee8d5"))
                 (org-block-end-line (:background "#eee8d5"))
-                (org-block (:background "#f7f0dc" :foreground "#657b83"))))))
+                (org-block (:background "#f7f0dc" :foreground "#657b83"))
+                (my/fci-rule (:background "#e8e0d0"))))))
     (my/solarized-black-bright
      .
      ((theme . solarized-black-bright)
@@ -580,20 +594,42 @@ sets `my-jump-handlers' in buffers of that mode."
                 (org-block-end-line (:background "#222425"))
                 (org-block (:background "#202223" :foreground "#c5c8c6"))
                 (cursor (:background "#c5c8c6"))))))
+    (my/spacemacs-dark
+     .
+     ((theme . spacemacs-dark)
+      (faces . ((hl-line (:background "#303235"))
+                (mode-line-inactive
+                 (:box (:line-width 1 :color "#5d4d7a" :style nil)
+                       :foreground "#7c7c7c"
+                       :background "#292b2e"))
+                (mode-line
+                 (:box (:line-width 1 :color "#5d4d7a" :style nil)
+                       :foreground "#b2b2b2"
+                       :background "#3a3c3f"))
+                (my/fci-rule (:background "#35373a"))))))
     (my/spacemacs-light . ((theme . spacemacs-light)))
+    (my/leuven
+     .
+     ((theme . leuven)
+      (faces . ((hl-line (:background "#eeeeee"))
+                (my/fci-rule (:background "#dddddd"))
+                (my/mode-line-project (:inherit mode-line-highlight))
+                (term (:inherit default))))))
     ))
 
 (defvar my/avail-themes
   '(
+    my/spacemacs-dark
     my/zenburn
-    my/peacock
-    my/solarized-dark
     my/solarized-light
     my/solarized-black-bright
-    my/monokai
+    my/leuven
+    ;; my/spacemacs-light
+    ;; my/solarized-dark
+    ;; my/monokai
     ;; my/oceanicnext
     ;; my/tomorrow-night
-    my/spacemacs-light
+    ;; my/peacock
     ))
 (defvar my/current-theme 0)
 
@@ -624,7 +660,9 @@ sets `my-jump-handlers' in buffers of that mode."
 
 (defun my/refresh-theme ()
   (interactive)
-  (my/set-theme (elt my/avail-themes my/current-theme)))
+  (my/set-theme (elt my/avail-themes my/current-theme))
+  (setq linum-format 'dynamic))
+
 
 #+END_SRC
    
@@ -993,6 +1031,8 @@ sets `my-jump-handlers' in buffers of that mode."
 
 * Haskell
   
+** ghc-mod (on hold while testing intero)
+
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package ghc :ensure t :defer t)
 (use-package hindent :ensure t :defer t)
@@ -1131,12 +1171,18 @@ sets `my-jump-handlers' in buffers of that mode."
 
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(use-package intero
-  :ensure t
-  :defer t)
 
-(add-hook 'haskell-mode-hook 'intero-mode)
+** Intero
+
+#+BEGIN_SRC emacs-lisp
+(use-package intero :ensure t :defer t)
+
+(add-hook 'haskell-mode-hook
+          (lambda ()
+            (intero-mode)
+            (flycheck-add-next-checker 'intero '(t . haskell-hlint))
+            ;; (eldoc-mode)
+            ))
 #+END_SRC
 
 
@@ -1388,7 +1434,7 @@ sets `my-jump-handlers' in buffers of that mode."
                                (propertize
                                 (format " {%s}" (projectile-project-name))
                                 'face
-                                'font-lock-function-name-face))))
+                                'my/mode-line-project))))
 #+END_SRC
 
 
@@ -1480,6 +1526,23 @@ sets `my-jump-handlers' in buffers of that mode."
       "select window")
      ))
   )
+#+END_SRC
+
+
+* Yasnippet
+  
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :ensure t
+  :init
+  (use-package yasnippet-snippets :ensure t)
+  :config
+  (define-key yas-minor-mode-map (kbd "<tab>") nil)
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
+  (diminish 'yas-minor-mode ""))
+
+(yas-global-mode 1)
 #+END_SRC
 
 
@@ -1598,7 +1661,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (defun my/file-tree ()
     "open treemacs in git root"
     (interactive)
-    (if (treemacs--buffer-exists?)
+    (if (treemacs-buffer-exists?)
         (progn
           (treemacs-select-window)
           (treemacs-kill-buffer))
@@ -1752,6 +1815,19 @@ Create compilation buffer
                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package spaceline
+  :ensure t
+  :init
+  (require 'spaceline-config)
+  (setq ;; powerline-utf-8-separator-left 65279
+        ;; powerline-utf-8-separator-right 65279
+        powerline-default-separator 'utf-8
+        powerline-height 20
+        spaceline-highlight-face-func 'spaceline-highlight-face-modified)
+  (spaceline-spacemacs-theme))
+#+END_SRC
+
 
 * Org-mode
    
@@ -1831,41 +1907,7 @@ Create compilation buffer
 #+END_SRC
    
 
-* Setup
-  
-Some per-workstation setup
-
-#+BEGIN_SRC emacs-lisp
-(defvar workstation-dir (expand-file-name "~/.emacs.d/workstation/"))
-(add-to-list 'load-path workstation-dir)
-
-(let ((init-workstation (intern "local-workstation")))
-  (require init-workstation nil 'noerror))
-#+END_SRC
-   
-
-Global setup
-
-#+BEGIN_SRC emacs-lisp
-(setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
-
-(setq x-underline-at-descent-line t)
-
-(my/set-theme)
-(my/set-font)
-
-(setq linum-format 'dynamic)
-(set-face-attribute 'show-paren-match nil :weight 'normal)
-(set-face-attribute 'trailing-whitespace nil :background "#602020")
-(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-
-;; startup layout
-;; (let ((split-height-threshold nil)
-;;       (split-width-threshold 0))
-;;   (find-file-other-window "~/.emacs.d/configuration.org"))
-#+END_SRC
-
+* Hybrid input mode
 
 #+BEGIN_SRC emacs-lisp
 (defcustom hybrid-mode-default-state 'normal
@@ -1977,4 +2019,48 @@ Global setup
 
 (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
 #+END_SRC
+
+
+* Setup
+  
+** Per-workstation setup
+
+(thanks Nicolas Petton)
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/hosts-dir (expand-file-name "~/.emacs.d/hosts/"))
+(add-to-list 'load-path my/hosts-dir)
+
+(defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
+
+(let* ((host-file (intern (concat "init-" my/hostname))))
+  (require host-file nil 'noerror))
+#+END_SRC
+   
+
+** Global setup
+
+#+BEGIN_SRC emacs-lisp
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
+
+(setq x-underline-at-descent-line t)
+
+(my/set-theme)
+(my/set-font)
+
+(setq linum-format 'dynamic)
+(set-face-attribute 'show-paren-match nil :weight 'normal)
+(set-face-attribute 'trailing-whitespace nil :background "#602020")
+(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+
+(hybrid-mode)
+
+;; startup layout
+;; (let ((split-height-threshold nil)
+;;       (split-width-threshold 0))
+;;   (find-file-other-window "~/.emacs.d/configuration.org"))
+#+END_SRC
+
+
 
