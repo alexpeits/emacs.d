@@ -1,3 +1,5 @@
+
+
 * Variables and PATH
    
 #+BEGIN_SRC emacs-lisp
@@ -329,6 +331,11 @@ sets `my-jump-handlers' in buffers of that mode."
   :config
   (diminish 'hs-minor-mode "")
   (add-hook 'prog-mode-hook #'hs-minor-mode))
+
+(use-package expand-region
+  :ensure t
+  :config
+  (global-set-key (kbd "C-=") 'er/expand-region))
 #+END_SRC
 
 
@@ -746,6 +753,73 @@ sets `my-jump-handlers' in buffers of that mode."
 
 
 * Evil-mode
+
+Keybind to command mapping
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/leader-keys
+  '(
+    ("]"  find-tag-other-window)
+    (";"  evilnc-comment-or-uncomment-lines)
+
+    ("bb" helm-buffers-list)
+    ("bn" next-buffer)
+    ("bp" previous-buffer)
+
+    ("el" my/toggle-flycheck-error-list)
+
+    ("fa" helm-ag)
+    ("ff" helm-find)
+
+    ("h"  help)
+
+    ("j"  my/jump-to-definition)
+
+    ("n"  my/file-tree)
+
+    ("pl" persp-next)
+    ("ph" persp-prev)
+    ("pp" projectile-persp-switch-project)
+    ("pq" persp-kill)
+    ("pr" persp-rename)
+    ("ps" counsel-projectile-ag)
+
+    ("sd" pwd)
+
+    ("t8" fci-mode)
+    ("tf" my/toggle-font)
+    ("tg" global-diff-hl-mode)
+    ("tj" my/toggle-jsmodes)
+    ("tl" linum-mode)
+    ("th" hl-line-mode)
+    ("ts" flycheck-mode)
+    ("tt" my/toggle-theme)
+    ("tw" toggle-truncate-lines)
+
+    ("uh" rainbow-mode)
+    ("um" menu-bar-mode)
+    ("up" rainbow-delimiters-mode)
+
+    ("ws" evil-window-split)
+    ("wv" evil-window-vsplit)
+
+    ("Ts" counsel-load-theme)
+    ))
+#+END_SRC
+
+For when I'm not using evil mode
+
+#+BEGIN_SRC emacs-lisp
+(define-prefix-command 'my/leader-map)
+
+(define-key ctl-x-map "t" 'my/leader-map)
+
+(dolist (i my/leader-keys)
+  (let ((k (car i))
+        (f (cadr i)))
+    (define-key my/leader-map k f)))
+#+End_SRC
+
    
 #+BEGIN_SRC emacs-lisp
 (use-package evil-leader
@@ -753,53 +827,11 @@ sets `my-jump-handlers' in buffers of that mode."
   :config
   (global-evil-leader-mode)
   (evil-leader/set-leader "<SPC>")
-  (evil-leader/set-key
-    "]"  'find-tag-other-window
-    ";"  'evilnc-comment-or-uncomment-lines
-
-    "bb" 'helm-buffers-list
-    "bn" 'next-buffer
-    "bp" 'previous-buffer
-
-    "el" 'my/toggle-flycheck-error-list
-
-    "fa" 'helm-ag
-    "ff" 'helm-find
-
-    "h"  'help
-
-    "j"  'my/jump-to-definition
-
-    "n"  'my/file-tree
-
-    "pl" 'persp-next
-    "ph" 'persp-prev
-    "pp" 'projectile-persp-switch-project
-    "pq" 'persp-kill
-    "pr" 'persp-rename
-    "ps" 'counsel-projectile-ag
-
-    "sd" 'pwd
-
-    "t8" 'fci-mode
-    "tf" 'my/toggle-font
-    "tg" 'global-diff-hl-mode
-    "tj" 'my/toggle-jsmodes
-    "tl" 'linum-mode
-    "th" 'hl-line-mode
-    "ts" 'flycheck-mode
-    "tt" 'my/toggle-theme
-    "tw" 'toggle-truncate-lines
-
-    "uh" 'rainbow-mode
-    "um" 'menu-bar-mode
-    "up" 'rainbow-delimiters-mode
-
-    "ws" 'evil-window-split
-    "wv" 'evil-window-vsplit
-
-    "Ts" 'counsel-load-theme
-    ))
+  (dolist (i my/leader-keys)
+  (let ((k (car i))
+        (f (cadr i)))
+    (evil-leader/set-key k f)))
+  )
 
 (use-package evil
   :ensure t
@@ -841,7 +873,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
   (evil-define-key 'normal neotree-mode-map (kbd "|") 'neotree-enter-vertical-split)
   (evil-define-key 'normal neotree-mode-map (kbd "-") 'neotree-enter-horizontal-split)
-  
+
   ;; move state to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
 
@@ -885,12 +917,6 @@ sets `my-jump-handlers' in buffers of that mode."
                      (call-interactively 'evil-shift-right)
                      (execute-kbd-macro "gv"))))
 
-  (use-package evil-nerd-commenter
-    :ensure t
-    :config
-    ;; evilnc toggles instead of commenting/uncommenting
-    (setq evilnc-invert-comment-line-by-line t))
-
   ;; search with star while in v-mode
   (use-package evil-visualstar
     :ensure t
@@ -898,13 +924,39 @@ sets `my-jump-handlers' in buffers of that mode."
     (global-evil-visualstar-mode))
   )
 
+#+END_SRC
+
+Can be used without evil:
+
+#+BEGIN_SRC emacs-lisp
+(use-package evil-nerd-commenter
+    :ensure t
+    :config
+    ;; evilnc toggles instead of commenting/uncommenting
+    (setq evilnc-invert-comment-line-by-line t)
+    (define-key global-map (kbd "M-;") 'evilnc-comment-or-uncomment-lines))
+
 (use-package evil-surround
   :ensure t
   :config
   (global-evil-surround-mode 1)
-  (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region))
+  (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
+  (defconst my/mark-active-alist
+  `((mark-active
+      ,@(let ((m (make-sparse-keymap)))
+          (define-key m (kbd "s") 'evil-surround-region)
+          m))))
+  (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+(define-prefix-command 'my/command-map)
+
+(define-key ctl-x-map (kbd "C-;") 'my/command-map)
+
+(define-key my/command-map (kbd "c") 'evil-surround-change)
+
+#+END_SRC
 
 * Python
    
@@ -1512,6 +1564,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+  (global-set-key (kbd "C-c p f") 'counsel-projectile-find-file)
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
   ;; (add-hook 'projectile-after-switch-project-hook 'counsel-projectile-find-file)

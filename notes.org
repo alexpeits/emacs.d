@@ -1,0 +1,38 @@
+* keybinding tricks
+
+** vim-like block editing
+
+=C-x SPC= select  =C-t= edit =RET=
+
+** vim-like expansion inside delimiters
+
+- install =expand-region=
+- =(global-set-key (kbd "C-=") 'er/expand-region)=
+- press repeatedly to expand words, quotes, parens etc
+
+** registers
+
+#+BEGIN_EXAMPLE
+C-x r <SPC> r
+    Record the position of point and the current buffer in register r (point-to-register). 
+
+C-x r j r
+    Jump to the position and buffer saved in register r (jump-to-register).
+
+C-x r s r
+    Copy region into register r (copy-to-register). 
+
+C-x r i r
+    Insert text from register r (insert-register). 
+
+M-x append-to-register <RET> r
+    Append region to text in register r.  When register r contains text, you
+    can use C-x r + (increment-register) to append to that register. Note that
+    command C-x r + behaves differently if r contains a number. See Number
+    Registers.
+
+M-x prepend-to-register <RET> r
+    Prepend region to text in register r.
+#+END_EXAMPLE
+
+
