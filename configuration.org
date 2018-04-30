@@ -460,6 +460,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (setq linum-format 'dynamic))
 
 ;; hl-line
+(setq hl-line-sticky-flag nil)
 (add-hook 'prog-mode-hook 'hl-line-mode)
 
 ;; highlight trailing whitespace
@@ -488,7 +489,7 @@ sets `my-jump-handlers' in buffers of that mode."
    fci-mode-hooks
    (my/set-fci-rule-color) (fci-mode)))
 
-(use-package hl-todo :ensure t)
+;; (use-package hl-todo :ensure t)
 
 #+END_SRC
    
@@ -615,6 +616,17 @@ sets `my-jump-handlers' in buffers of that mode."
                        :background "#3a3c3f"))
                 (my/fci-rule (:background "#35373a"))))))
     (my/spacemacs-light . ((theme . spacemacs-light)))
+    (my/deeper-blue
+        .
+        ((theme . deeper-blue)
+        (faces . ((default (:foreground "gray80" :background "#232733"))
+                    (cursor (:background "gray80"))
+                    (hl-line (:background "#313749"))
+                    (fringe (:background "#343844"))
+                    (region (:background "#3f454f"))
+                    (org-block (:background "#272b37" :foreground "gray80"))
+                    (org-block-begin-line (:background "#343844" :foreground "gray80"))
+                    (org-block-end-line (:background "#343844" :foreground "gray80"))))))
     (my/leuven
      .
      ((theme . leuven)
@@ -630,13 +642,14 @@ sets `my-jump-handlers' in buffers of that mode."
     my/solarized-light
     my/solarized-black-bright
     my/tomorrow-night-eighties
-    ;; my/leuven
-    ;; my/spacemacs-light
-    ;; my/solarized-dark
-    ;; my/monokai
-    ;; my/oceanicnext
-    ;; my/tomorrow-night
-    ;; my/peacock
+    my/leuven
+    my/spacemacs-light
+    my/solarized-dark
+    my/monokai
+    my/oceanicnext
+    my/tomorrow-night
+    my/peacock
+    my/deeper-blue
     ))
 (defvar my/current-theme 0)
 
@@ -696,17 +709,6 @@ sets `my-jump-handlers' in buffers of that mode."
 (define-key global-map (kbd "C-+") 'text-scale-increase)
 (define-key global-map (kbd "C--") 'text-scale-decrease)
 
-;; smarter scaling
-(defun my/get-font-components ()
-  (split-string (elt my/avail-fonts my/current-font) "-"))
-
-(defun my/incr-font ()
-  (let* ((font-components (my/get-font-components))
-         (font-name (car font-components))
-         (font-size (string-to-number (cadr font-components)))
-         (new-font-size (+ text-scale-mode-step font-size)))
-    (set-frame-font
-     (concat font-name "-" (number-to-string new-font-size)))))
 #+END_SRC
 
 
@@ -1347,6 +1349,12 @@ sets `my-jump-handlers' in buffers of that mode."
 ** JSON, YAML, Markdown etc.
 
 #+BEGIN_SRC emacs-lisp
+(use-package json-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '(".json\\'" . json-mode))
+  (add-to-list 'auto-mode-alist '(".json.tmpl\\'" . json-mode)))
+
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
