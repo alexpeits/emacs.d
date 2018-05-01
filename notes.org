@@ -36,3 +36,7 @@ M-x prepend-to-register <RET> r
 #+END_EXAMPLE
 
 
+* General keybinds
+
+- =C-u C-SPC= or =C-u C-@=: jump to previous position in buffer
+- =C-x C-SPC= or =C-x C-@=: jump to previous position in any buffer
