@@ -149,6 +149,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (require 'use-package)
 
 (use-package cl :ensure t)
+(use-package diminish :ensure t)
 #+END_SRC
    
 
