@@ -2226,7 +2226,7 @@ Create compilation buffer
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
-   (ipython . t)
+   ;; (ipython . t)
    (haskell . t)
    (dot . t)
    (restclient . t)
