@@ -2084,6 +2084,7 @@ Create compilation buffer
   :config
   (use-package elfeed-goodies :ensure t)
   (use-package elfeed-web :ensure t)
+  (setq elfeed-search-filter "@10-days-ago +unread")
   (setq
    elfeed-feeds
    '(
