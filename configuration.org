@@ -221,7 +221,10 @@ sets `my-jump-handlers' in buffers of that mode."
 (add-to-list 'auto-mode-alist '("env.example\\'" . conf-mode))
 
 ;; add extension for restclient.el
-(add-to-list 'auto-mode-alist '(".http\\'" . restclient-mode))
+(use-package restclient
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '(".http\\'" . restclient-mode)))
 
 ;; DocView
 (setq doc-view-continuous t)
