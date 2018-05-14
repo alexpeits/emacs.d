@@ -16,7 +16,8 @@
 (add-to-list 'exec-path (expand-file-name "~/.local/bin"))
 (add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
 (setq user-full-name "Alex Peitsinis"
-      user-mail-address "alexpeitsinis@gmail.com")
+      user-mail-address "alexpeitsinis@gmail.com"
+      auth-sources '("~/.authinfo.gpg"))
 
 (defvar is-mac (eq system-type 'darwin)
   "Whether emacs is running in mac or not")
@@ -72,6 +73,13 @@ will be killed."
   (with-temp-buffer
     (insert-file-contents (expand-file-name path))
     (buffer-string)))
+
+;; read file lines into a list
+(defun my/read-file-into-list (filePath)
+  "Return a list of lines of a file at filePath."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (split-string (buffer-string) "\n" t)))
 
 ;; Jump to definition, copied from spacemacs
 
@@ -814,7 +822,7 @@ Keybind to command mapping
 
 For when I'm not using evil mode
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (define-prefix-command 'my/leader-map)
 
 (define-key ctl-x-map "t" 'my/leader-map)
@@ -861,7 +869,10 @@ For when I'm not using evil mode
                   intero-repl-mode
                   cider-repl-mode
                   dired-mode
-                  treemacs-mode))
+                  treemacs-mode
+                  elfeed-search-mode
+                  elfeed-show-mode
+                  ))
     (my/make-emacs-mode mode))
 
   ;; don't need C-n, C-p
@@ -946,12 +957,13 @@ Can be used without evil:
   :config
   (global-evil-surround-mode 1)
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
-  (defconst my/mark-active-alist
-  `((mark-active
-      ,@(let ((m (make-sparse-keymap)))
-          (define-key m (kbd "s") 'evil-surround-region)
-          m))))
-  (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist))
+  ;; (defconst my/mark-active-alist
+  ;; `((mark-active
+  ;;     ,@(let ((m (make-sparse-keymap)))
+  ;;         (define-key m (kbd "s") 'evil-surround-region)
+  ;;         m))))
+  ;; (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist)
+  )
 #+END_SRC
 
 
@@ -1073,14 +1085,14 @@ Can be used without evil:
   
 Treat hybrid mode and emacs keybindings the same way
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun my/emacs-modes-keybind (key fun)
   (define-key global-map (kbd key) fun)
   (define-key evil-hybrid-state-map (kbd key) fun)
 )
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (define-prefix-command 'my/command-map)
 
 (define-key ctl-x-map (kbd "C-;") 'my/command-map)
@@ -1090,7 +1102,7 @@ Treat hybrid mode and emacs keybindings the same way
 #+END_SRC
 
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defun vi-open-line-above ()
   "Insert a newline above the current line and put point at beginning."
   (interactive)
@@ -2064,6 +2076,80 @@ Create compilation buffer
 #+END_SRC
 
 
+** elfeed
+   
+#+BEGIN_SRC emacs-lisp
+(use-package elfeed
+  :ensure t
+  :config
+  (use-package elfeed-goodies :ensure t)
+  (use-package elfeed-web :ensure t)
+  (setq
+   elfeed-feeds
+   '(
+     "http://xkcd.com/rss.xml"
+     "http://nullprogram.com/feed/"
+     "http://argumatronic.com/rss.xml"
+     "http://endlessparentheses.com/atom.xml"
+     "http://irreal.org/blog/?feed=rss2"
+     "https://ekaschalk.github.io/index.xml"
+     "http://oremacs.com/atom.xml"
+     "https://emacs.cafe/feed.xml"
+     "http://planet.haskell.org/rss20.xml"
+     "http://fpcomplete.com/feed/"
+     "http://taylor.fausak.me/sitemap.atom"
+     "http://jr0cket.co.uk/atom.xml"
+     "http://www.howardism.org/index.xml"
+     "https://harryrschwartz.com/atom.xml"
+     "https://bartoszmilewski.com/feed/"
+     "http://lucumr.pocoo.org/feed.atom"
+     "https://www.joelonsoftware.com/feed/"
+     "http://reasonablypolymorphic.com/atom.xml"
+     "http://www.serpentine.com/blog/feed/"
+     "https://jacobian.org/feed.xml"
+     "http://bitemyapp.com/rss.xml"
+     "http://blog.acolyer.org/feed/"
+     "https://accidentallyquadratic.tumblr.com/rss"
+     "http://www.haskellforall.com/feeds/posts/default"
+     "http://jakevdp.github.io/feeds/all.atom.xml"
+     "http://jaspervdj.be/rss.xml"
+     "http://neilmitchell.blogspot.com/feeds/posts/default"
+     "http://www.usrsb.in/rss.xml"
+     )))
+#+END_SRC
+
+
+** mu4e
+   
+#+BEGIN_SRC emacs-lisp
+(unless is-mac
+  (defvar mu-prefix (expand-file-name "~/opt/mu"))
+  (add-to-list 'load-path (concat mu-prefix "/share/emacs/site-lisp/mu4e"))
+  (setq mu4e-mu-binary (concat mu-prefix "/bin/mu"))
+  (setq mu4e-get-mail-command "offlineimap -o")
+  (require 'mu4e)
+  (setq mu4e-contexts
+        `( ,(make-mu4e-context
+             :name "Gmail"
+             :match-func (lambda (msg) (when msg
+                                         (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
+             :vars '(
+                     (mu4e-trash-folder . "/Gmail/[Gmail].Trash")
+                     (mu4e-refile-folder . "/Gmail/[Gmail].Archive")
+                     (mu4e-drafts-folder . "/Gmail/[Gmail].Drafts")
+                     (mu4e-sent-folder . "/Gmail/[Gmail].Sent Mail")
+                     ))))
+  ;; smtpmail
+  (require 'smtpmail)
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-stream-type 'starttls
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-user "alexpeitsinis@gmail.com"
+        smtpmail-smtp-service 587))
+#+END_SRC
+
+
 * Modeline
   
 #+BEGIN_SRC emacs-lisp
@@ -2204,7 +2290,7 @@ Create compilation buffer
 
 (hybrid-mode)
 
-(setq evil-default-state 'emacs)
+;; (setq evil-default-state 'emacs)
 
 ;; startup layout
 ;; (let ((split-height-threshold nil)
