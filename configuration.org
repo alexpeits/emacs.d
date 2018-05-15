@@ -2260,6 +2260,32 @@ Create compilation buffer
 #+END_SRC
    
 
+* Reading papers
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/papers-dir (expand-file-name "~/papers/"))
+
+(use-package helm-bibtex
+  :ensure t
+  :config
+  (setq
+   helm-bibtex-bibliography (concat my/papers-dir "index.bib")
+   helm-bibtex-library-path (concat my/papers-dir "lib/")
+   helm-bibtex-notes-path (concat my/papers-dir "index.org")
+   bibtex-completion-bibliography (concat my/papers-dir "index.bib")
+   bibtex-completion-notes-path (concat my/papers-dir "index.org")))
+
+(use-package org-ref
+  :ensure t
+  :config
+  (setq org-ref-notes-directory my/papers-dir
+        org-ref-bibliography-notes (concat my/papers-dir "index.org")
+        org-ref-default-bibliography `(,(concat my/papers-dir "index.bib"))
+        org-ref-pdf-directory (concat my/papers-dir "lib/")))
+
+(use-package interleave :ensure t)
+#+END_SRC
+
 * Setup
   
 ** Per-workstation setup
