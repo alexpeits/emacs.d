@@ -2278,15 +2278,16 @@ Create compilation buffer
   (setq
    helm-bibtex-bibliography (concat my/papers-dir "index.bib")
    helm-bibtex-library-path (concat my/papers-dir "lib/")
-   helm-bibtex-notes-path (concat my/papers-dir "index.org")
-   bibtex-completion-bibliography (concat my/papers-dir "index.bib")
-   bibtex-completion-notes-path (concat my/papers-dir "index.org")))
+   helm-bibtex-notes-path (concat my/papers-dir "papers.org")
+   bibtex-completion-pdf-field "File"  ;; try `file' field
+   bibtex-completion-bibliography `(,(concat my/papers-dir "index.bib"))
+   bibtex-completion-notes-path (concat my/papers-dir "papers.org")))
 
 (use-package org-ref
   :ensure t
   :config
   (setq org-ref-notes-directory my/papers-dir
-        org-ref-bibliography-notes (concat my/papers-dir "index.org")
+        org-ref-bibliography-notes (concat my/papers-dir "papers.org")
         org-ref-default-bibliography `(,(concat my/papers-dir "index.bib"))
         org-ref-pdf-directory (concat my/papers-dir "lib/")))
 
