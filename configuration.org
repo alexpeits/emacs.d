@@ -2120,6 +2120,7 @@ Create compilation buffer
      "http://jaspervdj.be/rss.xml"
      "http://neilmitchell.blogspot.com/feeds/posts/default"
      "http://www.usrsb.in/rss.xml"
+     "https://dev.to/feed"
      )))
 #+END_SRC
 
@@ -2127,31 +2128,37 @@ Create compilation buffer
 ** mu4e
    
 #+BEGIN_SRC emacs-lisp
-(unless is-mac
-  (defvar mu-prefix (expand-file-name "~/opt/mu"))
-  (add-to-list 'load-path (concat mu-prefix "/share/emacs/site-lisp/mu4e"))
-  (setq mu4e-mu-binary (concat mu-prefix "/bin/mu"))
-  (setq mu4e-get-mail-command "offlineimap -o")
-  (require 'mu4e)
-  (setq mu4e-contexts
-        `( ,(make-mu4e-context
-             :name "Gmail"
-             :match-func (lambda (msg) (when msg
-                                         (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
-             :vars '(
-                     (mu4e-trash-folder . "/Gmail/[Gmail].Trash")
-                     (mu4e-refile-folder . "/Gmail/[Gmail].Archive")
-                     (mu4e-drafts-folder . "/Gmail/[Gmail].Drafts")
-                     (mu4e-sent-folder . "/Gmail/[Gmail].Sent Mail")
-                     ))))
-  ;; smtpmail
-  (require 'smtpmail)
-  (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-stream-type 'starttls
-        smtpmail-default-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-user "alexpeitsinis@gmail.com"
-        smtpmail-smtp-service 587))
+(if is-mac
+    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
+  (progn
+    (defvar mu-prefix (expand-file-name "~/opt/mu"))
+    (add-to-list 'load-path (concat mu-prefix "/share/emacs/site-lisp/mu4e"))
+    (setq mu4e-mu-binary (concat mu-prefix "/bin/mu"))))
+
+(defvar mu-prefix (expand-file-name "~/opt/mu"))
+(add-to-list 'load-path (concat mu-prefix "/share/emacs/site-lisp/mu4e"))
+(setq mu4e-mu-binary (concat mu-prefix "/bin/mu"))
+(setq mu4e-get-mail-command "offlineimap -o")
+(require 'mu4e)
+(setq mu4e-contexts
+      `( ,(make-mu4e-context
+           :name "Gmail"
+           :match-func (lambda (msg) (when msg
+                                       (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
+           :vars '(
+                   (mu4e-trash-folder . "/Gmail/[Gmail].Trash")
+                   (mu4e-refile-folder . "/Gmail/[Gmail].Archive")
+                   (mu4e-drafts-folder . "/Gmail/[Gmail].Drafts")
+                   (mu4e-sent-folder . "/Gmail/[Gmail].Sent Mail")
+                   ))))
+;; smtpmail
+(require 'smtpmail)
+(setq message-send-mail-function 'smtpmail-send-it
+      smtpmail-stream-type 'starttls
+      smtpmail-default-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-server "smtp.gmail.com"
+      smtpmail-smtp-user "alexpeitsinis@gmail.com"
+      smtpmail-smtp-service 587)
 #+END_SRC
 
 
@@ -2285,6 +2292,7 @@ Create compilation buffer
 
 (use-package interleave :ensure t)
 #+END_SRC
+
 
 * Setup
   
