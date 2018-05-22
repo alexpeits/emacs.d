@@ -635,7 +635,9 @@ sets `my-jump-handlers' in buffers of that mode."
                 (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))))))
+                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
+                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                (flycheck-fringe-warning (:foreground "#ffcc99"))))))
     (my/spacemacs-dark
      .
      ((theme . spacemacs-dark)
@@ -851,7 +853,7 @@ For when I'm not using evil mode
   (let ((k (car i))
         (f (cadr i)))
     (define-key my/leader-map k f)))
-#+End_SRC
+#+END_SRC
 
    
 #+BEGIN_SRC emacs-lisp
@@ -872,7 +874,18 @@ For when I'm not using evil mode
   (setq evil-want-C-i-jump nil)
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
   ;; (evil-mode 1)
-  (my/add-hooks '(prog-mode-hook text-mode-hook outline-mode-hook) (evil-local-mode))
+  (my/add-hooks
+   '(
+     prog-mode-hook
+     text-mode-hook
+     outline-mode-hook
+     haskell-cabal-mode-hook
+     conf-unix-mode-hook
+     conf-colon-mode-hook
+     conf-space-mode-hook
+     conf-windows-mode-hook
+     )
+   (evil-local-mode))
 
   (defun my/make-emacs-mode (mode)
     "Make `mode' use emacs keybindings."
@@ -2150,6 +2163,17 @@ Create compilation buffer
 #+END_SRC
 
 
+** pocket
+
+#+BEGIN_SRC emacs-lisp
+(use-package pocket-reader
+  :ensure t
+  :config
+  (setq pocket-reader-open-url-default-function 'eww)
+  )
+#+END_SRC
+
+
 ** mu4e
    
 #+BEGIN_SRC emacs-lisp
@@ -2251,7 +2275,6 @@ Create compilation buffer
       ;; org-src-window-setup 'current-window
       org-directory (expand-file-name "~/org/")
       org-default-notes-file (concat org-directory "notes.org")
-      org-agenda-files `(,(concat org-directory "notes.org"))
       org-ellipsis "…"
       ;; org-mobile
       org-mobile-inbox-for-pull "~/org/flagged.org"
@@ -2382,3 +2405,4 @@ Create compilation buffer
 ;;       (split-width-threshold 0))
 ;;   (find-file-other-window "~/.emacs.d/configuration.org"))
 #+END_SRC
+
