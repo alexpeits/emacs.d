@@ -494,7 +494,8 @@ sets `my-jump-handlers' in buffers of that mode."
 (add-hook 'prog-mode-hook 'hl-line-mode)
 
 ;; highlight trailing whitespace
-(add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
+(setq whitespace-style '(face trailing))
+(add-hook 'prog-mode-hook (lambda () (whitespace-mode)))
 
 ;; 80-column rule
 (use-package whitespace
@@ -522,7 +523,7 @@ sets `my-jump-handlers' in buffers of that mode."
 ;; (use-package hl-todo :ensure t)
 
 #+END_SRC
-   
+
 
 * Theme
 
@@ -2340,7 +2341,7 @@ Create compilation buffer
 
 
 * Setup
-  
+
 ** Per-workstation setup
 
 (thanks Nicolas Petton)
@@ -2369,7 +2370,7 @@ Create compilation buffer
 
 (setq linum-format 'dynamic)
 (set-face-attribute 'show-paren-match nil :weight 'normal)
-(set-face-attribute 'trailing-whitespace nil :background "#602020")
+(custom-set-faces '(whitespace-trailing ((t (:background "#602020")))))
 (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
 (hybrid-mode)
@@ -2381,4 +2382,3 @@ Create compilation buffer
 ;;       (split-width-threshold 0))
 ;;   (find-file-other-window "~/.emacs.d/configuration.org"))
 #+END_SRC
-
