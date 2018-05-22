@@ -203,6 +203,12 @@ sets `my-jump-handlers' in buffers of that mode."
 ;; vim-like scrolling (emacs=0)
 (setq scroll-conservatively 101)
 
+;; smooth scrolling
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+
+
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
 ;; used in help
@@ -224,6 +230,7 @@ sets `my-jump-handlers' in buffers of that mode."
 ;; add extension for restclient.el
 (use-package restclient
   :ensure t
+  :defer t
   :config
   (add-to-list 'auto-mode-alist '(".http\\'" . restclient-mode)))
 
@@ -347,6 +354,10 @@ sets `my-jump-handlers' in buffers of that mode."
   :ensure t
   :config
   (global-set-key (kbd "C-=") 'er/expand-region))
+
+(use-package misc
+  :config
+  (global-set-key (kbd "M-Z") 'zap-up-to-char))
 #+END_SRC
 
 
@@ -514,7 +525,7 @@ sets `my-jump-handlers' in buffers of that mode."
    
 
 * Theme
-   
+
 #+BEGIN_SRC emacs-lisp
 (unless is-mac
   (defvar zenburn-override-colors-alist)
@@ -596,6 +607,7 @@ sets `my-jump-handlers' in buffers of that mode."
                 (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
                 (hl-line (:background "#2c2e28"))
                 (fringe (:background "#293024"))))))
+    (my/monokai-light . ((theme . monokai-light)))
     (my/oceanicnext
      .
      ((theme . base16-oceanicnext)
@@ -620,7 +632,9 @@ sets `my-jump-handlers' in buffers of that mode."
                 (cursor (:background "#cccccc"))
                 (font-lock-comment-face (:foreground "#999999" :slant normal))
                 (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))))))
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (mode-line (:background "#5b5b5b" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
+                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))))))
     (my/spacemacs-dark
      .
      ((theme . spacemacs-dark)
@@ -665,6 +679,7 @@ sets `my-jump-handlers' in buffers of that mode."
     my/spacemacs-light
     my/solarized-dark
     my/monokai
+    my/monokai-light
     my/oceanicnext
     my/tomorrow-night
     my/peacock
@@ -855,7 +870,8 @@ For when I'm not using evil mode
   :config
   (setq evil-want-C-i-jump nil)
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
-  (evil-mode 1)
+  ;; (evil-mode 1)
+  (my/add-hooks '(prog-mode-hook text-mode-hook outline-mode-hook) (evil-local-mode))
 
   (defun my/make-emacs-mode (mode)
     "Make `mode' use emacs keybindings."
@@ -863,21 +879,22 @@ For when I'm not using evil mode
     (add-to-list 'evil-emacs-state-modes mode))
 
   ;; emacs mode is default in some modes
-  (dolist (mode '(term-mode
-                  eshell-mode
-                  shell-mode
-                  special-mode
-                  xref--xref-buffer-mode
-                  haskell-error-mode
-                  haskell-interactive-mode
-                  intero-repl-mode
-                  cider-repl-mode
-                  dired-mode
-                  treemacs-mode
-                  elfeed-search-mode
-                  elfeed-show-mode
-                  ))
-    (my/make-emacs-mode mode))
+  ;; (dolist (mode '(term-mode
+                  ;; eshell-mode
+                  ;; shell-mode
+                  ;; special-mode
+                  ;; xref--xref-buffer-mode
+                  ;; haskell-error-mode
+                  ;; haskell-interactive-mode
+                  ;; intero-repl-mode
+                  ;; cider-repl-mode
+                  ;; dired-mode
+                  ;; treemacs-mode
+                  ;; elfeed-search-mode
+                  ;; elfeed-show-mode
+                  ;; erc-mode
+                  ;; ))
+    ;; (my/make-emacs-mode mode))
 
   ;; don't need C-n, C-p
   (define-key evil-insert-state-map (kbd "C-n") nil)
@@ -906,7 +923,11 @@ For when I'm not using evil mode
     (evil-scroll-line-to-center (line-number-at-pos)))
 
   ;; this is needed to be able to use C-h
-  (global-set-key (kbd "C-h") 'undefined)
+  (global-set-key (kbd "C-h") 'help)
+  (define-key evil-normal-state-map (kbd "C-h") 'undefined)
+  (define-key evil-insert-state-map (kbd "C-h") 'undefined)
+  (define-key evil-visual-state-map (kbd "C-h") 'undefined)
+
   (define-key evil-emacs-state-map (kbd "C-h") 'help)
   (define-key evil-insert-state-map (kbd "C-k") nil)
 
@@ -1005,7 +1026,7 @@ Can be used without evil:
 (define-minor-mode hybrid-mode
   "Global minor mode to replace insert state by hybrid state."
   :global t
-  :lighter " hybrid"
+  :lighter ""
   :group 'my
   (if hybrid-mode
       (enable-hybrid-editing-style)
@@ -1082,6 +1103,7 @@ Can be used without evil:
        (memq (or state evil-state) '(insert hybrid))))
 
 (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
+(define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
 
@@ -1996,7 +2018,7 @@ With a prefix argument, insert a newline above the current line."
 
 Make non-active buffer names in modeline darker (as per [[https://emacs.stackexchange.com/a/22682/14525][this]] stackoverflow answer)
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (defvar ml-selected-window nil)
 
 (defun ml-record-selected-window ()
@@ -2089,6 +2111,7 @@ Create compilation buffer
   (use-package elfeed-goodies :ensure t)
   (use-package elfeed-web :ensure t)
   (setq elfeed-search-filter "@10-days-ago +unread")
+  (define-key elfeed-search-mode-map (kbd "U") #'elfeed-update)
   (setq
    elfeed-feeds
    '(
@@ -2103,6 +2126,7 @@ Create compilation buffer
      "http://planet.haskell.org/rss20.xml"
      "http://fpcomplete.com/feed/"
      "http://taylor.fausak.me/sitemap.atom"
+     "https://idontgetoutmuch.wordpress.com/feed"
      "http://jr0cket.co.uk/atom.xml"
      "http://www.howardism.org/index.xml"
      "https://harryrschwartz.com/atom.xml"
@@ -2162,6 +2186,25 @@ Create compilation buffer
 #+END_SRC
 
 
+** erc
+
+#+BEGIN_SRC emacs-lisp
+(use-package erc
+  :config
+  (setq erc-rename-buffers t
+        erc-interpret-mirc-color t
+        erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
+  (defun my/erc-freenode ()
+    (interactive)
+    (erc :server "irc.freenode.net" :port 6667 :nick "runforestrun"))
+  (defun my/erc-switch-to-buffer ()
+    (interactive)
+    (let ((read-buffer-function nil))
+      (call-interactively 'erc-switch-to-buffer)))
+  (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer))
+#+END_SRC
+
+
 * Modeline
   
 #+BEGIN_SRC emacs-lisp
@@ -2207,6 +2250,7 @@ Create compilation buffer
       ;; org-src-window-setup 'current-window
       org-directory (expand-file-name "~/org/")
       org-default-notes-file (concat org-directory "notes.org")
+      org-agenda-files `(,(concat org-directory "notes.org"))
       org-ellipsis "…"
       ;; org-mobile
       org-mobile-inbox-for-pull "~/org/flagged.org"
@@ -2337,6 +2381,4 @@ Create compilation buffer
 ;;       (split-width-threshold 0))
 ;;   (find-file-other-window "~/.emacs.d/configuration.org"))
 #+END_SRC
-
-
 
