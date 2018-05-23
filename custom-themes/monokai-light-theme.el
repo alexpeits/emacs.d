@@ -140,7 +140,7 @@ Also affects 'linum-mode' background."
   :type 'string
   :group 'monokai-light)
 
-(defcustom monokai-light-foreground "#104954"
+(defcustom monokai-light-foreground "#28406b"
   "Adaptive colors - foreground"
   :type 'string
   :group 'monokai-light)
@@ -155,7 +155,7 @@ Also affects 'linum-mode' background."
   :type 'string
   :group 'monokai-light)
 
-(defcustom monokai-light-emphasis "#104954"
+(defcustom monokai-light-emphasis "#28406b"
   "Adaptive colors - emphasis"
   :type 'string
   :group 'monokai-light)
