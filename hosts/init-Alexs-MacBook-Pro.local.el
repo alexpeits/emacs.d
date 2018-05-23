@@ -12,11 +12,9 @@
 (setq my/avail-themes
       '(
         my/tomorrow-night-eighties
+        my/monokai-light
         my/zenburn
-        my/solarized-light
-        my/solarized-black-bright
         my/solarized-dark
-        my/deeper-blue
         ))
 
 (setq my/current-theme 0)
@@ -26,4 +24,5 @@
 (add-to-list 'bibtex-completion-bibliography (expand-file-name "~/Documents/Bibtex/library.bib"))
 (add-to-list 'org-ref-default-bibliography (expand-file-name "~/Documents/Bibtex/library.bib"))
 
-(provide 'init-Alexs-MacBook-Pro.local)
+;; org-mode
+(setq org-agenda-files '("~/job/notes/notes.org"))

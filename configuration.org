@@ -2371,12 +2371,11 @@ Create compilation buffer
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/hosts-dir (expand-file-name "~/.emacs.d/hosts/"))
-(add-to-list 'load-path my/hosts-dir)
 
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
 
-(let* ((host-file (intern (concat "init-" my/hostname))))
-  (require host-file nil 'noerror))
+(let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
+  (load-file host-file))
 #+END_SRC
    
 

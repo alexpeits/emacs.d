@@ -16,5 +16,3 @@
 (add-hook 'prog-mode-hook
           (lambda ()
             (set-face-attribute 'font-lock-comment-face nil :slant 'normal)))
-
-(provide 'init-alex-pc)
