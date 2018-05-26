@@ -636,8 +636,29 @@ sets `my-jump-handlers' in buffers of that mode."
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
+                (diff-hl-insert (:background "#769376"))
+                (diff-hl-change (:background "#638db7"))
+                (diff-hl-delete (:background "#bc3636"))
                 (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
                 (flycheck-fringe-warning (:foreground "#ffcc99"))))))
+    (my/tomorrow-day
+     .
+     ((theme . sanityinc-tomorrow-day)
+      (faces . ((org-block-begin-line (:background "#ededed"))
+                (org-block-end-line (:background "#ededed"))
+                (org-block (:background "#f7f7f7" :foreground "#4d4d4c"))
+                (cursor (:background "#4d4d4c"))
+                (mode-line-buffer-id (:foreground "#8959a8" :weight bold))
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (mode-line (:background "#cacaca" :foreground "#4d4d4c" :box (:line-width 1 :color "#cacaca") :weight normal))
+                (mode-line-inactive (:inherit mode-line :background "#f1f1f1" :foreground "#8e908c" :weight normal))
+                (my/fci-rule (:background "#dddddd"))
+                (diff-hl-insert (:background "#b9e0b3"))
+                (diff-hl-change (:background "#b5d8f4"))
+                (diff-hl-delete (:background "#f4b5b5"))
+                ;; (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                ;; (flycheck-fringe-warning (:foreground "#ffcc99"))
+                ))))
     (my/spacemacs-dark
      .
      ((theme . spacemacs-dark)
@@ -678,6 +699,7 @@ sets `my-jump-handlers' in buffers of that mode."
     my/solarized-light
     my/solarized-black-bright
     my/tomorrow-night-eighties
+    my/tomorrow-day
     my/leuven
     my/spacemacs-light
     my/solarized-dark
@@ -818,6 +840,7 @@ Keybind to command mapping
     ("pq" persp-kill)
     ("pr" persp-rename)
     ("ps" counsel-projectile-ag)
+    ("pt" my/counsel-ag-todos-global)
 
     ("sd" pwd)
 
@@ -1469,7 +1492,12 @@ With a prefix argument, insert a newline above the current line."
 ** Intero
 
 #+BEGIN_SRC emacs-lisp
-(use-package intero :ensure t :defer t)
+(use-package intero
+  :ensure t
+  :defer t
+  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
+  (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+  )
 
 (add-hook 'haskell-mode-hook
           (lambda ()
@@ -1735,7 +1763,13 @@ With a prefix argument, insert a newline above the current line."
                                (propertize
                                 (format " {%s}" (projectile-project-name))
                                 'face
-                                'my/mode-line-project))))
+                                'my/mode-line-project)))
+  (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
+    (if (projectile-project-p)
+        (apply in-proj-f args)
+      (apply out-proj-f args))
+    ))
+
 #+END_SRC
 
 
@@ -1809,6 +1843,26 @@ With a prefix argument, insert a newline above the current line."
         ace-select-window)
       "select window")
      ))
+
+  (ivy-set-actions
+   'ivy-switch-buffer
+   `(("s"
+      ,(my/control-function-window-split
+        ivy--switch-buffer-other-window-action
+        0 nil)
+      "split horizontally")
+     ("v"
+      ,(my/control-function-window-split
+        ivy--switch-buffer-other-window-action
+        nil 0)
+      "split vertically")
+     ("n"
+      ,(my/execute-f-with-hook
+        (lambda (b) (switch-to-buffer b nil 'force-same-window))
+        ace-select-window)
+      "select window")
+     ))
+
   (ivy-set-actions
    'counsel-projectile-find-file
    `(("s"
@@ -1840,6 +1894,10 @@ With a prefix argument, insert a newline above the current line."
 (defun my/counsel-ag-todos ()
   (interactive)
   (counsel-ag my/todo-search-string))
+
+(defun my/counsel-ag-todos-global ()
+  (interactive)
+  (my/try-exec-in-project 'my/counsel-projectile-ag-todos 'my/counsel-ag-todos))
 #+END_SRC
 
 
@@ -1979,9 +2037,7 @@ With a prefix argument, insert a newline above the current line."
         (progn
           (treemacs-select-window)
           (treemacs-kill-buffer))
-      (if (projectile-project-p)
-          (treemacs-projectile)
-        (treemacs)))))
+      (treemacs))))
 #+END_SRC
 
 ** Others
