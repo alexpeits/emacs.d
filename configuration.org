@@ -636,9 +636,9 @@ sets `my-jump-handlers' in buffers of that mode."
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
-                (diff-hl-insert (:background "#769376"))
-                (diff-hl-change (:background "#638db7"))
-                (diff-hl-delete (:background "#bc3636"))
+                (diff-hl-insert (:background "#608960"))
+                (diff-hl-change (:background "#3e6184"))
+                (diff-hl-delete (:background "#992626"))
                 (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
                 (flycheck-fringe-warning (:foreground "#ffcc99"))))))
     (my/tomorrow-day
@@ -1261,91 +1261,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 
-* Javascript
-   
-#+BEGIN_SRC emacs-lisp
-(use-package nvm
-  :if (file-exists-p "~/.nvm")
-  :ensure t
-  :config
-
-  (setq my/default-node-version (car (split-string (my/read-file-contents "~/.nvm/alias/default"))))
-  (defvar my/current-node-version nil
-    "Currently used node version. Set only after a js file is opened")
-
-  (defun my/add-node-to-path (version)
-    (let ((pathstr (format (expand-file-name "~/.nvm/versions/node/%s/bin") version)))
-      (unless (member pathstr exec-path) (setq exec-path (append exec-path (list pathstr))))))
-
-  (defun my/remove-node-from-path (version)
-    (let ((pathstr (format (expand-file-name "~/.nvm/versions/node/%s/bin") version)))
-      (setq exec-path (cl-remove-if (lambda (el) (string= el pathstr)) exec-path))))
-
-  (defun my/select-node-version ()
-    (completing-read
-     "node version: "
-     (reverse (mapcar 'car (nvm--installed-versions)))
-     nil nil nil nil my/default-node-version))
-
-  (defun my/nvm-use-ver ()
-    (interactive)
-    (let ((choice (my/select-node-version)))
-      (nvm-use choice)
-      (unless (null my/current-node-version) (my/remove-node-from-path my/current-node-version))
-      (my/add-node-to-path choice)
-      (setq my/current-node-version choice)
-      )))
-
-(require 'js-doc)
-(use-package js2-mode :ensure t)
-(use-package rjsx-mode :ensure t)
-(add-hook 'js2-mode-hook (lambda ()
-                           (define-key js2-mode-map "\C-c m d" 'js-doc-insert-function-doc)
-                           (define-key js2-mode-map "\C-c m @" 'js-doc-insert-tag)))
-
-(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
-(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
-(my|define-jump-handlers js2-mode)
-(my|define-jump-handlers rjsx-mode)
-(my|define-jump-handlers web-mode)
-
-(dolist (mode '("js2" "rjsx"))
-  (let ((hook (intern-soft (format "%s-mode-hook" mode)))
-        (handler (intern-soft (format "my-jump-handlers-%s-mode" mode))))
-    (add-hook hook `(lambda ()
-                      (if (and (file-exists-p "~/.nvm")
-                               (null my/current-node-version))
-                          (my/nvm-use-ver))
-                      (setq evil-shift-width 2)
-                      (use-package tern :ensure t :config (tern-mode))
-                      (add-to-list (quote ,handler) 'tern-find-definition)))))
-
-(setq ;; js2-mode
- js2-basic-offset 2
- js-indent-level 2
- ;; web-mode
- css-indent-offset 2
- web-mode-markup-indent-offset 2
- web-mode-css-indent-offset 2
- web-mode-code-indent-offset 2
- web-mode-attr-indent-offset 2)
-
-;; Turn off js2 mode errors & warnings (we lean on eslint/standard)
-(setq js2-mode-show-parse-errors nil
-      js2-mode-show-strict-warnings nil)
-
-(defun my/toggle-jsmodes ()
-  (interactive)
-  (with-current-buffer (current-buffer)
-    (let ((mode major-mode))
-      (cond
-       ((string= mode "js2-mode") (web-mode))
-       ((string= mode "web-mode") (js2-mode))
-       ((string= mode "js-mode") (js2-mode))))))
-
-#+END_SRC
-
-
 * Haskell
   
 ** ghc-mod (on hold while testing intero)
@@ -1495,6 +1410,7 @@ With a prefix argument, insert a newline above the current line."
 (use-package intero
   :ensure t
   :defer t
+  :config
   ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
   (setq intero-extra-ghci-options '("-package" "pretty-simple"))
   )
@@ -1505,6 +1421,91 @@ With a prefix argument, insert a newline above the current line."
             (flycheck-add-next-checker 'intero '(t . haskell-hlint))
             ;; (eldoc-mode)
             ))
+#+END_SRC
+
+
+* Javascript
+   
+#+BEGIN_SRC emacs-lisp
+(use-package nvm
+  :if (file-exists-p "~/.nvm")
+  :ensure t
+  :config
+
+  (setq my/default-node-version (car (split-string (my/read-file-contents "~/.nvm/alias/default"))))
+  (defvar my/current-node-version nil
+    "Currently used node version. Set only after a js file is opened")
+
+  (defun my/add-node-to-path (version)
+    (let ((pathstr (format (expand-file-name "~/.nvm/versions/node/%s/bin") version)))
+      (unless (member pathstr exec-path) (setq exec-path (append exec-path (list pathstr))))))
+
+  (defun my/remove-node-from-path (version)
+    (let ((pathstr (format (expand-file-name "~/.nvm/versions/node/%s/bin") version)))
+      (setq exec-path (cl-remove-if (lambda (el) (string= el pathstr)) exec-path))))
+
+  (defun my/select-node-version ()
+    (completing-read
+     "node version: "
+     (reverse (mapcar 'car (nvm--installed-versions)))
+     nil nil nil nil my/default-node-version))
+
+  (defun my/nvm-use-ver ()
+    (interactive)
+    (let ((choice (my/select-node-version)))
+      (nvm-use choice)
+      (unless (null my/current-node-version) (my/remove-node-from-path my/current-node-version))
+      (my/add-node-to-path choice)
+      (setq my/current-node-version choice)
+      )))
+
+(require 'js-doc)
+(use-package js2-mode :ensure t)
+(use-package rjsx-mode :ensure t)
+(add-hook 'js2-mode-hook (lambda ()
+                           (define-key js2-mode-map "\C-c m d" 'js-doc-insert-function-doc)
+                           (define-key js2-mode-map "\C-c m @" 'js-doc-insert-tag)))
+
+(add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+(my|define-jump-handlers js2-mode)
+(my|define-jump-handlers rjsx-mode)
+(my|define-jump-handlers web-mode)
+
+(dolist (mode '("js2" "rjsx"))
+  (let ((hook (intern-soft (format "%s-mode-hook" mode)))
+        (handler (intern-soft (format "my-jump-handlers-%s-mode" mode))))
+    (add-hook hook `(lambda ()
+                      (if (and (file-exists-p "~/.nvm")
+                               (null my/current-node-version))
+                          (my/nvm-use-ver))
+                      (setq evil-shift-width 2)
+                      (use-package tern :ensure t :config (tern-mode))
+                      (add-to-list (quote ,handler) 'tern-find-definition)))))
+
+(setq ;; js2-mode
+ js2-basic-offset 2
+ js-indent-level 2
+ ;; web-mode
+ css-indent-offset 2
+ web-mode-markup-indent-offset 2
+ web-mode-css-indent-offset 2
+ web-mode-code-indent-offset 2
+ web-mode-attr-indent-offset 2)
+
+;; Turn off js2 mode errors & warnings (we lean on eslint/standard)
+(setq js2-mode-show-parse-errors nil
+      js2-mode-show-strict-warnings nil)
+
+(defun my/toggle-jsmodes ()
+  (interactive)
+  (with-current-buffer (current-buffer)
+    (let ((mode major-mode))
+      (cond
+       ((string= mode "js2-mode") (web-mode))
+       ((string= mode "web-mode") (js2-mode))
+       ((string= mode "js-mode") (js2-mode))))))
+
 #+END_SRC
 
 
@@ -2447,9 +2448,9 @@ Create compilation buffer
 (my/set-font)
 
 (setq linum-format 'dynamic)
-(set-face-attribute 'show-paren-match nil :weight 'normal)
 (custom-set-faces '(whitespace-trailing ((t (:background "#602020")))))
-(set-face-attribute 'font-lock-comment-face nil :slant 'italic)
+(set-face-attribute 'show-paren-match nil :weight 'normal)
+;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
 (hybrid-mode)
 

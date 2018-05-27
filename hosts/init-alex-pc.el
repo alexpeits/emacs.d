@@ -15,8 +15,7 @@
   '(
     my/tomorrow-night-eighties
     my/tomorrow-day
-    my/monokai-light
-    my/zenburn
+    ;; my/zenburn
     ))
 (setq my/current-theme 0)
 
