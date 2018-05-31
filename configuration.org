@@ -522,7 +522,14 @@ PWD is not in a git repo (or the git command is not found)."
                          "/")))
           (split-string (pwd-repl-home (eshell/pwd)) "/")) 'face 'eshell-prompt)
          (or (curr-dir-git-branch-string (eshell/pwd)))
-         (propertize " $ " 'face 'default))))
+         (propertize " $" 'face 'eshell-prompt)
+         (propertize " " 'face 'default)
+         )))
+
+(require 'em-smart)
+(setq eshell-where-to-jump 'begin)
+(setq eshell-review-quick-commands nil)
+(setq eshell-smart-space-goes-to-end t)
 
 (defun eshell/clear ()
   (interactive)
