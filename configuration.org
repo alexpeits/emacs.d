@@ -411,7 +411,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 
 * Term, eshell and comint-mode
-
+  
 #+BEGIN_SRC emacs-lisp
 (add-hook 'term-mode-hook
           (lambda ()
@@ -431,16 +431,6 @@ sets `my-jump-handlers' in buffers of that mode."
 
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
-;; eshell
-(defun eshell/clear ()
-  "Clear the eshell buffer."
-  (interactive)
-  (let ((eshell-buffer-maximum-lines 0))
-    (eshell-truncate-buffer)))
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key eshell-mode-map (kbd "C-l") 'eshell/clear)))
 
 ;; comint
 (setq comint-prompt-read-only t)
@@ -454,6 +444,96 @@ sets `my-jump-handlers' in buffers of that mode."
           (lambda ()
             (define-key comint-mode-map (kbd "C-l") 'my/comint-clear-buffer)))
 
+#+END_SRC
+
+** eshell
+
+#+BEGIN_SRC emacs-lisp
+;; (defun eshell/clear ()
+;;   "Clear the eshell buffer."
+;;   (interactive)
+;;   (let ((eshell-buffer-maximum-lines 0))
+;;     (eshell-truncate-buffer)))
+
+(setq eshell-destroy-buffer-when-process-dies t)
+(setq eshell-history-size 1024)
+(setq eshell-prompt-regexp "^[^#$]* [#$] ")
+(load "em-hist")           ; So the history vars are defined
+(if (boundp 'eshell-save-history-on-exit)
+    (setq eshell-save-history-on-exit t)) ; Don't ask, just save
+(if (boundp 'eshell-ask-to-save-history)
+    (setq eshell-ask-to-save-history 'always)) ; For older(?) version
+
+(defun pwd-repl-home (pwd)
+  (interactive)
+  (let* ((home (expand-file-name (getenv "HOME")))
+   (home-len (length home)))
+    (if (and
+   (>= (length pwd) home-len)
+   (equal home (substring pwd 0 home-len)))
+  (concat "~" (substring pwd home-len))
+      pwd)))
+
+(defun curr-dir-git-branch-string (pwd)
+  "Returns current git branch as a string, or the empty string if
+PWD is not in a git repo (or the git command is not found)."
+  (interactive)
+  (when (and (eshell-search-path "git")
+             (locate-dominating-file pwd ".git"))
+    (let ((git-output (shell-command-to-string (concat "cd " pwd " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
+      (propertize (concat "["
+              (if (> (length git-output) 0)
+                  (substring git-output 0 -1)
+                "(no branch)")
+              "]") 'face 'font-lock-string-face)
+      )))
+
+;; (defun curr-dir-git-status (pwd)
+;;   (let ((ahead "git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' '")
+;;         (behind "git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' '")
+;;         (untracked "git ls-files --other --exclude-standard 2> /dev/null")
+;;         (modified "git diff --quiet 2> /dev/null")
+;;         (staged "git diff --cached --quiet 2> /dev/null")
+;;         )
+;;     (message (shell-command-to-string (concat "cd " pwd " && " ahead)))
+;;     (message (shell-command-to-string (concat "cd " pwd " && " behind)))
+;;     (message (shell-command-to-string (concat "cd " pwd " && " untracked)))
+;;     (message (shell-command-to-string (concat "cd " pwd " && " modified)))
+;;     (message (shell-command-to-string (concat "cd " pwd " && " staged)))
+;;     ))
+
+
+(setq eshell-prompt-function
+      (lambda ()
+        (concat
+         (propertize ((lambda (p-lst)
+            (if (> (length p-lst) 3)
+                (concat
+                 (mapconcat (lambda (elm) (if (zerop (length elm)) ""
+                                            (substring elm 0 1)))
+                            (butlast p-lst 3)
+                            "/")
+                 "/"
+                 (mapconcat (lambda (elm) elm)
+                            (last p-lst 3)
+                            "/"))
+              (mapconcat (lambda (elm) elm)
+                         p-lst
+                         "/")))
+          (split-string (pwd-repl-home (eshell/pwd)) "/")) 'face 'eshell-prompt)
+         (or (curr-dir-git-branch-string (eshell/pwd)))
+         (propertize " $ " 'face 'default))))
+
+(defun eshell/clear ()
+  (interactive)
+  "Clear the eshell buffer."
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (eshell-send-input)))
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (define-key eshell-mode-map (kbd "C-l") 'eshell/clear)))
 #+END_SRC
 
 
