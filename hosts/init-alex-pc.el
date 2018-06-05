@@ -1,3 +1,5 @@
+(require 'moe-theme)
+
 (setq my/avail-fonts
   '(
     "Iosevka Term-10.5"
@@ -13,6 +15,7 @@
 
 (setq my/avail-themes
   '(
+    my/moe-dark
     my/tomorrow-night-eighties
     my/tomorrow-day
     ;; my/zenburn
