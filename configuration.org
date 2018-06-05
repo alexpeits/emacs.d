@@ -520,9 +520,9 @@ PWD is not in a git repo (or the git command is not found)."
               (mapconcat (lambda (elm) elm)
                          p-lst
                          "/")))
-          (split-string (pwd-repl-home (eshell/pwd)) "/")) 'face 'eshell-prompt)
+          (split-string (pwd-repl-home (eshell/pwd)) "/")) 'face 'font-lock-type-face)
          (or (curr-dir-git-branch-string (eshell/pwd)))
-         (propertize " $" 'face 'eshell-prompt)
+         (propertize " $" 'face 'font-lock-type-face)
          (propertize " " 'face 'default)
          )))
 
@@ -711,6 +711,27 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block-end-line (:background "#222425"))
                 (org-block (:background "#202223" :foreground "#c5c8c6"))
                 (cursor (:background "#c5c8c6"))))))
+    (my/moe-dark
+     .
+     ((theme . moe-dark)
+      (faces . (
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (mode-line (:background "#bababa" :foreground "#404040" :weight normal :box (:line-width 1 :color nil :style released-button)))
+                (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#bbbbbb" :weight normal))
+                (mode-line-buffer-id (:weight bold :foreground "#303030" :distant-foreground "#9c9c9c"))
+                (diff-hl-insert (:background "#608960"))
+                (diff-hl-change (:background "#3e6184"))
+                (diff-hl-delete (:background "#992626"))
+                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                (flycheck-fringe-warning (:foreground "#ffcc99"))
+                (flycheck-error (:underline (:color "#bb4646" :style wave)))
+                (flycheck-fringe-error (:foreground "#bb4646"))
+                (fringe (:foreground "#a8a8a8" :background "#353535"))
+                (region (:inverse-video nil :background "#515151"))
+                (my/fci-rule (:background "#404040"))
+                (my/mode-line-project (:foreground "#298244"))
+                (minibuffer-prompt (:inherit default :foreground "#bdccef"))
+                ))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
@@ -787,6 +808,7 @@ PWD is not in a git repo (or the git command is not found)."
     my/solarized-black-bright
     my/tomorrow-night-eighties
     my/tomorrow-day
+    my/moe-dark
     my/leuven
     my/spacemacs-light
     my/solarized-dark
@@ -994,6 +1016,7 @@ For when I'm not using evil mode
      conf-colon-mode-hook
      conf-space-mode-hook
      conf-windows-mode-hook
+     conf-mode
      )
    (evil-local-mode))
 
@@ -1903,7 +1926,10 @@ With a prefix argument, insert a newline above the current line."
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+
   (global-set-key (kbd "C-c p f") 'counsel-projectile-find-file)
+  (define-key projectile-command-map (kbd "s") 'counsel-projectile-ag)
+
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
   ;; (add-hook 'projectile-after-switch-project-hook 'counsel-projectile-find-file)
@@ -2284,6 +2310,7 @@ Create compilation buffer
      "http://planet.haskell.org/rss20.xml"
      "http://fpcomplete.com/feed/"
      "http://taylor.fausak.me/sitemap.atom"
+     "https://doisinkidney.com/rss.xml"
      "https://idontgetoutmuch.wordpress.com/feed"
      "http://jr0cket.co.uk/atom.xml"
      "http://www.howardism.org/index.xml"
