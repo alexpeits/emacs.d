@@ -2037,6 +2037,7 @@ With a prefix argument, insert a newline above the current line."
 
 #+BEGIN_SRC emacs-lisp
 (use-package docker-tramp
+  :unless (>= emacs-major-version 26)
   :ensure t
   :config
   (let* ((-tramp-version (mapcar #'string-to-int (split-string tramp-version "\\.")))
@@ -2276,7 +2277,6 @@ Create compilation buffer
 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
-  :unless is-mac
   :ensure t
   :init
   (pdf-tools-install)
