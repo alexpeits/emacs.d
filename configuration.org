@@ -726,9 +726,9 @@ PWD is not in a git repo (or the git command is not found)."
      ((theme . moe-dark)
       (faces . ((org-block (:background "#383838" :foreground "#c0c0c0"))
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (mode-line (:background "#b5b5b5" :foreground "#404040" :weight normal :box (:line-width 1 :color nil :style released-button)))
-                (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#bbbbbb" :weight normal))
-                (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#9c9c9c" :weight bold))
+                (mode-line (:background "#a0a0a0" :foreground "#3a3a3a" :weight normal :box (:line-width 1 :color nil :style released-button)))
+                (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#b5b5b5" :weight normal))
+                (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#a0a0a0" :weight bold))
                 (diff-hl-insert (:background "#608960"))
                 (diff-hl-change (:background "#3e6184"))
                 (diff-hl-delete (:background "#992626"))
@@ -741,6 +741,9 @@ PWD is not in a git repo (or the git command is not found)."
                 (my/fci-rule (:background "#404040"))
                 (my/mode-line-project (:foreground "#298244"))
                 (minibuffer-prompt (:inherit default :foreground "#c6c6c6"))
+                (comint-highlight-prompt (:inherit font-lock-type-face :weight bold))
+                ;; (sml-modeline-vis-face (:inherit match))
+                ;; (sml-modeline-end-face (:background "#7a7a7a" :foreground "#404040"))
                 ))))
     (my/tomorrow-night-eighties
      .
