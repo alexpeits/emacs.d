@@ -410,6 +410,16 @@ sets `my-jump-handlers' in buffers of that mode."
 
 
 
+** searching
+
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "M-s s") 'isearch-forward)
+(global-set-key (kbd "M-s S") 'isearch-forward-regexp)
+(global-set-key (kbd "M-s r") 'isearch-backward)
+(global-set-key (kbd "M-s R") 'isearch-backward-regexp)
+#+END_SRC
+
+
 * Term, eshell and comint-mode
   
 #+BEGIN_SRC emacs-lisp
@@ -1140,6 +1150,8 @@ Can be used without evil:
 
 
 * Hybrid input mode
+  
+# Copied directly from spacemacs
 
 #+BEGIN_SRC emacs-lisp
 (defcustom hybrid-mode-default-state 'normal
@@ -1329,8 +1341,8 @@ With a prefix argument, insert a newline above the current line."
 (setq python-shell-prompt-detect-failure-warning nil)
 (my|define-jump-handlers python-mode)
 (my|define-jump-handlers cython-mode anaconda-mode-goto)
-(my/make-emacs-mode 'inferior-python-mode)
-(my/make-emacs-mode 'anaconda-mode-view-mode)
+;; (my/make-emacs-mode 'inferior-python-mode)
+;; (my/make-emacs-mode 'anaconda-mode-view-mode)
 
 (defun my/mode-line-venv ()
   (if (string= major-mode "python-mode")
@@ -1372,7 +1384,28 @@ With a prefix argument, insert a newline above the current line."
 
 
 * Haskell
+
+** Intero
+
+#+BEGIN_SRC emacs-lisp
+(use-package intero
+  :ensure t
+  :defer t
+  :config
+  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
+  ;; this has to be installed in every repo until I find a solution
+  (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+  )
+
+(add-hook 'haskell-mode-hook
+          (lambda ()
+            (intero-mode)
+            (flycheck-add-next-checker 'intero '(t . haskell-hlint))
+            ;; (eldoc-mode)
+            ))
+#+END_SRC
   
+
 ** ghc-mod (on hold while testing intero)
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1514,26 +1547,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 
-** Intero
-
-#+BEGIN_SRC emacs-lisp
-(use-package intero
-  :ensure t
-  :defer t
-  :config
-  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
-  (setq intero-extra-ghci-options '("-package" "pretty-simple"))
-  )
-
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (intero-mode)
-            (flycheck-add-next-checker 'intero '(t . haskell-hlint))
-            ;; (eldoc-mode)
-            ))
-#+END_SRC
-
-
 * Javascript
    
 #+BEGIN_SRC emacs-lisp
@@ -1629,8 +1642,8 @@ With a prefix argument, insert a newline above the current line."
    ;; (sp-local-pair 'clojure-mode "(" nil :actions '(:rem insert))
    ))
 
-(my/make-emacs-mode 'cider-stacktrace-mode)
-(my/make-emacs-mode 'cider-docview-mode)
+;; (my/make-emacs-mode 'cider-stacktrace-mode)
+;; (my/make-emacs-mode 'cider-docview-mode)
 
 (add-hook
  'cider-repl-mode-hook
@@ -1911,7 +1924,7 @@ With a prefix argument, insert a newline above the current line."
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
   (global-set-key (kbd "C-s") 'my/swiper)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
+  (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "C-c i") 'counsel-imenu)
