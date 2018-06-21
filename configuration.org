@@ -722,6 +722,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block-end-line (:inherit org-meta-line :background "#1f2327"))
                 (persp-selected-face (:foreground "#7bc4c1" :weight bold))
                 (mode-line (:box nil :foreground "#599cab" :background "#1f3442"))
+                (mode-line-inactive (:box nil :foreground "#285765" :background "#11151c"))
                 ;; (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#b5b5b5" :weight normal))
                 ;; (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#a0a0a0" :weight bold))
                 (my/fci-rule (:background "#082633"))
