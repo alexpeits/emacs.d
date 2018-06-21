@@ -592,7 +592,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; highlight trailing whitespace
 (setq whitespace-style '(face trailing))
-(add-hook 'prog-mode-hook (lambda () (whitespace-mode)))
+(add-hook 'prog-mode-hook (lambda () (whitespace-mode) (diminish whitespace-mode "")))
 
 ;; 80-column rule
 (use-package whitespace
@@ -714,6 +714,21 @@ PWD is not in a git repo (or the git command is not found)."
                (org-block (:background "#1f2f39" :foreground "#c0c5ce"))
                (cursor (:background "#c0c5ce"))
                (fringe (:background "#23343e"))))))
+    (my/gotham
+     .
+     ((theme . gotham)
+      (faces . ((org-block (:background "#14191d" :foreground "#99d1ce"))
+                (org-block-begin-line (:inherit org-meta-line :background "#1f2327"))
+                (org-block-end-line (:inherit org-meta-line :background "#1f2327"))
+                (persp-selected-face (:foreground "#7bc4c1" :weight bold))
+                (mode-line (:box nil :foreground "#599cab" :background "#1f3442"))
+                ;; (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#b5b5b5" :weight normal))
+                ;; (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#a0a0a0" :weight bold))
+                (my/fci-rule (:background "#082633"))
+                ;; (my/mode-line-project (:foreground "#2aa889"))
+                (font-lock-keyword-face (:foreground "#325d6b" :weight bold))
+                (region (:inverse-video nil :background "#0a3749"))
+                ))))
     (my/tomorrow-night
      .
      ((theme . base16-tomorrow-night)
@@ -2441,12 +2456,11 @@ Create compilation buffer
   :ensure t
   :init
   (require 'spaceline-config)
-  (setq ;; powerline-utf-8-separator-left 65279
-        ;; powerline-utf-8-separator-right 65279
-        powerline-default-separator 'utf-8
+  (setq powerline-default-separator nil
         powerline-height 20
         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-spacemacs-theme))
+  (spaceline-spacemacs-theme)
+  (setq projectile-mode-line ""))
 #+END_SRC
 
 
