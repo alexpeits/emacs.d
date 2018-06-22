@@ -705,6 +705,25 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
                 (hl-line (:background "#2c2e28"))
                 (fringe (:background "#293024"))))))
+    (my/doom-molokai
+     .
+     ((theme . doom-molokai)
+      (faces . (;; (org-block-begin-line (:background "#303125"))
+                ;; (org-block-end-line (:background "#303125"))
+                ;; (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
+                (mode-line (:box nil :foreground "#ffffff" :background "#636464"))
+                (mode-line-inactive (:box nil :foreground "#707070" :background "#333435" :weight normal))
+                (font-lock-doc-face (:inherit font-lock-string-face))
+                (ivy-current-match (:background "#4a4b4b"))
+                (sp-show-pair-match-face (:foreground "#e74c3c" :backround "#4a4b4b"))
+                (ivy-minibuffer-match-face-1 (:foreground "#c0c0c0" :background "#494431"))
+                (swiper-match-face-1 (:foreground "#c0c0c0" :background "#494431"))
+                (diff-hl-insert (:background "#406640"))
+                (diff-hl-change (:background "#28496b"))
+                (diff-hl-delete (:background "#771b1b"))
+                (my/fci-rule (:background "#353535"))
+                (hl-line (:background "#282929"))
+                (fringe (:background "#222323" :foreground "#505050"))))))
     (my/monokai-light . ((theme . monokai-light)))
     (my/oceanicnext
      .
@@ -856,11 +875,13 @@ PWD is not in a git repo (or the git command is not found)."
     my/solarized-black-bright
     my/tomorrow-night-eighties
     my/tomorrow-day
+    my/gotham
     my/moe-dark
     my/leuven
     my/spacemacs-light
     my/solarized-dark
     my/monokai
+    my/doom-molokai
     my/monokai-light
     my/oceanicnext
     my/tomorrow-night
