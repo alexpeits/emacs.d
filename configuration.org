@@ -327,7 +327,7 @@ sets `my-jump-handlers' in buffers of that mode."
 (use-package imenu-list
   :ensure t
   :config
-  (global-set-key (kbd "C-\\") #'imenu-list-minor-mode)
+  ;; (global-set-key (kbd "C-x C-\\") #'imenu-list-minor-mode)
   (setq imenu-list-size 30))
 
 (use-package zeal-at-point
@@ -805,6 +805,7 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block-begin-line (:background "#373737"))
                 (org-block-end-line (:background "#373737"))
                 (org-block (:background "#323232" :foreground "#cccccc"))
+                (default (:foreground "#cccccc" :background "#272727"))
                 (cursor (:background "#cccccc"))
                 (font-lock-comment-face (:foreground "#999999" :slant normal))
                 (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
@@ -1390,18 +1391,13 @@ With a prefix argument, insert a newline above the current line."
             "ipython"
           "python")))
 
-(my/set-python-interpreter)
-(add-hook 'pyvenv-post-activate-hooks 'my/set-python-interpreter)
-(add-hook 'pyvenv-post-deactivate-hooks 'my/set-python-interpreter)
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
 
 (setq python-shell-prompt-detect-failure-warning nil)
 (my|define-jump-handlers python-mode)
-(my|define-jump-handlers cython-mode anaconda-mode-goto)
-;; (my/make-emacs-mode 'inferior-python-mode)
-;; (my/make-emacs-mode 'anaconda-mode-view-mode)
+(my|define-jump-handlers cython-mode)
 
 (defun my/mode-line-venv ()
   (if (string= major-mode "python-mode")
@@ -2392,6 +2388,7 @@ Create compilation buffer
      "http://lucumr.pocoo.org/feed.atom"
      "https://www.joelonsoftware.com/feed/"
      "http://reasonablypolymorphic.com/atom.xml"
+     "http://lambdafoo.com/atom.xml"
      "http://www.serpentine.com/blog/feed/"
      "https://jacobian.org/feed.xml"
      "http://bitemyapp.com/rss.xml"
@@ -2608,6 +2605,13 @@ Create compilation buffer
         org-ref-pdf-directory (concat my/papers-dir "lib/")))
 
 (use-package interleave :ensure t)
+#+END_SRC
+
+
+* LaTeX
+
+#+BEGIN_SRC emacs-lisp
+(setq default-input-method "haskell-unicode")
 #+END_SRC
 
 
