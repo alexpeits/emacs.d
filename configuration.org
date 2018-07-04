@@ -664,7 +664,8 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block-end-line (:background "#474747"))
                 (org-block (:background "#424242" :foreground "#dcdccc"))
                 (persp-selected-face (:foreground "#d0bf8f" :weight bold))
-                (my/fci-rule (:background "#474747"))
+                (my/fci-rule (:background "#5a5a5a"))
+                ;; (mode-line-inactive (:foreground "#5f7f5f" :background "#333333"))
                 ))))
     (my/peacock
      .
@@ -824,6 +825,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:inverse-video nil :background "#323232"))
                 (region (:inverse-video nil :background "#515151"))
                 (cursor (:background "#dddddd"))
+                (fringe (:background "#3c3c3c"))
                 (font-lock-comment-face (:foreground "chocolate1" :slant normal))
                 (font-lock-doc-face (:foreground "LightCoral" :slant normal))
                 (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
