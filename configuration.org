@@ -692,6 +692,9 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block-begin-line (:background "#eee8d5"))
                 (org-block-end-line (:background "#eee8d5"))
                 (org-block (:background "#f7f0dc" :foreground "#657b83"))
+                (diff-hl-insert (:background "#b9e0b3"))
+                (diff-hl-change (:background "#b5d8f4"))
+                (diff-hl-delete (:background "#f4b5b5"))
                 (my/fci-rule (:background "#e8e0d0"))))))
     (my/solarized-black-bright
      .
