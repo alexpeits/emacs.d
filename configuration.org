@@ -205,7 +205,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; smooth scrolling
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-progressive-speed t) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
 
@@ -404,7 +404,7 @@ sets `my-jump-handlers' in buffers of that mode."
     :keybinding "v")
 
   (defengine hoogle
-    "http://www.haskell.org/hoogle/?q=%s"
+    "https://hoogle.haskell.org/?hoogle=%s"
     :keybinding "h"))
 #+END_SRC
 
@@ -661,7 +661,9 @@ PWD is not in a git repo (or the git command is not found)."
      ((theme . zenburn)
       (faces . ((org-block-begin-line (:background "#474747"))
                 (org-block-end-line (:background "#474747"))
-                (org-block (:background "#424242" :foreground "#dcdccc"))))))
+                (org-block (:background "#424242" :foreground "#dcdccc"))
+                (persp-selected-face (:foreground "#d0bf8f" :weight bold))
+                ))))
     (my/peacock
      .
      ((theme . doom-peacock)
@@ -704,16 +706,19 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block-end-line (:background "#303125"))
                 (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
                 (hl-line (:background "#2c2e28"))
+                (default (:background "#272822" :foreground "#d6d6d4"))
                 (fringe (:background "#293024"))))))
     (my/doom-molokai
      .
      ((theme . doom-molokai)
-      (faces . (;; (org-block-begin-line (:background "#303125"))
-                ;; (org-block-end-line (:background "#303125"))
-                ;; (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
+      (faces . ((org-block-begin-line (:background "#2b2b2b"))
+                (org-block-end-line (:background "#2b2b2b"))
+                (org-block (:background "#252525" :foreground "#d6d6d4"))
+                (default (:foreground "#d6d6d4" :background "#212121"))
                 (mode-line (:box nil :foreground "#ffffff" :background "#636464"))
                 (mode-line-inactive (:box nil :foreground "#707070" :background "#333435" :weight normal))
                 (font-lock-doc-face (:inherit font-lock-string-face))
+                (font-lock-comment-face (:foreground "#757576"))
                 (ivy-current-match (:background "#4a4b4b"))
                 (sp-show-pair-match-face (:foreground "#e74c3c" :backround "#4a4b4b"))
                 (ivy-minibuffer-match-face-1 (:foreground "#c0c0c0" :background "#494431"))
@@ -800,6 +805,30 @@ PWD is not in a git repo (or the git command is not found)."
                 ;; (sml-modeline-vis-face (:inherit match))
                 ;; (sml-modeline-end-face (:background "#7a7a7a" :foreground "#404040"))
                 ))))
+    (my/manoj-dark
+     .
+     ((theme . manoj-dark)
+      (faces . ((org-block-begin-line (:background "#323232"))
+                (org-block-end-line (:background "#323232"))
+                (org-block (:background "#2b2b2b" :foreground "#dddddd"))
+                (default (:foreground "#dddddd" :background "#252525"))
+                (hl-line (:inverse-video nil :background "#323232"))
+                (region (:inverse-video nil :background "#515151"))
+                (cursor (:background "#dddddd"))
+                (font-lock-comment-face (:foreground "chocolate1" :slant normal))
+                (font-lock-doc-face (:foreground "LightCoral" :slant normal))
+                (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
+                (mode-line-buffer-id (:foreground "chocolate1" :weight bold))
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
+                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
+                (diff-hl-insert (:background "#608960"))
+                (diff-hl-change (:background "#3e6184"))
+                (diff-hl-delete (:background "#992626"))
+                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                (flycheck-fringe-warning (:foreground "#ffcc99"))
+                (flycheck-error (:underline (:color "#ee5656" :style wave)))
+                (flycheck-fringe-error (:foreground "#ee5656"))))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
@@ -1165,13 +1194,13 @@ For when I'm not using evil mode
 
   (define-key evil-insert-state-map (kbd "C-M-i") 'company-complete)
 
-  (define-key evil-visual-state-map (kbd "<") '(lambda ()
+  (define-key evil-visual-state-map (kbd "<") #'(lambda ()
                  (interactive)
                  (progn
                      (call-interactively 'evil-shift-left)
                      (execute-kbd-macro "gv"))))
 
-  (define-key evil-visual-state-map (kbd ">") '(lambda ()
+  (define-key evil-visual-state-map (kbd ">") #'(lambda ()
                  (interactive)
                  (progn
                      (call-interactively 'evil-shift-right)
@@ -1723,7 +1752,7 @@ With a prefix argument, insert a newline above the current line."
 ;;   )
 
 ;; expand macros in another window
-(define-key lisp-mode-map (kbd "C-c C-m") '(lambda () (interactive) (macrostep-expand t)))
+(define-key lisp-mode-map (kbd "C-c C-m") #'(lambda () (interactive) (macrostep-expand t)))
 (my/add-hooks '(lisp-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook) (eldoc-mode))
 
 #+END_SRC
@@ -2288,27 +2317,27 @@ Make non-active buffer names in modeline darker (as per [[https://emacs.stackexc
    "Face for active buffer identification.")
 
 (defface ml-inactive-window-face
-   '((t (:foreground "#ccbb8e")))
+   '((t (:foreground "#ac9b6e")))
    ;; '((t (:foreground "#808888")))
    "Face for inactive buffer identification.")
 
-;; (defun ml-propertized-buffer-identification (fmt)
-;;   "Return a list suitable for `mode-line-buffer-identification'.
-;; FMT is a format specifier such as \"%12b\".  This function adds
-;; text properties for face, help-echo, and local-map to it."
-;;   (list (propertize fmt
-;;         'face
-;;           (if (eq ml-selected-window (selected-window))
-;;             'ml-active-window-face
-;;             'ml-inactive-window-face)
-;;         'help-echo
-;;         (purecopy "Buffer name
-;; mouse-1: Previous buffer\nmouse-3: Next buffer")
-;;         'mouse-face 'mode-line-highlight
-;;         'local-map mode-line-buffer-identification-keymap)))
-;; 
-;; (setq-default mode-line-buffer-identification
-;;   '(:eval (ml-propertized-buffer-identification "%12b")))
+(defun ml-propertized-buffer-identification (fmt)
+  "Return a list suitable for `mode-line-buffer-identification'.
+FMT is a format specifier such as \"%12b\".  This function adds
+text properties for face, help-echo, and local-map to it."
+  (list (propertize fmt
+        'face
+          (if (eq ml-selected-window (selected-window))
+            'ml-active-window-face
+            'ml-inactive-window-face)
+        'help-echo
+        (purecopy "Buffer name
+mouse-1: Previous buffer\nmouse-3: Next buffer")
+        'mouse-face 'mode-line-highlight
+        'local-map mode-line-buffer-identification-keymap)))
+
+(setq-default mode-line-buffer-identification
+  '(:eval (ml-propertized-buffer-identification "%12b")))
 
 #+END_SRC
 
