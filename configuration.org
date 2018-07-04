@@ -692,6 +692,10 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block-begin-line (:background "#eee8d5"))
                 (org-block-end-line (:background "#eee8d5"))
                 (org-block (:background "#f7f0dc" :foreground "#657b83"))
+                (mode-line (:underline (:color "#cccec4" :style line)
+                            :overline "#eee8d5" :box
+                            (:line-width 1 :color "#eee8d5" :style unspecified)
+                            :foreground "#657b83" :background "#d8d2bf"))
                 (diff-hl-insert (:background "#b9e0b3"))
                 (diff-hl-change (:background "#b5d8f4"))
                 (diff-hl-delete (:background "#f4b5b5"))
