@@ -613,6 +613,7 @@ PWD is not in a git repo (or the git command is not found)."
   (setq fci-mode-hooks '(python-mode-hook))
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color (face-attribute 'my/fci-rule :background)))
+  (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
   (my/add-hooks
    fci-mode-hooks
    (my/set-fci-rule-color) (fci-mode)))
@@ -663,6 +664,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block-end-line (:background "#474747"))
                 (org-block (:background "#424242" :foreground "#dcdccc"))
                 (persp-selected-face (:foreground "#d0bf8f" :weight bold))
+                (my/fci-rule (:background "#474747"))
                 ))))
     (my/peacock
      .
