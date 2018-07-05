@@ -2387,6 +2387,10 @@ Create compilation buffer
   (pdf-tools-install)
   :config
   ;; temporary - will investigate breaking changes
+  (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
+  (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
+  (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
+  (define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
   (add-hook 'pdf-tools-enabled-hook
             (lambda () (setq pdf-view-midnight-colors '("#dcdccc" . "#494949")))))
 #+END_SRC
