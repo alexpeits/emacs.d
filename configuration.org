@@ -655,7 +655,7 @@ PWD is not in a git repo (or the git command is not found)."
 (defface my/mode-line-project '((t :inherit font-lock-function-name-face))
   "Mode line project name face")
 
-(defvar my/themes
+(setq my/themes
   '(
     (my/zenburn
      .
@@ -718,6 +718,27 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:background "#2c2e28"))
                 (default (:background "#272822" :foreground "#d6d6d4"))
                 (fringe (:background "#293024"))))))
+    (my/zerodark
+     .
+     ((theme . zerodark)
+      (faces . ((mode-line (:box nil :foreground "#e0e0e0" :background "#324351"))
+                (org-block (:foreground "#abb2bf"))
+                (my/fci-rule (:background "#25303a"))
+                (hl-line (:background "#222a31"))
+                (mode-line (:foreground "#61afef" :background "#38394c" :box (:line-width 2 :color "#38394c")))
+                (mode-line-inactive (:foreground "#6b727f" :background "#22252c" :box (:line-width 2 :color "#22252c")))
+                ))))
+    (my/doom-city-lights
+     .
+     ((theme . doom-city-lights)
+      (faces . ((mode-line (:box nil :foreground "#e0e0e0" :background "#324351"))
+                (diff-hl-insert (:background "#608960"))
+                (diff-hl-change (:background "#3e6184"))
+                (diff-hl-delete (:background "#992626"))
+                (my/fci-rule (:background "#25303a"))
+                (hl-line (:background "#222a31"))
+                (region (:background "#323c45"))
+                (fringe (:background "#25303a" :foreground "#454545"))))))
     (my/doom-molokai
      .
      ((theme . doom-molokai)
