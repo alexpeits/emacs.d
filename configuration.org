@@ -721,11 +721,14 @@ PWD is not in a git repo (or the git command is not found)."
     (my/zerodark
      .
      ((theme . zerodark)
-      (faces . ((org-block (:foreground "#abb2bf"))
+      (faces . ((org-block (:foreground "#abb2bf" :background "#2b3038"))
+                (org-block-begin-line (:background "#31353e"))
+                (org-block-end-line (:background "#31353e"))
                 (my/fci-rule (:background "#25303a"))
                 (hl-line (:background "#222a31"))
-                (mode-line (:foreground "#61afef" :background "#38394c" :box (:line-width 2 :color "#38394c")))
+                (mode-line (:foreground "#61afef" :background "#3c3d51" :box (:line-width 2 :color "#38394c")))
                 (mode-line-inactive (:foreground "#6b727f" :background "#22252c" :box (:line-width 2 :color "#22252c")))
+                (persp-selected-face (:inherit font-lock-keyword-face :weight bold))
                 ))))
     (my/doom-city-lights
      .
