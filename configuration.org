@@ -23,7 +23,6 @@
   "Whether emacs is running in mac or not")
 #+END_SRC
    
-
 * Various utility functions
    
 #+BEGIN_SRC emacs-lisp
@@ -129,7 +128,6 @@ sets `my-jump-handlers' in buffers of that mode."
 
 #+END_SRC
 
-
 * Package management
    
 #+BEGIN_SRC emacs-lisp
@@ -152,7 +150,6 @@ sets `my-jump-handlers' in buffers of that mode."
 (use-package diminish :ensure t)
 #+END_SRC
    
-
 * Various configurations
    
 ** TODO : sort these
@@ -360,7 +357,6 @@ sets `my-jump-handlers' in buffers of that mode."
   (global-set-key (kbd "M-Z") 'zap-up-to-char))
 #+END_SRC
 
-
 ** engine-mode
    
 #+BEGIN_SRC emacs-lisp
@@ -408,8 +404,6 @@ sets `my-jump-handlers' in buffers of that mode."
     :keybinding "h"))
 #+END_SRC
 
-
-
 ** searching
 
 #+BEGIN_SRC emacs-lisp
@@ -418,7 +412,6 @@ sets `my-jump-handlers' in buffers of that mode."
 (global-set-key (kbd "M-s r") 'isearch-backward)
 (global-set-key (kbd "M-s R") 'isearch-backward-regexp)
 #+END_SRC
-
 
 * Term, eshell and comint-mode
   
@@ -553,7 +546,6 @@ PWD is not in a git repo (or the git command is not found)."
             (define-key eshell-mode-map (kbd "C-l") 'eshell/clear)))
 #+END_SRC
 
-
 * UI
    
 #+BEGIN_SRC emacs-lisp
@@ -621,7 +613,6 @@ PWD is not in a git repo (or the git command is not found)."
 ;; (use-package hl-todo :ensure t)
 
 #+END_SRC
-
 
 * Theme
 
@@ -997,7 +988,6 @@ PWD is not in a git repo (or the git command is not found)."
 
 #+END_SRC
    
-
 * Font
 
 #+BEGIN_SRC emacs-lisp
@@ -1021,7 +1011,6 @@ PWD is not in a git repo (or the git command is not found)."
 (define-key global-map (kbd "C--") 'text-scale-decrease)
 
 #+END_SRC
-
 
 * VCS
   
@@ -1058,7 +1047,6 @@ PWD is not in a git repo (or the git command is not found)."
     (global-git-gutter+-mode)))
 
 #+END_SRC
-
 
 * Evil-mode
 
@@ -1281,7 +1269,6 @@ Can be used without evil:
   )
 #+END_SRC
 
-
 * Hybrid input mode
   
 # Copied directly from spacemacs
@@ -1398,7 +1385,6 @@ Can be used without evil:
 (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
-
 * Keybindings
   
 Treat hybrid mode and emacs keybindings the same way
@@ -1452,7 +1438,6 @@ With a prefix argument, insert a newline above the current line."
 (define-key my/command-map (kbd "C-:") 'er/expand-region)
 #+END_SRC
 
-
 * Python
    
 #+BEGIN_SRC emacs-lisp
@@ -1505,7 +1490,6 @@ With a prefix argument, insert a newline above the current line."
 
 #+END_SRC
 
-
 * Haskell
 
 ** Intero
@@ -1528,7 +1512,6 @@ With a prefix argument, insert a newline above the current line."
             ))
 #+END_SRC
   
-
 ** ghc-mod (on hold while testing intero)
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1669,7 +1652,6 @@ With a prefix argument, insert a newline above the current line."
 
 #+END_SRC
 
-
 * Javascript
    
 #+BEGIN_SRC emacs-lisp
@@ -1754,7 +1736,6 @@ With a prefix argument, insert a newline above the current line."
 
 #+END_SRC
 
-
 * Clojure
    
 #+BEGIN_SRC emacs-lisp
@@ -1774,7 +1755,6 @@ With a prefix argument, insert a newline above the current line."
    (eldoc-mode)
    (define-key cider-repl-mode-map "\C-c\C-l" 'cider-repl-clear-buffer)))
 #+END_SRC
-
 
 * Lisps
    
@@ -1798,7 +1778,6 @@ With a prefix argument, insert a newline above the current line."
 (my/add-hooks '(lisp-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook) (eldoc-mode))
 
 #+END_SRC
-
 
 * Other programming languages
    
@@ -1834,7 +1813,6 @@ With a prefix argument, insert a newline above the current line."
 
 #+END_SRC
 
-    
 ** Rust
 
 #+BEGIN_SRC emacs-lisp
@@ -1858,7 +1836,6 @@ With a prefix argument, insert a newline above the current line."
   (setenv "RUST_SRC_PATH" my/rust-src-path))
 #+END_SRC
     
-    
 ** HTML
 
 #+BEGIN_SRC emacs-lisp
@@ -1869,7 +1846,6 @@ With a prefix argument, insert a newline above the current line."
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook 'emmet-mode))
 #+END_SRC
-
 
 ** Latex
 
@@ -1888,7 +1864,6 @@ With a prefix argument, insert a newline above the current line."
 
 (add-hook 'LaTeX-mode-hook 'my/latex-setup t)
 #+END_SRC
-    
     
 ** JSON, YAML, Markdown etc.
 
@@ -1909,7 +1884,6 @@ With a prefix argument, insert a newline above the current line."
 (use-package yaml-mode :ensure t)
 #+END_SRC
     
-
 * Company-mode
    
 #+BEGIN_SRC emacs-lisp
@@ -1944,7 +1918,6 @@ With a prefix argument, insert a newline above the current line."
        (define-key company-active-map (kbd "C-f") 'company-show-location)
        (setq company-minimum-prefix-length 3))))
 #+END_SRC
-
 
 * Flycheck-mode
    
@@ -1994,7 +1967,6 @@ With a prefix argument, insert a newline above the current line."
   (setq-default flycheck-emacs-lisp-load-path 'inherit))
 #+END_SRC
 
-
 * Projectile
    
 #+BEGIN_SRC emacs-lisp
@@ -2018,7 +1990,6 @@ With a prefix argument, insert a newline above the current line."
     ))
 
 #+END_SRC
-
 
 * Ivy/Counsel/Swiper
    
@@ -2151,7 +2122,6 @@ With a prefix argument, insert a newline above the current line."
   (my/try-exec-in-project 'my/counsel-projectile-ag-todos 'my/counsel-ag-todos))
 #+END_SRC
 
-
 * Yasnippet
   
 #+BEGIN_SRC emacs-lisp
@@ -2168,7 +2138,6 @@ With a prefix argument, insert a newline above the current line."
 (yas-global-mode 1)
 #+END_SRC
 
-
 * Remote connections, docker etc
 
 #+BEGIN_SRC emacs-lisp
@@ -2183,7 +2152,6 @@ With a prefix argument, insert a newline above the current line."
              (<= -minor 2))
         (require 'docker-tramp-compat))))
 #+END_SRC
-
 
 * Other window management
 
@@ -2391,7 +2359,6 @@ Create compilation buffer
   (switch-to-buffer "*compilation*"))
 #+END_SRC
 
-
 * Other major modes
 
 ** Ledger
@@ -2407,7 +2374,6 @@ Create compilation buffer
   (add-to-list 'evil-emacs-state-modes 'ledger-report-mode)
   :mode "\\.hledger\\..*\\'")
 #+END_SRC
-
 
 ** PDF tools
 
@@ -2425,7 +2391,6 @@ Create compilation buffer
   (add-hook 'pdf-tools-enabled-hook
             (lambda () (setq pdf-view-midnight-colors '("#dcdccc" . "#494949")))))
 #+END_SRC
-
 
 ** elfeed
    
@@ -2478,7 +2443,6 @@ Create compilation buffer
      )))
 #+END_SRC
 
-
 ** pocket
 
 #+BEGIN_SRC emacs-lisp
@@ -2488,7 +2452,6 @@ Create compilation buffer
   (setq pocket-reader-open-url-default-function 'eww)
   )
 #+END_SRC
-
 
 ** mu4e
    
@@ -2526,7 +2489,6 @@ Create compilation buffer
       smtpmail-smtp-service 587)
 #+END_SRC
 
-
 ** erc
 
 #+BEGIN_SRC emacs-lisp
@@ -2549,7 +2511,6 @@ Create compilation buffer
 
   )
 #+END_SRC
-
 
 * Modeline
   
@@ -2575,7 +2536,6 @@ Create compilation buffer
   (spaceline-spacemacs-theme)
   (setq projectile-mode-line ""))
 #+END_SRC
-
 
 * Org-mode
    
@@ -2654,7 +2614,6 @@ Create compilation buffer
     '("pr" "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW"))))
 #+END_SRC
    
-
 * Reading papers
 
 #+BEGIN_SRC emacs-lisp
@@ -2682,13 +2641,11 @@ Create compilation buffer
 (use-package interleave :ensure t)
 #+END_SRC
 
-
 * LaTeX
 
 #+BEGIN_SRC emacs-lisp
 (setq default-input-method "haskell-unicode")
 #+END_SRC
-
 
 * Setup
 
@@ -2705,7 +2662,6 @@ Create compilation buffer
   (load-file host-file))
 #+END_SRC
    
-
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
