@@ -151,7 +151,6 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
    
 * Various configurations
-   
 ** TODO : sort these
    
 #+BEGIN_SRC emacs-lisp
@@ -414,6 +413,7 @@ sets `my-jump-handlers' in buffers of that mode."
 #+END_SRC
 
 * Term, eshell and comint-mode
+** Terms
   
 #+BEGIN_SRC emacs-lisp
 (add-hook 'term-mode-hook
@@ -1013,7 +1013,6 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * VCS
-  
 ** Magit
    
 #+BEGIN_SRC emacs-lisp
@@ -1049,7 +1048,6 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * Evil-mode
-
 
 Keybind to command mapping
 
@@ -1491,7 +1489,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 * Haskell
-
 ** Intero
 
 #+BEGIN_SRC emacs-lisp
@@ -1780,7 +1777,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 * Other programming languages
-   
 ** C/C++
    
 #+BEGIN_SRC emacs-lisp
@@ -2154,7 +2150,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 * Other window management
-
 ** Helm
     
 #+BEGIN_SRC emacs-lisp
@@ -2360,7 +2355,6 @@ Create compilation buffer
 #+END_SRC
 
 * Other major modes
-
 ** Ledger
 
 #+BEGIN_SRC emacs-lisp
@@ -2648,7 +2642,6 @@ Create compilation buffer
 #+END_SRC
 
 * Setup
-
 ** Per-workstation setup
 
 (thanks Nicolas Petton)
