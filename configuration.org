@@ -728,7 +728,15 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:background "#222a31"))
                 (mode-line (:foreground "#61afef" :background "#3c3d51" :box (:line-width 2 :color "#38394c")))
                 (mode-line-inactive (:foreground "#6b727f" :background "#22252c" :box (:line-width 2 :color "#22252c")))
+                (vertical-border (:foreground "#4a4f5b"))
                 (persp-selected-face (:inherit font-lock-keyword-face :weight bold))
+                (flycheck-warning (:underline (:color "#da8548" :style wave)))
+                (flycheck-fringe-warning (:foreground "#da8548"))
+                (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
+                (flycheck-fringe-error (:foreground "#ff6c6b"))
+                (flycheck-info (:underline (:color "#6aafef" :style wave)))
+                (flycheck-fringe-info (:foreground "#61afef"))
+                (term-color-cyan (:foreground "#417eaf"))
                 ))))
     (my/doom-city-lights
      .
@@ -2464,6 +2472,9 @@ Create compilation buffer
      "http://neilmitchell.blogspot.com/feeds/posts/default"
      "http://www.usrsb.in/rss.xml"
      "https://dev.to/feed"
+
+     ;; Podcasts
+     "http://www.magicreadalong.com/episode?format=rss"
      )))
 #+END_SRC
 
