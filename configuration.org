@@ -732,7 +732,8 @@ PWD is not in a git repo (or the git command is not found)."
     (my/doom-city-lights
      .
      ((theme . doom-city-lights)
-      (faces . ((mode-line (:box nil :foreground "#e0e0e0" :background "#324351"))
+      (faces . ((mode-line (:box nil :foreground "#e0e0e0" :background "#324351" :box (:line-width 2 :color "#324351")))
+                (mode-line-inactive (:foreground "#56697a" :background "#1a2127" :box (:line-width 2 :color "#1a2127")))
                 (diff-hl-insert (:background "#608960"))
                 (diff-hl-change (:background "#3e6184"))
                 (diff-hl-delete (:background "#992626"))
