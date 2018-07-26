@@ -1999,6 +1999,7 @@ With a prefix argument, insert a newline above the current line."
 * Projectile
    
 #+BEGIN_SRC emacs-lisp
+(setq projectile-keymap-prefix (kbd "C-c p"))
 (use-package projectile
   :ensure t
   :init
