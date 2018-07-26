@@ -867,6 +867,28 @@ PWD is not in a git repo (or the git command is not found)."
                 (flycheck-fringe-warning (:foreground "#ffcc99"))
                 (flycheck-error (:underline (:color "#ee5656" :style wave)))
                 (flycheck-fringe-error (:foreground "#ee5656"))))))
+    (my/doom-tomorrow-night
+     .
+     ((theme . doom-tomorrow-night)
+      (faces . ((org-block-begin-line (:background "#373737"))
+                (org-block-end-line (:background "#373737"))
+                (org-block (:background "#323232" :foreground "#cccccc"))
+                (default (:foreground "#cccccc" :background "#272727"))
+                (hl-line (:inverse-video nil :background "#323232"))
+                (cursor (:background "#cccccc"))
+                (region (:inverse-video nil :background "#515151"))
+                (fringe (:foreground "#999999" :background "#333333"))
+                (vertical-separator (:foreground "#515151" :background "#292F37"))
+                (font-lock-comment-face (:foreground "#999999" :slant normal))
+                (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (mode-line (:background "#5b5b5b" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
+                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
+                (diff-hl-insert (:background "#608960"))
+                (diff-hl-change (:background "#3e6184"))
+                (diff-hl-delete (:background "#992626"))
+                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                (flycheck-fringe-warning (:foreground "#ffcc99"))))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
@@ -2431,6 +2453,7 @@ Create compilation buffer
      "https://www.joelonsoftware.com/feed/"
      "http://reasonablypolymorphic.com/atom.xml"
      "http://lambdafoo.com/atom.xml"
+     "http://www.rntz.net/blog/atom.xml"
      "http://www.serpentine.com/blog/feed/"
      "https://jacobian.org/feed.xml"
      "http://bitemyapp.com/rss.xml"
@@ -2445,6 +2468,9 @@ Create compilation buffer
 
      ;; Podcasts
      "http://www.magicreadalong.com/episode?format=rss"
+
+     ;; News
+     "https://www.efsyn.gr/rss.xml"
      )))
 #+END_SRC
 
