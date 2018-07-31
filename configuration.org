@@ -80,6 +80,14 @@ will be killed."
     (insert-file-contents filePath)
     (split-string (buffer-string) "\n" t)))
 
+;; do `reg' when called, `alt' when called with C-u
+(defmacro my/defun-with-alt (reg alt)
+  `(lambda (u)
+     (interactive "P")
+     (if (null u)
+         (,reg)
+       (,alt))))
+
 ;; Jump to definition, copied from spacemacs
 
 (defvar my-default-jump-handlers '()
@@ -125,7 +133,6 @@ sets `my-jump-handlers' in buffers of that mode."
                     (not (equal old-buffer (current-buffer))))
             (throw 'done t)))))
     (message "No jump handler was able to find this symbol.")))
-
 #+END_SRC
 
 * Package management
@@ -745,6 +752,10 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:background "#222a31"))
                 (region (:background "#323c45"))
                 (fringe (:background "#25303a" :foreground "#454545"))))))
+    (my/doom-one
+     .
+     ((theme . doom-one)
+      (faces . ())))
     (my/doom-molokai
      .
      ((theme . doom-molokai)
@@ -848,7 +859,7 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block-begin-line (:background "#323232"))
                 (org-block-end-line (:background "#323232"))
                 (org-block (:background "#2b2b2b" :foreground "#dddddd"))
-                (default (:foreground "#dddddd" :background "#252525"))
+                (default (:foreground "#dddddd" :background "#222222"))
                 (hl-line (:inverse-video nil :background "#323232"))
                 (region (:inverse-video nil :background "#515151"))
                 (cursor (:background "#dddddd"))
@@ -856,10 +867,10 @@ PWD is not in a git repo (or the git command is not found)."
                 (font-lock-comment-face (:foreground "chocolate1" :slant normal))
                 (font-lock-doc-face (:foreground "LightCoral" :slant normal))
                 (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
-                (mode-line-buffer-id (:foreground "chocolate1" :weight bold))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (mode-line-buffer-id (:foreground "white" :weight bold))
+                (persp-selected-face (:foreground "#4f98e2" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
+                (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
                 (diff-hl-insert (:background "#608960"))
                 (diff-hl-change (:background "#3e6184"))
                 (diff-hl-delete (:background "#992626"))
@@ -2213,7 +2224,10 @@ With a prefix argument, insert a newline above the current line."
   :ensure t
   :config
   (setq avy-background t)
-  (global-set-key (kbd "M-i") 'avy-goto-line))
+  (global-set-key
+   (kbd "M-i")
+   (my/defun-with-alt avy-goto-line
+                      (lambda () (interactive) (call-interactively 'avy-goto-char-2)))))
 #+END_SRC
 
 ** Dired
