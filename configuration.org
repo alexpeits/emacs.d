@@ -669,19 +669,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (my/fci-rule (:background "#5a5a5a"))
                 ;; (mode-line-inactive (:foreground "#5f7f5f" :background "#333333"))
                 ))))
-    (my/peacock
-     .
-     ((theme . doom-peacock)
-      (faces . ((cursor (:background "#ede0ce"))
-                (mode-line (:background "#4c4a46" :box nil))
-                (mode-line-inactive (:background "#3b3936" :foreground "#8d8d8d" :box nil))
-                (hl-line (:background "#2f2f2f"))
-                (fringe (:background "#2f2f2f"))
-                (vertical-border (:foreground "#383838"))
-                (org-block (:background "#32302c" :foreground "#ede0ce"))
-                (org-block-begin-line (:background "#3f3c39" :foreground "#ede0ce"))
-                (org-block-end-line (:background "#3f3c39" :foreground "#ede0ce"))))))
-
     (my/solarized-dark
      .
      ((theme . solarized-dark)
@@ -752,10 +739,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:background "#222a31"))
                 (region (:background "#323c45"))
                 (fringe (:background "#25303a" :foreground "#454545"))))))
-    (my/doom-one
-     .
-     ((theme . doom-one)
-      (faces . ())))
     (my/doom-molokai
      .
      ((theme . doom-molokai)
@@ -774,38 +757,10 @@ PWD is not in a git repo (or the git command is not found)."
                 (diff-hl-insert (:background "#406640"))
                 (diff-hl-change (:background "#28496b"))
                 (diff-hl-delete (:background "#771b1b"))
-                (my/fci-rule (:background "#353535"))
                 (hl-line (:background "#282929"))
+                (my/fci-rule (:background "#353535"))
                 (persp-selected-face (:foreground "#72b8ff" :weight bold))
                 (fringe (:background "#222323" :foreground "#505050"))))))
-    (my/monokai-light . ((theme . monokai-light)))
-    (my/oceanicnext
-     .
-     ((theme . base16-oceanicnext)
-     (faces . ((org-block-begin-line (:background "#2b3b3b"))
-               (org-block-end-line (:background "#2b3b3b"))
-               (org-block (:background "#1f2f39" :foreground "#c0c5ce"))
-               (cursor (:background "#c0c5ce"))
-               (fringe (:background "#23343e"))))))
-    (my/noctilux
-     .
-     ((theme . noctilux)
-      (faces . ((org-block-begin-line (:background "#282828"))
-                (org-block-end-line (:background "#282828"))
-                (org-block (:background "#242424" :foreground "#cccccc"))
-                (persp-selected-face (:foreground "#aaccff" :weight bold))
-                (mode-line (:box nil :foreground "#cccccc" :background "#555555"))
-                (mode-line-inactive (:box nil :foreground "#999999" :background "#303030" :weight normal))
-                ;; (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#b5b5b5" :weight normal))
-                ;; (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#a0a0a0" :weight bold))
-                ;; (my/fci-rule (:background "#082633"))
-                ;; (my/mode-line-project (:foreground "#2aa889"))
-                (region (:inverse-video nil :background "#505050"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))
-                (flycheck-error (:underline (:color "#ee5656" :style wave)))
-                (flycheck-fringe-error (:foreground "#ee5656"))
-                ))))
     (my/gotham
      .
      ((theme . gotham)
@@ -822,13 +777,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (font-lock-keyword-face (:foreground "#36616f" :weight bold))
                 (region (:inverse-video nil :background "#0a3749"))
                 ))))
-    (my/tomorrow-night
-     .
-     ((theme . base16-tomorrow-night)
-      (faces . ((org-block-begin-line (:background "#222425"))
-                (org-block-end-line (:background "#222425"))
-                (org-block (:background "#202223" :foreground "#c5c8c6"))
-                (cursor (:background "#c5c8c6"))))))
     (my/moe-dark
      .
      ((theme . moe-dark)
@@ -853,6 +801,22 @@ PWD is not in a git repo (or the git command is not found)."
                 ;; (sml-modeline-vis-face (:inherit match))
                 ;; (sml-modeline-end-face (:background "#7a7a7a" :foreground "#404040"))
                 ))))
+    (my/abyss
+     .
+     ((theme . abyss)
+      (faces . ((org-block-begin-line (:background "#303030"))
+                (org-block-end-line (:background "#303030"))
+                (org-block (:background "#262626" :foreground "#bbe0f0"))
+                (hl-line (:inverse-video nil :background "#252525"))
+                (fringe (:background "#313131"))
+                (my/fci-rule (:background "#3a3a3a"))
+                (my/mode-line-project (:inherit persp-selected-face))
+                (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
+                (font-lock-comment-face (:foreground "#d55e00" :slant normal))
+                (flycheck-warning (:underline (:color "#cea071" :style wave)))
+                (flycheck-fringe-warning (:foreground "#cea071"))
+                (flycheck-error (:underline (:color "#b74343" :style wave)))
+                (flycheck-fringe-error (:foreground "#b74343"))))))
     (my/manoj-dark
      .
      ((theme . manoj-dark)
@@ -865,7 +829,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (cursor (:background "#dddddd"))
                 (fringe (:background "#3c3c3c"))
                 (my/fci-rule (:background "#383838"))
-                (font-lock-comment-face (:foreground "chocolate1" :slant normal))
                 (font-lock-doc-face (:foreground "LightCoral" :slant normal))
                 (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
                 (font-lock-comment-face (:foreground "#8a8a8a"))
@@ -881,6 +844,34 @@ PWD is not in a git repo (or the git command is not found)."
                 (flycheck-fringe-warning (:foreground "#ffcc99"))
                 (flycheck-error (:underline (:color "#ee5656" :style wave)))
                 (flycheck-fringe-error (:foreground "#ee5656"))))))
+    (my/wombat
+     .
+     ((theme . wombat)
+      (faces . ((org-block-begin-line (:background "#323232"))
+                (org-block-end-line (:background "#323232"))
+                (org-block (:background "#2b2b2b" :foreground "#dddddd"))
+                (default (:foreground "#dddddd" :background "#242424"))
+                (hl-line (:inverse-video nil :background "#323232"))
+                (region (:inverse-video nil :background "#515151"))
+                (cursor (:background "#dddddd"))
+                (fringe (:background "#3c3c3c" :foreground "#8a8a8a"))
+                (my/fci-rule (:background "#383838"))
+                (show-paren-match (:background "steelblue3"))
+                (mode-line-buffer-id (:foreground "white" :weight bold))
+                (persp-selected-face (:foreground "#4f98e2" :weight bold))
+                (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
+                (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
+                (diff-hl-insert (:background "#608960"))
+                (diff-hl-change (:background "#3e6184"))
+                (diff-hl-delete (:background "#992626"))
+                (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
+                (flycheck-fringe-warning (:foreground "DarkOrange"))
+                (flycheck-error (:underline (:color "DarkOrange" :style wave)))
+                (flycheck-fringe-warning (:foreground "DarkOrange"))
+                (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
+                (flycheck-fringe-error (:foreground "#ff6c6b"))
+                (flycheck-info (:underline (:color "#6aafef" :style wave)))
+                (flycheck-fringe-info (:foreground "#61afef"))))))
     (my/doom-tomorrow-night
      .
      ((theme . doom-tomorrow-night)
@@ -940,20 +931,6 @@ PWD is not in a git repo (or the git command is not found)."
                 ;; (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
                 ;; (flycheck-fringe-warning (:foreground "#ffcc99"))
                 ))))
-    (my/spacemacs-dark
-     .
-     ((theme . spacemacs-dark)
-      (faces . ((hl-line (:background "#303235"))
-                (mode-line-inactive
-                 (:box (:line-width 1 :color "#5d4d7a" :style nil)
-                       :foreground "#7c7c7c"
-                       :background "#292b2e"))
-                (mode-line
-                 (:box (:line-width 1 :color "#5d4d7a" :style nil)
-                       :foreground "#b2b2b2"
-                       :background "#3a3c3f"))
-                (my/fci-rule (:background "#35373a"))))))
-    (my/spacemacs-light . ((theme . spacemacs-light)))
     (my/deeper-blue
         .
         ((theme . deeper-blue)
@@ -1252,6 +1229,8 @@ For when I'm not using evil mode
   (define-key evil-insert-state-map (kbd "C-h") 'undefined)
   (define-key evil-visual-state-map (kbd "C-h") 'undefined)
 
+  (define-key evil-visual-state-map (kbd "ESC") 'evil-normal-state)
+
   (define-key evil-emacs-state-map (kbd "C-h") 'help)
   (define-key evil-insert-state-map (kbd "C-k") nil)
 
@@ -1428,6 +1407,7 @@ Can be used without evil:
        (memq (or state evil-state) '(insert hybrid))))
 
 (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
+(define-key evil-hybrid-state-map (kbd "ESC") 'evil-normal-state)
 (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
@@ -1543,6 +1523,8 @@ With a prefix argument, insert a newline above the current line."
 (use-package intero
   :ensure t
   :defer t
+  :init
+  (setq intero-blacklist '("~/.xmonad"))
   :config
   ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
   ;; this has to be installed in every repo until I find a solution
@@ -1551,7 +1533,7 @@ With a prefix argument, insert a newline above the current line."
 
 (add-hook 'haskell-mode-hook
           (lambda ()
-            (intero-mode)
+            (intero-mode-blacklist)
             (flycheck-add-next-checker 'intero '(t . haskell-hlint))
             ;; (eldoc-mode)
             ))
@@ -1824,6 +1806,20 @@ With a prefix argument, insert a newline above the current line."
 
 #+END_SRC
 
+* Markdown
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :config
+  (add-hook 'markdown-mode-hook #'(lambda () (setq fill-column 100)))
+  (setq markdown-fontify-code-blocks-natively t))
+#+END_SRC
+
 * Other programming languages
 ** C/C++
    
@@ -1917,13 +1913,6 @@ With a prefix argument, insert a newline above the current line."
   :config
   (add-to-list 'auto-mode-alist '(".json\\'" . json-mode))
   (add-to-list 'auto-mode-alist '(".json.tmpl\\'" . json-mode)))
-
-(use-package markdown-mode
-  :ensure t
-  :commands (markdown-mode gfm-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode)))
 
 (use-package yaml-mode :ensure t)
 #+END_SRC
