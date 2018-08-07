@@ -1212,6 +1212,10 @@ For when I'm not using evil mode
   (evil-define-key 'normal neotree-mode-map (kbd "|") 'neotree-enter-vertical-split)
   (evil-define-key 'normal neotree-mode-map (kbd "-") 'neotree-enter-horizontal-split)
 
+  ;; intercept ESC when running in terminal
+  (setq evil-intercept-esc t)
+  (evil-esc-mode)
+
   ;; move state to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
 
@@ -1228,8 +1232,6 @@ For when I'm not using evil mode
   (define-key evil-normal-state-map (kbd "C-h") 'undefined)
   (define-key evil-insert-state-map (kbd "C-h") 'undefined)
   (define-key evil-visual-state-map (kbd "C-h") 'undefined)
-
-  (define-key evil-visual-state-map (kbd "ESC") 'evil-normal-state)
 
   (define-key evil-emacs-state-map (kbd "C-h") 'help)
   (define-key evil-insert-state-map (kbd "C-k") nil)
@@ -1407,7 +1409,6 @@ Can be used without evil:
        (memq (or state evil-state) '(insert hybrid))))
 
 (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
-(define-key evil-hybrid-state-map (kbd "ESC") 'evil-normal-state)
 (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
@@ -2549,6 +2550,16 @@ Create compilation buffer
   (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer)
 
   )
+#+END_SRC
+
+* Other minor modes
+** wiki-summary
+
+#+BEGIN_SRC emacs-lisp
+(use-package wiki-summary
+  :ensure t
+  :defer 1
+  :bind ("C-c W" . wiki-summary))
 #+END_SRC
 
 * Modeline
