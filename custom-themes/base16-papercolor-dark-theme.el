@@ -7,7 +7,7 @@
 
 (deftheme base16-papercolor-dark)
 
-(let ((base00 "#262626")
+(let ((base00 "#222222")
       (base01 "#262626")
       (base01a "#323232")
       (base01b "#353535")
@@ -309,9 +309,9 @@
    `(org-agenda-date ((t (:foreground ,base0D :underline nil))))
    `(org-agenda-done ((t (:foreground ,base0B))))
    `(org-agenda-dimmed-todo-face ((t (:foreground ,base04))))
-   `(org-block ((t (:foreground ,base05 :background "#2e2e2e"))))
-   `(org-block-begin-line ((t (:background "#3a3a3a"))))
-   `(org-block-end-line ((t (:background "#3a3a3a"))))
+   `(org-block ((t (:foreground ,base05 :background "#2a2a2a"))))
+   `(org-block-begin-line ((t (:background "#373737"))))
+   `(org-block-end-line ((t (:background "#373737"))))
    `(org-code ((t (:foreground ,base0A))))
    `(org-column ((t (:background ,base01))))
    `(org-column-title ((t (:inherit org-column :weight bold :underline t))))
