@@ -9,10 +9,10 @@
 
 (let ((base00 "#222222")
       (base01 "#262626")
-      (base01a "#323232")
+      (base01a "#2c2c2c")
       (base01b "#353535")
       (base02 "#4d4d4c")
-      (base02b "#5d5d5d")
+      (base02b "#595959")
       (base03 "#808080")
       (base04 "#949494")
       (base05 "#d0d0d0")
@@ -181,7 +181,7 @@
    `(whitespace-trailing ((t (:background ,base08 :foreground ,base0A))))
 
    ;; Parenthesis matching (built-in)
-   `(show-paren-match ((t (:background ,base0D :foreground ,base03))))
+   `(show-paren-match ((t (:background ,base02 :foreground ,base09 :weight bold))))
    `(show-paren-mismatch ((t (:background ,base09 :foreground ,base03))))
 
    ;; Parenthesis matching (mic-paren)
@@ -209,9 +209,9 @@
    `(diff-file-header ((t (:background ,base02))))
    `(diff-hunk-header ((t (:background ,base01 :foreground ,base0E))))
 
-   `(diff-hl-change ((t (:foreground ,base0A))))
-   `(diff-hl-delete ((t (:foreground ,base08))))
-   `(diff-hl-insert ((t (:foreground ,base0B))))
+   `(diff-hl-change ((t (:foreground ,base0C))))
+   `(diff-hl-delete ((t (:foreground ,base09b))))
+   `(diff-hl-insert ((t (:foreground ,base0E))))
 
    `(ediff-even-diff-A ((t (:foreground nil :background nil :inverse-video t))))
    `(ediff-even-diff-B ((t (:foreground nil :background nil :inverse-video t))))
@@ -309,9 +309,9 @@
    `(org-agenda-date ((t (:foreground ,base0D :underline nil))))
    `(org-agenda-done ((t (:foreground ,base0B))))
    `(org-agenda-dimmed-todo-face ((t (:foreground ,base04))))
-   `(org-block ((t (:foreground ,base05 :background "#2a2a2a"))))
-   `(org-block-begin-line ((t (:background "#373737"))))
-   `(org-block-end-line ((t (:background "#373737"))))
+   `(org-block ((t (:foreground ,base05 :background "#282828"))))
+   `(org-block-begin-line ((t (:background "#333333"))))
+   `(org-block-end-line ((t (:background "#333333"))))
    `(org-code ((t (:foreground ,base0A))))
    `(org-column ((t (:background ,base01))))
    `(org-column-title ((t (:inherit org-column :weight bold :underline t))))
