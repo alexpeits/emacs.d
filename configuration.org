@@ -181,8 +181,7 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; diminish various minor modes in modeline
 (add-hook 'auto-revert-mode-hook (lambda () (diminish 'auto-revert-mode "")))
-(add-hook 'eldoc-mode-hook
-          (lambda () (diminish 'eldoc-mode "")))
+(add-hook 'eldoc-mode-hook (lambda () (diminish 'eldoc-mode "")))
 
 ;; store all backup and autosave files in
 ;; one dir
@@ -194,7 +193,7 @@ sets `my-jump-handlers' in buffers of that mode."
 ;; only with this set to nil can org-mode export & open too
 (setq process-connection-type nil)
 
-;; i love this
+;; yesss
 (defalias 'yes-or-no-p #'y-or-n-p)
 
 ;; use spaces
@@ -210,7 +209,6 @@ sets `my-jump-handlers' in buffers of that mode."
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
 (setq mouse-wheel-progressive-speed t) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
@@ -230,18 +228,8 @@ sets `my-jump-handlers' in buffers of that mode."
 (add-to-list 'auto-mode-alist '(".env.dev\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env.example\\'" . conf-mode))
 
-;; add extension for restclient.el
-(use-package restclient
-  :ensure t
-  :defer t
-  :config
-  (add-to-list 'auto-mode-alist '(".http\\'" . restclient-mode)))
-
 ;; DocView
 (setq doc-view-continuous t)
-
-;; window size when emacs is opened
-(setq initial-frame-alist '((width . 223) (height . 73)))
 
 (defun my/indent-region-or-buffer ()
   "Indent a region if selected, otherwise the whole buffer."
@@ -261,7 +249,6 @@ sets `my-jump-handlers' in buffers of that mode."
   :commands (sp-split-sexp sp-newline sp-up-sexp)
 
   :init
-
   (defun my/smartparens-pair-newline (id action context)
     (save-excursion
       (newline)
@@ -279,11 +266,11 @@ sets `my-jump-handlers' in buffers of that mode."
         sp-highlight-wrap-overlay nil
         sp-highlight-wrap-tag-overlay nil)
 
-
   (use-package evil-smartparens
     :ensure t
     :config
     (diminish 'evil-smartparens-mode ""))
+
   (my/add-hooks '(prog-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
   (setq my/lisp-mode-hooks '(emacs-lisp-mode-hook clojure-mode-hook))
   (my/add-hooks my/lisp-mode-hooks (smartparens-strict-mode) (evil-smartparens-mode))
@@ -410,15 +397,6 @@ sets `my-jump-handlers' in buffers of that mode."
     :keybinding "h"))
 #+END_SRC
 
-** searching
-
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "M-s s") 'isearch-forward)
-(global-set-key (kbd "M-s S") 'isearch-forward-regexp)
-(global-set-key (kbd "M-s r") 'isearch-backward)
-(global-set-key (kbd "M-s R") 'isearch-backward-regexp)
-#+END_SRC
-
 * Term, eshell and comint-mode
 ** Terms
   
@@ -441,7 +419,6 @@ sets `my-jump-handlers' in buffers of that mode."
 
 (add-hook 'term-exec-hook 'oleh-term-exec-hook)
 
-
 ;; comint
 (setq comint-prompt-read-only t)
 
@@ -459,12 +436,6 @@ sets `my-jump-handlers' in buffers of that mode."
 ** eshell
 
 #+BEGIN_SRC emacs-lisp
-;; (defun eshell/clear ()
-;;   "Clear the eshell buffer."
-;;   (interactive)
-;;   (let ((eshell-buffer-maximum-lines 0))
-;;     (eshell-truncate-buffer)))
-
 (setq eshell-destroy-buffer-when-process-dies t)
 (setq eshell-history-size 1024)
 (setq eshell-prompt-regexp "^[^#$]* [#$] ")
@@ -497,21 +468,6 @@ PWD is not in a git repo (or the git command is not found)."
                 "(no branch)")
               "]") 'face 'font-lock-string-face)
       )))
-
-;; (defun curr-dir-git-status (pwd)
-;;   (let ((ahead "git log --oneline @{u}.. 2> /dev/null | wc -l | tr -d ' '")
-;;         (behind "git log --oneline ..@{u} 2> /dev/null | wc -l | tr -d ' '")
-;;         (untracked "git ls-files --other --exclude-standard 2> /dev/null")
-;;         (modified "git diff --quiet 2> /dev/null")
-;;         (staged "git diff --cached --quiet 2> /dev/null")
-;;         )
-;;     (message (shell-command-to-string (concat "cd " pwd " && " ahead)))
-;;     (message (shell-command-to-string (concat "cd " pwd " && " behind)))
-;;     (message (shell-command-to-string (concat "cd " pwd " && " untracked)))
-;;     (message (shell-command-to-string (concat "cd " pwd " && " modified)))
-;;     (message (shell-command-to-string (concat "cd " pwd " && " staged)))
-;;     ))
-
 
 (setq eshell-prompt-function
       (lambda ()
@@ -580,9 +536,6 @@ PWD is not in a git repo (or the git command is not found)."
 ;; linum
 (use-package linum
   :config
-  ;; (global-linum-mode t)
-  ;; (add-hook 'prog-mode-hook (lambda () (linum-mode t)))
-  ;; (setq linum-format "%4d ")
   (setq linum-format 'dynamic))
 
 ;; hl-line
@@ -648,7 +601,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
-(defface my/fci-rule '((t :background "#474747"))
+(defface my/fci-rule '((t :background "#404040"))
   "Dummy face for vertical rule, only background color is used in runtime")
 (defface my/mode-line-project '((t :inherit font-lock-function-name-face))
   "Mode line project name face")
@@ -698,15 +651,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block (:background "#292929" :foreground "#a1acae"))
                 (hl-line (:background "#303030"))
                 (fringe (:background "#303030"))))))
-    (my/monokai
-     .
-     ((theme . monokai)
-      (faces . ((org-block-begin-line (:background "#303125"))
-                (org-block-end-line (:background "#303125"))
-                (org-block (:background "#2b2c20" :foreground "#f8f8f2"))
-                (hl-line (:background "#2c2e28"))
-                (default (:background "#272822" :foreground "#d6d6d4"))
-                (fringe (:background "#293024"))))))
     (my/zerodark
      .
      ((theme . zerodark)
@@ -739,68 +683,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:background "#222a31"))
                 (region (:background "#323c45"))
                 (fringe (:background "#25303a" :foreground "#454545"))))))
-    (my/doom-molokai
-     .
-     ((theme . doom-molokai)
-      (faces . ((org-block-begin-line (:background "#2b2b2b"))
-                (org-block-end-line (:background "#2b2b2b"))
-                (org-block (:background "#252525" :foreground "#d6d6d4"))
-                (default (:foreground "#d6d6d4" :background "#212121"))
-                (mode-line (:box nil :foreground "#ffffff" :background "#636464"))
-                (mode-line-inactive (:box nil :foreground "#707070" :background "#333435" :weight normal))
-                (font-lock-doc-face (:inherit font-lock-string-face))
-                (font-lock-comment-face (:foreground "#757576"))
-                (ivy-current-match (:background "#4a4b4b"))
-                (sp-show-pair-match-face (:foreground "#e74c3c" :backround "#4a4b4b"))
-                (ivy-minibuffer-match-face-1 (:foreground "#c0c0c0" :background "#494431"))
-                (swiper-match-face-1 (:foreground "#c0c0c0" :background "#494431"))
-                (diff-hl-insert (:background "#406640"))
-                (diff-hl-change (:background "#28496b"))
-                (diff-hl-delete (:background "#771b1b"))
-                (hl-line (:background "#282929"))
-                (my/fci-rule (:background "#353535"))
-                (persp-selected-face (:foreground "#72b8ff" :weight bold))
-                (fringe (:background "#222323" :foreground "#505050"))))))
-    (my/gotham
-     .
-     ((theme . gotham)
-      (faces . ((org-block (:background "#14191d" :foreground "#99d1ce"))
-                (org-block-begin-line (:inherit org-meta-line :background "#1f2327"))
-                (org-block-end-line (:inherit org-meta-line :background "#1f2327"))
-                (persp-selected-face (:foreground "#7bc4c1" :weight bold))
-                (mode-line (:box nil :foreground "#599cab" :background "#1f3442"))
-                (mode-line-inactive (:box nil :foreground "#285765" :background "#11151c"))
-                ;; (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#b5b5b5" :weight normal))
-                ;; (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#a0a0a0" :weight bold))
-                (my/fci-rule (:background "#082633"))
-                ;; (my/mode-line-project (:foreground "#2aa889"))
-                (font-lock-keyword-face (:foreground "#36616f" :weight bold))
-                (region (:inverse-video nil :background "#0a3749"))
-                ))))
-    (my/moe-dark
-     .
-     ((theme . moe-dark)
-      (faces . ((org-block (:background "#383838" :foreground "#c0c0c0"))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (mode-line (:background "#a0a0a0" :foreground "#3a3a3a" :weight normal :box (:line-width 1 :color nil :style released-button)))
-                (mode-line-inactive (:inherit mode-line :background "#424242" :foreground "#b5b5b5" :weight normal))
-                (mode-line-buffer-id (:foreground "#303030" :distant-foreground "#a0a0a0" :weight bold))
-                (diff-hl-insert (:background "#608960"))
-                (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#992626"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))
-                (flycheck-error (:underline (:color "#ee5656" :style wave)))
-                (flycheck-fringe-error (:foreground "#ee5656"))
-                (fringe (:background "#353535" :foreground "#808080"))
-                (region (:inverse-video nil :background "#515151"))
-                (my/fci-rule (:background "#404040"))
-                (my/mode-line-project (:foreground "#298244"))
-                (minibuffer-prompt (:inherit default :foreground "#c6c6c6"))
-                (comint-highlight-prompt (:inherit font-lock-type-face :weight bold))
-                ;; (sml-modeline-vis-face (:inherit match))
-                ;; (sml-modeline-end-face (:background "#7a7a7a" :foreground "#404040"))
-                ))))
     (my/abyss
      .
      ((theme . abyss)
@@ -872,28 +754,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (flycheck-fringe-error (:foreground "#ff6c6b"))
                 (flycheck-info (:underline (:color "#6aafef" :style wave)))
                 (flycheck-fringe-info (:foreground "#61afef"))))))
-    (my/doom-tomorrow-night
-     .
-     ((theme . doom-tomorrow-night)
-      (faces . ((org-block-begin-line (:background "#373737"))
-                (org-block-end-line (:background "#373737"))
-                (org-block (:background "#323232" :foreground "#cccccc"))
-                (default (:foreground "#cccccc" :background "#272727"))
-                (hl-line (:inverse-video nil :background "#323232"))
-                (cursor (:background "#cccccc"))
-                (region (:inverse-video nil :background "#515151"))
-                (fringe (:foreground "#999999" :background "#333333"))
-                (vertical-separator (:foreground "#515151" :background "#292F37"))
-                (font-lock-comment-face (:foreground "#999999" :slant normal))
-                (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (mode-line (:background "#5b5b5b" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#353535" :foreground "#999999" :weight normal))
-                (diff-hl-insert (:background "#608960"))
-                (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#992626"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
@@ -928,8 +788,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (diff-hl-insert (:background "#b9e0b3"))
                 (diff-hl-change (:background "#b5d8f4"))
                 (diff-hl-delete (:background "#f4b5b5"))
-                ;; (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                ;; (flycheck-fringe-warning (:foreground "#ffcc99"))
                 ))))
     (my/deeper-blue
         .
@@ -942,13 +800,6 @@ PWD is not in a git repo (or the git command is not found)."
                     (org-block (:background "#272b37" :foreground "gray80"))
                     (org-block-begin-line (:background "#343844" :foreground "gray80"))
                     (org-block-end-line (:background "#343844" :foreground "gray80"))))))
-    (my/leuven
-     .
-     ((theme . leuven)
-      (faces . ((hl-line (:background "#eeeeee"))
-                (my/fci-rule (:background "#dddddd"))
-                (my/mode-line-project (:inherit mode-line-highlight))
-                (term (:inherit default))))))
     ))
 
 (defvar my/avail-themes
@@ -958,18 +809,9 @@ PWD is not in a git repo (or the git command is not found)."
     my/solarized-black-bright
     my/tomorrow-night-eighties
     my/tomorrow-day
-    my/gotham
-    my/moe-dark
-    my/leuven
-    my/spacemacs-light
-    my/solarized-dark
-    my/monokai
-    my/doom-molokai
-    my/monokai-light
-    my/oceanicnext
-    my/tomorrow-night
-    my/peacock
     my/deeper-blue
+    my/abyss
+    my/wombat
     ))
 (defvar my/current-theme 0)
 
@@ -1888,24 +1730,6 @@ With a prefix argument, insert a newline above the current line."
   (add-hook 'css-mode-hook 'emmet-mode))
 #+END_SRC
 
-** Latex
-
-#+BEGIN_SRC emacs-lisp
-(defun my/latex-setup ()
-  (defun my/texcount ()
-    (interactive)
-    (let* ((this-file (buffer-file-name))
-           (word-count
-            (with-output-to-string
-              (with-current-buffer standard-output
-                (call-process "texcount" nil t nil "-brief" "-nc" this-file)))))
-      (string-match "\n$" word-count)
-      (message (replace-match "" nil nil word-count))))
-  (define-key LaTeX-mode-map "\C-cw" 'my/texcount))
-
-(add-hook 'LaTeX-mode-hook 'my/latex-setup t)
-#+END_SRC
-    
 ** JSON, YAML, Markdown etc.
 
 #+BEGIN_SRC emacs-lisp
@@ -2159,7 +1983,7 @@ With a prefix argument, insert a newline above the current line."
 
 * Yasnippet
   
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package yasnippet
   :ensure t
   :init
@@ -2171,21 +1995,6 @@ With a prefix argument, insert a newline above the current line."
   (diminish 'yas-minor-mode ""))
 
 (yas-global-mode 1)
-#+END_SRC
-
-* Remote connections, docker etc
-
-#+BEGIN_SRC emacs-lisp
-(use-package docker-tramp
-  :unless (>= emacs-major-version 26)
-  :ensure t
-  :config
-  (let* ((-tramp-version (mapcar #'string-to-int (split-string tramp-version "\\.")))
-         (-major (car -tramp-version))
-         (-minor (cadr -tramp-version)))
-    (if (and (<= -major 2)
-             (<= -minor 2))
-        (require 'docker-tramp-compat))))
 #+END_SRC
 
 * Other window management
@@ -2253,28 +2062,6 @@ With a prefix argument, insert a newline above the current line."
 (if is-mac (setq dired-use-ls-dired nil))
 #+END_SRC
 
-** Neotree
-
-#+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :unless (>= emacs-major-version 25)
-  :ensure t
-  :config
-  (setq neo-smart-open t)
-  (setq neo-theme 'nerd)
-
-  (defun my/file-tree ()
-    "Open NeoTree using the git root."
-    (interactive)
-    (neotree-toggle)
-    (if (and (neo-global--window-exists-p)
-             (projectile-project-p))
-        (let ((project-dir (projectile-project-root))
-              (file-name (buffer-file-name)))
-          (neotree-dir project-dir)
-          (neotree-find file-name)))))
-#+END_SRC
-    
 ** Treemacs
    
 #+BEGIN_SRC emacs-lisp
@@ -2315,14 +2102,6 @@ With a prefix argument, insert a newline above the current line."
       (global-set-key (kbd "C-s-k") 'buf-move-up)
       (global-set-key (kbd "C-s-l") 'buf-move-right))))
 
-;; eyebrowse
-(use-package eyebrowse
-  :ensure t
-  :config
-  (setq eyebrowse-mode-line-separator " "
-        eyebrowse-new-workspace t)
-  (eyebrowse-mode t))
-
 ;; popwin, mainly to always open helm buffers at bottom
 (use-package popwin
   :ensure t
@@ -2333,14 +2112,6 @@ With a prefix argument, insert a newline above the current line."
                                             (popwin-mode -1)))
   ;;  Restore popwin-mode after a Helm session finishes.
   (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1))))
-
-(use-package flx-ido
-  :ensure  t
-  :config
-  (flx-ido-mode 1)
-  ;; disable ido faces to see flx highlights.
-  (setq ido-enable-flex-matching t)
-  (setq ido-use-faces nil))
 #+END_SRC
 
 Make non-active buffer names in modeline darker (as per [[https://emacs.stackexchange.com/a/22682/14525][this]] stackoverflow answer)
@@ -2481,16 +2252,6 @@ Create compilation buffer
      ;; News
      "https://www.efsyn.gr/rss.xml"
      )))
-#+END_SRC
-
-** pocket
-
-#+BEGIN_SRC emacs-lisp
-(use-package pocket-reader
-  :ensure t
-  :config
-  (setq pocket-reader-open-url-default-function 'eww)
-  )
 #+END_SRC
 
 ** mu4e
@@ -2695,6 +2456,20 @@ Create compilation buffer
 
 #+BEGIN_SRC emacs-lisp
 (setq default-input-method "haskell-unicode")
+
+(defun my/latex-setup ()
+  (defun my/texcount ()
+    (interactive)
+    (let* ((this-file (buffer-file-name))
+           (word-count
+            (with-output-to-string
+              (with-current-buffer standard-output
+                (call-process "texcount" nil t nil "-brief" "-nc" this-file)))))
+      (string-match "\n$" word-count)
+      (message (replace-match "" nil nil word-count))))
+  (define-key LaTeX-mode-map "\C-cw" 'my/texcount))
+
+(add-hook 'LaTeX-mode-hook 'my/latex-setup t)
 #+END_SRC
 
 * Setup
