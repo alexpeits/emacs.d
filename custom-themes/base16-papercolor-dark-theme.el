@@ -12,7 +12,7 @@
       (base01a "#2c2c2c")
       (base01b "#353535")
       (base02 "#4d4d4c")
-      (base02b "#595959")
+      (base02b "#5d5d5d")
       (base03 "#808080")
       (base04 "#949494")
       (base05 "#d0d0d0")
