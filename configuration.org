@@ -540,7 +540,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; hl-line
 (setq hl-line-sticky-flag nil)
-(add-hook 'prog-mode-hook 'hl-line-mode)
+;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
 ;; highlight trailing whitespace
 (setq whitespace-style '(face trailing))
@@ -601,7 +601,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
-(defface my/fci-rule '((t :background "#404040"))
+(defface my/fci-rule '((t :inherit font-lock-comment-face))
   "Dummy face for vertical rule, only background color is used in runtime")
 (defface my/mode-line-project '((t :inherit font-lock-function-name-face))
   "Mode line project name face")
@@ -743,9 +743,9 @@ PWD is not in a git repo (or the git command is not found)."
                 (persp-selected-face (:foreground "#4f98e2" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
-                (diff-hl-insert (:background "#608960"))
+                (diff-hl-insert (:background "#345b34"))
                 (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#992626"))
+                (diff-hl-delete (:background "#7c2626"))
                 (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
                 (flycheck-fringe-warning (:foreground "DarkOrange"))
                 (flycheck-error (:underline (:color "DarkOrange" :style wave)))
@@ -792,14 +792,12 @@ PWD is not in a git repo (or the git command is not found)."
     (my/deeper-blue
         .
         ((theme . deeper-blue)
-        (faces . ((default (:foreground "gray80" :background "#232733"))
-                    (cursor (:background "gray80"))
-                    (hl-line (:background "#313749"))
-                    (fringe (:background "#343844"))
-                    (region (:background "#3f454f"))
-                    (org-block (:background "#272b37" :foreground "gray80"))
-                    (org-block-begin-line (:background "#343844" :foreground "gray80"))
-                    (org-block-end-line (:background "#343844" :foreground "gray80"))))))
+        (faces . ((cursor (:background "gray80"))
+                  (hl-line (:background "#313749"))
+                  (fringe (:background "#212435"))
+                  (org-block (:background "#212435" :foreground "gray80"))
+                  (org-block-begin-line (:background "#272b37" :foreground "gray80"))
+                  (org-block-end-line (:background "#272b37" :foreground "gray80"))))))
     ))
 
 (defvar my/avail-themes
@@ -2232,6 +2230,7 @@ Create compilation buffer
      "http://lucumr.pocoo.org/feed.atom"
      "https://www.joelonsoftware.com/feed/"
      "http://reasonablypolymorphic.com/atom.xml"
+     "https://chrispenner.ca/atom.xml"
      "http://lambdafoo.com/atom.xml"
      "http://www.rntz.net/blog/atom.xml"
      "http://www.serpentine.com/blog/feed/"
