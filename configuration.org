@@ -564,7 +564,12 @@ PWD is not in a git repo (or the git command is not found)."
   (setq fci-handle-truncate-lines t)
   (setq fci-mode-hooks '(python-mode-hook))
   (defun my/set-fci-rule-color ()
-    (setq fci-rule-color (face-attribute 'my/fci-rule :background)))
+    (setq fci-rule-color
+          (let ((my-fci-color (face-attribute 'my/fci-rule :background))
+                (bg-color (face-attribute 'default :background)))
+            (if (eq my-fci-color 'unspecified)
+                (color-lighten-name bg-color 10)
+              my-fci-color))))
   (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
   (my/add-hooks
    fci-mode-hooks
@@ -601,7 +606,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
-(defface my/fci-rule '((t :inherit font-lock-comment-face))
+(defface my/fci-rule '((t :background nil))
   "Dummy face for vertical rule, only background color is used in runtime")
 (defface my/mode-line-project '((t :inherit font-lock-function-name-face))
   "Mode line project name face")
@@ -628,6 +633,7 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block-begin-line (:background "#073642"))
                 (org-block-end-line (:background "#073642"))
                 (org-block (:background "#002f3b" :foreground "#839496"))
+                (my/fci-rule (:background "#053440"))
                 (hl-line (:background "#053440"))))))
     (my/solarized-light
      .
