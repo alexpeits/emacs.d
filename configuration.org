@@ -613,10 +613,6 @@ PWD is not in a git repo (or the git command is not found)."
 
 (defvar my/themes
   '(
-    (my/default
-     .
-     ((post-eval . ((set-face-attribute 'hl-line nil :background "#ebebeb")
-                    (set-face-attribute 'my/fci-rule nil :background "#e3e3e3")))))
     (my/zenburn
      .
      ((theme . zenburn)
@@ -692,15 +688,16 @@ PWD is not in a git repo (or the git command is not found)."
     (my/abyss
      .
      ((theme . abyss)
-      (faces . ((org-block-begin-line (:background "#303030"))
-                (org-block-end-line (:background "#303030"))
-                (org-block (:background "#262626" :foreground "#bbe0f0"))
-                (hl-line (:inverse-video nil :background "#252525"))
-                (fringe (:background "#313131"))
-                (my/fci-rule (:background "#3a3a3a"))
+      (faces . ((org-block-begin-line (:background "#252525"))
+                (org-block-end-line (:background "#252525"))
+                (org-block (:background "#1a1a1a" :foreground "#bbe0f0"))
+                (hl-line (:inverse-video nil :background "#202020"))
+                (fringe (:background "#282828"))
+                (my/fci-rule (:background "#323232"))
                 (my/mode-line-project (:inherit persp-selected-face))
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
-                (font-lock-comment-face (:foreground "#d55e00" :slant normal))
+                ;; (font-lock-comment-face (:foreground "#808080" :slant normal))
+                ;; (font-lock-comment-delimiter-face (:foreground "#808080" :slant normal))
                 (flycheck-warning (:underline (:color "#cea071" :style wave)))
                 (flycheck-fringe-warning (:foreground "#cea071"))
                 (flycheck-error (:underline (:color "#b74343" :style wave)))
