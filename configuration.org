@@ -696,6 +696,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (my/fci-rule (:background "#323232"))
                 (my/mode-line-project (:inherit persp-selected-face))
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
+                (region (:background "#253b76"))
                 ;; (font-lock-comment-face (:foreground "#808080" :slant normal))
                 ;; (font-lock-comment-delimiter-face (:foreground "#808080" :slant normal))
                 (flycheck-warning (:underline (:color "#cea071" :style wave)))
