@@ -608,11 +608,11 @@ PWD is not in a git repo (or the git command is not found)."
 ;; (use-package zenburn-theme :ensure t :defer t)
 (defface my/fci-rule '((t :background nil))
   "Dummy face for vertical rule, only background color is used in runtime")
-(defface my/mode-line-project '((t :inherit font-lock-function-name-face))
+(defface my/mode-line-project '((t :inherit persp-selected-face))
   "Mode line project name face")
 
 (defvar my/themes
-  '(
+  `(
     (my/zenburn
      .
      ((theme . zenburn)
@@ -714,7 +714,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:inverse-video nil :background "#303030"))
                 (region (:inverse-video nil :background "#424242"))
                 (cursor (:background "#dddddd"))
-                (fringe (:background "#303030"))
+                (fringe (:background "#303030" :foreground "#505050"))
                 (my/fci-rule (:background "#363636"))
                 (font-lock-doc-face (:foreground "LightCoral" :slant normal))
                 (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
@@ -724,9 +724,9 @@ PWD is not in a git repo (or the git command is not found)."
                 (persp-selected-face (:foreground "#4f98e2" :weight bold))
                 (mode-line (:background "#4b4b4b" :foreground "#e9e9e9" :box (:line-width 1 :color "#4b4b4b") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#222222" :foreground "#868686" :weight normal))
-                (diff-hl-insert (:background "#608960"))
-                (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#992626"))
+                (diff-hl-insert (:background "#266326"))
+                (diff-hl-change (:background "#1f3a68"))
+                (diff-hl-delete (:background "#7a2121"))
                 (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
                 (flycheck-fringe-warning (:foreground "#ffcc99"))
                 (flycheck-error (:underline (:color "#ee5656" :style wave)))
@@ -741,7 +741,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (hl-line (:inverse-video nil :background "#323232"))
                 (region (:inverse-video nil :background "#515151"))
                 (cursor (:background "#dddddd"))
-                (fringe (:background "#3c3c3c" :foreground "#8a8a8a"))
+                (fringe (:background "#3c3c3c" :foreground "#606060"))
                 (my/fci-rule (:background "#383838"))
                 (show-paren-match (:background "steelblue3"))
                 (mode-line-buffer-id (:foreground "white" :weight bold))
@@ -755,8 +755,8 @@ PWD is not in a git repo (or the git command is not found)."
                 (flycheck-fringe-warning (:foreground "DarkOrange"))
                 (flycheck-error (:underline (:color "DarkOrange" :style wave)))
                 (flycheck-fringe-warning (:foreground "DarkOrange"))
-                (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
-                (flycheck-fringe-error (:foreground "#ff6c6b"))
+                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                (flycheck-fringe-warning (:foreground "#ffcc99"))
                 (flycheck-info (:underline (:color "#6aafef" :style wave)))
                 (flycheck-fringe-info (:foreground "#61afef"))))))
     (my/tomorrow-night-eighties
@@ -803,7 +803,15 @@ PWD is not in a git repo (or the git command is not found)."
                   (fringe (:background "#212435"))
                   (org-block (:background "#212435" :foreground "gray80"))
                   (org-block-begin-line (:background "#272b37" :foreground "gray80"))
-                  (org-block-end-line (:background "#272b37" :foreground "gray80"))))))
+                  (org-block-end-line (:background "#272b37" :foreground "gray80"))
+                  (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
+                  (flycheck-fringe-warning (:foreground "DarkOrange"))
+                  (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                  (flycheck-fringe-warning (:foreground "#ffcc99"))
+                  (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
+                  (flycheck-fringe-error (:foreground "#ff6c6b"))
+                  (flycheck-info (:underline (:color "#6aafef" :style wave)))
+                  (flycheck-fringe-info (:foreground "#61afef"))))))
     ))
 
 (defvar my/avail-themes
@@ -1880,7 +1888,7 @@ With a prefix argument, insert a newline above the current line."
   (setq ivy-use-virtual-buffers nil)
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
-  (global-set-key (kbd "C-s") 'my/swiper)
+  (global-set-key (kbd "C-c s") 'my/swiper)
   (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
