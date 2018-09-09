@@ -278,8 +278,10 @@ sets `my-jump-handlers' in buffers of that mode."
   :config
   (require 'smartparens-config)
   (show-smartparens-global-mode +1)
+
   ;; don't create a pair with single quote in minibuffer
   (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
+
   (sp-pair "(" nil :post-handlers
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
   (sp-pair "{" nil :post-handlers
@@ -608,7 +610,7 @@ PWD is not in a git repo (or the git command is not found)."
 ;; (use-package zenburn-theme :ensure t :defer t)
 (defface my/fci-rule '((t :background nil))
   "Dummy face for vertical rule, only background color is used in runtime")
-(defface my/mode-line-project '((t :inherit persp-selected-face))
+(defface my/mode-line-project '((t :inherit font-lock-constant-face))
   "Mode line project name face")
 
 (defvar my/themes
@@ -734,10 +736,10 @@ PWD is not in a git repo (or the git command is not found)."
     (my/wombat
      .
      ((theme . wombat)
-      (faces . ((org-block-begin-line (:background "#323232"))
-                (org-block-end-line (:background "#323232"))
-                (org-block (:background "#2b2b2b" :foreground "#dddddd"))
-                (default (:foreground "#dddddd" :background "#242424"))
+      (faces . ((org-block-begin-line (:background "#2a2a2a"))
+                (org-block-end-line (:background "#2a2a2a"))
+                (org-block (:background "#232323" :foreground "#dddddd"))
+                (default (:foreground "#dddddd" :background "#1b1b1b"))
                 (hl-line (:inverse-video nil :background "#323232"))
                 (region (:inverse-video nil :background "#515151"))
                 (cursor (:background "#dddddd"))
@@ -881,6 +883,10 @@ PWD is not in a git repo (or the git command is not found)."
   (let ((next-font (mod (1+ my/current-font) (length my/avail-fonts))))
     (my/set-font (elt my/avail-fonts next-font))
     (setq my/current-font next-font)))
+
+(defun my/refresh-font ()
+  (interactive)
+  (my/set-font (elt my/avail-fonts my/current-font)))
 
 ;; size & scaling
 (setq text-scale-mode-step 1.05)
@@ -1384,6 +1390,10 @@ With a prefix argument, insert a newline above the current line."
   ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
   ;; this has to be installed in every repo until I find a solution
   (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+  ;; don't auto insert matching single quotes in haskell mode, since I
+  ;; mostly use them for promoted data types
+  (sp-local-pair 'haskell-mode "'" nil :actions nil)
+  (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
   )
 
 (add-hook 'haskell-mode-hook
@@ -2264,6 +2274,9 @@ Create compilation buffer
 
      ;; News
      "https://www.efsyn.gr/rss.xml"
+
+     ;; Infosec
+     "https://blog.g0tmi1k.com/atom.xml"
      )))
 #+END_SRC
 
