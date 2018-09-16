@@ -610,7 +610,7 @@ PWD is not in a git repo (or the git command is not found)."
 ;; (use-package zenburn-theme :ensure t :defer t)
 (defface my/fci-rule '((t :background nil))
   "Dummy face for vertical rule, only background color is used in runtime")
-(defface my/mode-line-project '((t :inherit font-lock-constant-face))
+(defface my/mode-line-project '((t :inherit font-lock-function-name-face))
   "Mode line project name face")
 
 (defvar my/themes
@@ -700,6 +700,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (my/mode-line-project (:inherit persp-selected-face))
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
                 (region (:background "#253b76"))
+                (show-paren-match (:background "steelblue3"))
                 ;; (font-lock-comment-face (:foreground "#808080" :slant normal))
                 ;; (font-lock-comment-delimiter-face (:foreground "#808080" :slant normal))
                 (flycheck-warning (:underline (:color "#cea071" :style wave)))
@@ -741,18 +742,18 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block (:background "#232323" :foreground "#dddddd"))
                 (default (:foreground "#dddddd" :background "#1b1b1b"))
                 (hl-line (:inverse-video nil :background "#323232"))
-                (region (:inverse-video nil :background "#515151"))
+                (region (:inverse-video nil :background "#444444"))
                 (cursor (:background "#dddddd"))
-                (fringe (:background "#3c3c3c" :foreground "#606060"))
+                (fringe (:background "#323232" :foreground "#606060"))
                 (my/fci-rule (:background "#383838"))
                 (show-paren-match (:background "steelblue3"))
                 (mode-line-buffer-id (:foreground "white" :weight bold))
                 (persp-selected-face (:foreground "#4f98e2" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
-                (diff-hl-insert (:background "#345b34"))
-                (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#7c2626"))
+                (diff-hl-insert (:background "#266326"))
+                (diff-hl-change (:background "#1f3a68"))
+                (diff-hl-delete (:background "#7a2121"))
                 (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
                 (flycheck-fringe-warning (:foreground "DarkOrange"))
                 (flycheck-error (:underline (:color "DarkOrange" :style wave)))
@@ -798,22 +799,30 @@ PWD is not in a git repo (or the git command is not found)."
                 (diff-hl-delete (:background "#f4b5b5"))
                 ))))
     (my/deeper-blue
-        .
-        ((theme . deeper-blue)
-        (faces . ((cursor (:background "gray80"))
-                  (hl-line (:background "#313749"))
-                  (fringe (:background "#212435"))
-                  (org-block (:background "#212435" :foreground "gray80"))
-                  (org-block-begin-line (:background "#272b37" :foreground "gray80"))
-                  (org-block-end-line (:background "#272b37" :foreground "gray80"))
-                  (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
-                  (flycheck-fringe-warning (:foreground "DarkOrange"))
-                  (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                  (flycheck-fringe-warning (:foreground "#ffcc99"))
-                  (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
-                  (flycheck-fringe-error (:foreground "#ff6c6b"))
-                  (flycheck-info (:underline (:color "#6aafef" :style wave)))
-                  (flycheck-fringe-info (:foreground "#61afef"))))))
+     .
+     ((theme . deeper-blue)
+      (faces . ((cursor (:background "gray80"))
+                (hl-line (:background "#313749"))
+                (fringe (:background "#212435"))
+                (org-block (:background "#212435" :foreground "gray80"))
+                (org-block-begin-line (:background "#272b37" :foreground "gray80"))
+                (org-block-end-line (:background "#272b37" :foreground "gray80"))
+                (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
+                (flycheck-fringe-warning (:foreground "DarkOrange"))
+                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
+                (flycheck-fringe-warning (:foreground "#ffcc99"))
+                (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
+                (flycheck-fringe-error (:foreground "#ff6c6b"))
+                (flycheck-info (:underline (:color "#6aafef" :style wave)))
+                (flycheck-fringe-info (:foreground "#61afef"))))))
+
+    (my/distinguished
+     .
+     ((theme . distinguished)
+      (faces . ((default (:foreground "#f0fef0" :background "#151515"))
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (hl-line (:background "#282828"))
+                (diff-added (:background "#003500" :foreground "#00aa00"))))))
     ))
 
 (defvar my/avail-themes
@@ -1063,14 +1072,6 @@ For when I'm not using evil mode
 
   ;; magit
   (evil-define-key 'normal magit-blame-mode-map (kbd "q") 'magit-blame-quit)
-
-  ;; neotree
-  (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-  (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-enter)
-  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
-  (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
-  (evil-define-key 'normal neotree-mode-map (kbd "|") 'neotree-enter-vertical-split)
-  (evil-define-key 'normal neotree-mode-map (kbd "-") 'neotree-enter-horizontal-split)
 
   ;; intercept ESC when running in terminal
   (setq evil-intercept-esc t)
@@ -1898,7 +1899,8 @@ With a prefix argument, insert a newline above the current line."
   (setq ivy-use-virtual-buffers nil)
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
-  (global-set-key (kbd "C-c s") 'my/swiper)
+  (global-set-key (kbd "C-s") 'my/swiper)
+  (global-set-key (kbd "C-c s") 'isearch-forward)
   (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -2094,7 +2096,7 @@ With a prefix argument, insert a newline above the current line."
   (use-package treemacs-projectile :ensure t)
   (setq treemacs-follow-mode t
         treemacs-filewatch-mode t)
-  (define-key global-map (kbd "M-0") 'treemacs-select-window)
+  (define-key global-map (kbd "M-0") 'my/file-tree)
 
   (defun my/file-tree ()
     "open treemacs in git root"
