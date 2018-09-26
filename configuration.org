@@ -590,31 +590,56 @@ PWD is not in a git repo (or the git command is not found)."
 
 (setq spacemacs-theme-org-height nil)
 (when window-system
-   (setq solarized-use-variable-pitch nil
-         solarized-height-plus-1 1.0
-         solarized-height-plus-2 1.0
-         solarized-height-plus-3 1.0
-         solarized-height-plus-4 1.0
-         solarizedarker-use-variable-pitch nil
-         solarizedarker-height-plus-1 1.0
-         solarizedarker-height-plus-2 1.0
-         solarizedarker-height-plus-3 1.0
-         solarizedarker-height-plus-4 1.0
-         solarizedarkerbright-use-variable-pitch nil
-         solarizedarkerbright-height-plus-1 1.0
-         solarizedarkerbright-height-plus-2 1.0
-         solarizedarkerbright-height-plus-3 1.0
-         solarizedarkerbright-height-plus-4 1.0))
+   (setq
+    solarized-use-variable-pitch nil
+    solarized-height-plus-1 1.0
+    solarized-height-plus-2 1.0
+    solarized-height-plus-3 1.0
+    solarized-height-plus-4 1.0
+    solarized-brighter-use-variable-pitch nil
+    solarized-brighter-height-plus-1 1.0
+    solarized-brighter-height-plus-2 1.0
+    solarized-brighter-height-plus-3 1.0
+    solarized-brighter-height-plus-4 1.0
+    solarized-brighter-black-use-variable-pitch nil
+    solarized-brighter-black-height-plus-1 1.0
+    solarized-brighter-black-height-plus-2 1.0
+    solarized-brighter-black-height-plus-3 1.0
+    solarized-brighter-black-height-plus-4 1.0))
 
 ;; (use-package solarized-theme :ensure t :defer t)
 ;; (use-package zenburn-theme :ensure t :defer t)
 (defface my/fci-rule '((t :background nil))
   "Dummy face for vertical rule, only background color is used in runtime")
-(defface my/mode-line-project '((t :inherit font-lock-function-name-face))
+(defface my/mode-line-project '((t nil))
   "Mode line project name face")
 
 (defvar my/themes
   `(
+    (my/default
+     .
+     ((post-eval . ((set-face-attribute 'default nil :background "White")
+                    (set-face-attribute 'default nil :foreground "Black")
+                    (set-face-attribute 'font-lock-comment-face nil :foreground "Firebrick")
+                    (custom-set-faces
+                     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+                     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
+                     '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
+                     '(flycheck-fringe-error ((t (:foreground "red1"))))
+                     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+                     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2")))))))))
+    (my/default-dark
+     .
+     ((post-eval . ((set-face-attribute 'default nil :background "#161616")
+                    (set-face-attribute 'default nil :foreground "White")
+                    (set-face-attribute 'font-lock-comment-face nil :foreground "chocolate1")
+                    (custom-set-faces
+                     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+                     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
+                     '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
+                     '(flycheck-fringe-error ((t (:foreground "red1"))))
+                     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+                     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2")))))))))
     (my/zenburn
      .
      ((theme . zenburn)
@@ -710,15 +735,14 @@ PWD is not in a git repo (or the git command is not found)."
     (my/manoj-dark
      .
      ((theme . manoj-dark)
-      (faces . ((org-block-begin-line (:background "#262626"))
-                (org-block-end-line (:background "#262626"))
-                (org-block (:background "#1e1e1e" :foreground "#dddddd"))
-                (default (:foreground "#dddddd" :background "#1a1a1a"))
-                (hl-line (:inverse-video nil :background "#303030"))
+      (faces . ((org-block-begin-line (:background "#232323"))
+                (org-block-end-line (:background "#232323"))
+                (org-block (:background "#1a1a1a" :foreground "#dddddd"))
+                (default (:foreground "#dddddd" :background "#191919"))
+                (hl-line (:inverse-video nil :background "#2b2b2b"))
                 (region (:inverse-video nil :background "#424242"))
                 (cursor (:background "#dddddd"))
                 (fringe (:background "#303030" :foreground "#505050"))
-                (my/fci-rule (:background "#363636"))
                 (font-lock-doc-face (:foreground "LightCoral" :slant normal))
                 (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
                 (font-lock-comment-face (:foreground "chocolate1"))
@@ -850,7 +874,7 @@ PWD is not in a git repo (or the git command is not found)."
          (org-block-bg (cdr (assoc 'org-block-bg config))))
     ;; disable all currently enabled themes (otherwise faces get messed up)
     (mapc 'disable-theme custom-enabled-themes)
-    (unless (or (eq theme 'my/default) (null theme))
+    (unless (or (eq theme 'my/default) (eq theme 'my/default-dark) (null theme))
       (load-theme theme t)
       (dolist (fc faces)
         (let ((face (nth 0 fc))
@@ -1845,7 +1869,15 @@ With a prefix argument, insert a newline above the current line."
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (setq-default flycheck-temp-prefix ".flycheck")
-  (setq-default flycheck-emacs-lisp-load-path 'inherit))
+  (setq-default flycheck-emacs-lisp-load-path 'inherit)
+  (defun my/flycheck-always ()
+    (interactive)
+    (setq flycheck-check-syntax-automatically '(save idle-change new-line mode-enabled)))
+
+  (defun my/flycheck-on-save ()
+    (interactive)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled)))
+)
 #+END_SRC
 
 * Projectile
@@ -2007,7 +2039,7 @@ With a prefix argument, insert a newline above the current line."
 
 * Yasnippet
   
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
   :init
@@ -2018,7 +2050,8 @@ With a prefix argument, insert a newline above the current line."
   (define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
   (diminish 'yas-minor-mode ""))
 
-(yas-global-mode 1)
+;; (yas-global-mode 1)
+(my/add-hooks '(markdown-mode-hook gfm-mode-hook) (yas-minor-mode))
 #+END_SRC
 
 * Other window management
