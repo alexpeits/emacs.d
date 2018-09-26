@@ -36,6 +36,8 @@
  '(show-paren-match ((t (:background "RoyalBlue3"))))
  '(region ((t (:background "#253b76"))))
  '(fringe ((t (:background "#2b2b2b"))))
+ '(hl-line ((t (:background "#262626"))))
+ '(my/fci-rule ((t (:background "#2a2a2a"))))
  '(persp-selected-face ((t (:foreground "RoyalBlue" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))

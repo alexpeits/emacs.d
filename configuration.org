@@ -614,32 +614,8 @@ PWD is not in a git repo (or the git command is not found)."
 (defface my/mode-line-project '((t nil))
   "Mode line project name face")
 
-(defvar my/themes
+(setq my/themes
   `(
-    (my/default
-     .
-     ((post-eval . ((set-face-attribute 'default nil :background "White")
-                    (set-face-attribute 'default nil :foreground "Black")
-                    (set-face-attribute 'font-lock-comment-face nil :foreground "Firebrick")
-                    (custom-set-faces
-                     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-                     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
-                     '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
-                     '(flycheck-fringe-error ((t (:foreground "red1"))))
-                     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-                     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2")))))))))
-    (my/default-dark
-     .
-     ((post-eval . ((set-face-attribute 'default nil :background "#161616")
-                    (set-face-attribute 'default nil :foreground "White")
-                    (set-face-attribute 'font-lock-comment-face nil :foreground "chocolate1")
-                    (custom-set-faces
-                     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-                     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
-                     '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
-                     '(flycheck-fringe-error ((t (:foreground "red1"))))
-                     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-                     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2")))))))))
     (my/zenburn
      .
      ((theme . zenburn)
@@ -647,17 +623,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (org-block-end-line (:background "#474747"))
                 (org-block (:background "#424242" :foreground "#dcdccc"))
                 (persp-selected-face (:foreground "#d0bf8f" :weight bold))
-                (my/fci-rule (:background "#5a5a5a"))
-                ;; (mode-line-inactive (:foreground "#5f7f5f" :background "#333333"))
-                ))))
-    (my/solarized-dark
-     .
-     ((theme . solarized-dark)
-      (faces . ((org-block-begin-line (:background "#073642"))
-                (org-block-end-line (:background "#073642"))
-                (org-block (:background "#002f3b" :foreground "#839496"))
-                (my/fci-rule (:background "#053440"))
-                (hl-line (:background "#053440"))))))
+                (my/fci-rule (:background "#5a5a5a"))))))
     (my/solarized-light
      .
      ((theme . solarized-light)
@@ -672,14 +638,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (diff-hl-change (:background "#b5d8f4"))
                 (diff-hl-delete (:background "#f4b5b5"))
                 (my/fci-rule (:background "#e8e0d0"))))))
-    (my/solarized-black-bright
-     .
-     ((theme . solarized-black-bright)
-      (faces . ((org-block-begin-line (:background "#303030"))
-                (org-block-end-line (:background "#303030"))
-                (org-block (:background "#292929" :foreground "#a1acae"))
-                (hl-line (:background "#303030"))
-                (fringe (:background "#303030"))))))
     (my/zerodark
      .
      ((theme . zerodark)
@@ -698,20 +656,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (flycheck-fringe-error (:foreground "#ff6c6b"))
                 (flycheck-info (:underline (:color "#6aafef" :style wave)))
                 (flycheck-fringe-info (:foreground "#61afef"))
-                (term-color-cyan (:foreground "#417eaf"))
-                ))))
-    (my/doom-city-lights
-     .
-     ((theme . doom-city-lights)
-      (faces . ((mode-line (:box nil :foreground "#e0e0e0" :background "#324351" :box (:line-width 2 :color "#324351")))
-                (mode-line-inactive (:foreground "#56697a" :background "#1a2127" :box (:line-width 2 :color "#1a2127")))
-                (diff-hl-insert (:background "#608960"))
-                (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#992626"))
-                (my/fci-rule (:background "#25303a"))
-                (hl-line (:background "#222a31"))
-                (region (:background "#323c45"))
-                (fringe (:background "#25303a" :foreground "#454545"))))))
+                (term-color-cyan (:foreground "#417eaf"))))))
     (my/abyss
      .
      ((theme . abyss)
@@ -726,8 +671,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
                 (region (:background "#253b76"))
                 (show-paren-match (:background "steelblue3"))
-                ;; (font-lock-comment-face (:foreground "#808080" :slant normal))
-                ;; (font-lock-comment-delimiter-face (:foreground "#808080" :slant normal))
                 (flycheck-warning (:underline (:color "#cea071" :style wave)))
                 (flycheck-fringe-warning (:foreground "#cea071"))
                 (flycheck-error (:underline (:color "#b74343" :style wave)))
@@ -820,8 +763,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (my/fci-rule (:background "#dddddd"))
                 (diff-hl-insert (:background "#b9e0b3"))
                 (diff-hl-change (:background "#b5d8f4"))
-                (diff-hl-delete (:background "#f4b5b5"))
-                ))))
+                (diff-hl-delete (:background "#f4b5b5"))))))
     (my/deeper-blue
      .
      ((theme . deeper-blue)
@@ -839,7 +781,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (flycheck-fringe-error (:foreground "#ff6c6b"))
                 (flycheck-info (:underline (:color "#6aafef" :style wave)))
                 (flycheck-fringe-info (:foreground "#61afef"))))))
-
     (my/distinguished
      .
      ((theme . distinguished)
