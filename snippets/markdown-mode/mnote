@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: margin note
+# key: mnote
+# --
+<label for='${1:id}' class='margin-toggle'></label>
+<input type='checkbox' id='$1' class='margin-toggle'/>
+<span class='marginnote'>$2</span>
