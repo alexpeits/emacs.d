@@ -178,6 +178,8 @@ sets `my-jump-handlers' in buffers of that mode."
 
 ;; use column width 80 to fill (e.g. with gq)
 (setq-default fill-column 79)
+(defun my/set-mode-fill-width (mode-hook width)
+  (add-hook mode-hook `(lambda () (setq fill-column ,width))))
 
 ;; diminish various minor modes in modeline
 (add-hook 'auto-revert-mode-hook (lambda () (diminish 'auto-revert-mode "")))
@@ -295,6 +297,7 @@ sets `my-jump-handlers' in buffers of that mode."
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
+  (define-key smartparens-mode-map (kbd "M-j") nil)
   ;; (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
   ;; (define-key smartparens-mode-map (kbd "C-{") 'sp-backward-barf-sexp)
   ;; (define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
@@ -310,6 +313,7 @@ sets `my-jump-handlers' in buffers of that mode."
   ;; (define-key smartparens-mode-map (kbd "C-M-p") 'sp-up-sexp)
 )
 
+
 (use-package which-key
   :ensure t
   :config
@@ -319,7 +323,27 @@ sets `my-jump-handlers' in buffers of that mode."
 (use-package imenu-list
   :ensure t
   :config
+
+  (defun my/imenu-list-jump-to-window ()
+    "Jump to imenu-list window if visible, otherwise create it and jump."
+    (interactive)
+    (if (get-buffer-window imenu-list-buffer-name)
+        (select-window (get-buffer-window imenu-list-buffer-name))
+      (progn
+        (imenu-list-minor-mode)
+        (select-window (get-buffer-window imenu-list-buffer-name)))))
+
+  (defun my/imenu-list-smart-toggle ()
+    "If imenu-list window doesn't exist, create it and jump. If if does but
+it is not the current buffer, jump there. If it exists and it's the current
+buffer, close it."
+    (interactive)
+    (if (eq (current-buffer) (get-buffer imenu-list-buffer-name))
+        (imenu-list-minor-mode 'toggle)
+      (my/imenu-list-jump-to-window)))
+
   ;; (global-set-key (kbd "C-\\") #'imenu-list-minor-mode)
+  (global-set-key (kbd "C-\\") #'my/imenu-list-smart-toggle)
   (setq imenu-list-size 30))
 
 (use-package zeal-at-point
@@ -564,7 +588,10 @@ PWD is not in a git repo (or the git command is not found)."
   :ensure t
   :init
   (setq fci-handle-truncate-lines t)
-  (setq fci-mode-hooks '(python-mode-hook))
+  (setq
+   fci-mode-hooks
+   '(python-mode-hook
+     markdown-mode-hook))
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color
           (let ((my-fci-color (face-attribute 'my/fci-rule :background))
@@ -1647,7 +1674,7 @@ With a prefix argument, insert a newline above the current line."
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :config
-  (add-hook 'markdown-mode-hook #'(lambda () (setq fill-column 100)))
+  (my/set-mode-fill-width 'markdown-mode-hook 100)
   (setq markdown-fontify-code-blocks-natively t))
 #+END_SRC
 
@@ -1833,11 +1860,7 @@ With a prefix argument, insert a newline above the current line."
   :config
   (projectile-mode)
   (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line '(:eval
-                               (propertize
-                                (format " {%s}" (projectile-project-name))
-                                'face
-                                'my/mode-line-project)))
+  (setq projectile-mode-line-prefix " P")
   (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
     (if (projectile-project-p)
         (apply in-proj-f args)
@@ -1989,7 +2012,8 @@ With a prefix argument, insert a newline above the current line."
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   (define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
-  (diminish 'yas-minor-mode ""))
+  (diminish 'yas-minor-mode "")
+  (yas-reload-all))
 
 ;; (yas-global-mode 1)
 (my/add-hooks '(markdown-mode-hook gfm-mode-hook) (yas-minor-mode))
@@ -2070,16 +2094,10 @@ With a prefix argument, insert a newline above the current line."
   (use-package treemacs-projectile :ensure t)
   (setq treemacs-follow-mode t
         treemacs-filewatch-mode t)
-  (define-key global-map (kbd "M-0") 'my/file-tree)
-
-  (defun my/file-tree ()
-    "open treemacs in git root"
-    (interactive)
-    (if (treemacs-buffer-exists?)
-        (progn
-          (treemacs-select-window)
-          (treemacs-kill-buffer))
-      (treemacs))))
+  (treemacs-git-mode 'simple)
+  (define-key treemacs-mode-map (kbd "C-p") 'treemacs-previous-line)
+  (define-key treemacs-mode-map (kbd "C-n") 'treemacs-next-line)
+  (define-key global-map (kbd "M-0") 'treemacs))
 #+END_SRC
 
 ** Others
@@ -2155,14 +2173,6 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
 (setq-default mode-line-buffer-identification
   '(:eval (ml-propertized-buffer-identification "%12b")))
 
-#+END_SRC
-
-Create compilation buffer
-
-#+BEGIN_SRC emacs-lisp
-(defun my/switch-to-compilation-buffer ()
-  (interactive)
-  (switch-to-buffer "*compilation*"))
 #+END_SRC
 
 * Other major modes
@@ -2316,15 +2326,6 @@ Create compilation buffer
 #+END_SRC
 
 * Other minor modes
-** wiki-summary
-
-#+BEGIN_SRC emacs-lisp
-(use-package wiki-summary
-  :ensure t
-  :defer 1
-  :bind ("C-c W" . wiki-summary))
-#+END_SRC
-
 * Modeline
   
 #+BEGIN_SRC emacs-lisp
@@ -2415,6 +2416,8 @@ Create compilation buffer
 
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
+
+  (my/set-mode-fill-width 'org-mode-hook 100)
 
    (add-to-list
     'org-structure-template-alist

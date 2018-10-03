@@ -1,0 +1,3 @@
+# name: Thought
+# --
+{% newthought '${1:content}' %}
