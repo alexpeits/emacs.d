@@ -339,7 +339,7 @@ it is not the current buffer, jump there. If it exists and it's the current
 buffer, close it."
     (interactive)
     (if (eq (current-buffer) (get-buffer imenu-list-buffer-name))
-        (imenu-list-minor-mode 'toggle)
+        (imenu-list-quit-window)
       (my/imenu-list-jump-to-window)))
 
   ;; (global-set-key (kbd "C-\\") #'imenu-list-minor-mode)
