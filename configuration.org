@@ -1338,7 +1338,7 @@ With a prefix argument, insert a newline above the current line."
                       "-"
                     pyvenv-virtual-env-name)))
         (concat
-         " ["
+         "["
          ;; (propertize venv 'face 'font-lock-function-name-face)
          (propertize venv 'face '(:underline t))
          ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
@@ -1800,6 +1800,7 @@ With a prefix argument, insert a newline above the current line."
   :defer t
   :init (global-flycheck-mode)
   :config
+  (diminish 'flycheck-mode "")
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (defun my/toggle-flycheck-error-list ()
     (interactive)
@@ -2327,19 +2328,19 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
 * Other minor modes
 * Modeline
   
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (defface modeline-flycheck-error
-  '((t (:foreground "#FC5C94" :distant-foreground "#A20C41")))
+  '((t (:foreground "firebrick3" :distant-foreground "firebrick4")))
   "Face for flycheck error feedback in the modeline."
-  :group 'spaceline)
+  :group 'modeline-flycheck)
 (defface modeline-flycheck-warning
-  '((t (:foreground "#F3EA98" :distant-foreground "#968B26")))
+  '((t (:foreground "DarkGoldenrod4" :distant-foreground "chocolate4")))
   "Face for flycheck warning feedback in the modeline."
-  :group 'spaceline)
+  :group 'modeline-flycheck)
 (defface modeline-flycheck-info
-  '((t (:foreground "#8DE6F7" :distant-foreground "#21889B")))
+  '((t (:foreground "cyan4" :distant-foreground "CadetBlue4")))
   "Face for flycheck info feedback in the modeline."
-  :group 'spaceline)
+  :group 'modeline-flycheck)
 
 (defvar modeline-flycheck-bullet "•%s"
   "The bullet used for the flycheck segment.
@@ -2356,10 +2357,11 @@ the number of errors.")
         (propertize (format modeline-flycheck-bullet err) 'face face))))
 
 (defun my/mode-line-flycheck ()
-  (let ((ml-error (my/mode-line-flycheck-state 'error))
-        (ml-warning (my/mode-line-flycheck-state 'warning))
-        (ml-info (my/mode-line-flycheck-state 'info)))
-    (concat ml-error ml-warning ml-info)))
+  (let* ((ml-error (my/mode-line-flycheck-state 'error))
+         (ml-warning (my/mode-line-flycheck-state 'warning))
+         (ml-info (my/mode-line-flycheck-state 'info))
+         (ml-status (concat ml-error ml-warning ml-info)))
+    (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
   
 #+BEGIN_SRC emacs-lisp
@@ -2368,8 +2370,8 @@ the number of errors.")
                 mode-line-client mode-line-modified mode-line-remote
                 mode-line-frame-identification mode-line-buffer-identification " "
                 mode-line-position
-                ;; (:eval (my/mode-line-flycheck))
                 (vc-mode vc-mode)
+                (:eval (my/mode-line-flycheck))
                 (:eval (my/mode-line-venv))
                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 #+END_SRC
