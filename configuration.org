@@ -570,7 +570,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; highlight trailing whitespace
 (setq whitespace-style '(face trailing))
-(add-hook 'prog-mode-hook (lambda () (whitespace-mode) (diminish whitespace-mode "")))
+(add-hook 'prog-mode-hook #'whitespace-mode)
 
 ;; 80-column rule
 (use-package whitespace
@@ -1800,7 +1800,6 @@ With a prefix argument, insert a newline above the current line."
   :defer t
   :init (global-flycheck-mode)
   :config
-  (diminish 'flycheck-mode "")
   (add-hook 'after-init-hook #'global-flycheck-mode)
   (defun my/toggle-flycheck-error-list ()
     (interactive)
@@ -2328,12 +2327,48 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
 * Other minor modes
 * Modeline
   
+#+BEGIN_SRC emacs-lisp :tangle no
+(defface modeline-flycheck-error
+  '((t (:foreground "#FC5C94" :distant-foreground "#A20C41")))
+  "Face for flycheck error feedback in the modeline."
+  :group 'spaceline)
+(defface modeline-flycheck-warning
+  '((t (:foreground "#F3EA98" :distant-foreground "#968B26")))
+  "Face for flycheck warning feedback in the modeline."
+  :group 'spaceline)
+(defface modeline-flycheck-info
+  '((t (:foreground "#8DE6F7" :distant-foreground "#21889B")))
+  "Face for flycheck info feedback in the modeline."
+  :group 'spaceline)
+
+(defvar modeline-flycheck-bullet "•%s"
+  "The bullet used for the flycheck segment.
+This should be a format string with a single `%s'-expression corresponding to
+the number of errors.")
+
+(defun my/mode-line-flycheck-state (state)
+  (let* ((counts (flycheck-count-errors flycheck-current-errors))
+         (errorp (flycheck-has-current-errors-p state))
+         (err (or (cdr (assq state counts)) "?"))
+         (running (eq 'running flycheck-last-status-change))
+         (face (intern (format "modeline-flycheck-%S" state))))
+    (if (or errorp running)
+        (propertize (format modeline-flycheck-bullet err) 'face face))))
+
+(defun my/mode-line-flycheck ()
+  (let ((ml-error (my/mode-line-flycheck-state 'error))
+        (ml-warning (my/mode-line-flycheck-state 'warning))
+        (ml-info (my/mode-line-flycheck-state 'info)))
+    (concat ml-error ml-warning ml-info)))
+#+END_SRC
+  
 #+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
               '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
                 mode-line-client mode-line-modified mode-line-remote
                 mode-line-frame-identification mode-line-buffer-identification " "
                 mode-line-position
+                ;; (:eval (my/mode-line-flycheck))
                 (vc-mode vc-mode)
                 (:eval (my/mode-line-venv))
                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
@@ -2479,7 +2514,7 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
 
 * Setup
 ** Per-workstation setup
-
+   
 (thanks Nicolas Petton)
 
 #+BEGIN_SRC emacs-lisp
@@ -2508,6 +2543,8 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
 ;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
 (hybrid-mode)
+
+(diminish 'whitespace-mode "")
 
 ;; (setq evil-default-state 'emacs)
 
