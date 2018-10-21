@@ -613,7 +613,11 @@ PWD is not in a git repo (or the git command is not found)."
 #+BEGIN_SRC emacs-lisp
 (unless is-mac
   (defvar zenburn-override-colors-alist)
-  (setq zenburn-override-colors-alist '(("zenburn-bg" . "#3D3D3D"))))
+  (setq zenburn-override-colors-alist
+        '(
+          ("zenburn-bg" . "#3a3a3a")
+          ("zenburn-bg+1" . "#494949")
+          )))
 
 (setq spacemacs-theme-org-height nil)
 (when window-system
@@ -641,7 +645,7 @@ PWD is not in a git repo (or the git command is not found)."
 (defface my/mode-line-project '((t nil))
   "Mode line project name face")
 
-(setq my/themes
+(defvar my/themes
   `(
     (my/zenburn
      .
@@ -649,8 +653,7 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block-begin-line (:background "#474747"))
                 (org-block-end-line (:background "#474747"))
                 (org-block (:background "#424242" :foreground "#dcdccc"))
-                (persp-selected-face (:foreground "#d0bf8f" :weight bold))
-                (my/fci-rule (:background "#5a5a5a"))))))
+                (persp-selected-face (:foreground "#d0bf8f" :weight bold))))))
     (my/solarized-light
      .
      ((theme . solarized-light)
@@ -745,17 +748,17 @@ PWD is not in a git repo (or the git command is not found)."
                 (persp-selected-face (:foreground "#4f98e2" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
-                (diff-hl-insert (:background "#266326"))
+                (modeline-flycheck-error (:foreground "firebrick2"))
+                (modeline-flycheck-warning (:foreground "DarkGoldenrod3"))
+                (diff-hl-insert (:background "#2c5b2c"))
                 (diff-hl-change (:background "#1f3a68"))
                 (diff-hl-delete (:background "#7a2121"))
-                (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
-                (flycheck-fringe-warning (:foreground "DarkOrange"))
-                (flycheck-error (:underline (:color "DarkOrange" :style wave)))
-                (flycheck-fringe-warning (:foreground "DarkOrange"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))
-                (flycheck-info (:underline (:color "#6aafef" :style wave)))
-                (flycheck-fringe-info (:foreground "#61afef"))))))
+                (flycheck-warning (:underline (:color "orange1" :style wave)))
+                (flycheck-fringe-warning (:foreground "orange1"))
+                (flycheck-error (:underline (:color "red1" :style wave)))
+                (flycheck-fringe-error (:foreground "red1"))
+                (flycheck-info (:underline (:color "DeepSkyBlue2" :style wave)))
+                (flycheck-fringe-info (:foreground "DeepSkyBlue2"))))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
@@ -811,9 +814,19 @@ PWD is not in a git repo (or the git command is not found)."
     (my/distinguished
      .
      ((theme . distinguished)
-      (faces . ((default (:foreground "#f0fef0" :background "#151515"))
+      (faces . ((default (:foreground "#f0fef0" :background "#1a1a1a"))
+                (fringe (:background "#282828"))
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (hl-line (:background "#282828"))
+                (hl-line (:background "#2a2a2a"))
+                (diff-added (:background "#003500" :foreground "#00aa00"))))))
+    (my/darktooth
+     .
+     ((theme . darktooth)
+      (faces . ((fringe (:background "#353535"))
+                (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (hl-line (:background "#303030"))
+                (mode-line (:box nil :foreground "#EBDBB2" :background "#4f4a47"))
+                (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))
                 (diff-added (:background "#003500" :foreground "#00aa00"))))))
     ))
 
@@ -2330,15 +2343,15 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
   
 #+BEGIN_SRC emacs-lisp
 (defface modeline-flycheck-error
-  '((t (:foreground "firebrick3" :distant-foreground "firebrick4")))
+  '((t (:foreground "firebrick3" :distant-foreground "firebrick2")))
   "Face for flycheck error feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-warning
-  '((t (:foreground "DarkGoldenrod4" :distant-foreground "chocolate4")))
+  '((t (:foreground "DarkGoldenrod4" :distant-foreground "DarkGoldenrod3")))
   "Face for flycheck warning feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-info
-  '((t (:foreground "cyan4" :distant-foreground "CadetBlue4")))
+  '((t (:foreground "cyan4" :distant-foreground "cyan4")))
   "Face for flycheck info feedback in the modeline."
   :group 'modeline-flycheck)
 
