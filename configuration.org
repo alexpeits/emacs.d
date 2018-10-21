@@ -646,8 +646,7 @@ PWD is not in a git repo (or the git command is not found)."
   "Mode line project name face")
 
 (defvar my/themes
-  `(
-    (my/zenburn
+  `((my/zenburn
      .
      ((theme . zenburn)
       (faces . ((org-block-begin-line (:background "#474747"))
@@ -822,12 +821,15 @@ PWD is not in a git repo (or the git command is not found)."
     (my/darktooth
      .
      ((theme . darktooth)
-      (faces . ((fringe (:background "#353535"))
+      (faces . ((fringe (:background "#2a2a2a"))
+                (default (:foreground "#e5dfbc" :background "#202020"))
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
+                (font-lock-function-name-face (:foreground "#74b8bc"))
                 (hl-line (:background "#303030"))
-                (mode-line (:box nil :foreground "#EBDBB2" :background "#4f4a47"))
+                (mode-line (:box nil :foreground "#e5dfbc" :background "#4d4845"))
                 (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))
-                (diff-added (:background "#003500" :foreground "#00aa00"))))))
+                (diff-added (:background "#003500" :foreground "#00aa00"))
+                (diff-changed (:background "#333355" :foreground "blue3"))))))
     ))
 
 (defvar my/avail-themes
@@ -2343,15 +2345,15 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
   
 #+BEGIN_SRC emacs-lisp
 (defface modeline-flycheck-error
-  '((t (:foreground "firebrick3" :distant-foreground "firebrick2")))
+  '((t (:foreground "firebrick3" :distant-foreground "firebrick3")))
   "Face for flycheck error feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-warning
-  '((t (:foreground "DarkGoldenrod4" :distant-foreground "DarkGoldenrod3")))
+  '((t (:foreground "DarkGoldenrod4" :distant-foreground "DarkGoldenrod4")))
   "Face for flycheck warning feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-info
-  '((t (:foreground "cyan4" :distant-foreground "cyan4")))
+  '((t (:foreground "cyan4" :distant-foreground "cyan3")))
   "Face for flycheck info feedback in the modeline."
   :group 'modeline-flycheck)
 
