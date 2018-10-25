@@ -423,6 +423,21 @@ buffer, close it."
     :keybinding "h"))
 #+END_SRC
 
+** jumping to places
+
+#+BEGIN_SRC emacs-lisp
+(defun my/goto-line-show ()
+  "Show line numbers temporarily, while prompting for the line number input."
+  (interactive)
+  (unwind-protect
+      (progn
+        (linum-mode 1)
+        (call-interactively #'goto-line))
+    (linum-mode -1)))
+
+(global-set-key (kbd "C-x l") 'my/goto-line-show)
+#+END_SRC
+
 * Term, eshell and comint-mode
 ** Terms
   
@@ -846,8 +861,8 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((org-block (:background "#202020" :foreground "#aaaaa2"))
                 (org-block-begin-line (:background "#292929" :foreground "#bdbdb3"))
                 (org-block-end-line (:background "#292929" :foreground "#bdbdb3"))
-                (hl-line (:background "#303030"))
-                (region (:background "#103050"))
+                (hl-line (:background "#2a2a2a"))
+                (region (:background "#203b56"))
                 (fringe (:background "#222222"))
                 (show-paren-match (:background "#245587"))
                 (diff-hl-insert (:background "#2c5b2c" :foreground "#4c934c"))
@@ -1946,7 +1961,7 @@ With a prefix argument, insert a newline above the current line."
   (global-set-key (kbd "C-c g") 'counsel-git)
   (global-set-key (kbd "C-c j") 'counsel-git-grep)
   (global-set-key (kbd "C-c k") 'counsel-ag)
-  (global-set-key (kbd "C-x l") 'counsel-locate)
+  ;; (global-set-key (kbd "C-x l") 'counsel-locate)
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
