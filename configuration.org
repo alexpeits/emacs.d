@@ -840,6 +840,19 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box (:line-width 1 :color "#5d4d7a" :style nil) :foreground "#757575" :background "#292b2e"))
                 (diff-added (:background "#003500" :foreground "#00aa00"))
                 (diff-changed (:background "#333355" :foreground "blue3"))))))
+    (my/nimbus
+     .
+     ((theme . nimbus)
+      (faces . ((org-block (:background "#202020" :foreground "#aaaaa2"))
+                (org-block-begin-line (:background "#292929" :foreground "#bdbdb3"))
+                (org-block-end-line (:background "#292929" :foreground "#bdbdb3"))
+                (hl-line (:background "#303030"))
+                (region (:background "#103050"))
+                (fringe (:background "#222222"))
+                (show-paren-match (:background "#245587"))
+                (diff-hl-insert (:background "#2c5b2c" :foreground "#4c934c"))
+                (diff-hl-change (:background "#1f3a68" :foreground "#466daf"))
+                (diff-hl-delete (:background "#7a2121" :foreground "#bc4d4d"))))))
     ))
 
 (defvar my/avail-themes
