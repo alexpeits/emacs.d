@@ -715,37 +715,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
                 (region (:background "#253b76"))
                 (show-paren-match (:background "#365096"))
-                ;; (flycheck-warning (:underline (:color "orange1" :style wave)))
-                ;; (flycheck-fringe-warning (:foreground "orange1"))
-                ;; (flycheck-error (:underline (:color "red1" :style wave)))
-                ;; (flycheck-fringe-error (:foreground "red1"))
                 ))))
-    (my/manoj-dark
-     .
-     ((theme . manoj-dark)
-      (faces . ((org-block-begin-line (:background "#232323"))
-                (org-block-end-line (:background "#232323"))
-                (org-block (:background "#1a1a1a" :foreground "#dddddd"))
-                (default (:foreground "#dddddd" :background "#191919"))
-                (hl-line (:inverse-video nil :background "#2b2b2b"))
-                (region (:inverse-video nil :background "#424242"))
-                (cursor (:background "#dddddd"))
-                (fringe (:background "#303030" :foreground "#505050"))
-                (font-lock-doc-face (:foreground "LightCoral" :slant normal))
-                (font-lock-function-name-face (:foreground "mediumspringgreen" :weight bold))
-                (font-lock-comment-face (:foreground "chocolate1"))
-                (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
-                (mode-line-buffer-id (:foreground "white" :weight bold))
-                (persp-selected-face (:foreground "#4f98e2" :weight bold))
-                (mode-line (:background "#4b4b4b" :foreground "#e9e9e9" :box (:line-width 1 :color "#4b4b4b") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#222222" :foreground "#868686" :weight normal))
-                (diff-hl-insert (:background "#266326"))
-                (diff-hl-change (:background "#1f3a68"))
-                (diff-hl-delete (:background "#7a2121"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))
-                (flycheck-error (:underline (:color "#ee5656" :style wave)))
-                (flycheck-fringe-error (:foreground "#ee5656"))))))
     (my/wombat
      .
      ((theme . wombat)
@@ -809,31 +779,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (diff-hl-insert (:background "#b9e0b3"))
                 (diff-hl-change (:background "#b5d8f4"))
                 (diff-hl-delete (:background "#f4b5b5"))))))
-    (my/deeper-blue
-     .
-     ((theme . deeper-blue)
-      (faces . ((cursor (:background "gray80"))
-                (hl-line (:background "#313749"))
-                (fringe (:background "#212435"))
-                (org-block (:background "#212435" :foreground "gray80"))
-                (org-block-begin-line (:background "#272b37" :foreground "gray80"))
-                (org-block-end-line (:background "#272b37" :foreground "gray80"))
-                (flycheck-warning (:underline (:color "DarkOrange" :style wave)))
-                (flycheck-fringe-warning (:foreground "DarkOrange"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))
-                (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
-                (flycheck-fringe-error (:foreground "#ff6c6b"))
-                (flycheck-info (:underline (:color "#6aafef" :style wave)))
-                (flycheck-fringe-info (:foreground "#61afef"))))))
-    (my/distinguished
-     .
-     ((theme . distinguished)
-      (faces . ((default (:foreground "#f0fef0" :background "#1a1a1a"))
-                (fringe (:background "#282828"))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (hl-line (:background "#2a2a2a"))
-                (diff-added (:background "#003500" :foreground "#00aa00"))))))
     (my/darktooth
      .
      ((theme . darktooth)
@@ -846,28 +791,25 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))
                 (diff-added (:background "#003500" :foreground "#00aa00"))
                 (diff-changed (:background "#333355" :foreground "blue3"))))))
-    (my/spacemacs
-     .
-     ((theme . spacemacs-dark)
-      (faces . ((default (:foreground "#b2b2b2" :background "#222222"))
-                (hl-line (:background "#303030"))
-                (mode-line (:box (:line-width 1 :color "#5d4d7a" :style nil) :foreground "#b2b2b2" :background "#404040"))
-                (mode-line-inactive (:box (:line-width 1 :color "#5d4d7a" :style nil) :foreground "#757575" :background "#292b2e"))
-                (diff-added (:background "#003500" :foreground "#00aa00"))
-                (diff-changed (:background "#333355" :foreground "blue3"))))))
     (my/nimbus
      .
      ((theme . nimbus)
       (faces . ((org-block (:background "#202020" :foreground "#aaaaa2"))
                 (org-block-begin-line (:background "#292929" :foreground "#bdbdb3"))
                 (org-block-end-line (:background "#292929" :foreground "#bdbdb3"))
+                (modeline-flycheck-error (:foreground "#ff7272"))
+                (modeline-flycheck-warning (:foreground "#bcb34b"))
+                ;; (mode-line (:box nil :foreground "#bbc2cf" :background "#383f58"))
+                ;; (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
+                (mode-line-inactive (:foreground "black" :background "#415953"))
                 (hl-line (:background "#2a2a2a"))
                 (region (:background "#203b56"))
                 (fringe (:background "#222222"))
+                (persp-selected-face (:foreground "blue" :weight bold))
                 (show-paren-match (:background "#245587"))
-                (diff-hl-insert (:background "#2c5b2c" :foreground "#4c934c"))
-                (diff-hl-change (:background "#1f3a68" :foreground "#466daf"))
-                (diff-hl-delete (:background "#7a2121" :foreground "#bc4d4d"))))))
+                (diff-hl-insert (:background "#143514" :foreground "#4c934c"))
+                (diff-hl-change (:background "#122544" :foreground "#466daf"))
+                (diff-hl-delete (:background "#491111" :foreground "#bc4d4d"))))))
     ))
 
 (defvar my/avail-themes
@@ -2600,6 +2542,9 @@ the number of errors.")
 (hybrid-mode)
 
 (diminish 'whitespace-mode "")
+
+(when (fboundp 'treemacs--setup-icon-background-colors)
+  (treemacs--setup-icon-background-colors))
 
 ;; (setq evil-default-state 'emacs)
 
