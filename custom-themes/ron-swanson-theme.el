@@ -27,17 +27,17 @@
 
 (custom-theme-set-faces
  'ron-swanson
- '(default ((t (:background "#181818" :foreground "#e5e5e5"))))
- '(org-block ((t (:background "#1e1e1e" :foreground "#d8d8d8"))))
- '(org-block-begin-line ((t (:background "#272727"))))
- '(org-block-end-line ((t (:background "#272727"))))
+ '(default ((t (:background "#202020" :foreground "#e5e5e5"))))
+ '(org-block ((t (:background "#242424" :foreground "#d8d8d8"))))
+ '(org-block-begin-line ((t (:background "#2a2a2a"))))
+ '(org-block-end-line ((t (:background "#2a2a2a"))))
  '(fixed-pitch ((t nil)))
  '(font-lock-comment-face ((t (:foreground "chocolate1"))))
  '(show-paren-match ((t (:background "RoyalBlue3"))))
  '(region ((t (:background "#253b76"))))
  '(fringe ((t (:background "#2b2b2b"))))
- '(hl-line ((t (:background "#262626"))))
- '(my/fci-rule ((t (:background "#2a2a2a"))))
+ '(hl-line ((t (:background "#333333"))))
+ '(my/fci-rule ((t (:background "#404040"))))
  '(persp-selected-face ((t (:foreground "RoyalBlue" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
