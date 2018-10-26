@@ -791,6 +791,21 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))
                 (diff-added (:background "#003500" :foreground "#00aa00"))
                 (diff-changed (:background "#333355" :foreground "blue3"))))))
+    (my/gotham
+     .
+     ((theme . gotham)
+      (faces . ((org-block (:background "#14191d" :foreground "#99d1ce"))
+                (org-block-begin-line (:inherit org-meta-line :background "#1f2327"))
+                (org-block-end-line (:inherit org-meta-line :background "#1f2327"))
+                (persp-selected-face (:foreground "#7bc4c1" :weight bold))
+                (mode-line (:box nil :foreground "#5ea2b1" :background "#1f3442"))
+                (mode-line-inactive (:box nil :foreground "#285765" :background "#11151c"))
+                (font-lock-keyword-face (:foreground "#36616f" :weight bold))
+                (font-lock-comment-face (:foreground "#2b5a68"))
+                (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
+                (hl-line (:background "#1c2024"))
+                (region (:inverse-video nil :background "#0a3749"))
+                ))))
     (my/nimbus
      .
      ((theme . nimbus)
