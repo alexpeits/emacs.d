@@ -185,6 +185,8 @@ interface and inserts it at point."
 (use-package undo-tree
   :ensure t
   :config
+  (setq undo-tree-visualizer-relative-timestamps t
+        undo-tree-visualizer-diff t)
   (global-undo-tree-mode)
   (diminish 'undo-tree-mode ""))
 
@@ -220,9 +222,9 @@ interface and inserts it at point."
 (setq scroll-conservatively 101)
 
 ;; smooth scrolling
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-(setq mouse-wheel-progressive-speed t) ;; don't accelerate scrolling
-(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)) ;; one line at a time
+      mouse-wheel-progressive-speed t ;; don't accelerate scrolling
+      mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
@@ -309,22 +311,7 @@ interface and inserts it at point."
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "M-j") nil)
-  ;; (define-key smartparens-mode-map (kbd "C-(") 'sp-backward-slurp-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-{") 'sp-backward-barf-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-)") 'sp-forward-slurp-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-}") 'sp-forward-barf-sexp)
-
-  ;; (define-key smartparens-mode-map (kbd "C-M-b") 'sp-backward-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-M-f") 'sp-forward-sexp)
-
-  ;; (define-key smartparens-mode-map (kbd "C-M-u") 'sp-backward-up-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-M-d") 'sp-down-sexp)
-
-  ;; (define-key smartparens-mode-map (kbd "C-M-n") 'sp-backward-down-sexp)
-  ;; (define-key smartparens-mode-map (kbd "C-M-p") 'sp-up-sexp)
-)
-
+  (define-key smartparens-mode-map (kbd "M-j") nil))
 
 (use-package which-key
   :ensure t
@@ -578,24 +565,23 @@ PWD is not in a git repo (or the git command is not found)."
 (setq column-number-mode t)
 
 ;; disable annoying stuff
-(setq ring-bell-function 'ignore)
-(setq inhibit-startup-message t)
-(setq inhibit-splash-screen t)
-(setq initial-scratch-message nil)
+(setq ring-bell-function 'ignore
+      inhibit-startup-message t
+      inhibit-splash-screen t
+      initial-scratch-message nil)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 
 ;; linum
-(use-package linum
-  :config
-  (setq linum-format 'dynamic))
+(use-package linum :config (setq linum-format 'dynamic))
 
 ;; hl-line
 (setq hl-line-sticky-flag nil)
 (defun my/hl-line-set-bg ()
   (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
          (bg (face-attribute 'default :background)))
+    (set-face-attribute 'hl-line nil :inherit nil)
     (set-face-attribute 'hl-line nil :inverse-video nil)
     (set-face-attribute
      'hl-line nil :background
@@ -662,20 +648,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
                 (region (:background "#253b76"))
                 (show-paren-match (:background "#365096"))))))
-    (my/wombat
-     .
-     ((theme . wombat)
-      (faces . ((default (:foreground "#dddddd" :background "#1b1b1b"))
-                (region (:inverse-video nil :background "#444444"))
-                (cursor (:background "#dddddd"))
-                (fringe (:background "#323232" :foreground "#606060"))
-                (show-paren-match (:background "steelblue3"))
-                (mode-line-buffer-id (:foreground "white" :weight bold))
-                (persp-selected-face (:foreground "#4f98e2" :weight bold))
-                (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
-                (modeline-flycheck-error (:foreground "firebrick2"))
-                (modeline-flycheck-warning (:foreground "DarkGoldenrod3"))))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
@@ -696,16 +668,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (font-lock-function-name-face (:foreground "#74b8bc"))
                 (mode-line (:box nil :foreground "#e5dfbc" :background "#4d4845"))
                 (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))))))
-    (my/gotham
-     .
-     ((theme . gotham)
-      (faces . ((persp-selected-face (:foreground "#7bc4c1" :weight bold))
-                (mode-line (:box nil :foreground "#5ea2b1" :background "#1f3442"))
-                (mode-line-inactive (:box nil :foreground "#285765" :background "#11151c"))
-                (font-lock-keyword-face (:foreground "#36616f" :weight bold))
-                (font-lock-comment-face (:foreground "#2b5a68"))
-                (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
-                (region (:inverse-video nil :background "#0a3749"))))))
     (my/nimbus
      .
      ((theme . nimbus)
@@ -1202,8 +1164,7 @@ Treat hybrid mode and emacs keybindings the same way
 #+BEGIN_SRC emacs-lisp :tangle no
 (defun my/emacs-modes-keybind (key fun)
   (define-key global-map (kbd key) fun)
-  (define-key evil-hybrid-state-map (kbd key) fun)
-)
+  (define-key evil-hybrid-state-map (kbd key) fun))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1212,9 +1173,7 @@ Treat hybrid mode and emacs keybindings the same way
 (define-key ctl-x-map (kbd "C-;") 'my/command-map)
 
 (define-key my/command-map (kbd "c") 'evil-surround-change)
-
 #+END_SRC
-
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (defun vi-open-line-above ()
@@ -1240,12 +1199,6 @@ With a prefix argument, insert a newline above the current line."
   (if abovep
       (vi-open-line-above)
     (vi-open-line-below)))
-
-(define-key global-map (kbd "M-RET") 'vi-open-line)
-(define-key global-map (kbd "s-5") 'evil-jump-item)
-(define-key global-map (kbd "s-%") 'evil-jump-item)
-(define-key global-map (kbd "C-x :") 'evil-ex)
-(define-key my/command-map (kbd "C-:") 'er/expand-region)
 #+END_SRC
 
 * Haskell
@@ -1284,7 +1237,7 @@ the current file."
 
 #+END_SRC
   
-** ghc-mod (on hold while testing intero)
+** ghc-mod (not used now but some useful stuff)
 
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package ghc :ensure t :defer t)
@@ -1451,12 +1404,6 @@ the current file."
          "]"))
     ""))
 
-(defun my/set-pdb-trace ()
-  (interactive)
-  (evil-open-above 0)
-  (insert "import pdb; pdb.set_trace()")
-  (evil-normal-state))
-
 (add-hook 'python-mode-hook
           (lambda ()
             (anaconda-mode)
@@ -1467,10 +1414,6 @@ the current file."
             (setq-default flycheck-disabled-checkers
                           (append flycheck-disabled-checkers
                                   '(python-pycompile)))
-            (evil-leader/set-key
-              "vw" 'pyvenv-workon
-              "vd" 'pyvenv-deactivate
-              "md" 'my/insert-pdb-trace)
             (add-to-list 'my-jump-handlers-python-mode
                          '(anaconda-mode-find-definitions :async t))))
 
@@ -1570,9 +1513,6 @@ the current file."
    ;; (sp-local-pair 'clojure-mode "(" nil :actions '(:rem insert))
    ))
 
-;; (my/make-emacs-mode 'cider-stacktrace-mode)
-;; (my/make-emacs-mode 'cider-docview-mode)
-
 (add-hook
  'cider-repl-mode-hook
  (lambda ()
@@ -1583,20 +1523,6 @@ the current file."
 * Lisps
    
 #+BEGIN_SRC emacs-lisp
-;; Common LISP
-;; (use-package slime
-;;   :ensure t
-;;   :defer t
-;;   :init
-;;   ;; set up slime according to this link
-;;   ;; http://www.jonathanfischer.net/modern-common-lisp-on-linux/
-
-;;   (load (expand-file-name "~/quicklisp/slime-helper.el"))
-;;   (setq inferior-lisp-program "sbcl")
-;;   (use-package slime-company :ensure t :defer t)
-;;   (slime-setup '(slime-fancy slime-company))
-;;   )
-
 ;; expand macros in another window
 (define-key lisp-mode-map (kbd "C-c C-m") #'(lambda () (interactive) (macrostep-expand t)))
 (my/add-hooks '(lisp-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook) (eldoc-mode))
@@ -1622,8 +1548,8 @@ the current file."
    
 #+BEGIN_SRC emacs-lisp
 (use-package irony
+  :disabled t
   :ensure t
-  :defer t
   :init
   (use-package ggtags :ensure t)
   (my/add-hooks '(c++-mode-hook c-mode-hook objc-mode-hook)
@@ -1798,13 +1724,12 @@ the current file."
   (use-package persp-projectile :ensure t)
   :config
   (projectile-mode)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line-prefix " P")
+  (setq projectile-completion-system 'ivy
+        projectile-mode-line-prefix " P")
   (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
     (if (projectile-project-p)
         (apply in-proj-f args)
-      (apply out-proj-f args))
-    ))
+      (apply out-proj-f args))))
 
 #+END_SRC
 
@@ -1822,7 +1747,6 @@ the current file."
 
 (use-package ivy
   :ensure t
-
   :init
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
@@ -1852,7 +1776,6 @@ the current file."
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
-  ;; (global-set-key (kbd "C-c p f") 'counsel-projectile-find-file)
   (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
   (define-key projectile-command-map (kbd "s") 'counsel-projectile-ag)
 
@@ -1978,8 +1901,7 @@ the current file."
   :ensure t
   :config
   (setq aw-dispatch-always t)
-  (global-set-key (kbd "C-c o") 'ace-window)
-  )
+  (global-set-key (kbd "C-c o") 'ace-window))
 #+END_SRC
     
 ** Avy
@@ -2041,24 +1963,9 @@ the current file."
   (define-key global-map (kbd "M-0") 'treemacs))
 #+END_SRC
 
-** Others
+** Popwin
 
 #+BEGIN_SRC emacs-lisp
-(use-package buffer-move
-  :ensure t
-  :config
-  (if is-mac
-      (progn
-        (global-set-key (kbd "<C-s-268632072>") 'buf-move-left)
-        (global-set-key (kbd "<C-s-268632074>") 'buf-move-down)
-        (global-set-key (kbd "<C-s-268632075>") 'buf-move-up)
-        (global-set-key (kbd "<C-s-268632076>") 'buf-move-right))
-    (progn
-      (global-set-key (kbd "C-s-h") 'buf-move-left)
-      (global-set-key (kbd "C-s-j") 'buf-move-down)
-      (global-set-key (kbd "C-s-k") 'buf-move-up)
-      (global-set-key (kbd "C-s-l") 'buf-move-right))))
-
 ;; popwin, mainly to always open helm buffers at bottom
 (use-package popwin
   :ensure t
@@ -2069,51 +1976,6 @@ the current file."
                                             (popwin-mode -1)))
   ;;  Restore popwin-mode after a Helm session finishes.
   (add-hook 'helm-cleanup-hook (lambda () (popwin-mode 1))))
-#+END_SRC
-
-Make non-active buffer names in modeline darker (as per [[https://emacs.stackexchange.com/a/22682/14525][this]] stackoverflow answer)
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(defvar ml-selected-window nil)
-
-(defun ml-record-selected-window ()
-  (setq ml-selected-window (selected-window)))
-
-(defun ml-update-all ()
-  (force-mode-line-update t))
-
-(add-hook 'post-command-hook 'ml-record-selected-window)
-
-(add-hook 'buffer-list-update-hook 'ml-update-all)
-
-(defface ml-active-window-face
-   '((t (:foreground "#F0DFAF" :weight bold)))
-   ;; '((t (:foreground "#99a7a7" :weight bold)))
-   "Face for active buffer identification.")
-
-(defface ml-inactive-window-face
-   '((t (:foreground "#ac9b6e")))
-   ;; '((t (:foreground "#808888")))
-   "Face for inactive buffer identification.")
-
-(defun ml-propertized-buffer-identification (fmt)
-  "Return a list suitable for `mode-line-buffer-identification'.
-FMT is a format specifier such as \"%12b\".  This function adds
-text properties for face, help-echo, and local-map to it."
-  (list (propertize fmt
-        'face
-          (if (eq ml-selected-window (selected-window))
-            'ml-active-window-face
-            'ml-inactive-window-face)
-        'help-echo
-        (purecopy "Buffer name
-mouse-1: Previous buffer\nmouse-3: Next buffer")
-        'mouse-face 'mode-line-highlight
-        'local-map mode-line-buffer-identification-keymap)))
-
-(setq-default mode-line-buffer-identification
-  '(:eval (ml-propertized-buffer-identification "%12b")))
-
 #+END_SRC
 
 * Other major modes
@@ -2261,14 +2123,13 @@ mouse-1: Previous buffer\nmouse-3: Next buffer")
     (interactive)
     (let ((read-buffer-function nil))
       (call-interactively 'erc-switch-to-buffer)))
-  (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer)
-
-  )
+  (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer))
 #+END_SRC
 
-* Other minor modes
 * Modeline
   
+# Copied from spacemacs
+
 #+BEGIN_SRC emacs-lisp
 (defface modeline-flycheck-error
   '((t (:foreground "firebrick3" :distant-foreground "firebrick3")))
@@ -2477,13 +2338,11 @@ the number of errors.")
 * Setup
 ** Per-workstation setup
    
-(thanks Nicolas Petton)
+# thanks Nicolas Petton
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/hosts-dir (expand-file-name "~/.emacs.d/hosts/"))
-
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
-
 (let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
   (load-file host-file))
 #+END_SRC
@@ -2510,17 +2369,10 @@ the number of errors.")
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
-
-;; (setq evil-default-state 'emacs)
-
-;; startup layout
-;; (let ((split-height-threshold nil)
-;;       (split-width-threshold 0))
-;;   (find-file-other-window "~/.emacs.d/configuration.org"))
 #+END_SRC
 
 ** recentf
-
+   
 #+BEGIN_SRC emacs-lisp
 (recentf-mode 1)
 (recentf-open-files nil "*Recent Files*")
