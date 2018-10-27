@@ -133,6 +133,18 @@ sets `my-jump-handlers' in buffers of that mode."
                     (not (equal old-buffer (current-buffer))))
             (throw 'done t)))))
     (message "No jump handler was able to find this symbol.")))
+
+;; Thanks Tikhon Jelvis
+(defun my/file-name-at-point (add-to-kill-ring)
+  "Prompts the user for a file path using the standard C-x C-f
+interface and inserts it at point."
+  (interactive "P")
+  (let ((action (if add-to-kill-ring 'kill-new 'insert))
+        (path (if ido-mode
+                  (ido-read-file-name "file path: ")
+                  (read-file-name "file path: "))))
+    (apply action (list path))))
+(global-set-key (kbd "C-c f") 'my/file-name-at-point)
 #+END_SRC
 
 * Package management
@@ -581,6 +593,14 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; hl-line
 (setq hl-line-sticky-flag nil)
+(defun my/hl-line-set-bg ()
+  (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
+         (bg (face-attribute 'default :background)))
+    (set-face-attribute 'hl-line nil :inverse-video nil)
+    (set-face-attribute
+     'hl-line nil :background
+     (funcall func bg 5))))
+(add-hook 'my/theme-change-hook 'my/hl-line-set-bg)
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
 ;; highlight trailing whitespace
@@ -609,11 +629,10 @@ PWD is not in a git repo (or the git command is not found)."
      markdown-mode-hook))
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color
-          (let ((my-fci-color (face-attribute 'my/fci-rule :background))
-                (bg-color (face-attribute 'default :background)))
-            (if (eq my-fci-color 'unspecified)
+          (let ((bg-color (face-attribute 'default :background)))
+            (if (eq my/theme-type 'dark)
                 (color-lighten-name bg-color 10)
-              my-fci-color))))
+              (color-darken-name bg-color 10)))))
   (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
   (my/add-hooks
    fci-mode-hooks
@@ -634,151 +653,40 @@ PWD is not in a git repo (or the git command is not found)."
           ("zenburn-bg+1" . "#494949")
           )))
 
-(setq spacemacs-theme-org-height nil)
-(when window-system
-   (setq
-    solarized-use-variable-pitch nil
-    solarized-height-plus-1 1.0
-    solarized-height-plus-2 1.0
-    solarized-height-plus-3 1.0
-    solarized-height-plus-4 1.0
-    solarized-brighter-use-variable-pitch nil
-    solarized-brighter-height-plus-1 1.0
-    solarized-brighter-height-plus-2 1.0
-    solarized-brighter-height-plus-3 1.0
-    solarized-brighter-height-plus-4 1.0
-    solarized-brighter-black-use-variable-pitch nil
-    solarized-brighter-black-height-plus-1 1.0
-    solarized-brighter-black-height-plus-2 1.0
-    solarized-brighter-black-height-plus-3 1.0
-    solarized-brighter-black-height-plus-4 1.0))
-
-;; (use-package solarized-theme :ensure t :defer t)
-;; (use-package zenburn-theme :ensure t :defer t)
-(defface my/fci-rule '((t :background nil))
-  "Dummy face for vertical rule, only background color is used in runtime")
-(defface my/mode-line-project '((t nil))
-  "Mode line project name face")
-
 (defvar my/themes
-  `((my/zenburn
-     .
-     ((theme . zenburn)
-      (faces . ((org-block-begin-line (:background "#474747"))
-                (org-block-end-line (:background "#474747"))
-                (org-block (:background "#424242" :foreground "#dcdccc"))
-                (persp-selected-face (:foreground "#d0bf8f" :weight bold))))))
-    (my/solarized-light
-     .
-     ((theme . solarized-light)
-      (faces . ((org-block-begin-line (:background "#eee8d5"))
-                (org-block-end-line (:background "#eee8d5"))
-                (org-block (:background "#f7f0dc" :foreground "#657b83"))
-                (mode-line (:underline (:color "#cccec4" :style line)
-                            :overline "#eee8d5" :box
-                            (:line-width 1 :color "#eee8d5" :style unspecified)
-                            :foreground "#657b83" :background "#d8d2bf"))
-                (diff-hl-insert (:background "#b9e0b3"))
-                (diff-hl-change (:background "#b5d8f4"))
-                (diff-hl-delete (:background "#f4b5b5"))
-                (my/fci-rule (:background "#e8e0d0"))))))
-    (my/zerodark
-     .
-     ((theme . zerodark)
-      (faces . ((org-block (:foreground "#abb2bf" :background "#2b3038"))
-                (org-block-begin-line (:background "#31353e"))
-                (org-block-end-line (:background "#31353e"))
-                (my/fci-rule (:background "#25303a"))
-                (hl-line (:background "#222a31"))
-                (mode-line (:foreground "#61afef" :background "#3c3d51" :box (:line-width 2 :color "#38394c")))
-                (mode-line-inactive (:foreground "#6b727f" :background "#22252c" :box (:line-width 2 :color "#22252c")))
-                (vertical-border (:foreground "#4a4f5b"))
-                (persp-selected-face (:inherit font-lock-keyword-face :weight bold))
-                (flycheck-warning (:underline (:color "#da8548" :style wave)))
-                (flycheck-fringe-warning (:foreground "#da8548"))
-                (flycheck-error (:underline (:color "#ff6c6b" :style wave)))
-                (flycheck-fringe-error (:foreground "#ff6c6b"))
-                (flycheck-info (:underline (:color "#6aafef" :style wave)))
-                (flycheck-fringe-info (:foreground "#61afef"))
-                (term-color-cyan (:foreground "#417eaf"))))))
-    (my/abyss
+  `((my/abyss
      .
      ((theme . abyss)
-      (faces . ((org-block-begin-line (:background "#252525"))
-                (org-block-end-line (:background "#252525"))
-                (org-block (:background "#1a1a1a" :foreground "#bbe0f0"))
-                (default (:background "#141414" :foreground "#bbe0f0"))
-                (hl-line (:inverse-video nil :background "#282828"))
+      (faces . ((default (:background "#141414" :foreground "#bbe0f0"))
                 (fringe (:background "#282828"))
-                (my/fci-rule (:background "#323232"))
-                (my/mode-line-project (:inherit persp-selected-face))
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
                 (region (:background "#253b76"))
-                (show-paren-match (:background "#365096"))
-                ))))
+                (show-paren-match (:background "#365096"))))))
     (my/wombat
      .
      ((theme . wombat)
-      (faces . ((org-block-begin-line (:background "#2a2a2a"))
-                (org-block-end-line (:background "#2a2a2a"))
-                (org-block (:background "#232323" :foreground "#dddddd"))
-                (default (:foreground "#dddddd" :background "#1b1b1b"))
-                (hl-line (:inverse-video nil :background "#323232"))
+      (faces . ((default (:foreground "#dddddd" :background "#1b1b1b"))
                 (region (:inverse-video nil :background "#444444"))
                 (cursor (:background "#dddddd"))
                 (fringe (:background "#323232" :foreground "#606060"))
-                (my/fci-rule (:background "#383838"))
                 (show-paren-match (:background "steelblue3"))
                 (mode-line-buffer-id (:foreground "white" :weight bold))
                 (persp-selected-face (:foreground "#4f98e2" :weight bold))
                 (mode-line (:background "#5b5b5b" :foreground "#dfdfdf" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#2a2a2a" :foreground "#999999" :weight normal))
                 (modeline-flycheck-error (:foreground "firebrick2"))
-                (modeline-flycheck-warning (:foreground "DarkGoldenrod3"))
-                (diff-hl-insert (:background "#2c5b2c"))
-                (diff-hl-change (:background "#1f3a68"))
-                (diff-hl-delete (:background "#7a2121"))
-                (flycheck-warning (:underline (:color "orange1" :style wave)))
-                (flycheck-fringe-warning (:foreground "orange1"))
-                (flycheck-error (:underline (:color "red1" :style wave)))
-                (flycheck-fringe-error (:foreground "red1"))
-                (flycheck-info (:underline (:color "DeepSkyBlue2" :style wave)))
-                (flycheck-fringe-info (:foreground "DeepSkyBlue2"))))))
+                (modeline-flycheck-warning (:foreground "DarkGoldenrod3"))))))
     (my/tomorrow-night-eighties
      .
      ((theme . sanityinc-tomorrow-eighties)
-      (faces . ((org-block-begin-line (:background "#292929"))
-                (org-block-end-line (:background "#292929"))
-                (org-block (:background "#232323" :foreground "#cccccc"))
-                (default (:foreground "#cccccc" :background "#1a1a1a"))
-                (hl-line (:inverse-video nil :background "#282828"))
+      (faces . ((default (:foreground "#cccccc" :background "#1a1a1a"))
                 (region (:background "#424242"))
                 (cursor (:background "#cccccc"))
                 (font-lock-comment-face (:foreground "#999999" :slant normal))
                 (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
                 (mode-line (:background "#585858" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#313131" :foreground "#999999" :weight normal))
-                (diff-hl-insert (:background "#608960"))
-                (diff-hl-change (:background "#3e6184"))
-                (diff-hl-delete (:background "#992626"))
-                (flycheck-warning (:underline (:color "#ffcc99" :style wave)))
-                (flycheck-fringe-warning (:foreground "#ffcc99"))))))
-    (my/tomorrow-day
-     .
-     ((theme . sanityinc-tomorrow-day)
-      (faces . ((org-block-begin-line (:background "#ededed"))
-                (org-block-end-line (:background "#ededed"))
-                (org-block (:background "#f7f7f7" :foreground "#4d4d4c"))
-                (cursor (:background "#4d4d4c"))
-                (mode-line-buffer-id (:foreground "#8959a8" :weight bold))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (mode-line (:background "#cacaca" :foreground "#4d4d4c" :box (:line-width 1 :color "#cacaca") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#f1f1f1" :foreground "#8e908c" :weight normal))
-                (my/fci-rule (:background "#dddddd"))
-                (diff-hl-insert (:background "#b9e0b3"))
-                (diff-hl-change (:background "#b5d8f4"))
-                (diff-hl-delete (:background "#f4b5b5"))))))
+                (mode-line-inactive (:inherit mode-line :background "#313131" :foreground "#999999" :weight normal))))))
     (my/darktooth
      .
      ((theme . darktooth)
@@ -786,65 +694,61 @@ PWD is not in a git repo (or the git command is not found)."
                 (default (:foreground "#e5dfbc" :background "#202020"))
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
                 (font-lock-function-name-face (:foreground "#74b8bc"))
-                (hl-line (:background "#303030"))
                 (mode-line (:box nil :foreground "#e5dfbc" :background "#4d4845"))
-                (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))
-                (diff-added (:background "#003500" :foreground "#00aa00"))
-                (diff-changed (:background "#333355" :foreground "blue3"))))))
+                (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))))))
     (my/gotham
      .
      ((theme . gotham)
-      (faces . ((org-block (:background "#14191d" :foreground "#99d1ce"))
-                (org-block-begin-line (:inherit org-meta-line :background "#1f2327"))
-                (org-block-end-line (:inherit org-meta-line :background "#1f2327"))
-                (persp-selected-face (:foreground "#7bc4c1" :weight bold))
+      (faces . ((persp-selected-face (:foreground "#7bc4c1" :weight bold))
                 (mode-line (:box nil :foreground "#5ea2b1" :background "#1f3442"))
                 (mode-line-inactive (:box nil :foreground "#285765" :background "#11151c"))
                 (font-lock-keyword-face (:foreground "#36616f" :weight bold))
                 (font-lock-comment-face (:foreground "#2b5a68"))
                 (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
-                (hl-line (:background "#1c2024"))
-                (region (:inverse-video nil :background "#0a3749"))
-                ))))
+                (region (:inverse-video nil :background "#0a3749"))))))
     (my/nimbus
      .
      ((theme . nimbus)
-      (faces . ((org-block (:background "#202020" :foreground "#aaaaa2"))
-                (org-block-begin-line (:background "#292929" :foreground "#bdbdb3"))
-                (org-block-end-line (:background "#292929" :foreground "#bdbdb3"))
-                (modeline-flycheck-error (:foreground "#ff7272"))
+      (faces . ((modeline-flycheck-error (:foreground "#ff7272"))
                 (modeline-flycheck-warning (:foreground "#bcb34b"))
                 ;; (mode-line (:box nil :foreground "#bbc2cf" :background "#383f58"))
                 ;; (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
                 (mode-line-inactive (:foreground "black" :background "#415953"))
-                (hl-line (:background "#2a2a2a"))
                 (region (:background "#203b56"))
                 (fringe (:background "#222222"))
                 (persp-selected-face (:foreground "blue" :weight bold))
-                (show-paren-match (:background "#245587"))
-                (diff-hl-insert (:background "#143514" :foreground "#4c934c"))
-                (diff-hl-change (:background "#122544" :foreground "#466daf"))
-                (diff-hl-delete (:background "#491111" :foreground "#bc4d4d"))))))
+                (show-paren-match (:background "#245587"))))))
+    (my/blackboard
+     .
+     ((theme . blackboard)
+      (faces . ((default (:foreground "#ebebeb" :background "#0c1021"))
+                (mode-line (:box nil :foreground "#c9cfdb" :background "#414968"))
+                (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
+                (modeline-flycheck-error (:foreground "#e05e5e"))
+                (modeline-flycheck-warning (:foreground "#bcb34b"))
+                (modeline-flycheck-info (:foreground "#65a0ed"))
+                (persp-selected-face (:foreground "#66b1ff" :weight bold))
+                (show-paren-match (:background "#245587"))))))
     ))
 
-(defvar my/avail-themes
-  '(
-    my/zenburn
-    my/solarized-light
-    my/solarized-black-bright
-    my/tomorrow-night-eighties
-    my/tomorrow-day
-    my/deeper-blue
-    my/abyss
-    my/wombat
-    ))
+(defvar my/avail-themes '(deeper-blue wombat))
 (defvar my/current-theme 0)
 
-(defun my/set-theme (&optional theme-name)
-  (let* ((theme-name (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
+(defvar my/theme-type 'dark)
+(defvar my/theme-change-hook nil)
+
+(defun my/set-theme (&optional theme-name theme-type)
+  (let* ((theme-name- (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
+         (theme-name (if (listp theme-name-) (car theme-name-) theme-name-))
+         (theme-type
+          (if (null theme-type)
+              (if (listp theme-name-) (cdr theme-name-))
+            theme-type))
          (config (cdr (assoc theme-name my/themes)))
          (my-theme (cdr (assoc 'theme config)))
          (theme (if (null my-theme) theme-name my-theme))
+         (tp- (if (null theme-type) (cdr (assoc 'type config)) theme-type))
+         (tp (if (null tp-) 'dark tp-))
          (faces (cdr (assoc 'faces config)))
          (post-eval (cdr (assoc 'post-eval config)))
          (org-block-begin-end-bg (cdr (assoc 'org-block-begin-end-bg config)))
@@ -852,30 +756,30 @@ PWD is not in a git repo (or the git command is not found)."
          (org-block-bg (cdr (assoc 'org-block-bg config))))
     ;; disable all currently enabled themes (otherwise faces get messed up)
     (mapc 'disable-theme custom-enabled-themes)
-    (unless (or (eq theme 'my/default) (eq theme 'my/default-dark) (null theme))
-      (load-theme theme t)
-      (dolist (fc faces)
-        (let ((face (nth 0 fc))
-              (props (nth 1 fc)))
-          (unless (null face)
-            (custom-theme-set-faces
-             theme
-             `(,face ((t ,@props))))))))
+    (load-theme theme t)
+    (setq my/theme-type tp)
+    (dolist (fc faces)
+      (let ((face (nth 0 fc))
+            (props (nth 1 fc)))
+        (unless (null face)
+          (custom-theme-set-faces
+           theme
+           `(,face ((t ,@props)))))))
     (unless (null post-eval)
-      (mapc #'eval post-eval))))
+      (mapc #'eval post-eval)))
+  (run-hooks 'my/theme-change-hook))
 
 (defun my/toggle-theme ()
   (interactive)
-  (let ((next-theme (mod (1+ my/current-theme) (length my/avail-themes))))
-    (my/set-theme (elt my/avail-themes next-theme))
-    (setq my/current-theme next-theme)))
+  (let* ((next-theme (mod (1+ my/current-theme) (length my/avail-themes)))
+         (theme (elt my/avail-themes next-theme)))
+    (setq my/current-theme next-theme)
+    (my/set-theme)))
 
 (defun my/refresh-theme ()
   (interactive)
-  (my/set-theme (elt my/avail-themes my/current-theme))
+  (my/set-theme)
   (setq linum-format 'dynamic))
-
-
 #+END_SRC
    
 * Font
@@ -929,12 +833,28 @@ PWD is not in a git repo (or the git command is not found)."
 ** Diff-hl
 
 #+BEGIN_SRC emacs-lisp
+(defun my/diff-hl-set-fringe-faces ()
+  (let* ((dark (eq my/theme-type 'dark))
+         (ins-bg (if dark "#143514" "#b9e0b3"))
+         (ins-fg (if dark "#4c934c" "#143514"))
+         (ch-bg (if dark "#122544" "#b5d8f4"))
+         (ch-fg (if dark "#466daf" "#122544"))
+         (del-bg (if dark "#491111" "#f4b5b5"))
+         (del-fg (if dark "#bc4d4d" "#491111")))
+    (set-face-attribute 'diff-hl-insert nil :background ins-bg)
+    (set-face-attribute 'diff-hl-insert nil :foreground ins-fg)
+    (set-face-attribute 'diff-hl-change nil :background ch-bg)
+    (set-face-attribute 'diff-hl-change nil :foreground ch-fg)
+    (set-face-attribute 'diff-hl-delete nil :background del-bg)
+    (set-face-attribute 'diff-hl-delete nil :foreground del-fg)))
+
 (if (display-graphic-p)
     (use-package diff-hl
       :ensure t
       :config
       (global-diff-hl-mode)
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+      (add-hook 'my/theme-change-hook 'my/diff-hl-set-fringe-faces)
       (diff-hl-flydiff-mode))
   (use-package git-gutter+
     :ensure t
@@ -1328,60 +1248,7 @@ With a prefix argument, insert a newline above the current line."
 (define-key my/command-map (kbd "C-:") 'er/expand-region)
 #+END_SRC
 
-* Python
-   
-#+BEGIN_SRC emacs-lisp
-(use-package pyvenv) ;; this has to be downloaded
-
-(defun eshell/workon (arg) (pyvenv-workon arg))
-(defun eshell/deactivate () (pyvenv-deactivate))
-
-(setq python-shell-prompt-detect-failure-warning nil)
-(my|define-jump-handlers python-mode)
-(my|define-jump-handlers cython-mode anaconda-mode-goto)
-;; (my/make-emacs-mode 'inferior-python-mode)
-;; (my/make-emacs-mode 'anaconda-mode-view-mode)
-
-(defun my/mode-line-venv ()
-  (if (string= major-mode "python-mode")
-      (let ((venv (if (null pyvenv-virtual-env-name)
-                      "-"
-                    pyvenv-virtual-env-name)))
-        (concat
-         "["
-         ;; (propertize venv 'face 'font-lock-function-name-face)
-         (propertize venv 'face '(:underline t))
-         ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
-         "]"))
-    "[]"))
-
-(defun my/set-pdb-trace ()
-  (interactive)
-  (evil-open-above 0)
-  (insert "import pdb; pdb.set_trace()")
-  (evil-normal-state))
-
-(add-hook 'python-mode-hook
-          (lambda ()
-            (anaconda-mode)
-            (diminish 'anaconda-mode "")
-            (anaconda-eldoc-mode)
-            (diminish 'anaconda-eldoc-mode "")
-            (define-key python-mode-map (kbd "C-c C-j") 'counsel-imenu)
-            (setq-default flycheck-disabled-checkers
-                          (append flycheck-disabled-checkers
-                                  '(python-pycompile)))
-            (evil-leader/set-key
-              "vw" 'pyvenv-workon
-              "vd" 'pyvenv-deactivate
-              "md" 'my/insert-pdb-trace)
-            (add-to-list 'my-jump-handlers-python-mode
-                         '(anaconda-mode-find-definitions :async t))))
-
-#+END_SRC
-
 * Haskell
-** Intero
 
 #+BEGIN_SRC emacs-lisp
 (use-package intero
@@ -1403,8 +1270,18 @@ With a prefix argument, insert a newline above the current line."
           (lambda ()
             (intero-mode-blacklist)
             (flycheck-add-next-checker 'intero '(t . haskell-hlint))
+            (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
             ;; (eldoc-mode)
             ))
+
+(defun my/haskell-save-and-format ()
+  "Formats the import statements using haskell-stylish and saves
+the current file."
+  (interactive)
+  (save-buffer)
+  (haskell-mode-stylish-buffer)
+  (save-buffer))
+
 #+END_SRC
   
 ** ghc-mod (on hold while testing intero)
@@ -1544,6 +1421,58 @@ With a prefix argument, insert a newline above the current line."
         (with-current-buffer standard-output
           (insert (shell-command-to-string command))
           (ansi-color-apply-on-region (point-min) (point-max)))))))
+
+#+END_SRC
+
+* Python
+   
+#+BEGIN_SRC emacs-lisp
+(use-package pyvenv) ;; this has to be downloaded
+
+(defun eshell/workon (arg) (pyvenv-workon arg))
+(defun eshell/deactivate () (pyvenv-deactivate))
+
+(setq python-shell-prompt-detect-failure-warning nil)
+(my|define-jump-handlers python-mode)
+(my|define-jump-handlers cython-mode anaconda-mode-goto)
+;; (my/make-emacs-mode 'inferior-python-mode)
+;; (my/make-emacs-mode 'anaconda-mode-view-mode)
+
+(defun my/mode-line-venv ()
+  (if (string= major-mode "python-mode")
+      (let ((venv (if (null pyvenv-virtual-env-name)
+                      "-"
+                    pyvenv-virtual-env-name)))
+        (concat
+         "["
+         ;; (propertize venv 'face 'font-lock-function-name-face)
+         (propertize venv 'face '(:underline t))
+         ;; (propertize venv 'face '(:foreground "plum2" :distant-foreground "plum4"))
+         "]"))
+    ""))
+
+(defun my/set-pdb-trace ()
+  (interactive)
+  (evil-open-above 0)
+  (insert "import pdb; pdb.set_trace()")
+  (evil-normal-state))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (anaconda-mode)
+            (diminish 'anaconda-mode "")
+            (anaconda-eldoc-mode)
+            (diminish 'anaconda-eldoc-mode "")
+            (define-key python-mode-map (kbd "C-c C-j") 'counsel-imenu)
+            (setq-default flycheck-disabled-checkers
+                          (append flycheck-disabled-checkers
+                                  '(python-pycompile)))
+            (evil-leader/set-key
+              "vw" 'pyvenv-workon
+              "vd" 'pyvenv-deactivate
+              "md" 'my/insert-pdb-trace)
+            (add-to-list 'my-jump-handlers-python-mode
+                         '(anaconda-mode-find-definitions :async t))))
 
 #+END_SRC
 
@@ -1906,7 +1835,7 @@ With a prefix argument, insert a newline above the current line."
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
   (global-set-key (kbd "C-s") 'my/swiper)
-  (global-set-key (kbd "C-c s") 'isearch-forward)
+  ;; (global-set-key (kbd "C-c s") 'isearch-forward)
   (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
@@ -1936,24 +1865,25 @@ With a prefix argument, insert a newline above the current line."
           (t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
-  (ivy-set-actions
-   'counsel-find-file
-   `(("s"
-      ,(my/control-function-window-split
-        find-file-other-window
-        0 nil)
-      "split horizontally")
-     ("v"
-      ,(my/control-function-window-split
-        find-file-other-window
-        nil 0)
-      "split vertically")
-     ("n"
-      ,(my/execute-f-with-hook
-        find-file
-        ace-select-window)
-      "select window")
-     ))
+  (dolist (action '(counsel-find-file counsel-recentf))
+          (ivy-set-actions
+           action
+           `(("s"
+              ,(my/control-function-window-split
+                find-file-other-window
+                0 nil)
+              "split horizontally")
+             ("v"
+              ,(my/control-function-window-split
+                find-file-other-window
+                nil 0)
+              "split vertically")
+             ("n"
+              ,(my/execute-f-with-hook
+                find-file
+                ace-select-window)
+              "select window")
+             )))
 
   (ivy-set-actions
    'ivy-switch-buffer
@@ -2091,6 +2021,7 @@ With a prefix argument, insert a newline above the current line."
     'my/dired-find-file-ace))
 
 (require 'dired-x)
+(add-hook 'dired-mode-hook 'dired-omit-mode)
 (if is-mac (setq dired-use-ls-dired nil))
 #+END_SRC
 
@@ -2376,7 +2307,10 @@ the number of errors.")
   
 #+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
-              '("%e" evil-mode-line-tag mode-line-front-space mode-line-mule-info
+              '("%e"
+                mode-line-front-space
+                evil-mode-line-tag
+                mode-line-mule-info
                 mode-line-client mode-line-modified mode-line-remote
                 mode-line-frame-identification mode-line-buffer-identification " "
                 mode-line-position
@@ -2386,16 +2320,17 @@ the number of errors.")
                 " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
 #+END_SRC
 
+** Spaceline
+
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package spaceline
   :ensure t
   :init
   (require 'spaceline-config)
-  (setq powerline-default-separator nil
-        powerline-height 20
+  (setq powerline-default-separator 'arrow
+        powerline-height nil
         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-spacemacs-theme)
-  (setq projectile-mode-line ""))
+  (spaceline-emacs-theme))
 #+END_SRC
 
 * Org-mode
@@ -2442,6 +2377,21 @@ the number of errors.")
          (file (completing-read "Template: " ls))
          (path (concat templ-dir file)))
     (insert-file-contents path)))
+
+(defun my/org-set-src-faces ()
+  (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
+         (bg (face-attribute 'default :background))
+         (bg+ (funcall func bg 1))
+         (bg++ (funcall func bg 5))
+         (fg (face-attribute 'default :foreground)))
+    (when (facep 'org-block)
+      (set-face-attribute 'org-block nil :background bg+))
+    (when (facep 'org-block-begin-line)
+      (set-face-attribute 'org-block-begin-line nil :background bg++))
+    (when (facep 'org-block-end-line)
+      (set-face-attribute 'org-block-end-line nil :background bg++))))
+
+(add-hook 'my/theme-change-hook 'my/org-set-src-faces)
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -2567,5 +2517,14 @@ the number of errors.")
 ;; (let ((split-height-threshold nil)
 ;;       (split-width-threshold 0))
 ;;   (find-file-other-window "~/.emacs.d/configuration.org"))
+#+END_SRC
+
+** recentf
+
+#+BEGIN_SRC emacs-lisp
+(recentf-mode 1)
+(recentf-open-files nil "*Recent Files*")
+(setq recentf-max-saved-items 100000)
+(global-set-key (kbd "C-x C-a") 'counsel-recentf)
 #+END_SRC
 
