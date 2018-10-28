@@ -140,9 +140,7 @@ sets `my-jump-handlers' in buffers of that mode."
 interface and inserts it at point."
   (interactive "P")
   (let ((action (if add-to-kill-ring 'kill-new 'insert))
-        (path (if ido-mode
-                  (ido-read-file-name "file path: ")
-                  (read-file-name "file path: "))))
+        (path (read-file-name "file path: ")))
     (apply action (list path))))
 (global-set-key (kbd "C-c f") 'my/file-name-at-point)
 #+END_SRC
@@ -437,6 +435,21 @@ buffer, close it."
 (global-set-key (kbd "C-x l") 'my/goto-line-show)
 #+END_SRC
 
+** anzu
+
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure t
+  :config
+  (use-package evil-anzu
+    :ensure t
+    :config
+    (with-eval-after-load 'evil (require 'evil-anzu)))
+  (setq anzu-cons-mode-line-p nil
+        anzu-mode-lighter "")
+  (global-anzu-mode +1))
+#+END_SRC
+
 * Term, eshell and comint-mode
 ** Terms
   
@@ -591,6 +604,8 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; highlight trailing whitespace
 (setq whitespace-style '(face trailing))
+(add-hook 'whitespace-mode-hook
+          #'(lambda () (diminish 'whitespace-mode "")))
 (add-hook 'prog-mode-hook #'whitespace-mode)
 
 ;; 80-column rule
@@ -690,6 +705,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (modeline-flycheck-warning (:foreground "#bcb34b"))
                 (modeline-flycheck-info (:foreground "#65a0ed"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
+                (magit-section-highlight (:background "#203b56"))
                 (show-paren-match (:background "#245587"))))))
     ))
 
@@ -1207,6 +1223,7 @@ With a prefix argument, insert a newline above the current line."
 (use-package intero
   :ensure t
   :defer t
+  :diminish ""
   :init
   (setq intero-blacklist '("~/.xmonad"))
   :config
@@ -1225,6 +1242,7 @@ With a prefix argument, insert a newline above the current line."
             (flycheck-add-next-checker 'intero '(t . haskell-hlint))
             (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
             ;; (eldoc-mode)
+            (diminish 'haskell-mode "Hs")
             ))
 
 (defun my/haskell-save-and-format ()
@@ -1673,18 +1691,18 @@ the current file."
         (quit-window nil window)
       (flycheck-list-errors)))
   (use-package flymake-yaml :ensure t)
-  (use-package flycheck-mypy :ensure t)
-  (use-package flycheck-irony :ensure t)
+  ;; (use-package flycheck-mypy :ensure t)
+  ;; (use-package flycheck-irony :ensure t)
   (use-package flycheck-haskell :ensure t)
-  (use-package flycheck-rust :ensure t)
+  ;; (use-package flycheck-rust :ensure t)
   (use-package flycheck-yamllint :ensure t)
   (eval-after-load 'flycheck
     '(progn
        (set-face-background 'flycheck-warning "unspecified-bg")
        (set-face-foreground 'flycheck-warning "unspecified-fg")
-       (add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
+       ;; (add-hook 'flycheck-mode-hook #'flycheck-irony-setup)
        ;; (add-hook 'flycheck-mode-hook #'flycheck-haskell-setup)
-       (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+       ;; (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
        (add-hook 'flycheck-mode-hook #'flycheck-yamllint-setup)
       ))
   (define-key global-map (kbd "C-c ! t") 'flycheck-mode)
@@ -1714,15 +1732,26 @@ the current file."
 #+END_SRC
 
 * Projectile
+  
+#+BEGIN_SRC emacs-lisp
+(use-package perspective
+  :ensure t
+  :config
+  (persp-mode)
+  ;; emacs window title
+  (setq frame-title-format
+        '("" invocation-name "@" system-name
+          (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
+#+END_SRC
    
 #+BEGIN_SRC emacs-lisp
 (setq projectile-keymap-prefix (kbd "C-c p"))
 (use-package projectile
   :ensure t
   :init
-  (use-package perspective :ensure t :config (persp-mode))
   (use-package persp-projectile :ensure t)
   :config
+  (setq projectile-mode-line-fn '(lambda () (format " P[%s]" (projectile-project-name))))
   (projectile-mode)
   (setq projectile-completion-system 'ivy
         projectile-mode-line-prefix " P")
@@ -2127,6 +2156,7 @@ the current file."
 #+END_SRC
 
 * Modeline
+** Regular modeline
   
 # Copied from spacemacs
 
@@ -2165,12 +2195,16 @@ the number of errors.")
          (ml-status (concat ml-error ml-warning ml-info)))
     (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+
+#+END_SRC
   
 #+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
               '("%e"
                 mode-line-front-space
-                evil-mode-line-tag
+                ;; evil-mode-line-tag
                 mode-line-mule-info
                 mode-line-client mode-line-modified mode-line-remote
                 mode-line-frame-identification mode-line-buffer-identification " "
@@ -2178,7 +2212,20 @@ the number of errors.")
                 (vc-mode vc-mode)
                 (:eval (my/mode-line-flycheck))
                 (:eval (my/mode-line-venv))
-                " " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+                mode-line-modes mode-line-misc-info mode-line-end-spaces))
+#+END_SRC
+
+** Powerline
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package powerline
+  :ensure t
+  :config
+  (powerline-default-theme)
+  (add-hook 'my/theme-change-hook #'powerline-reset)
+  (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
+  (setq global-mode-string
+        (append global-mode-string '((:eval (my/mode-line-venv))))))
 #+END_SRC
 
 ** Spaceline
@@ -2191,7 +2238,12 @@ the number of errors.")
   (setq powerline-default-separator 'arrow
         powerline-height nil
         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-emacs-theme))
+  (spaceline-emacs-theme)
+  ;; (spaceline-toggle-buffer-encoding-abbrev-off)
+  (spaceline-toggle-buffer-position-off)
+  (custom-set-faces
+   '(spaceline-unmodified
+     ((t (:inherit mode-line :background "DarkOrange" :foreground "#3e3d31"))))))
 #+END_SRC
 
 * Org-mode
