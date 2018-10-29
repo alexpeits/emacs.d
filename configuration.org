@@ -698,7 +698,7 @@ PWD is not in a git repo (or the git command is not found)."
      .
      ((theme . blackboard)
       (faces . ((default (:foreground "#ebebeb" :background "#0c1021"))
-                (mode-line (:box nil :foreground "#c9cfdb" :background "#414968"))
+                (mode-line (:box nil :foreground "#ced4e0" :background "#495170"))
                 (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
                 (modeline-flycheck-error (:foreground "#e05e5e"))
                 (modeline-flycheck-warning (:foreground "#bcb34b"))
@@ -1746,12 +1746,12 @@ the current file."
    
 #+BEGIN_SRC emacs-lisp
 (setq projectile-keymap-prefix (kbd "C-c p"))
+(setq projectile-mode-line-fn '(lambda () (format " P[%s]" (projectile-project-name))))
 (use-package projectile
   :ensure t
   :init
   (use-package persp-projectile :ensure t)
   :config
-  (setq projectile-mode-line-fn '(lambda () (format " P[%s]" (projectile-project-name))))
   (projectile-mode)
   (setq projectile-completion-system 'ivy
         projectile-mode-line-prefix " P")
@@ -1944,7 +1944,7 @@ the current file."
   (global-set-key
    (kbd "M-i")
    (my/defun-with-alt avy-goto-line
-                      (lambda () (interactive) (call-interactively 'avy-goto-char-2)))))
+                      (lambda () (interactive) (avy-goto-char-2)))))
 #+END_SRC
 
 ** Dired
