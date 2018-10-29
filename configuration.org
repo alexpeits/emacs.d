@@ -704,6 +704,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (modeline-flycheck-warning (:foreground "#bcb34b"))
                 (modeline-flycheck-info (:foreground "#65a0ed"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
+                (linum (:inherit fringe :foreground "#608079"))
                 (magit-section-highlight (:background "#203b56"))
                 (show-paren-match (:background "#245587"))))))
     ))
