@@ -445,8 +445,7 @@ buffer, close it."
     :ensure t
     :config
     (with-eval-after-load 'evil (require 'evil-anzu)))
-  (setq anzu-cons-mode-line-p nil
-        anzu-mode-lighter "")
+  (setq anzu-mode-lighter "")
   (global-anzu-mode +1))
 #+END_SRC
 
@@ -1779,6 +1778,7 @@ the current file."
   :init
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
+  (use-package flx :ensure t)  ;; better fuzzy matching
   (use-package counsel-projectile :ensure t)
   (use-package ivy-bibtex :ensure t)
   :config
@@ -2294,8 +2294,8 @@ the number of errors.")
 (defun my/org-set-src-faces ()
   (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
          (bg (face-attribute 'default :background))
-         (bg+ (funcall func bg 1))
-         (bg++ (funcall func bg 5))
+         (bg+ (funcall func bg 2))
+         (bg++ (funcall func bg 7))
          (fg (face-attribute 'default :foreground)))
     (when (facep 'org-block)
       (set-face-attribute 'org-block nil :background bg+))
@@ -2411,7 +2411,11 @@ the number of errors.")
 (my/set-font)
 
 (setq linum-format 'dynamic)
-(custom-set-faces '(whitespace-trailing ((t (:background "#602020")))))
+(custom-set-faces
+ '(whitespace-trailing ((t (:background "#602020"))))
+ '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
+ '(fixed-pitch ((t nil)))
+ )
 (set-face-attribute 'show-paren-match nil :weight 'normal)
 ;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
