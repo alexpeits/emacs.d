@@ -2322,7 +2322,6 @@ the number of errors.")
    (use-package ox-twbs :ensure t)
    (use-package ox-reveal :ensure t)
    (org-bullets-mode)
-   (require 'my-org-blog)
 
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
