@@ -366,7 +366,8 @@ buffer, close it."
 (use-package expand-region
   :ensure t
   :config
-  (global-set-key (kbd "C-=") 'er/expand-region))
+  (global-set-key (kbd "C-=") 'er/expand-region)
+  (global-set-key (kbd "C-M-=") 'er/contract-region))
 
 (use-package misc
   :config
@@ -607,17 +608,6 @@ PWD is not in a git repo (or the git command is not found)."
           #'(lambda () (diminish 'whitespace-mode "")))
 (add-hook 'prog-mode-hook #'whitespace-mode)
 
-;; 80-column rule
-(use-package whitespace
-  :disabled t
-  :ensure t
-  :config
-  (setq whitespace-line-column 79)
-  (setq whitespace-style '(face lines-tail))
-  (setq whitespace-global-modes '(python-mode))
-  (global-whitespace-mode +1)
-  (diminish 'global-whitespace-mode ""))
-
 (use-package fill-column-indicator
   :if (>= emacs-major-version 25)
   :ensure t
@@ -640,6 +630,20 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; (use-package hl-todo :ensure t)
 
+#+END_SRC
+
+** highlight whitespace
+   
+#+BEGIN_SRC emacs-lisp :tangle no
+;; 80-column rule
+(use-package whitespace
+  :ensure t
+  :config
+  (setq whitespace-line-column 79)
+  (setq whitespace-style '(face lines-tail))
+  (setq whitespace-global-modes '(python-mode))
+  (global-whitespace-mode +1)
+  (diminish 'global-whitespace-mode ""))
 #+END_SRC
 
 * Theme
@@ -685,19 +689,23 @@ PWD is not in a git repo (or the git command is not found)."
     (my/nimbus
      .
      ((theme . nimbus)
-      (faces . ((modeline-flycheck-error (:foreground "#ff7272"))
+      (faces . ((mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
+                (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
+                (persp-selected-face (:foreground "#66b1ff" :weight bold))
+                (modeline-flycheck-error (:foreground "#e05e5e"))
                 (modeline-flycheck-warning (:foreground "#bcb34b"))
-                ;; (mode-line (:box nil :foreground "#bbc2cf" :background "#383f58"))
-                ;; (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
-                (mode-line-inactive (:foreground "black" :background "#415953"))
+                (modeline-flycheck-info (:foreground "#65a0ed"))
+                ;; (mode-line-inactive (:foreground "black" :background "#415953"))
+                ;; (persp-selected-face (:foreground "blue" :weight bold))
+                ;; (modeline-flycheck-error (:foreground "#ff7272"))
+                ;; (modeline-flycheck-warning (:foreground "#bcb34b"))
                 (region (:background "#203b56"))
                 (fringe (:background "#222222"))
-                (persp-selected-face (:foreground "blue" :weight bold))
                 (show-paren-match (:background "#245587"))))))
     (my/blackboard
      .
      ((theme . blackboard)
-      (faces . ((default (:foreground "#ebebeb" :background "#0c1021"))
+      (faces . ((default (:foreground "#e2e2e2" :background "#0c1021"))
                 (mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
                 (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
                 (modeline-flycheck-error (:foreground "#e05e5e"))
@@ -1565,10 +1573,10 @@ the current file."
 
 * Other programming languages
 ** C/C++
-   
-#+BEGIN_SRC emacs-lisp
+*** irony
+    
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package irony
-  :disabled t
   :ensure t
   :init
   (use-package ggtags :ensure t)
@@ -1591,17 +1599,20 @@ the current file."
 
 (my|define-jump-handlers c-mode)
 (my|define-jump-handlers c++-mode)
+#+END_SRC
+
+*** general setup
+
+#+BEGIN_SRC emacs-lisp
 (setq c-default-style "linux"
       c-basic-offset 4)
-
 #+END_SRC
 
 ** Rust
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package rust-mode
-  :disabled t
-  ;; :ensure t
+  :ensure t
   :config
   (use-package cargo :ensure t)
   (use-package racer :ensure t)
