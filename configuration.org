@@ -692,9 +692,6 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
                 (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
-                (modeline-flycheck-error (:foreground "#e05e5e"))
-                (modeline-flycheck-warning (:foreground "#bcb34b"))
-                (modeline-flycheck-info (:foreground "#65a0ed"))
                 ;; (mode-line-inactive (:foreground "black" :background "#415953"))
                 ;; (persp-selected-face (:foreground "blue" :weight bold))
                 ;; (modeline-flycheck-error (:foreground "#ff7272"))
@@ -708,13 +705,24 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((default (:foreground "#e2e2e2" :background "#0c1021"))
                 (mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
                 (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
-                (modeline-flycheck-error (:foreground "#e05e5e"))
-                (modeline-flycheck-warning (:foreground "#bcb34b"))
-                (modeline-flycheck-info (:foreground "#65a0ed"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
                 (font-lock-comment-face (:foreground "#9b9b9b" :slant italic))
                 (linum (:inherit fringe :foreground "#607480"))
                 (magit-section-highlight (:background "#203b56"))
+                (show-paren-match (:background "#245587"))))))
+    (my/one-dark
+     .
+     ((theme . one-dark)
+      (faces . ((default (:foreground "#abb2bf" :background "#23262d"))
+                (mode-line (:box nil :foreground "#ced4e0" :background "#5c6370"))
+                (mode-line-inactive (:box nil :foreground "#646c7d" :background "#2c323c"))
+                (mode-line-buffer-id (:weight bold))
+                (org-block (:foreground "#a0a8b5"))
+                (persp-selected-face (:foreground "#66b1ff" :weight bold))
+                (vertical-border (:foreground "#546276"))
+                (fringe (:background "#2a2d38"))
+                (font-lock-comment-face (:foreground "#747c8e" :slant italic))
+                (font-lock-doc-face (:foreground "#9fb893"))
                 (show-paren-match (:background "#245587"))))))
     ))
 
@@ -2176,15 +2184,15 @@ the current file."
 
 #+BEGIN_SRC emacs-lisp
 (defface modeline-flycheck-error
-  '((t (:foreground "firebrick3" :distant-foreground "firebrick3")))
+  '((t (:foreground "#e05e5e" :distant-foreground "#e05e5e")))
   "Face for flycheck error feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-warning
-  '((t (:foreground "DarkGoldenrod4" :distant-foreground "DarkGoldenrod4")))
+  '((t (:foreground "#bcb34b" :distant-foreground "#bcb34b")))
   "Face for flycheck warning feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-info
-  '((t (:foreground "cyan4" :distant-foreground "cyan3")))
+  '((t (:foreground "#65a0ed" :distant-foreground "#65a0ed")))
   "Face for flycheck info feedback in the modeline."
   :group 'modeline-flycheck)
 
