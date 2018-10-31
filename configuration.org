@@ -450,6 +450,17 @@ buffer, close it."
   (global-anzu-mode +1))
 #+END_SRC
 
+** math input
+   
+# http://ergoemacs.org/emacs/xmsi-math-symbols-input.html
+
+#+BEGIN_SRC emacs-lisp
+(use-package xah-math-input
+  :ensure t
+  :config
+  (global-xah-math-input-mode 1))
+#+END_SRC
+
 * Term, eshell and comint-mode
 ** Terms
   
