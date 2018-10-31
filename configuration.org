@@ -458,7 +458,8 @@ buffer, close it."
 (use-package xah-math-input
   :ensure t
   :config
-  (global-xah-math-input-mode 1))
+  (global-xah-math-input-mode 1)
+  (puthash "::" "∷" xah-math-input-abrvs))
 #+END_SRC
 
 * Term, eshell and comint-mode
