@@ -460,6 +460,11 @@ buffer, close it."
   :ensure t
   :config
   (global-xah-math-input-mode 1)
+  (define-key xah-math-input-keymap (kbd "S-SPC" ) nil)
+  (define-key xah-math-input-keymap (kbd "S-C-SPC") 'xah-math-input-change-to-symbol)
+
+  (diminish 'xah-math-input-mode "")
+
   (puthash "::" "∷" xah-math-input-abrvs)
   (puthash "bottom" "⊥" xah-math-input-abrvs)
 )
@@ -728,16 +733,17 @@ PWD is not in a git repo (or the git command is not found)."
     (my/one-dark
      .
      ((theme . one-dark)
-      (faces . ((default (:foreground "#abb2bf" :background "#23262d"))
-                (mode-line (:box nil :foreground "#ced4e0" :background "#5c6370"))
+      (faces . ((default (:foreground "#bac2d1" :background "#1a1c23"))
+                (mode-line (:box nil :foreground "#ced4e0" :background "#464c57"))
                 (mode-line-inactive (:box nil :foreground "#646c7d" :background "#2c323c"))
                 (mode-line-buffer-id (:weight bold))
                 (org-block (:foreground "#a0a8b5"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
                 (vertical-border (:foreground "#546276"))
-                (fringe (:background "#2a2d38"))
+                (fringe (:background "#22242d"))
                 (font-lock-comment-face (:foreground "#747c8e" :slant italic))
                 (font-lock-doc-face (:foreground "#9fb893"))
+                (markdown-code-face (:inherit fixed-pitch :foreground "#c678dd"))
                 (show-paren-match (:background "#245587"))))))
     ))
 
@@ -909,6 +915,7 @@ Keybind to command mapping
     ("sd" pwd)
 
     ("t8" fci-mode)
+    ("tc" global-company-mode)
     ("tf" my/toggle-font)
     ("tg" global-diff-hl-mode)
     ("tj" my/toggle-jsmodes)
@@ -2445,6 +2452,10 @@ the number of errors.")
 
 (my/set-theme)
 (my/set-font)
+
+(unless (display-graphic-p)
+  (set-face-attribute 'default nil :background "#222222")
+  (run-hooks 'my/theme-change-hook))
 
 (setq linum-format 'dynamic)
 (custom-set-faces
