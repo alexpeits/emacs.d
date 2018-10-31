@@ -453,13 +453,16 @@ buffer, close it."
 ** math input
    
 # http://ergoemacs.org/emacs/xmsi-math-symbols-input.html
+# https://github.com/roelvandijk/base-unicode-symbols/blob/master/Prelude/Unicode.hs
 
 #+BEGIN_SRC emacs-lisp
 (use-package xah-math-input
   :ensure t
   :config
   (global-xah-math-input-mode 1)
-  (puthash "::" "∷" xah-math-input-abrvs))
+  (puthash "::" "∷" xah-math-input-abrvs)
+  (puthash "bottom" "⊥" xah-math-input-abrvs)
+)
 #+END_SRC
 
 * Term, eshell and comint-mode
