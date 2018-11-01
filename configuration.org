@@ -88,6 +88,16 @@ will be killed."
          (,reg)
        (,alt))))
 
+;; Create a new scratch buffer and select major mode
+(defun my/create-scratch-buffer-with-mode (other-window)
+  (interactive "P")
+  (let* ((mmode (completing-read "buffer mode: " (apropos-internal "-mode$") nil nil nil nil (symbol-name initial-major-mode)))
+         (buf (generate-new-buffer (concat "scratch" "-" mmode)))
+         (switch-func (if other-window 'switch-to-buffer-other-window 'switch-to-buffer)))
+    (funcall switch-func buf)
+    (funcall (intern mmode))
+    (setq buffer-offer-save nil)))
+
 ;; Jump to definition, copied from spacemacs
 
 (defvar my-default-jump-handlers '()
@@ -1861,6 +1871,7 @@ the current file."
           (t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
+
   (dolist (action '(counsel-find-file counsel-recentf))
           (ivy-set-actions
            action
@@ -1898,6 +1909,7 @@ the current file."
         (lambda (b) (switch-to-buffer b nil 'force-same-window))
         ace-select-window)
       "select window")
+     ("k" kill-buffer "kill buffer")
      ))
 
   (ivy-set-actions
@@ -2079,6 +2091,7 @@ the current file."
   (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
   (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
   (define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)  ;; don't use swiper
   (add-hook 'pdf-tools-enabled-hook
             (lambda () (setq pdf-view-midnight-colors '("#dcdccc" . "#494949")))))
 #+END_SRC
@@ -2097,45 +2110,56 @@ the current file."
    elfeed-feeds
    '(
      "http://xkcd.com/rss.xml"
+     "https://idontgetoutmuch.wordpress.com/feed"
+     "http://jr0cket.co.uk/atom.xml"
+     "http://www.howardism.org/index.xml"
+     "https://harryrschwartz.com/atom.xml"
+     "http://lucumr.pocoo.org/feed.atom"
+     "https://www.joelonsoftware.com/feed/"
+     "http://lambdafoo.com/atom.xml"
+     "http://www.rntz.net/blog/atom.xml"
+     "https://jacobian.org/feed.xml"
+     "https://accidentallyquadratic.tumblr.com/rss"
+     "http://blog.acolyer.org/feed/"
+     "http://jakevdp.github.io/feeds/all.atom.xml"
+     "http://www.usrsb.in/rss.xml"
+     "https://dev.to/feed"
+     "https://eli.thegreenplace.net/feeds/all.atom.xml"
+     "https://www.peterbe.com/rss.xml"
+
+     ;; Emacs
      "http://nullprogram.com/feed/"
-     "http://argumatronic.com/rss.xml"
      "http://endlessparentheses.com/atom.xml"
      "http://irreal.org/blog/?feed=rss2"
      "https://ekaschalk.github.io/index.xml"
      "http://oremacs.com/atom.xml"
      "https://emacs.cafe/feed.xml"
+
+     ;; FP
+     "http://www.haskellforall.com/feeds/posts/default"
+     "http://jaspervdj.be/rss.xml"
+     "http://neilmitchell.blogspot.com/feeds/posts/default"
+     "https://blog.qfpl.io/rss.xml"
+     "http://bitemyapp.com/rss.xml"
+     "http://feeds.feedburner.com/incodeblog"
+     "http://www.tomharding.me/atom.xml"
+     "http://www.serpentine.com/blog/feed/"
+     "http://reasonablypolymorphic.com/atom.xml"
+     "https://chrispenner.ca/atom.xml"
+     "https://bartoszmilewski.com/feed/"
+     "https://doisinkidney.com/rss.xml"
      "http://planet.haskell.org/rss20.xml"
      "http://fpcomplete.com/feed/"
      "http://taylor.fausak.me/sitemap.atom"
-     "https://doisinkidney.com/rss.xml"
-     "https://idontgetoutmuch.wordpress.com/feed"
-     "http://jr0cket.co.uk/atom.xml"
-     "http://www.howardism.org/index.xml"
-     "https://harryrschwartz.com/atom.xml"
-     "https://bartoszmilewski.com/feed/"
-     "http://lucumr.pocoo.org/feed.atom"
-     "https://www.joelonsoftware.com/feed/"
-     "http://reasonablypolymorphic.com/atom.xml"
-     "https://chrispenner.ca/atom.xml"
-     "http://lambdafoo.com/atom.xml"
-     "http://www.rntz.net/blog/atom.xml"
-     "http://www.serpentine.com/blog/feed/"
-     "https://jacobian.org/feed.xml"
-     "http://bitemyapp.com/rss.xml"
-     "http://blog.acolyer.org/feed/"
-     "https://accidentallyquadratic.tumblr.com/rss"
-     "http://www.haskellforall.com/feeds/posts/default"
-     "http://jakevdp.github.io/feeds/all.atom.xml"
-     "http://jaspervdj.be/rss.xml"
-     "http://neilmitchell.blogspot.com/feeds/posts/default"
-     "http://www.usrsb.in/rss.xml"
-     "https://dev.to/feed"
+     "http://argumatronic.com/rss.xml"
 
      ;; Podcasts
      "http://www.magicreadalong.com/episode?format=rss"
 
      ;; News
-     "https://www.efsyn.gr/rss.xml"
+
+     ;; Comics
+     "https://www.monkeyuser.com/feed.xml"
 
      ;; Infosec
      "https://blog.g0tmi1k.com/atom.xml"
