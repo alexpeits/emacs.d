@@ -431,21 +431,6 @@ buffer, close it."
     :keybinding "h"))
 #+END_SRC
 
-** jumping to places
-
-#+BEGIN_SRC emacs-lisp
-(defun my/goto-line-show ()
-  "Show line numbers temporarily, while prompting for the line number input."
-  (interactive)
-  (unwind-protect
-      (progn
-        (linum-mode 1)
-        (call-interactively #'goto-line))
-    (linum-mode -1)))
-
-(global-set-key (kbd "C-x l") 'my/goto-line-show)
-#+END_SRC
-
 ** anzu
 
 #+BEGIN_SRC emacs-lisp
@@ -743,14 +728,14 @@ PWD is not in a git repo (or the git command is not found)."
     (my/one-dark
      .
      ((theme . one-dark)
-      (faces . ((default (:foreground "#bac2d1" :background "#1a1c23"))
+      (faces . ((default (:foreground "#bac2d1" :background "#171920"))
                 (mode-line (:box nil :foreground "#ced4e0" :background "#464c57"))
                 (mode-line-inactive (:box nil :foreground "#646c7d" :background "#2c323c"))
                 (mode-line-buffer-id (:weight bold))
                 (org-block (:foreground "#a0a8b5"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
                 (vertical-border (:foreground "#546276"))
-                (fringe (:background "#22242d"))
+                (fringe (:background "#20222b"))
                 (font-lock-comment-face (:foreground "#747c8e" :slant italic))
                 (font-lock-doc-face (:foreground "#9fb893"))
                 (markdown-code-face (:inherit fixed-pitch :foreground "#c678dd"))
@@ -890,8 +875,7 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * Evil-mode
-
-Keybind to command mapping
+** keybind to command mapping
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/leader-keys
@@ -900,8 +884,7 @@ Keybind to command mapping
     (";"  evilnc-comment-or-uncomment-lines)
 
     ("bb" helm-buffers-list)
-    ("bn" next-buffer)
-    ("bp" previous-buffer)
+    ("bs" my/create-scratch-buffer-with-mode)
 
     ("el" my/toggle-flycheck-error-list)
 
@@ -924,11 +907,12 @@ Keybind to command mapping
 
     ("sd" pwd)
 
+    ("if" my/file-name-at-point)
+
     ("t8" fci-mode)
     ("tc" global-company-mode)
     ("tf" my/toggle-font)
     ("tg" global-diff-hl-mode)
-    ("tj" my/toggle-jsmodes)
     ("tl" linum-mode)
     ("th" hl-line-mode)
     ("ts" flycheck-mode)
@@ -939,19 +923,16 @@ Keybind to command mapping
     ("um" menu-bar-mode)
     ("up" rainbow-delimiters-mode)
 
-    ("ws" evil-window-split)
-    ("wv" evil-window-vsplit)
-
     ("Ts" counsel-load-theme)
     ))
 #+END_SRC
 
-For when I'm not using evil mode
+** For when I'm not using evil mode
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (define-prefix-command 'my/leader-map)
 
-(define-key ctl-x-map "t" 'my/leader-map)
+(define-key ctl-x-map "m" 'my/leader-map)
 
 (dolist (i my/leader-keys)
   (let ((k (car i))
@@ -959,6 +940,7 @@ For when I'm not using evil mode
     (define-key my/leader-map k f)))
 #+END_SRC
 
+** evil-mode setup
    
 #+BEGIN_SRC emacs-lisp
 (use-package evil-leader
@@ -969,15 +951,13 @@ For when I'm not using evil mode
   (dolist (i my/leader-keys)
   (let ((k (car i))
         (f (cadr i)))
-    (evil-leader/set-key k f)))
-  )
+    (evil-leader/set-key k f))))
 
 (use-package evil
   :ensure t
   :config
   (setq evil-want-C-i-jump nil)
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
-  ;; (evil-mode 1)
   (my/add-hooks
    '(
      prog-mode-hook
@@ -989,6 +969,7 @@ For when I'm not using evil mode
      conf-space-mode-hook
      conf-windows-mode-hook
      toml-mode
+     restclient-mode
      )
    (evil-local-mode))
 
@@ -996,24 +977,6 @@ For when I'm not using evil mode
     "Make `mode' use emacs keybindings."
     (delete mode evil-insert-state-modes)
     (add-to-list 'evil-emacs-state-modes mode))
-
-  ;; emacs mode is default in some modes
-  ;; (dolist (mode '(term-mode
-                  ;; eshell-mode
-                  ;; shell-mode
-                  ;; special-mode
-                  ;; xref--xref-buffer-mode
-                  ;; haskell-error-mode
-                  ;; haskell-interactive-mode
-                  ;; intero-repl-mode
-                  ;; cider-repl-mode
-                  ;; dired-mode
-                  ;; treemacs-mode
-                  ;; elfeed-search-mode
-                  ;; elfeed-show-mode
-                  ;; erc-mode
-                  ;; ))
-    ;; (my/make-emacs-mode mode))
 
   ;; don't need C-n, C-p
   (define-key evil-insert-state-map (kbd "C-n") nil)
@@ -1082,7 +1045,7 @@ For when I'm not using evil mode
 
 #+END_SRC
 
-Can be used without evil:
+** evil packages that can be used without evil-mode
 
 #+BEGIN_SRC emacs-lisp
 (use-package evil-nerd-commenter
@@ -1097,13 +1060,12 @@ Can be used without evil:
   :config
   (global-evil-surround-mode 1)
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
-  ;; (defconst my/mark-active-alist
-  ;; `((mark-active
-  ;;     ,@(let ((m (make-sparse-keymap)))
-  ;;         (define-key m (kbd "s") 'evil-surround-region)
-  ;;         m))))
-  ;; (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist)
-  )
+  (defconst my/mark-active-alist
+  `((mark-active
+      ,@(let ((m (make-sparse-keymap)))
+          (define-key m (kbd "C-c s") 'evil-surround-region)
+          m))))
+  (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist))
 #+END_SRC
 
 * Hybrid input mode
@@ -1222,7 +1184,7 @@ Can be used without evil:
 (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
-* Keybindings
+* Keybindings (not used)
   
 Treat hybrid mode and emacs keybindings the same way
 
@@ -1230,17 +1192,13 @@ Treat hybrid mode and emacs keybindings the same way
 (defun my/emacs-modes-keybind (key fun)
   (define-key global-map (kbd key) fun)
   (define-key evil-hybrid-state-map (kbd key) fun))
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle no
 (define-prefix-command 'my/command-map)
 
 (define-key ctl-x-map (kbd "C-;") 'my/command-map)
 
 (define-key my/command-map (kbd "c") 'evil-surround-change)
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle no
 (defun vi-open-line-above ()
   "Insert a newline above the current line and put point at beginning."
   (interactive)
@@ -1267,7 +1225,7 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 * Haskell
-
+  
 #+BEGIN_SRC emacs-lisp
 (use-package intero
   :ensure t
@@ -2064,6 +2022,15 @@ the current file."
 #+END_SRC
 
 * Other major modes
+** restclient
+
+#+BEGIN_SRC emacs-lisp
+(use-package restclient
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
+#+END_SRC
+
 ** Ledger
 
 #+BEGIN_SRC emacs-lisp
