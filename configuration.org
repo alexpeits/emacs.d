@@ -92,7 +92,7 @@ will be killed."
 (defun my/create-scratch-buffer-with-mode (other-window)
   (interactive "P")
   (let* ((mmode (completing-read "buffer mode: " (apropos-internal "-mode$") nil nil nil nil (symbol-name initial-major-mode)))
-         (buf (generate-new-buffer (concat "scratch" "-" mmode)))
+         (buf (generate-new-buffer (concat "*scratch" "-" mmode "*")))
          (switch-func (if other-window 'switch-to-buffer-other-window 'switch-to-buffer)))
     (funcall switch-func buf)
     (funcall (intern mmode))
