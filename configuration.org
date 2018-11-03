@@ -26,6 +26,10 @@
 * Various utility functions
    
 #+BEGIN_SRC emacs-lisp
+(defmacro comment (&rest body)
+  "Comment out one or more s-expressions."
+  nil)
+
 (defmacro my/add-hooks (hooks &rest body)
   `(dolist (hook ,hooks)
      (add-hook hook (lambda () ,@body))))
@@ -606,6 +610,7 @@ PWD is not in a git repo (or the git command is not found)."
 
 ;; hl-line
 (setq hl-line-sticky-flag nil)
+(defvar my/hl-line-contrast 5)
 (defun my/hl-line-set-bg ()
   (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
          (bg (face-attribute 'default :background)))
@@ -613,7 +618,7 @@ PWD is not in a git repo (or the git command is not found)."
     (set-face-attribute 'hl-line nil :inverse-video nil)
     (set-face-attribute
      'hl-line nil :background
-     (funcall func bg 5))))
+     (funcall func bg my/hl-line-contrast))))
 (add-hook 'my/theme-change-hook 'my/hl-line-set-bg)
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
@@ -672,7 +677,7 @@ PWD is not in a git repo (or the git command is not found)."
           ("zenburn-bg+1" . "#494949")
           )))
 
-(defvar my/themes
+(setq my/themes
   `((my/abyss
      .
      ((theme . abyss)
@@ -692,15 +697,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (persp-selected-face (:foreground "#297fd6" :weight bold))
                 (mode-line (:background "#585858" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
                 (mode-line-inactive (:inherit mode-line :background "#313131" :foreground "#999999" :weight normal))))))
-    (my/darktooth
-     .
-     ((theme . darktooth)
-      (faces . ((fringe (:background "#2a2a2a"))
-                (default (:foreground "#e5dfbc" :background "#202020"))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (font-lock-function-name-face (:foreground "#74b8bc"))
-                (mode-line (:box nil :foreground "#e5dfbc" :background "#4d4845"))
-                (mode-line-inactive (:box nil :foreground "#a89984" :background "#33302d"))))))
     (my/nimbus
      .
      ((theme . nimbus)
@@ -725,6 +721,13 @@ PWD is not in a git repo (or the git command is not found)."
                 (linum (:inherit fringe :foreground "#607480"))
                 (magit-section-highlight (:background "#203b56"))
                 (show-paren-match (:background "#245587"))))))
+    (my/gotham
+     .
+     ((theme . gotham)
+      (faces . ((persp-selected-face (:foreground "#3daccf" :weight bold))
+                (font-lock-keyword-face (:foreground "#23748e" :weight bold))
+                (mode-line (:box nil :foreground "#63a2b0" :background "#1a2d3a"))
+                (mode-line-inactive (:box nil :foreground "#245361" :background "#191d24"))))))
     (my/one-dark
      .
      ((theme . one-dark)
@@ -969,7 +972,6 @@ PWD is not in a git repo (or the git command is not found)."
      conf-space-mode-hook
      conf-windows-mode-hook
      toml-mode
-     restclient-mode
      )
    (evil-local-mode))
 
@@ -1770,7 +1772,6 @@ the current file."
     (if (projectile-project-p)
         (apply in-proj-f args)
       (apply out-proj-f args))))
-
 #+END_SRC
 
 * Ivy/Counsel/Swiper
@@ -1826,6 +1827,7 @@ the current file."
   ;; (setq projectile-switch-project-action 'counsel-projectile-find-file)
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
+          (ivy-bibtex . ivy--regex-ignore-order)
           (t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
@@ -2028,7 +2030,8 @@ the current file."
 (use-package restclient
   :ensure t
   :config
-  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode)))
+  (add-to-list 'auto-mode-alist '("\\.http\\'" . restclient-mode))
+  (add-hook 'restclient-mode-hook 'evil-local-mode))
 #+END_SRC
 
 ** Ledger
@@ -2273,12 +2276,13 @@ the number of errors.")
   (setq powerline-default-separator 'arrow
         powerline-height nil
         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
-  (spaceline-emacs-theme)
   ;; (spaceline-toggle-buffer-encoding-abbrev-off)
-  (spaceline-toggle-buffer-position-off)
-  (custom-set-faces
-   '(spaceline-unmodified
-     ((t (:inherit mode-line :background "DarkOrange" :foreground "#3e3d31"))))))
+  (spaceline-toggle-buffer-size-off)
+  (spaceline-emacs-theme)
+  ;; (custom-set-faces
+  ;;  '(spaceline-unmodified
+  ;;    ((t (:inherit mode-line :background "DarkOrange" :foreground "#3e3d31")))))
+  )
 #+END_SRC
 
 * Org-mode
@@ -2347,7 +2351,7 @@ the number of errors.")
    ;; (ipython . t)
    (haskell . t)
    (dot . t)
-   (restclient . t)
+   ;; (restclient . t)
    ))
 
 (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
