@@ -677,7 +677,7 @@ PWD is not in a git repo (or the git command is not found)."
           ("zenburn-bg+1" . "#494949")
           )))
 
-(setq my/themes
+(defvar my/themes
   `((my/abyss
      .
      ((theme . abyss)
@@ -726,6 +726,10 @@ PWD is not in a git repo (or the git command is not found)."
      ((theme . gotham)
       (faces . ((persp-selected-face (:foreground "#3daccf" :weight bold))
                 (font-lock-keyword-face (:foreground "#23748e" :weight bold))
+                (font-lock-comment-face (:foreground "#305e6c"))
+                (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
+                (isearch (:inverse-video nil :foreground "black" :background "#d26937"))
+                (lazy-highlight (:foreground "#091f2e" :background "#2a6e83"))
                 (mode-line (:box nil :foreground "#63a2b0" :background "#1a2d3a"))
                 (mode-line-inactive (:box nil :foreground "#245361" :background "#191d24"))))))
     (my/one-dark
