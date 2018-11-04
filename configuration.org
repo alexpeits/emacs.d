@@ -251,6 +251,10 @@ interface and inserts it at point."
 ;; (dolist (hook '(text-mode-hook change-log-mode-hook log-edit-mode-hook))
 ;;   (add-hook hook (lambda () (flyspell-mode 1))))
 
+;; IBuffer
+(eval-after-load "ibuffer"
+  (define-key ibuffer-mode-map (kbd "M-o") nil))
+
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '(".env.dev\\'" . conf-mode))
@@ -677,7 +681,7 @@ PWD is not in a git repo (or the git command is not found)."
           ("zenburn-bg+1" . "#494949")
           )))
 
-(defvar my/themes
+(setq my/themes
   `((my/abyss
      .
      ((theme . abyss)
@@ -703,10 +707,6 @@ PWD is not in a git repo (or the git command is not found)."
       (faces . ((mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
                 (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
                 (persp-selected-face (:foreground "#66b1ff" :weight bold))
-                ;; (mode-line-inactive (:foreground "black" :background "#415953"))
-                ;; (persp-selected-face (:foreground "blue" :weight bold))
-                ;; (modeline-flycheck-error (:foreground "#ff7272"))
-                ;; (modeline-flycheck-warning (:foreground "#bcb34b"))
                 (region (:background "#203b56"))
                 (fringe (:background "#222222"))
                 (show-paren-match (:background "#245587"))))))
@@ -726,13 +726,14 @@ PWD is not in a git repo (or the git command is not found)."
      ((theme . gotham)
       (faces . ((persp-selected-face (:foreground "#3daccf" :weight bold))
                 (font-lock-keyword-face (:foreground "#23748e" :weight bold))
-                (font-lock-comment-face (:foreground "#305e6c"))
+                (font-lock-comment-face (:foreground "#346776"))
                 (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
                 (outline-1 (:foreground "#2aa889"))
                 (isearch (:inverse-video nil :foreground "black" :background "#d26937"))
-                (lazy-highlight (:foreground "#091f2e" :background "#2a6e83"))
-                (mode-line (:box nil :foreground "#63a2b0" :background "#1a2d3a"))
-                (mode-line-inactive (:box nil :foreground "#245361" :background "#191d24"))))))
+                (lazy-highlight (:foreground "black" :background "#2a6e83"))
+                (ivy-current-match (:background "#134a60"))
+                (mode-line (:box nil :foreground "#89c9d7" :background "#233a49"))
+                (mode-line-inactive (:box nil :foreground "#245361" :background "#1e222a"))))))
     (my/one-dark
      .
      ((theme . one-dark)
@@ -1895,6 +1896,13 @@ the current file."
         ace-select-window)
       "select window")
      ))
+
+  (ivy-set-actions
+   'projectile-switch-project
+   '(("d" dired "Open Dired in project's directory")
+     ("v" projectile-vc "Open project root in vc-dir or magit")
+     ("r" projectile-remove-known-project "Remove project(s)")))
+
   )
 
 (defvar my/todo-search-string
@@ -1977,6 +1985,12 @@ the current file."
     (if (ace-select-window)
         (find-file fname))))
 
+(defun my/dired-persistent-buffer ()
+  (interactive)
+  (call-interactively 'dired)
+  (use-local-map (copy-keymap dired-mode-map))
+  (local-set-key (kbd "RET") #'my/dired-find-file-ace))
+
 (with-eval-after-load 'dired
   (define-key dired-mode-map
     (kbd "C-c v")
@@ -1993,7 +2007,6 @@ the current file."
     'my/dired-find-file-ace))
 
 (require 'dired-x)
-(add-hook 'dired-mode-hook 'dired-omit-mode)
 (if is-mac (setq dired-use-ls-dired nil))
 #+END_SRC
 
@@ -2101,6 +2114,9 @@ the current file."
      "https://dev.to/feed"
      "https://eli.thegreenplace.net/feeds/all.atom.xml"
      "https://www.peterbe.com/rss.xml"
+
+     ;; Microservices, DDD etc
+     "https://microservices.io/feed.xml"
 
      ;; Emacs
      "http://nullprogram.com/feed/"
