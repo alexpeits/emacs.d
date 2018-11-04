@@ -582,7 +582,7 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * UI
-   
+  
 #+BEGIN_SRC emacs-lisp
 ;; highlight numbers
 (use-package highlight-numbers
@@ -728,6 +728,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (font-lock-keyword-face (:foreground "#23748e" :weight bold))
                 (font-lock-comment-face (:foreground "#305e6c"))
                 (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
+                (outline-1 (:foreground "#2aa889"))
                 (isearch (:inverse-video nil :foreground "black" :background "#d26937"))
                 (lazy-highlight (:foreground "#091f2e" :background "#2a6e83"))
                 (mode-line (:box nil :foreground "#63a2b0" :background "#1a2d3a"))
