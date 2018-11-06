@@ -661,8 +661,6 @@ PWD is not in a git repo (or the git command is not found)."
    fci-mode-hooks
    (my/set-fci-rule-color) (fci-mode)))
 
-;; (use-package hl-todo :ensure t)
-
 #+END_SRC
 
 ** highlight whitespace
@@ -738,6 +736,7 @@ PWD is not in a git repo (or the git command is not found)."
                 (font-lock-comment-face (:foreground "#346776"))
                 (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
                 (outline-1 (:foreground "#2aa889"))
+                (treemacs-fringe-indicator-face (:foreground "#2aa889"))
                 (isearch (:inverse-video nil :foreground "black" :background "#d26937"))
                 (lazy-highlight (:foreground "black" :background "#2a6e83"))
                 (ivy-current-match (:background "#134a60"))
