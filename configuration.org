@@ -252,8 +252,8 @@ interface and inserts it at point."
 ;;   (add-hook hook (lambda () (flyspell-mode 1))))
 
 ;; IBuffer
-(eval-after-load "ibuffer"
-  (define-key ibuffer-mode-map (kbd "M-o") nil))
+;; (eval-after-load "ibuffer"
+;;  (define-key ibuffer-mode-map (kbd "M-o") nil))
 
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
@@ -265,6 +265,15 @@ interface and inserts it at point."
 
 (defun my/indent-region-or-buffer ()
   "Indent a region if selected, otherwise the whole buffer."
+
+
+
+
+
+
+
+
+
   (interactive)
   (save-excursion
     (if (region-active-p)
@@ -855,12 +864,12 @@ PWD is not in a git repo (or the git command is not found)."
 #+BEGIN_SRC emacs-lisp
 (defun my/diff-hl-set-fringe-faces ()
   (let* ((dark (eq my/theme-type 'dark))
-         (ins-bg (if dark "#143514" "#b9e0b3"))
-         (ins-fg (if dark "#4c934c" "#143514"))
-         (ch-bg (if dark "#122544" "#b5d8f4"))
-         (ch-fg (if dark "#466daf" "#122544"))
-         (del-bg (if dark "#491111" "#f4b5b5"))
-         (del-fg (if dark "#bc4d4d" "#491111")))
+         (ins-bg (if dark "#0b260b" "#b9e0b3"))
+         (ins-fg (if dark "#2b662b" "#143514"))
+         (ch-bg (if dark "#0e213d" "#b5d8f4"))
+         (ch-fg (if dark "#305187" "#122544"))
+         (del-bg (if dark "#2d0909" "#f4b5b5"))
+         (del-fg (if dark "#842f2f" "#491111")))
     (set-face-attribute 'diff-hl-insert nil :background ins-bg)
     (set-face-attribute 'diff-hl-insert nil :foreground ins-fg)
     (set-face-attribute 'diff-hl-change nil :background ch-bg)
@@ -1000,13 +1009,14 @@ PWD is not in a git repo (or the git command is not found)."
   ;; move state to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
 
-  (defadvice evil-search-next
-      (after advice-for-evil-search-next activate)
-    (evil-scroll-line-to-center (line-number-at-pos)))
+  ;; move search result to center of the screen
+  ;; (defadvice evil-search-next
+  ;;     (after advice-for-evil-search-next activate)
+  ;;   (evil-scroll-line-to-center (line-number-at-pos)))
 
-  (defadvice evil-search-previous
-      (after advice-for-evil-search-previous activate)
-    (evil-scroll-line-to-center (line-number-at-pos)))
+  ;; (defadvice evil-search-previous
+  ;;     (after advice-for-evil-search-previous activate)
+  ;;   (evil-scroll-line-to-center (line-number-at-pos)))
 
   ;; this is needed to be able to use C-h
   (global-set-key (kbd "C-h") 'help)
@@ -1816,9 +1826,9 @@ the current file."
   (global-set-key (kbd "<f1> l") 'counsel-find-library)
   (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
   (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  (global-set-key (kbd "C-c j") 'counsel-git-grep)
-  (global-set-key (kbd "C-c k") 'counsel-ag)
+  ;; (global-set-key (kbd "C-c g") 'counsel-git)
+  ;; (global-set-key (kbd "C-c j") 'counsel-git-grep)
+  ;; (global-set-key (kbd "C-c k") 'counsel-ag)
   ;; (global-set-key (kbd "C-x l") 'counsel-locate)
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
