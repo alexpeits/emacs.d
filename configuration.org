@@ -627,11 +627,10 @@ PWD is not in a git repo (or the git command is not found)."
 (defun my/hl-line-set-bg ()
   (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
          (bg (face-attribute 'default :background)))
-    (set-face-attribute 'hl-line nil :inherit nil)
-    (set-face-attribute 'hl-line nil :inverse-video nil)
-    (set-face-attribute
-     'hl-line nil :background
-     (funcall func bg my/hl-line-contrast))))
+    (custom-theme-set-faces
+     my/theme
+     `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast))))))
+    ))
 (add-hook 'my/theme-change-hook 'my/hl-line-set-bg)
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
@@ -653,9 +652,9 @@ PWD is not in a git repo (or the git command is not found)."
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color
           (let ((bg-color (face-attribute 'default :background)))
-            (if (eq my/theme-type 'dark)
-                (color-lighten-name bg-color 10)
-              (color-darken-name bg-color 10)))))
+            (if (eq my/theme-type 'light)
+                (color-darken-name bg-color 10)
+              (color-lighten-name bg-color 10)))))
   (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
   (my/add-hooks
    fci-mode-hooks
@@ -762,30 +761,29 @@ PWD is not in a git repo (or the git command is not found)."
 (defvar my/avail-themes '(deeper-blue wombat))
 (defvar my/current-theme 0)
 
+(defvar my/theme (elt my/avail-themes 0))
 (defvar my/theme-type 'dark)
 (defvar my/theme-change-hook nil)
 
-(defun my/set-theme (&optional theme-name theme-type)
+(defun my/set-theme (&optional theme-name theme-type dont-run-hooks)
   (let* ((theme-name- (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
          (theme-name (if (listp theme-name-) (car theme-name-) theme-name-))
-         (theme-type
-          (if (null theme-type)
-              (if (listp theme-name-) (cdr theme-name-))
-            theme-type))
+         (dont-run-hooks
+          (if (listp theme-name-) (caddr theme-name-) dont-run-hooks))
          (config (cdr (assoc theme-name my/themes)))
          (my-theme (cdr (assoc 'theme config)))
          (theme (if (null my-theme) theme-name my-theme))
-         (tp- (if (null theme-type) (cdr (assoc 'type config)) theme-type))
-         (tp (if (null tp-) 'dark tp-))
+         (theme-type
+          (if (listp theme-name-) (cadr theme-name-) theme-type))
+         (theme-type (if (null theme-type) (cdr (assoc 'type config)) theme-type))
+         (theme-type (if (null theme-type) 'dark theme-type))
          (faces (cdr (assoc 'faces config)))
-         (post-eval (cdr (assoc 'post-eval config)))
-         (org-block-begin-end-bg (cdr (assoc 'org-block-begin-end-bg config)))
-         (org-block-fg (cdr (assoc 'org-block-fg config)))
-         (org-block-bg (cdr (assoc 'org-block-bg config))))
+         (post-eval (cdr (assoc 'post-eval config))))
     ;; disable all currently enabled themes (otherwise faces get messed up)
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme theme t)
-    (setq my/theme-type tp)
+    (setq my/theme-type theme-type)
+    (setq my/theme theme)
     (dolist (fc faces)
       (let ((face (nth 0 fc))
             (props (nth 1 fc)))
@@ -794,8 +792,8 @@ PWD is not in a git repo (or the git command is not found)."
            theme
            `(,face ((t ,@props)))))))
     (unless (null post-eval)
-      (mapc #'eval post-eval)))
-  (run-hooks 'my/theme-change-hook))
+      (mapc #'eval post-eval))
+    (unless dont-run-hooks (run-hooks 'my/theme-change-hook))))
 
 (defun my/toggle-theme ()
   (interactive)
@@ -869,12 +867,11 @@ PWD is not in a git repo (or the git command is not found)."
          (ch-fg (if dark "#305187" "#122544"))
          (del-bg (if dark "#2d0909" "#f4b5b5"))
          (del-fg (if dark "#842f2f" "#491111")))
-    (set-face-attribute 'diff-hl-insert nil :background ins-bg)
-    (set-face-attribute 'diff-hl-insert nil :foreground ins-fg)
-    (set-face-attribute 'diff-hl-change nil :background ch-bg)
-    (set-face-attribute 'diff-hl-change nil :foreground ch-fg)
-    (set-face-attribute 'diff-hl-delete nil :background del-bg)
-    (set-face-attribute 'diff-hl-delete nil :foreground del-fg)))
+    (custom-theme-set-faces
+     my/theme
+     `(diff-hl-insert ((t (:background ,ins-bg :foreground ,ins-fg))))
+     `(diff-hl-change ((t (:background ,ch-bg :foreground ,ch-fg))))
+     `(diff-hl-delete ((t (:background ,del-bg :foreground ,del-fg)))))))
 
 (if (display-graphic-p)
     (use-package diff-hl
@@ -2366,12 +2363,11 @@ the number of errors.")
          (bg+ (funcall func bg 2))
          (bg++ (funcall func bg 7))
          (fg (face-attribute 'default :foreground)))
-    (when (facep 'org-block)
-      (set-face-attribute 'org-block nil :background bg+))
-    (when (facep 'org-block-begin-line)
-      (set-face-attribute 'org-block-begin-line nil :background bg++))
-    (when (facep 'org-block-end-line)
-      (set-face-attribute 'org-block-end-line nil :background bg++))))
+    (custom-theme-set-faces
+     my/theme
+     `(org-block ((t (:background ,bg+))))
+     `(org-block-begin-line ((t (:background ,bg++))))
+     `(org-block-end-line ((t (:background ,bg++)))))))
 
 (add-hook 'my/theme-change-hook 'my/org-set-src-faces)
 
