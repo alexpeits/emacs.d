@@ -2149,6 +2149,7 @@ the current file."
      "http://fpcomplete.com/feed/"
      "http://taylor.fausak.me/sitemap.atom"
      "http://argumatronic.com/rss.xml"
+     "https://teh.id.au/posts/atom.xml"
 
      ;; Podcasts
      "http://www.magicreadalong.com/episode?format=rss"
