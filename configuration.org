@@ -2231,7 +2231,7 @@ the current file."
   "Face for flycheck error feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-warning
-  '((t (:foreground "#bcb34b" :distant-foreground "#bcb34b")))
+  '((t (:foreground "#bfb03d" :distant-foreground "#bfb03d")))
   "Face for flycheck warning feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-info
