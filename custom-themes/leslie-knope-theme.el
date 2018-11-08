@@ -32,7 +32,6 @@
  '(org-block-end-line ((t (:background "#eeeeee"))))
  '(fixed-pitch ((t nil)))
  '(hl-line ((t (:background "#f5f5f5"))))
- '(my/fci-rule ((t (:background "#dddddd"))))
  '(whitespace-trailing ((t (:background "#602020"))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
  '(flycheck-fringe-warning ((t (:foreground "orange1"))))

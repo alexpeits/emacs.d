@@ -37,7 +37,6 @@
  '(region ((t (:background "#253b76"))))
  '(fringe ((t (:background "#2b2b2b"))))
  '(hl-line ((t (:background "#333333"))))
- '(my/fci-rule ((t (:background "#404040"))))
  '(persp-selected-face ((t (:foreground "RoyalBlue" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))

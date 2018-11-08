@@ -7,18 +7,25 @@
     ;; "Menlo for Powerline-10.5"
     ;; "Menlo for Powerline-9"
     ;; "Ubuntu Mono-10.5"
+    ;; "Terminus-12"
     ))
 
-(setq my/big-font "Ubuntu Mono-13.2")
+(setq my/big-font "Hack-22")
 (setq my/current-font 1)
 
 (setq my/avail-themes
   '(
-    ron-swanson
-    my/zenburn
-    my/default
+    ;; my/abyss
+    ;; my/nimbus
+    ;; my/blackboard
+    my/gotham
+    (zenburn dark t)
+    ;; ron-swanson
+    (leslie-knope light)
     ))
 (setq my/current-theme 0)
+
+(setq my/hl-line-contrast 8)
 
 (add-hook 'prog-mode-hook
           (lambda ()
@@ -29,6 +36,13 @@
 
 (setq org-agenda-files `(,(concat org-directory "notes.org")))
 
-(setq base16-highlight-mode-line 'contrast)
+(setq
+ solarized-use-variable-pitch nil
+ solarized-brighter-use-variable-pitch nil
+ solarized-brighter-black-use-variable-pitch nil)
+
+(defun my/set-big-font ()
+  (interactive)
+  (set-frame-font my/big-font))
 
 ;; (setq markdown-command "pandoc --highlight-style pygments -s")
