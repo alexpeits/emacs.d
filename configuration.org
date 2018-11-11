@@ -244,6 +244,8 @@ interface and inserts it at point."
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
+;; I use that to switch to Greek layout
+(global-set-key (kbd "M-SPC") nil)
 ;; used in help
 (define-key 'help-command (kbd "C-l") 'find-library)
 (define-key 'help-command (kbd "C-k") 'find-function-on-key)
@@ -628,14 +630,12 @@ PWD is not in a git repo (or the git command is not found)."
 ;; hl-line
 (setq hl-line-sticky-flag nil)
 (defvar my/hl-line-contrast 5)
-(defun my/hl-line-set-bg ()
-  (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
+(defun my/hl-line-set-bg (&optional light-bg)
+  (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
          (bg (face-attribute 'default :background)))
     (custom-theme-set-faces
      my/theme
-     `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast))))))
-    ))
-(add-hook 'my/theme-change-hook 'my/hl-line-set-bg)
+     `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast))))))))
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
 (use-package fill-column-indicator
@@ -650,7 +650,7 @@ PWD is not in a git repo (or the git command is not found)."
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color
           (let ((bg-color (face-attribute 'default :background)))
-            (if (eq my/theme-type 'light)
+            (if my/theme-light-bg
                 (color-darken-name bg-color 10)
               (color-lighten-name bg-color 10)))))
   (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
@@ -674,91 +674,99 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * Theme
-
+  
 #+BEGIN_SRC emacs-lisp
-(unless is-mac
-  (defvar zenburn-override-colors-alist)
-  (setq zenburn-override-colors-alist
-        '(
-          ("zenburn-bg" . "#3a3a3a")
-          ("zenburn-bg+1" . "#494949")
-          )))
+(defun my/after-set-theme (&optional light-bg)
+  (setq my/theme-light-bg (if light-bg t nil))
+  (my/diff-hl-set-fringe-faces light-bg)
+  (my/hl-line-set-bg light-bg)
+  (my/org-set-src-faces light-bg))
 
-(setq my/themes
-  `((my/abyss
-     .
-     ((theme . abyss)
-      (faces . ((default (:background "#141414" :foreground "#bbe0f0"))
-                (fringe (:background "#282828"))
-                (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
-                (region (:background "#253b76"))
-                (show-paren-match (:background "#365096"))))))
-    (my/blackboard
-     .
-     ((theme . blackboard)
-      (faces . ((default (:foreground "#e2e2e2" :background "#0c1021"))
-                (mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
-                (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
-                (persp-selected-face (:foreground "#66b1ff" :weight bold))
-                (font-lock-comment-face (:foreground "#9b9b9b" :slant italic))
-                (linum (:inherit fringe :foreground "#607480"))
-                (magit-section-highlight (:background "#203b56"))
-                (show-paren-match (:background "#245587"))))))
-    (my/gotham
-     .
-     ((theme . gotham)
-      (faces . ((persp-selected-face (:foreground "#3daccf" :weight bold))
-                (font-lock-keyword-face (:foreground "#23748e" :weight bold))
-                ;; (font-lock-comment-face (:foreground "#346776"))
-                (font-lock-comment-face (:foreground "#386b77"))
-                (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
-                (outline-1 (:foreground "#2aa889"))
-                (shadow (:foreground "#599cab"))
-                (avy-lead-face-0 (:foreground "#99d1ce" :background "#245361"))
-                (treemacs-fringe-indicator-face (:foreground "#2aa889"))
-                (isearch (:inverse-video nil :foreground "black" :background "#d26937"))
-                (lazy-highlight (:foreground "black" :background "#2a6e83"))
-                (ivy-current-match (:background "#134a60"))
-                (mode-line (:box nil :foreground "#89c9d7" :background "#233a49"))
-                (mode-line-inactive (:box nil :foreground "#245361" :background "#1e222a"))))))
+(setq my/all-themes
+  '(
+    (abyss
+     (progn
+       (custom-theme-set-faces
+        'abyss
+        '(default ((t (:background "#141414" :foreground "#bbe0f0"))))
+        '(fringe ((t (:background "#282828"))))
+        '(mode-line-inactive ((t (:box nil :foreground "#cc79a7" :background "#3a3a3a"))))
+        '(region ((t (:background "#253b76"))))
+        '(show-paren-match ((t (:background "#365096"))))
+        )
+       (my/after-set-theme)
+       ))
+    (blackboard
+     (progn
+       (custom-theme-set-faces
+        'blackboard
+        '(default ((t (:foreground "#e2e2e2" :background "#0c1021"))))
+        '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
+        '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
+        '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
+        '(font-lock-comment-face ((t (:foreground "#9b9b9b" :slant italic))))
+        '(linum ((t (:inherit fringe :foreground "#607480"))))
+        '(magit-section-highlight ((t (:background "#203b56"))))
+        '(show-paren-match ((t (:background "#245587"))))
+        )
+       (my/after-set-theme)
+       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+       ))
+    (gotham
+     (progn
+       (custom-theme-set-faces
+        'gotham
+        '(default ((t (:background "#131a21" :foreground "#99d1ce"))))
+        '(fringe ((t (:background "#192128"))))
+        '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
+        '(font-lock-keyword-face ((t (:foreground "#23748e" :weight bold))))
+        '(font-lock-comment-face ((t (:foreground "#386b77"))))
+        '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+        '(outline-1 ((t (:foreground "#2aa889"))))
+        '(shadow ((t (:foreground "#599cab"))))
+        '(avy-lead-face-0 ((t (:foreground "#99d1ce" :background "#245361"))))
+        '(treemacs-fringe-indicator-face ((t (:foreground "#2aa889"))))
+        '(isearch ((t (:inverse-video nil :foreground "black" :background "#d26937"))))
+        '(lazy-highlight ((t (:foreground "black" :background "#2a6e83"))))
+        '(ivy-current-match ((t (:background "#134a60"))))
+        '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
+        '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#1e222a")))))
+       (my/after-set-theme)
+       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+       ))
+    (zenburn
+     (progn
+       (my/hl-line-set-bg)
+       (my/org-set-src-faces)
+       (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
+       ))
+    (leslie-knope
+     (my/after-set-theme t)
+     t)
     ))
 
-(defvar my/avail-themes '(deeper-blue wombat))
+(defvar my/avail-themes '(wombat))
 (defvar my/current-theme 0)
+(defvar my/theme 'wombat)
+(defvar my/theme-light-bg nil)
 
-(defvar my/theme (elt my/avail-themes 0))
-(defvar my/theme-type 'dark)
-(defvar my/theme-change-hook nil)
-
-(defun my/set-theme (&optional theme-name theme-type dont-run-hooks)
-  (let* ((theme-name- (if (null theme-name) (elt my/avail-themes my/current-theme) theme-name))
-         (theme-name (if (listp theme-name-) (car theme-name-) theme-name-))
-         (dont-run-hooks
-          (if (listp theme-name-) (caddr theme-name-) dont-run-hooks))
-         (config (cdr (assoc theme-name my/themes)))
-         (my-theme (cdr (assoc 'theme config)))
-         (theme (if (null my-theme) theme-name my-theme))
-         (theme-type
-          (if (listp theme-name-) (cadr theme-name-) theme-type))
-         (theme-type (if (null theme-type) (cdr (assoc 'type config)) theme-type))
-         (theme-type (if (null theme-type) 'dark theme-type))
-         (faces (cdr (assoc 'faces config)))
-         (post-eval (cdr (assoc 'post-eval config))))
-    ;; disable all currently enabled themes (otherwise faces get messed up)
+(defun my/set-theme (&optional theme-config light-bg)
+  (let* ((theme-config (if (null theme-config)
+                           (elt my/avail-themes my/current-theme)
+                         theme-config))
+         (theme (if (listp theme-config)
+                    (car theme-config)
+                  theme-config))
+         (config (if (listp theme-config) (cadr theme-config) nil))
+         (light-bg (if (listp theme-config)
+                       (caddr theme-config)
+                     light-bg)))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme theme t)
-    (setq my/theme-type theme-type)
     (setq my/theme theme)
-    (dolist (fc faces)
-      (let ((face (nth 0 fc))
-            (props (nth 1 fc)))
-        (unless (null face)
-          (custom-theme-set-faces
-           theme
-           `(,face ((t ,@props)))))))
-    (unless (null post-eval)
-      (mapc #'eval post-eval))
-    (unless dont-run-hooks (run-hooks 'my/theme-change-hook))))
+    (setq my/theme-light-bg light-bg)
+    (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
+    (eval config)))
 
 (defun my/toggle-theme ()
   (interactive)
@@ -823,8 +831,8 @@ PWD is not in a git repo (or the git command is not found)."
 ** Diff-hl
 
 #+BEGIN_SRC emacs-lisp
-(defun my/diff-hl-set-fringe-faces ()
-  (let* ((dark (eq my/theme-type 'dark))
+(defun my/diff-hl-set-fringe-faces (&optional light-bg)
+  (let* ((dark (not light-bg))
          (ins-bg (if dark "#143514" "#b9e0b3"))
          (ins-fg (if dark "#4c934c" "#143514"))
          (ch-bg (if dark "#122544" "#b5d8f4"))
@@ -843,7 +851,6 @@ PWD is not in a git repo (or the git command is not found)."
       :config
       (global-diff-hl-mode)
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-      (add-hook 'my/theme-change-hook 'my/diff-hl-set-fringe-faces)
       (diff-hl-flydiff-mode))
   (use-package git-gutter+
     :ensure t
@@ -1945,7 +1952,9 @@ the current file."
   :ensure t
   :config
   (setq aw-dispatch-always t)
-  (global-set-key (kbd "C-c o") 'ace-window))
+  (global-set-key (kbd "C-c o") 'ace-window)
+  (custom-set-faces
+   '(aw-leading-char-face ((t (:foreground "magenta" :weight bold :height 1.5 :box t))))))
 #+END_SRC
 
 ** Treemacs
@@ -2010,7 +2019,7 @@ the current file."
     (add-hook
      'pdf-tools-enabled-hook
      (lambda ()
-       ;; (setq pdf-view-midnight-colors '("#dcdccc" . "#494949"))
+       ;; (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
        (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749")))))
 #+END_SRC
 
@@ -2184,7 +2193,7 @@ the current file."
   "Face for flycheck warning feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-info
-  '((t (:foreground "#65a0ed" :distant-foreground "#65a0ed")))
+  '((t (:foreground "#75b0ce" :distant-foreground "#75b0ce")))
   "Face for flycheck info feedback in the modeline."
   :group 'modeline-flycheck)
 
@@ -2208,10 +2217,6 @@ the number of errors.")
          (ml-info (my/mode-line-flycheck-state 'info))
          (ml-status (concat ml-error ml-warning ml-info)))
     (if (null ml-status) "" (concat " " ml-status " "))))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-
 #+END_SRC
   
 #+BEGIN_SRC emacs-lisp
@@ -2305,8 +2310,8 @@ the number of errors.")
          (path (concat templ-dir file)))
     (insert-file-contents path)))
 
-(defun my/org-set-src-faces ()
-  (let* ((func (if (eq my/theme-type 'dark) 'color-lighten-name 'color-darken-name))
+(defun my/org-set-src-faces (&optional light-bg)
+  (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
          (bg (face-attribute 'default :background))
          (bg+ (funcall func bg 2))
          (bg++ (funcall func bg 7))
@@ -2316,8 +2321,6 @@ the number of errors.")
      `(org-block ((t (:background ,bg+))))
      `(org-block-begin-line ((t (:background ,bg++))))
      `(org-block-end-line ((t (:background ,bg++)))))))
-
-(add-hook 'my/theme-change-hook 'my/org-set-src-faces)
 
 (use-package graphviz-dot-mode :ensure t)
 
@@ -2394,7 +2397,7 @@ the number of errors.")
 #+END_SRC
    
 ** Global setup
-
+   
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
@@ -2410,12 +2413,16 @@ the number of errors.")
 
 (setq linum-format 'dynamic)
 (custom-set-faces
- '(whitespace-trailing ((t (:background "#602020"))))
  '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
  '(fixed-pitch ((t nil)))
- )
+ '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
+ '(flycheck-fringe-error ((t (:foreground "red1"))))
+ '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+ '(flycheck-fringe-warning ((t (:foreground "orange1"))))
+ '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+ '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+ '(whitespace-trailing ((t (:background "#602020")))))
 (set-face-attribute 'show-paren-match nil :weight 'normal)
-;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
 (hybrid-mode)
 
