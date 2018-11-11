@@ -19,27 +19,13 @@
 
 (setq my/avail-themes
   `(
-    ;; ,(assoc 'gotham my/all-themes)
+    ,(assoc 'gotham my/all-themes)
     ;; ,(assoc 'zenburn my/all-themes)
     ,(assoc 'blackboard my/all-themes)
     ;; ,(assoc 'leslie-knope my/all-themes)
-    (sunburn
-     (progn
-       (custom-theme-set-faces
-        'sunburn
-        '(mode-line-buffer-id ((t (:weight bold))))
-        '(minibuffer-prompt ((t (:foreground "#f0dfaf"))))
-        '(fringe ((t (:background "#4f4951"))))
-        '(region ((t (:background "#6b5f6f"))))
-        '(mode-line
-          ((t (:box
-               (:line-width -1 :color nil :style released-button)
-               :foreground "#f1f1f1" :background "#3d344c"))))
-        )
-       (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
-       (my/hl-line-set-bg) (my/org-set-src-faces)))
+    ,(assoc 'sunburn my/all-themes)
     ))
-(setq my/current-theme 1)
+(setq my/current-theme 2)
 
 (setq my/hl-line-contrast 5)
 

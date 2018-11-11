@@ -730,15 +730,31 @@ PWD is not in a git repo (or the git command is not found)."
         '(lazy-highlight ((t (:foreground "black" :background "#2a6e83"))))
         '(ivy-current-match ((t (:background "#134a60"))))
         '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
-        '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#1e222a")))))
+        '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#1e222a"))))
+        )
        (my/after-set-theme)
        (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
        ))
     (zenburn
      (progn
-       (my/hl-line-set-bg)
-       (my/org-set-src-faces)
+       (my/hl-line-set-bg) (my/org-set-src-faces)
        (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
+       ))
+    (sunburn
+     (progn
+       (custom-theme-set-faces
+        'sunburn
+        '(mode-line-buffer-id ((t (:weight bold))))
+        '(minibuffer-prompt ((t (:foreground "#f0dfaf"))))
+        '(fringe ((t (:background "#4f4951"))))
+        '(region ((t (:background "#6b5f6f"))))
+        '(mode-line
+          ((t (:box
+               (:line-width -1 :color nil :style released-button)
+               :foreground "#f1f1f1" :background "#3d344c"))))
+        )
+       (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
+       (my/hl-line-set-bg) (my/org-set-src-faces)
        ))
     (leslie-knope
      (my/after-set-theme t)
