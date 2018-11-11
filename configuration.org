@@ -206,9 +206,8 @@ interface and inserts it at point."
 (defun my/set-mode-fill-width (mode-hook width)
   (add-hook mode-hook `(lambda () (setq fill-column ,width))))
 
-;; diminish various minor modes in modeline
-(add-hook 'auto-revert-mode-hook (lambda () (diminish 'auto-revert-mode "")))
-(add-hook 'eldoc-mode-hook (lambda () (diminish 'eldoc-mode "")))
+(use-package autorevert :diminish auto-revert-mode)
+(use-package eldoc :diminish eldoc-mode)
 
 ;; store all backup and autosave files in
 ;; one dir
@@ -222,6 +221,12 @@ interface and inserts it at point."
 
 ;; yesss
 (defalias 'yes-or-no-p #'y-or-n-p)
+
+;; Always confirm before closing because I'm stupid
+(add-hook
+ 'kill-emacs-query-functions
+ (lambda () (y-or-n-p "Do you really want to exit Emacs? "))
+ 'append)
 
 ;; use spaces
 (setq-default indent-tabs-mode nil)
@@ -264,15 +269,6 @@ interface and inserts it at point."
 
 (defun my/indent-region-or-buffer ()
   "Indent a region if selected, otherwise the whole buffer."
-
-
-
-
-
-
-
-
-
   (interactive)
   (save-excursion
     (if (region-active-p)
@@ -395,6 +391,21 @@ buffer, close it."
 (use-package misc
   :config
   (global-set-key (kbd "M-Z") 'zap-up-to-char))
+#+END_SRC
+
+** Jumping etc
+   
+#+BEGIN_SRC emacs-lisp
+(defun my/goto-line-show ()
+  "Show line numbers temporarily, while prompting for the line number input."
+  (interactive)
+  (unwind-protect
+      (progn
+        (linum-mode 1)
+        (call-interactively #'goto-line))
+    (linum-mode -1)))
+
+(global-set-key (kbd "M-g M-g") 'my/goto-line-show)
 #+END_SRC
 
 ** engine-mode
@@ -627,12 +638,6 @@ PWD is not in a git repo (or the git command is not found)."
 (add-hook 'my/theme-change-hook 'my/hl-line-set-bg)
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
-;; highlight trailing whitespace
-(setq whitespace-style '(face trailing))
-(add-hook 'whitespace-mode-hook
-          #'(lambda () (diminish 'whitespace-mode "")))
-(add-hook 'prog-mode-hook #'whitespace-mode)
-
 (use-package fill-column-indicator
   :if (>= emacs-major-version 25)
   :ensure t
@@ -655,18 +660,17 @@ PWD is not in a git repo (or the git command is not found)."
 
 #+END_SRC
 
-** highlight whitespace
+** highlight trailing whitespace
    
-#+BEGIN_SRC emacs-lisp :tangle no
-;; 80-column rule
+#+BEGIN_SRC emacs-lisp
 (use-package whitespace
   :ensure t
+  :diminish whitespace-mode
   :diminish global-whitespace-mode
   :config
-  (setq whitespace-line-column 79)
-  (setq whitespace-style '(face lines-tail))
-  (setq whitespace-global-modes '(python-mode))
-  (global-whitespace-mode +1))
+  (setq whitespace-line-column 79
+        whitespace-style '(face trailing))
+  (add-hook 'prog-mode-hook #'whitespace-mode))
 #+END_SRC
 
 * Theme
@@ -689,26 +693,6 @@ PWD is not in a git repo (or the git command is not found)."
                 (mode-line-inactive (:box nil :foreground "#cc79a7" :background "#3a3a3a"))
                 (region (:background "#253b76"))
                 (show-paren-match (:background "#365096"))))))
-    (my/tomorrow-night-eighties
-     .
-     ((theme . sanityinc-tomorrow-eighties)
-      (faces . ((default (:foreground "#cccccc" :background "#1a1a1a"))
-                (region (:background "#424242"))
-                (cursor (:background "#cccccc"))
-                (font-lock-comment-face (:foreground "#999999" :slant normal))
-                (mode-line-buffer-id (:foreground "#cc99cc" :weight bold))
-                (persp-selected-face (:foreground "#297fd6" :weight bold))
-                (mode-line (:background "#585858" :foreground "#cccccc" :box (:line-width 1 :color "#515151") :weight normal))
-                (mode-line-inactive (:inherit mode-line :background "#313131" :foreground "#999999" :weight normal))))))
-    (my/nimbus
-     .
-     ((theme . nimbus)
-      (faces . ((mode-line (:box nil :foreground "#ced4e0" :background "#414968"))
-                (mode-line-inactive (:box nil :foreground "#4b7192" :background "#272a34"))
-                (persp-selected-face (:foreground "#66b1ff" :weight bold))
-                (region (:background "#203b56"))
-                (fringe (:background "#222222"))
-                (show-paren-match (:background "#245587"))))))
     (my/blackboard
      .
      ((theme . blackboard)
@@ -725,31 +709,18 @@ PWD is not in a git repo (or the git command is not found)."
      ((theme . gotham)
       (faces . ((persp-selected-face (:foreground "#3daccf" :weight bold))
                 (font-lock-keyword-face (:foreground "#23748e" :weight bold))
-                (font-lock-comment-face (:foreground "#346776"))
+                ;; (font-lock-comment-face (:foreground "#346776"))
+                (font-lock-comment-face (:foreground "#386b77"))
                 (font-lock-comment-delimiter-face (:inherit font-lock-comment-face))
                 (outline-1 (:foreground "#2aa889"))
                 (shadow (:foreground "#599cab"))
+                (avy-lead-face-0 (:foreground "#99d1ce" :background "#245361"))
                 (treemacs-fringe-indicator-face (:foreground "#2aa889"))
                 (isearch (:inverse-video nil :foreground "black" :background "#d26937"))
                 (lazy-highlight (:foreground "black" :background "#2a6e83"))
                 (ivy-current-match (:background "#134a60"))
                 (mode-line (:box nil :foreground "#89c9d7" :background "#233a49"))
                 (mode-line-inactive (:box nil :foreground "#245361" :background "#1e222a"))))))
-    (my/one-dark
-     .
-     ((theme . one-dark)
-      (faces . ((default (:foreground "#bac2d1" :background "#171920"))
-                (mode-line (:box nil :foreground "#ced4e0" :background "#464c57"))
-                (mode-line-inactive (:box nil :foreground "#646c7d" :background "#2c323c"))
-                (mode-line-buffer-id (:weight bold))
-                (org-block (:foreground "#a0a8b5"))
-                (persp-selected-face (:foreground "#66b1ff" :weight bold))
-                (vertical-border (:foreground "#546276"))
-                (fringe (:background "#20222b"))
-                (font-lock-comment-face (:foreground "#747c8e" :slant italic))
-                (font-lock-doc-face (:foreground "#9fb893"))
-                (markdown-code-face (:inherit fixed-pitch :foreground "#c678dd"))
-                (show-paren-match (:background "#245587"))))))
     ))
 
 (defvar my/avail-themes '(deeper-blue wombat))
@@ -1665,8 +1636,9 @@ the current file."
   :ensure t
   :diminish company-mode
   :init
-  (setq company-dabbrev-downcase nil)
-  (setq company-idle-delay 0.5)
+  (setq company-dabbrev-downcase nil
+        company-minimum-prefix-length 3
+        company-idle-delay 0.4)
   (add-hook 'after-init-hook 'global-company-mode)
   :config
   (use-package company-tern :ensure t)
@@ -1686,8 +1658,7 @@ the current file."
        (define-key company-active-map (kbd "C-n") 'company-select-next)
        (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
        (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
-       (define-key company-active-map (kbd "C-f") 'company-show-location)
-       (setq company-minimum-prefix-length 3))))
+       (define-key company-active-map (kbd "C-f") 'company-show-location))))
 #+END_SRC
 
 * Flycheck-mode
@@ -1960,7 +1931,7 @@ the current file."
 (use-package avy
   :ensure t
   :config
-  (setq avy-background t)
+  ;; (setq avy-background t)
   (global-set-key
    (kbd "M-i")
    (my/defun-with-alt avy-goto-line
@@ -2040,7 +2011,7 @@ the current file."
      'pdf-tools-enabled-hook
      (lambda ()
        ;; (setq pdf-view-midnight-colors '("#dcdccc" . "#494949"))
-       (setq pdf-view-midnight-colors '("#99d1ce" . "#0a3749")))))
+       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749")))))
 #+END_SRC
 
 ** elfeed
@@ -2447,8 +2418,6 @@ the number of errors.")
 ;; (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
 
 (hybrid-mode)
-
-(diminish 'whitespace-mode "")
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
