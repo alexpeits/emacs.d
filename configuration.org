@@ -263,7 +263,7 @@ interface and inserts it at point."
 
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '(".env.dev\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '(".env.*\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env.example\\'" . conf-mode))
 
 ;; DocView
@@ -720,6 +720,7 @@ PWD is not in a git repo (or the git command is not found)."
         '(fringe ((t (:background "#192128"))))
         '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
         '(font-lock-keyword-face ((t (:foreground "#23748e" :weight bold))))
+        ;; '(font-lock-type-face ((t (:foreground "#48a7c4"))))
         '(font-lock-comment-face ((t (:foreground "#386b77"))))
         '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
         '(outline-1 ((t (:foreground "#2aa889"))))
@@ -735,6 +736,38 @@ PWD is not in a git repo (or the git command is not found)."
        (my/after-set-theme)
        (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
        ))
+    (kaolin-mono-dark
+     (progn
+       (custom-theme-set-faces
+        'kaolin-mono-dark
+        '(default ((t (:foreground "#c6d1cb" :background "#111915"))))
+        '(mode-line
+          ((t (:foreground "#c5d4cd" :background "#24342c" :box (:line-width 2 :color "#273931" :style nil)))))
+        '(mode-line-inactive
+          ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#1f2c26" :style nil)))))
+        '(mode-line-buffer-id ((t (:weight bold))))
+        '(vertical-border ((t (:foreground "#5a605a"))))
+        '(fringe ((t (:background "#1d2320"))))
+        ;; '(font-lock-type-face ((t (:foreground "#749182"))))
+        '(font-lock-function-name-face ((t (:foreground "#97bfad" :weight bold))))
+        '(font-lock-variable-name-face ((t (:foreground "#97bfad"))))
+        '(font-lock-comment-face ((t (:foreground "#4c6257"))))
+        '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+        '(font-lock-doc-face ((t (:foreground "#6fce9f"))))
+        '(region ((t (:background "#364c41"))))
+        '(persp-selected-face ((t (:foreground "#65e6a7" :weight bold))))
+        '(show-paren-match ((t (:background "#327353" :weight bold))))
+        '(lazy-highlight ((t (:foreground "#69ceb0" :background "#25352d"))))
+        '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
+        '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
+        '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
+        '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
+        )
+       (my/diff-hl-set-fringe-faces)
+       (my/org-set-src-faces)
+       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+       )
+     )
     (zenburn
      (progn
        (my/hl-line-set-bg) (my/org-set-src-faces)
@@ -907,6 +940,7 @@ PWD is not in a git repo (or the git command is not found)."
     ("pt" my/counsel-ag-todos-global)
 
     ("sd" pwd)
+    ("sf" face-at-point)
 
     ("if" my/file-name-at-point)
     ("iu" counsel-unicode-char)
@@ -2329,8 +2363,8 @@ the number of errors.")
 (defun my/org-set-src-faces (&optional light-bg)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
          (bg (face-attribute 'default :background))
-         (bg+ (funcall func bg 2))
-         (bg++ (funcall func bg 7))
+         (bg+ (funcall func bg 1.5))
+         (bg++ (funcall func bg 6))
          (fg (face-attribute 'default :foreground)))
     (custom-theme-set-faces
      my/theme
