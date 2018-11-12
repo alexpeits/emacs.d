@@ -689,6 +689,7 @@ PWD is not in a git repo (or the git command is not found)."
            (custom-theme-set-faces
             'wombat
             '(default ((t (:foreground "#dddddd" :background "#222222"))))
+            '(font-lock-comment-face ((t (:foreground "#8a877a"))))
             '(region ((t (:background "#515151"))))
             '(cursor ((t (:background "#dddddd"))))
             '(fringe ((t (:background "#333333"))))
@@ -697,9 +698,9 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line-buffer-id ((t (:weight bold))))
             '(persp-selected-face ((t (:foreground "#95e454" :weight bold))))
             '(mode-line
-              ((t (:background "#4b4b4b" :foreground "#e8e8e8" :box (:line-width 1 :color "#515151")))))
+              ((t (:background "#484848" :foreground "#d6d6d6" :box (:line-width 1 :color "#515151")))))
             '(mode-line-inactive
-              ((t (:inherit mode-line :background "#2e2e2e" :foreground "#999999"))))
+              ((t (:inherit mode-line :background "#2e2e2e" :foreground "#858585"))))
             )
            (my/after-set-theme)
            (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))

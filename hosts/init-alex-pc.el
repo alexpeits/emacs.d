@@ -27,7 +27,7 @@
     ;; ,(assoc 'kaolin-mono-dark my/all-themes)
     ;; ,(assoc 'wombat my/all-themes)
     ))
-(setq my/current-theme 1)
+(setq my/current-theme 0)
 
 (setq my/hl-line-contrast 5)
 
