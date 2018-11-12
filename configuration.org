@@ -683,116 +683,133 @@ PWD is not in a git repo (or the git command is not found)."
   (my/org-set-src-faces light-bg))
 
 (setq my/all-themes
-  '(
-    (abyss
-     (progn
-       (custom-theme-set-faces
-        'abyss
-        '(default ((t (:background "#141414" :foreground "#bbe0f0"))))
-        '(fringe ((t (:background "#282828"))))
-        '(mode-line-inactive ((t (:box nil :foreground "#cc79a7" :background "#3a3a3a"))))
-        '(region ((t (:background "#253b76"))))
-        '(show-paren-match ((t (:background "#365096"))))
-        )
-       (my/after-set-theme)
-       ))
-    (blackboard
-     (progn
-       (custom-theme-set-faces
-        'blackboard
-        '(default ((t (:foreground "#e2e2e2" :background "#0c1021"))))
-        '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
-        '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
-        '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
-        '(font-lock-comment-face ((t (:foreground "#9b9b9b" :slant italic))))
-        '(linum ((t (:inherit fringe :foreground "#607480"))))
-        '(magit-section-highlight ((t (:background "#203b56"))))
-        '(show-paren-match ((t (:background "#245587"))))
-        )
-       (my/after-set-theme)
-       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
-       ))
-    (gotham
-     (progn
-       (custom-theme-set-faces
-        'gotham
-        '(default ((t (:background "#131a21" :foreground "#99d1ce"))))
-        '(fringe ((t (:background "#192128"))))
-        '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
-        '(font-lock-keyword-face ((t (:foreground "#23748e" :weight bold))))
-        ;; '(font-lock-type-face ((t (:foreground "#48a7c4"))))
-        '(font-lock-comment-face ((t (:foreground "#386b77"))))
-        '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-        '(outline-1 ((t (:foreground "#2aa889"))))
-        '(shadow ((t (:foreground "#599cab"))))
-        '(avy-lead-face-0 ((t (:foreground "#99d1ce" :background "#245361"))))
-        '(treemacs-fringe-indicator-face ((t (:foreground "#2aa889"))))
-        '(isearch ((t (:inverse-video nil :foreground "black" :background "#d26937"))))
-        '(lazy-highlight ((t (:foreground "black" :background "#2a6e83"))))
-        '(ivy-current-match ((t (:background "#134a60"))))
-        '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
-        '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#1e222a"))))
-        )
-       (my/after-set-theme)
-       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
-       ))
-    (kaolin-mono-dark
-     (progn
-       (custom-theme-set-faces
-        'kaolin-mono-dark
-        '(default ((t (:foreground "#c6d1cb" :background "#111915"))))
-        '(mode-line
-          ((t (:foreground "#c5d4cd" :background "#24342c" :box (:line-width 2 :color "#273931" :style nil)))))
-        '(mode-line-inactive
-          ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#1f2c26" :style nil)))))
-        '(mode-line-buffer-id ((t (:weight bold))))
-        '(vertical-border ((t (:foreground "#5a605a"))))
-        '(fringe ((t (:background "#1d2320"))))
-        ;; '(font-lock-type-face ((t (:foreground "#749182"))))
-        '(font-lock-function-name-face ((t (:foreground "#97bfad" :weight bold))))
-        '(font-lock-variable-name-face ((t (:foreground "#97bfad"))))
-        '(font-lock-comment-face ((t (:foreground "#4c6257"))))
-        '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-        '(font-lock-doc-face ((t (:foreground "#6fce9f"))))
-        '(region ((t (:background "#364c41"))))
-        '(persp-selected-face ((t (:foreground "#65e6a7" :weight bold))))
-        '(show-paren-match ((t (:background "#327353" :weight bold))))
-        '(lazy-highlight ((t (:foreground "#69ceb0" :background "#25352d"))))
-        '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
-        '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
-        '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
-        '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
-        )
-       (my/diff-hl-set-fringe-faces)
-       (my/org-set-src-faces)
-       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
-       )
-     )
-    (zenburn
-     (progn
-       (my/hl-line-set-bg) (my/org-set-src-faces)
-       (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
-       ))
-    (sunburn
-     (progn
-       (custom-theme-set-faces
-        'sunburn
-        '(mode-line-buffer-id ((t (:weight bold))))
-        '(minibuffer-prompt ((t (:foreground "#f0dfaf"))))
-        '(fringe ((t (:background "#4f4951"))))
-        '(region ((t (:background "#6b5f6f"))))
-        '(mode-line
-          ((t (:box
-               (:line-width -1 :color nil :style released-button)
-               :foreground "#f1f1f1" :background "#3d344c"))))
-        )
-       (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
-       (my/hl-line-set-bg) (my/org-set-src-faces)
-       ))
-    (leslie-knope
-     (my/after-set-theme t)
-     t)
-    ))
+      '(
+        (wombat
+         (progn
+           (custom-theme-set-faces
+            'wombat
+            '(default ((t (:foreground "#dddddd" :background "#222222"))))
+            '(region ((t (:background "#515151"))))
+            '(cursor ((t (:background "#dddddd"))))
+            '(fringe ((t (:background "#333333"))))
+            '(isearch ((t (:foreground "#242424" :background "#e5786d"))))
+            '(show-paren-match ((t (:background "steelblue4" :weight bold))))
+            '(mode-line-buffer-id ((t (:weight bold))))
+            '(persp-selected-face ((t (:foreground "#95e454" :weight bold))))
+            '(mode-line
+              ((t (:background "#4b4b4b" :foreground "#e8e8e8" :box (:line-width 1 :color "#515151")))))
+            '(mode-line-inactive
+              ((t (:inherit mode-line :background "#2e2e2e" :foreground "#999999"))))
+            )
+           (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           ))
+        (abyss
+         (progn
+           (custom-theme-set-faces
+            'abyss
+            '(default ((t (:background "#141414" :foreground "#bbe0f0"))))
+            '(fringe ((t (:background "#282828"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#cc79a7" :background "#3a3a3a"))))
+            '(region ((t (:background "#253b76"))))
+            '(show-paren-match ((t (:background "#365096"))))
+            )
+           (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           ))
+        (blackboard
+         (progn
+           (custom-theme-set-faces
+            'blackboard
+            '(default ((t (:foreground "#e2e2e2" :background "#0c1021"))))
+            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
+            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
+            '(font-lock-comment-face ((t (:foreground "#9b9b9b" :slant italic))))
+            '(linum ((t (:inherit fringe :foreground "#607480"))))
+            '(magit-section-highlight ((t (:background "#203b56"))))
+            '(show-paren-match ((t (:background "#245587"))))
+            )
+           (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           ))
+        (gotham
+         (progn
+           (custom-theme-set-faces
+            'gotham
+            '(default ((t (:background "#131a21" :foreground "#99d1ce"))))
+            '(fringe ((t (:background "#192128"))))
+            '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
+            '(font-lock-keyword-face ((t (:foreground "#2884a2" :weight bold))))
+            '(font-lock-comment-face ((t (:foreground "#386b77"))))
+            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+            '(outline-1 ((t (:foreground "#2aa889"))))
+            '(shadow ((t (:foreground "#599cab"))))
+            '(avy-lead-face-0 ((t (:foreground "#99d1ce" :background "#245361"))))
+            '(treemacs-fringe-indicator-face ((t (:foreground "#2aa889"))))
+            '(isearch ((t (:inverse-video nil :foreground "black" :background "#d26937"))))
+            '(lazy-highlight ((t (:foreground "black" :background "#2a6e83"))))
+            '(ivy-current-match ((t (:background "#134a60"))))
+            '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#1e222a"))))
+            )
+           (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           ))
+        (kaolin-mono-dark
+         (progn
+           (custom-theme-set-faces
+            'kaolin-mono-dark
+            '(default ((t (:foreground "#c6d1cb" :background "#111915"))))
+            '(mode-line
+              ((t (:foreground "#c5d4cd" :background "#24342c" :box (:line-width 2 :color "#273931" :style nil)))))
+            '(mode-line-inactive
+              ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#1f2c26" :style nil)))))
+            '(mode-line-buffer-id ((t (:weight bold))))
+            '(vertical-border ((t (:foreground "#5a605a"))))
+            '(fringe ((t (:background "#1d2320"))))
+            '(font-lock-function-name-face ((t (:foreground "#97bfad" :weight bold))))
+            '(font-lock-comment-face ((t (:foreground "#4c6257"))))
+            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+            '(font-lock-doc-face ((t (:foreground "#6fce9f"))))
+            '(persp-selected-face ((t (:foreground "#65e6a7" :weight bold))))
+            '(show-paren-match ((t (:background "#327353" :weight bold))))
+            '(lazy-highlight ((t (:foreground "#69ceb0" :background "#25352d"))))
+            '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
+            '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
+            '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
+            '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
+            )
+           (my/diff-hl-set-fringe-faces)
+           (my/org-set-src-faces)
+           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           )
+         )
+        (zenburn
+         (progn
+           (my/hl-line-set-bg) (my/org-set-src-faces)
+           (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
+           ))
+        (sunburn
+         (progn
+           (custom-theme-set-faces
+            'sunburn
+            '(mode-line-buffer-id ((t (:weight bold))))
+            '(minibuffer-prompt ((t (:foreground "#f0dfaf"))))
+            '(fringe ((t (:background "#4f4951"))))
+            '(region ((t (:background "#6b5f6f"))))
+            '(mode-line
+              ((t (:box
+                   (:line-width -1 :color nil :style released-button)
+                   :foreground "#f1f1f1" :background "#3d344c"))))
+            )
+           (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
+           (my/hl-line-set-bg) (my/org-set-src-faces)
+           ))
+        (leslie-knope
+         (my/after-set-theme t)
+         t)
+        ))
 
 (defvar my/avail-themes '(wombat))
 (defvar my/current-theme 0)
@@ -2243,7 +2260,7 @@ the current file."
   "Face for flycheck warning feedback in the modeline."
   :group 'modeline-flycheck)
 (defface modeline-flycheck-info
-  '((t (:foreground "#75b0ce" :distant-foreground "#75b0ce")))
+  '((t (:foreground "DeepSkyBlue3" :distant-foreground "DeepSkyBlue3")))
   "Face for flycheck info feedback in the modeline."
   :group 'modeline-flycheck)
 
