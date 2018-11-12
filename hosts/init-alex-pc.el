@@ -21,11 +21,33 @@
   `(
     ,(assoc 'gotham my/all-themes)
     ;; ,(assoc 'zenburn my/all-themes)
-    ,(assoc 'blackboard my/all-themes)
+    ;; ,(assoc 'blackboard my/all-themes)
     ;; ,(assoc 'leslie-knope my/all-themes)
     ,(assoc 'sunburn my/all-themes)
+    (kaolin-mono-dark
+     (progn
+       (custom-theme-set-faces
+        'kaolin-mono-dark
+        '(mode-line
+          ((t (:foreground "#c5d4cd" :background "#1f2f28" :box (:line-width 2 :color "#23352d" :style nil)))))
+        '(mode-line-inactive
+          ((t (:foreground "#567668" :background "#16211c" :box (:line-width 2 :color "#1b2822" :style nil)))))
+        '(mode-line-buffer-id ((t (:weight bold))))
+        '(font-lock-type-face ((t (:foreground "#749182"))))
+        '(font-lock-comment-face ((t (:foreground "#4c6257"))))
+        '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+        '(font-lock-doc-face ((t (:foreground "#6fce9f"))))
+        '(persp-selected-face ((t (:foreground "#65e6a7" :weight bold))))
+        '(show-paren-match ((t (:background "#327353" :weight bold))))
+        )
+       (my/diff-hl-set-fringe-faces)
+       (my/org-set-src-faces)
+       ;; (my/hl-line-set-bg)
+       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+       )
+     )
     ))
-(setq my/current-theme 2)
+(setq my/current-theme 1)
 
 (setq my/hl-line-contrast 5)
 

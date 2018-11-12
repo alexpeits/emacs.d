@@ -2355,7 +2355,7 @@ the number of errors.")
  (lambda ()
    (use-package ox-twbs :ensure t)
    (use-package ox-reveal :ensure t)
-   ;; (use-package org-bullets :ensure t :config (org-bullets-mode))
+   (use-package org-bullets :ensure t :config (org-bullets-mode))
 
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
