@@ -752,7 +752,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(lazy-highlight ((t (:foreground "black" :background "#2a6e83"))))
             '(ivy-current-match ((t (:background "#134a60"))))
             '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#1e222a"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#19232d"))))
             )
            (my/after-set-theme)
            (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
