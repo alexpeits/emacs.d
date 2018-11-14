@@ -705,6 +705,20 @@ PWD is not in a git repo (or the git command is not found)."
            (my/after-set-theme)
            (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
            ))
+        (nimbus
+         (progn
+           (custom-theme-set-faces
+            'nimbus
+            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
+            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
+            '(region ((t (:background "#203b56"))))
+            '(fringe ((t (:background "#222222"))))
+            '(show-paren-match ((t (:background "#245587"))))
+            )
+           (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           ))
         (abyss
          (progn
            (custom-theme-set-faces
