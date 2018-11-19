@@ -649,10 +649,13 @@ PWD is not in a git repo (or the git command is not found)."
      markdown-mode-hook))
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color
-          (let ((bg-color (face-attribute 'default :background)))
-            (if my/theme-light-bg
-                (color-darken-name bg-color 10)
-              (color-lighten-name bg-color 10)))))
+          (let ((fci-face (face-attribute 'my/fci :foreground))
+                (bg-color (face-attribute 'default :background)))
+            (if (eq fci-face 'unspecified)
+                (if my/theme-light-bg
+                    (color-darken-name bg-color 15)
+                  (color-lighten-name bg-color 15))
+              fci-face))))
   (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
   (my/add-hooks
    fci-mode-hooks
@@ -682,55 +685,62 @@ PWD is not in a git repo (or the git command is not found)."
   (my/hl-line-set-bg light-bg)
   (my/org-set-src-faces light-bg))
 
+(defface my/fci '((t ())) "fci rule face")
+
 (setq my/all-themes
       '(
         (wombat
          (progn
            (custom-theme-set-faces
             'wombat
-            '(default ((t (:foreground "#dddddd" :background "#222222"))))
+            '(default ((t (:foreground "#d8d8d8" :background "#1e1e1e"))))
             '(font-lock-comment-face ((t (:foreground "#8a877a"))))
             '(region ((t (:background "#515151"))))
             '(cursor ((t (:background "#dddddd"))))
-            '(fringe ((t (:background "#333333"))))
+            '(fringe ((t (:background "#2e2e2e"))))
             '(isearch ((t (:foreground "#242424" :background "#e5786d"))))
             '(show-paren-match ((t (:background "steelblue4" :weight bold))))
             '(mode-line-buffer-id ((t (:weight bold))))
             '(persp-selected-face ((t (:foreground "#95e454" :weight bold))))
             '(mode-line
-              ((t (:background "#484848" :foreground "#d6d6d6" :box (:line-width 1 :color "#515151")))))
+              ((t (:background "#505050" :foreground "#d6d6d6" :box (:line-width 1 :color "#505050")))))
             '(mode-line-inactive
-              ((t (:inherit mode-line :background "#2e2e2e" :foreground "#858585"))))
+              ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
             )
            (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
            ))
         (nimbus
          (progn
            (custom-theme-set-faces
             'nimbus
-            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
-            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
+            '(mode-line
+              ((t (:background "#505050" :foreground "#d6d6d6" :box (:line-width 1 :color "#505050")))))
+            '(mode-line-inactive
+              ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
+            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
+            '(font-lock-function-name-face ((t (:foreground "#379663"))))
             '(region ((t (:background "#203b56"))))
             '(fringe ((t (:background "#222222"))))
             '(show-paren-match ((t (:background "#245587"))))
             )
            (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           (my/magit-set-diff-faces)
            ))
         (abyss
          (progn
            (custom-theme-set-faces
             'abyss
-            '(default ((t (:background "#141414" :foreground "#bbe0f0"))))
+            '(default ((t (:background "#171717" :foreground "#bbe0f0"))))
             '(fringe ((t (:background "#282828"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#cc79a7" :background "#3a3a3a"))))
+            '(mode-line ((t (:foreground "#0d1000" :background "#52a1c9"))))
+            '(mode-line-inactive ((t (:foreground "#cc79a7" :background "#303030"))))
             '(region ((t (:background "#253b76"))))
             '(show-paren-match ((t (:background "#365096"))))
+            '(anzu-mode-line ((t (:foreground "#0d1000" :background "magenta" :weight bold))))
+            '(anzu-mode-line-no-match ((t (:inherit anzu-mode-line :background "red"))))
             )
            (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
+           (my/modeline-flycheck-darker-faces)
            ))
         (blackboard
          (progn
@@ -744,9 +754,9 @@ PWD is not in a git repo (or the git command is not found)."
             '(linum ((t (:inherit fringe :foreground "#607480"))))
             '(magit-section-highlight ((t (:background "#203b56"))))
             '(show-paren-match ((t (:background "#245587"))))
+            '(my/fci ((t (:foreground "#233064"))))
             )
            (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
            ))
         (gotham
          (progn
@@ -769,37 +779,24 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#19232d"))))
             )
            (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
            ))
-        (kaolin-mono-dark
+        (ample-light
          (progn
            (custom-theme-set-faces
-            'kaolin-mono-dark
-            '(default ((t (:foreground "#c6d1cb" :background "#111915"))))
-            '(mode-line
-              ((t (:foreground "#c5d4cd" :background "#24342c" :box (:line-width 2 :color "#273931" :style nil)))))
-            '(mode-line-inactive
-              ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#1f2c26" :style nil)))))
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(vertical-border ((t (:foreground "#5a605a"))))
-            '(fringe ((t (:background "#1d2320"))))
-            '(font-lock-function-name-face ((t (:foreground "#97bfad" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#4c6257"))))
-            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-            '(font-lock-doc-face ((t (:foreground "#6fce9f"))))
-            '(persp-selected-face ((t (:foreground "#65e6a7" :weight bold))))
-            '(show-paren-match ((t (:background "#327353" :weight bold))))
-            '(lazy-highlight ((t (:foreground "#69ceb0" :background "#25352d"))))
-            '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
-            '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
-            '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
-            '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
+            'ample-light
+            '(default ((t (:foreground "gray30" :background "#cbc9b1"))))
+            '(cursor ((t (:foreground "#cbc9b1" :background "gray30"))))
+            '(mode-line ((t (:foreground "gray30" :background "#a8a68d"))))
+            '(mode-line-inactive ((t (:foreground "gray55" :background "#bbb9a1"))))
+            '(font-lock-comment-face ((t (:foreground "#8a8a8a" :slant italic))))
+            '(company-tooltip ((t (:foreground "gray43" :background "#bab8a5"))))
+            '(company-tooltip-selection ((t (:foreground "gray43" :background "#aba991"))))
+            '(company-tooltip-common ((t (:foreground "#528fd1"))))
+            '(company-tooltip-common-selection ((t (:foreground "#bbb9a1" :background "gray43"))))
             )
-           (my/diff-hl-set-fringe-faces)
-           (my/org-set-src-faces)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
-           )
-         )
+           (my/after-set-theme t)
+           (my/modeline-flycheck-darker-faces)
+           ))
         (zenburn
          (progn
            (my/hl-line-set-bg) (my/org-set-src-faces)
@@ -818,12 +815,9 @@ PWD is not in a git repo (or the git command is not found)."
                    (:line-width -1 :color nil :style released-button)
                    :foreground "#f1f1f1" :background "#3d344c"))))
             )
-           (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
            (my/hl-line-set-bg) (my/org-set-src-faces)
+           (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
            ))
-        (leslie-knope
-         (my/after-set-theme t)
-         t)
         ))
 
 (defvar my/avail-themes '(wombat))
@@ -846,7 +840,7 @@ PWD is not in a git repo (or the git command is not found)."
     (load-theme theme t)
     (setq my/theme theme)
     (setq my/theme-light-bg light-bg)
-    (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
+    (setq pdf-view-midnight-colors '("#b3dfdd" . "#0a3749"))
     (eval config)))
 
 (defun my/toggle-theme ()
@@ -893,6 +887,15 @@ PWD is not in a git repo (or the git command is not found)."
 ** Magit
    
 #+BEGIN_SRC emacs-lisp
+(defun my/magit-set-diff-faces ()
+  (custom-theme-set-faces
+   my/theme
+   '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
+   '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
+   '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
+   '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
+   ))
+
 (use-package magit
   :ensure t
   :defer t
@@ -946,6 +949,8 @@ PWD is not in a git repo (or the git command is not found)."
 #+BEGIN_SRC emacs-lisp
 (defvar my/leader-keys
   '(
+    ("SPC" fci-mode)
+
     ("]"  find-tag-other-window)
     (";"  evilnc-comment-or-uncomment-lines)
 
@@ -959,9 +964,10 @@ PWD is not in a git repo (or the git command is not found)."
 
     ("h"  help)
 
-    ("j"  my/jump-to-definition)
+    ("if" my/file-name-at-point)
+    ("iu" counsel-unicode-char)
 
-    ("n"  my/file-tree)
+    ("j"  my/jump-to-definition)
 
     ("pl" persp-next)
     ("ph" persp-prev)
@@ -973,9 +979,6 @@ PWD is not in a git repo (or the git command is not found)."
 
     ("sd" pwd)
     ("sf" face-at-point)
-
-    ("if" my/file-name-at-point)
-    ("iu" counsel-unicode-char)
 
     ("t8" fci-mode)
     ("tc" global-company-mode)
@@ -992,6 +995,8 @@ PWD is not in a git repo (or the git command is not found)."
     ("up" rainbow-delimiters-mode)
 
     ("Ts" counsel-load-theme)
+
+    ("Q" evil-local-mode)
     ))
 #+END_SRC
 
@@ -1005,7 +1010,7 @@ PWD is not in a git repo (or the git command is not found)."
 (dolist (i my/leader-keys)
   (let ((k (car i))
         (f (cadr i)))
-    (define-key my/leader-map k f)))
+    (define-key my/leader-map (kbd k) f)))
 #+END_SRC
 
 ** evil-mode setup
@@ -1017,9 +1022,9 @@ PWD is not in a git repo (or the git command is not found)."
   (global-evil-leader-mode)
   (evil-leader/set-leader "<SPC>")
   (dolist (i my/leader-keys)
-  (let ((k (car i))
-        (f (cadr i)))
-    (evil-leader/set-key k f))))
+    (let ((k (car i))
+          (f (cadr i)))
+      (evil-leader/set-key k f))))
 
 (use-package evil
   :ensure t
@@ -1213,7 +1218,7 @@ PWD is not in a git repo (or the git command is not found)."
 ;; see https://github.com/emacs-evil/evil/blob/56e92f7cb4e04e665670460093b41f58446b7a2b/evil-states.el#L108
 (evil-define-state hybrid
   "Hybrid state for hybrid mode."
-  :tag " <H> "
+  :tag " <I> "
   :cursor (bar . 2)
   :message "-- HYBRID --"
   :entry-hook (evil-start-track-last-insertion)
@@ -2036,7 +2041,7 @@ the current file."
   (setq aw-dispatch-always t)
   (global-set-key (kbd "C-c o") 'ace-window)
   (custom-set-faces
-   '(aw-leading-char-face ((t (:foreground "magenta" :weight bold :height 1.5 :box t))))))
+   '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.5 :box t))))))
 #+END_SRC
 
 ** Treemacs
@@ -2279,6 +2284,14 @@ the current file."
   "Face for flycheck info feedback in the modeline."
   :group 'modeline-flycheck)
 
+(defun my/modeline-flycheck-darker-faces ()
+  (custom-theme-set-faces
+   my/theme
+   '(modeline-flycheck-error ((t (:foreground "#c63d3d" :distant-foreground "#c63d3d"))))
+   '(modeline-flycheck-warning ((t (:foreground "#84781a" :distant-foreground "#84781a"))))
+   '(modeline-flycheck-info ((t (:foreground "DeepSkyBlue4" :distant-foreground "DeepSkyBlue4"))))
+   ))
+
 (defvar modeline-flycheck-bullet "•%s"
   "The bullet used for the flycheck segment.
 This should be a format string with a single `%s'-expression corresponding to
@@ -2482,7 +2495,7 @@ the number of errors.")
    
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
-(load custom-file 'noerror)
+;; (load custom-file 'noerror)
 
 (setq x-underline-at-descent-line t)
 
@@ -2517,7 +2530,7 @@ the number of errors.")
 #+BEGIN_SRC emacs-lisp
 (recentf-mode 1)
 (recentf-open-files nil "*Recent Files*")
-(setq recentf-max-saved-items 100000)
+(setq recentf-max-saved-items 100)
 (global-set-key (kbd "C-x C-a") 'counsel-recentf)
 #+END_SRC
 
