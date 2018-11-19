@@ -5,9 +5,9 @@
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/custom"))
 (add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/custom-themes/"))
 (setenv "PATH" (concat
-                "/usr/local/bin" path-separator
                 (expand-file-name "~/bin") path-separator
                 (expand-file-name "~/.local/bin") path-separator
+                "/usr/local/bin" path-separator
                 (expand-file-name "~/.cargo/bin") path-separator
                 (getenv "PATH")))
 (add-to-list 'exec-path "/usr/local/bin")
@@ -647,14 +647,15 @@ PWD is not in a git repo (or the git command is not found)."
    fci-mode-hooks
    '(python-mode-hook
      markdown-mode-hook))
+  (defvar my/fci-contrast 10)
   (defun my/set-fci-rule-color ()
     (setq fci-rule-color
           (let ((fci-face (face-attribute 'my/fci :foreground))
                 (bg-color (face-attribute 'default :background)))
             (if (eq fci-face 'unspecified)
                 (if my/theme-light-bg
-                    (color-darken-name bg-color 15)
-                  (color-lighten-name bg-color 15))
+                    (color-darken-name bg-color my/fci-contrast)
+                  (color-lighten-name bg-color my/fci-contrast))
               fci-face))))
   (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
   (my/add-hooks
@@ -686,7 +687,9 @@ PWD is not in a git repo (or the git command is not found)."
   (my/org-set-src-faces light-bg))
 
 (defface my/fci '((t ())) "fci rule face")
+(setq nord-comment-brightness 8)
 
+;; I am trying a lot of themes dammit
 (setq my/all-themes
       '(
         (wombat
@@ -743,11 +746,30 @@ PWD is not in a git repo (or the git command is not found)."
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
            ))
+        (nord
+         (progn
+           (custom-theme-set-faces
+            'nord
+            '(default ((t (:background "#1a1e28" :foreground "#b6c1d3"))))
+            '(mode-line-inactive ((t (:background "#292e3a" :foreground "#5e7591"))))
+            '(font-lock-doc-face ((t (:foreground "#97aa86"))))
+            '(font-lock-preprocessor-face ((t (:foreground "#B48EAD" :weight bold))))
+            '(font-lock-variable-name-face ((t (:inherit default))))
+            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
+            '(fringe ((t (:background "#1f2630"))))
+            '(show-paren-match ((t (:background "#477099" :weight bold))))
+            '(outline-2 ((t (:foreground "#8FBCBB" :weight bold))))
+            '(org-level-2 ((t (:inherit outline-2))))
+            '(outline-3 ((t (:foreground "#a3be8c" :weight bold))))
+            '(org-level-3 ((t (:inherit outline-3))))
+            )
+           (my/after-set-theme)
+           ))
         (blackboard
          (progn
            (custom-theme-set-faces
             'blackboard
-            '(default ((t (:foreground "#e2e2e2" :background "#0c1021"))))
+            '(default ((t (:foreground "#b3c9c1" :background "#0c1021"))))
             '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
             '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
             '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
@@ -790,7 +812,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line ((t (:foreground "gray30" :background "#a8a68d"))))
             '(mode-line-inactive ((t (:foreground "gray55" :background "#bbb9a1"))))
             '(font-lock-comment-face ((t (:foreground "#8a8a8a" :slant italic))))
-            '(company-tooltip ((t (:foreground "gray43" :background "#bab8a5"))))
+            '(company-toolti ((t (:foreground "gray43" :background "#bab8a5"))))
             '(company-tooltip-selection ((t (:foreground "gray43" :background "#aba991"))))
             '(company-tooltip-common ((t (:foreground "#528fd1"))))
             '(company-tooltip-common-selection ((t (:foreground "#bbb9a1" :background "gray43"))))
@@ -955,7 +977,6 @@ PWD is not in a git repo (or the git command is not found)."
     ("]"  find-tag-other-window)
     (";"  evilnc-comment-or-uncomment-lines)
 
-    ("bb" helm-buffers-list)
     ("bs" my/create-scratch-buffer-with-mode)
 
     ("el" my/toggle-flycheck-error-list)
@@ -970,11 +991,6 @@ PWD is not in a git repo (or the git command is not found)."
 
     ("j"  my/jump-to-definition)
 
-    ("pl" persp-next)
-    ("ph" persp-prev)
-    ("pp" projectile-persp-switch-project)
-    ("pq" persp-kill)
-    ("pr" persp-rename)
     ("ps" counsel-projectile-ag)
     ("pt" my/counsel-ag-todos-global)
 
@@ -1712,7 +1728,7 @@ the current file."
   (add-hook 'css-mode-hook 'emmet-mode))
 #+END_SRC
 
-** JSON, YAML, Markdown etc.
+** JSON, YAML etc.
 
 #+BEGIN_SRC emacs-lisp
 (use-package json-mode
@@ -2042,7 +2058,7 @@ the current file."
   (setq aw-dispatch-always t)
   (global-set-key (kbd "C-c o") 'ace-window)
   (custom-set-faces
-   '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.5 :box t))))))
+   '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.8))))))
 #+END_SRC
 
 ** Treemacs
