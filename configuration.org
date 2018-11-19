@@ -736,6 +736,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line-inactive ((t (:foreground "#cc79a7" :background "#303030"))))
             '(region ((t (:background "#253b76"))))
             '(show-paren-match ((t (:background "#365096"))))
+            '(linum ((t (:foreground "#607480"))))
             '(anzu-mode-line ((t (:foreground "#0d1000" :background "magenta" :weight bold))))
             '(anzu-mode-line-no-match ((t (:inherit anzu-mode-line :background "red"))))
             )
