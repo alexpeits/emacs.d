@@ -814,7 +814,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line ((t (:foreground "gray30" :background "#a8a68d"))))
             '(mode-line-inactive ((t (:foreground "gray55" :background "#bbb9a1"))))
             '(font-lock-comment-face ((t (:foreground "#8a8a8a" :slant italic))))
-            '(company-toolti ((t (:foreground "gray43" :background "#bab8a5"))))
+            '(company-tooltip ((t (:foreground "gray43" :background "#bab8a5"))))
             '(company-tooltip-selection ((t (:foreground "gray43" :background "#aba991"))))
             '(company-tooltip-common ((t (:foreground "#528fd1"))))
             '(company-tooltip-common-selection ((t (:foreground "#bbb9a1" :background "gray43"))))
@@ -1335,6 +1335,9 @@ With a prefix argument, insert a newline above the current line."
 
 (add-hook 'haskell-mode-hook
           (lambda ()
+            ;; hack for this issue https://github.com/haskell/haskell-mode/issues/1615
+            ;; still breaks indentation
+            ;; (font-lock-add-keywords nil '(("':'" 0 'font-lock-string-face t)))
             (intero-mode-blacklist)
             (haskell-decl-scan-mode)
             (flycheck-add-next-checker 'intero '(t . haskell-hlint))
