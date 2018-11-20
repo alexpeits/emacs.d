@@ -750,14 +750,14 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'nord
-            '(default ((t (:background "#161b24" :foreground "#b6c1d3"))))
+            '(default ((t (:background "#191f28" :foreground "#b6c1d3"))))
             '(mode-line ((t (:background "#3f4758" :foreground "#9ac9d7"))))
             '(mode-line-inactive ((t (:background "#242934" :foreground "#5e7591"))))
             '(font-lock-doc-face ((t (:foreground "#97aa86"))))
             '(font-lock-preprocessor-face ((t (:foreground "#B48EAD" :weight bold))))
             '(font-lock-variable-name-face ((t (:inherit default))))
             '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
-            '(fringe ((t (:background "#1b222b"))))
+            '(fringe ((t (:background "#1d242d"))))
             '(show-paren-match ((t (:background "#477099" :weight bold))))
             '(outline-2 ((t (:foreground "#8FBCBB" :weight bold))))
             '(org-level-2 ((t (:inherit outline-2))))
@@ -791,7 +791,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
             ;; '(font-lock-type-face ((t (:foreground "#888ca6"))))
             '(font-lock-keyword-face ((t (:foreground "#2884a2" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#386b77"))))
+            '(font-lock-comment-face ((t (:foreground "#366773" :slant italic))))
             '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
             '(outline-1 ((t (:foreground "#2aa889"))))
             '(shadow ((t (:foreground "#599cab"))))
