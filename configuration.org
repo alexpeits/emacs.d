@@ -689,6 +689,8 @@ PWD is not in a git repo (or the git command is not found)."
 (defface my/fci '((t ())) "fci rule face")
 (setq nord-comment-brightness 8)
 
+(defvar my/fewer-colors nil)
+
 ;; I am trying a lot of themes dammit
 (setq my/all-themes
       '(
@@ -696,19 +698,23 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'wombat
-            '(default ((t (:foreground "#d8d8d8" :background "#1e1e1e"))))
-            '(font-lock-comment-face ((t (:foreground "#8a877a"))))
+            '(default ((t (:foreground "#d8d8d8" :background "#202020"))))
+            '(font-lock-comment-face ((t (:foreground "#797f7d"))))
             '(region ((t (:background "#515151"))))
-            '(cursor ((t (:background "#dddddd"))))
+            '(highlight ((t (:background "#3a3a3a"))))
+            '(cursor ((t (:background "#d8d8d8"))))
             '(fringe ((t (:background "#2e2e2e"))))
             '(isearch ((t (:foreground "#242424" :background "#e5786d"))))
+            '(vertical-border ((t (:foreground "#b0b0b0"))))
             '(show-paren-match ((t (:background "steelblue4" :weight bold))))
             '(mode-line-buffer-id ((t (:weight bold))))
-            '(persp-selected-face ((t (:foreground "#95e454" :weight bold))))
+            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
             '(mode-line
-              ((t (:background "#505050" :foreground "#d6d6d6" :box (:line-width 1 :color "#505050")))))
+              ((t (:background "#454545" :foreground "#d6d6d6" :box (:line-width 1 :color "#4a4a4a")))))
             '(mode-line-inactive
               ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
+            '(outline-2 ((t (:foreground "#8ac6f2" :weight bold))))
+            '(outline-3 ((t (:foreground "#ccaa8f" :weight bold))))
             )
            (my/after-set-theme)
            ))
@@ -786,10 +792,10 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'gotham
-            '(default ((t (:background "#131a21" :foreground "#99d1ce"))))
+            '(default ((t (:background "#11171d" :foreground "#99d1ce"))))
             '(fringe ((t (:background "#192128"))))
             '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
-            ;; '(font-lock-type-face ((t (:foreground "#888ca6"))))
+            (if my/fewer-colors '(font-lock-type-face ((t (:foreground "#888ca6")))))
             '(font-lock-keyword-face ((t (:foreground "#2884a2" :weight bold))))
             '(font-lock-comment-face ((t (:foreground "#366773" :slant italic))))
             '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
@@ -814,7 +820,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line ((t (:foreground "gray30" :background "#a8a68d"))))
             '(mode-line-inactive ((t (:foreground "gray55" :background "#bbb9a1"))))
             '(font-lock-comment-face ((t (:foreground "#8a8a8a" :slant italic))))
-            '(company-tooltip ((t (:foreground "gray43" :background "#bab8a5"))))
+            '(company-toolti ((t (:foreground "gray43" :background "#bab8a5"))))
             '(company-tooltip-selection ((t (:foreground "gray43" :background "#aba991"))))
             '(company-tooltip-common ((t (:foreground "#528fd1"))))
             '(company-tooltip-common-selection ((t (:foreground "#bbb9a1" :background "gray43"))))
@@ -1335,9 +1341,6 @@ With a prefix argument, insert a newline above the current line."
 
 (add-hook 'haskell-mode-hook
           (lambda ()
-            ;; hack for this issue https://github.com/haskell/haskell-mode/issues/1615
-            ;; still breaks indentation
-            ;; (font-lock-add-keywords nil '(("':'" 0 'font-lock-string-face t)))
             (intero-mode-blacklist)
             (haskell-decl-scan-mode)
             (flycheck-add-next-checker 'intero '(t . haskell-hlint))
@@ -1660,7 +1663,8 @@ the current file."
          ("\\.markdown\\'" . markdown-mode))
   :config
   (my/set-mode-fill-width 'markdown-mode-hook 100)
-  (setq markdown-fontify-code-blocks-natively t))
+  ;; (setq markdown-fontify-code-blocks-natively t)
+  )
 #+END_SRC
 
 * Other programming languages
@@ -1899,6 +1903,10 @@ the current file."
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
           (ivy-bibtex . ivy--regex-ignore-order)
+          (counsel-unicode-char . ivy--regex-ignore-order)
+          (insert-char . ivy--regex-ignore-order)
+          (ucs-insert . ivy--regex-ignore-order)
+          (counsel-unicode-char . ivy--regex-ignore-order)
           (t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
@@ -2531,6 +2539,7 @@ the number of errors.")
 (setq linum-format 'dynamic)
 (custom-set-faces
  '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
+ '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
  '(fixed-pitch ((t nil)))
  '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
  '(flycheck-fringe-error ((t (:foreground "red1"))))
