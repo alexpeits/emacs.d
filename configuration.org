@@ -326,6 +326,8 @@ interface and inserts it at point."
   (sp-pair "[" nil :post-handlers
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
 
+  (sp-local-pair 'haskell-mode "'" nil :actions nil)
+
   ;; keybindings
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
@@ -487,6 +489,13 @@ buffer, close it."
 
   (puthash "::" "∷" xah-math-input-abrvs)
   (puthash "bottom" "⊥" xah-math-input-abrvs))
+#+END_SRC
+
+** recentf
+
+#+BEGIN_SRC emacs-lisp
+(setq recentf-max-saved-items 100)
+(recentf-mode 1)
 #+END_SRC
 
 * Term, eshell and comint-mode
@@ -739,15 +748,20 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'abyss
-            '(default ((t (:background "#171717" :foreground "#bbe0f0"))))
+            '(default ((t (:background "#161616" :foreground "#afd0dd"))))
             '(fringe ((t (:background "#282828"))))
+            ;; '(font-lock-doc-face ((t (:foreground "#d55e00"))))
+            ;; '(font-lock-comment-face ((t (:foreground "#727272" :slant italic))))
+            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+            '(font-lock-string-face ((t (:foreground "#ef58ef"))))
             '(mode-line ((t (:foreground "#0d1000" :background "#52a1c9"))))
             '(mode-line-inactive ((t (:foreground "#cc79a7" :background "#303030"))))
             '(region ((t (:background "#253b76"))))
             '(show-paren-match ((t (:background "#365096"))))
             '(linum ((t (:foreground "#607480"))))
+            '(lazy-highlight ((t (:foreground "#284242" :background "paleturquoise4"))))
             '(anzu-mode-line ((t (:foreground "#0d1000" :background "magenta" :weight bold))))
-            '(anzu-mode-line-no-match ((t (:inherit anzu-mode-line :background "red"))))
+            '(anzu-mode-line-no-match ((t (:foreground "#0d1000" :background "red" :weight bold))))
             )
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
@@ -785,6 +799,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(magit-section-highlight ((t (:background "#203b56"))))
             '(show-paren-match ((t (:background "#245587"))))
             '(my/fci ((t (:foreground "#233064"))))
+            '(treemacs-fringe-indicator-face ((t (:background "#589344" :foreground "#589344"))))
             )
            (my/after-set-theme)
            ))
@@ -1089,13 +1104,13 @@ PWD is not in a git repo (or the git command is not found)."
   (setq evil-mode-line-format '(before . mode-line-front-space))
 
   ;; move search result to center of the screen
-  ;; (defadvice evil-search-next
-  ;;     (after advice-for-evil-search-next activate)
-  ;;   (evil-scroll-line-to-center (line-number-at-pos)))
+  (defadvice evil-search-next
+      (after advice-for-evil-search-next activate)
+    (evil-scroll-line-to-center (line-number-at-pos)))
 
-  ;; (defadvice evil-search-previous
-  ;;     (after advice-for-evil-search-previous activate)
-  ;;   (evil-scroll-line-to-center (line-number-at-pos)))
+  (defadvice evil-search-previous
+      (after advice-for-evil-search-previous activate)
+    (evil-scroll-line-to-center (line-number-at-pos)))
 
   ;; this is needed to be able to use C-h
   (global-set-key (kbd "C-h") 'help)
@@ -1243,7 +1258,7 @@ PWD is not in a git repo (or the git command is not found)."
 ;; see https://github.com/emacs-evil/evil/blob/56e92f7cb4e04e665670460093b41f58446b7a2b/evil-states.el#L108
 (evil-define-state hybrid
   "Hybrid state for hybrid mode."
-  :tag " <I> "
+  :tag " <H> "
   :cursor (bar . 2)
   :message "-- HYBRID --"
   :entry-hook (evil-start-track-last-insertion)
@@ -1324,37 +1339,37 @@ With a prefix argument, insert a newline above the current line."
 * Haskell
   
 #+BEGIN_SRC emacs-lisp
-(use-package intero
-  :ensure t
-  :defer t
-  :diminish intero-mode
-  :init
-  (setq intero-blacklist '("~/.xmonad"))
-  :config
-  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
-  ;; this has to be installed in every repo until I find a solution
-  (setq intero-extra-ghci-options '("-package" "pretty-simple"))
-  ;; don't auto insert matching single quotes in haskell mode, since I
-  ;; mostly use them for promoted data types
-  (sp-local-pair 'haskell-mode "'" nil :actions nil)
-  (sp-local-pair 'intero-repl-mode "'" nil :actions nil))
+  (use-package intero
+    :ensure t
+    :defer t
+    :diminish intero-mode
+    :init
+    (setq intero-blacklist '("~/.xmonad"))
+    (setq my/use-intero t)
+    :config
+    ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
+    ;; this has to be installed in every repo until I find a solution
+    ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+    ;; don't auto insert matching single quotes in haskell mode, since I
+    ;; mostly use them for promoted data types
+    (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
+    (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
+#+END_SRC
 
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (intero-mode-blacklist)
-            (haskell-decl-scan-mode)
-            (flycheck-add-next-checker 'intero '(t . haskell-hlint))
-            (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
-            ;; (eldoc-mode)
-            ))
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'haskell-mode-hook
+            (lambda ()
+              (if my/use-intero (intero-mode-blacklist))
+              (haskell-decl-scan-mode)
+              (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)))
 
-(defun my/haskell-save-and-format ()
-  "Formats the import statements using haskell-stylish and saves
-the current file."
-  (interactive)
-  (save-buffer)
-  (haskell-mode-stylish-buffer)
-  (save-buffer))
+  (defun my/haskell-save-and-format ()
+    "Formats the import statements using haskell-stylish and saves
+  the current file."
+    (interactive)
+    (save-buffer)
+    (haskell-mode-stylish-buffer)
+    (save-buffer))
 #+END_SRC
   
 ** ghc-mod (not used now but some useful stuff)
@@ -1498,18 +1513,22 @@ the current file."
 #+END_SRC
 
 * Purescript
-
+  
 #+BEGIN_SRC emacs-lisp
 (use-package purescript-mode
   :ensure t
-  :diminish purescript-indentation-mode
+  :diminish purescript-indent-mode
   :config
-  (add-hook 'purescript-mode-hook #'turn-on-purescript-indentation))
+  (add-hook 'purescript-mode-hook #'turn-on-purescript-indent)
+  ;; xref for purescript works a bit weird with qualified identifiers
+  (define-key purescript-mode-map (kbd "M-.")
+    #'(lambda () (interactive) (xref-find-definitions (current-word t t)))))
+#+END_SRC
 
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package psc-ide
   :ensure t
   :after (purescript-mode)
-  ;; :diminish psc-ide-mode
   :config
   (add-hook 'purescript-mode-hook #'psc-ide-mode))
 #+END_SRC
@@ -1669,35 +1688,6 @@ the current file."
 
 * Other programming languages
 ** C/C++
-*** irony
-    
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package irony
-  :ensure t
-  :init
-  (use-package ggtags :ensure t)
-  (my/add-hooks '(c++-mode-hook c-mode-hook objc-mode-hook)
-             (irony-mode)
-             (ggtags-mode 1)
-             (c-turn-on-eldoc-mode))
-  (defvar c-eldoc-includes "-I/usr/include -I/usr/include/python3.5m -I./ -I../")
-  :config
-  (defun my-irony-mode-hook ()
-    (defun irony-snippet-available-p () -1)
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  (add-hook 'irony-mode-hook (lambda ()
-                               (my-irony-mode-hook)
-                               (irony-cdb-autosetup-compile-options)))
-  (use-package company-irony-c-headers :ensure t :defer t))
-
-(my|define-jump-handlers c-mode)
-(my|define-jump-handlers c++-mode)
-#+END_SRC
-
-*** general setup
 
 #+BEGIN_SRC emacs-lisp
 (setq c-default-style "linux"
@@ -1749,7 +1739,7 @@ the current file."
 (use-package yaml-mode :ensure t)
 #+END_SRC
     
-* Company-mode
+* Company
    
 #+BEGIN_SRC emacs-lisp
 (use-package company
@@ -1781,7 +1771,7 @@ the current file."
        (define-key company-active-map (kbd "C-f") 'company-show-location))))
 #+END_SRC
 
-* Flycheck-mode
+* Flycheck
    
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
@@ -1814,7 +1804,7 @@ the current file."
 
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
-                        '(javascript-jshint)))
+                        '(javascript-jshint haskell-ghc haskell-stack-ghc)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (setq-default flycheck-temp-prefix ".flycheck")
@@ -1860,7 +1850,7 @@ the current file."
 #+END_SRC
 
 * Ivy/Counsel/Swiper
-   
+  
 #+BEGIN_SRC emacs-lisp
 (defun my/swiper (fuzzy)
   (interactive "P")
@@ -1878,8 +1868,11 @@ the current file."
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
   (use-package flx :ensure t)  ;; better fuzzy matching
+  (use-package ag :ensure t)
   (use-package counsel-projectile :ensure t)
   (use-package ivy-bibtex :ensure t)
+  ;; this has to exist e.g. in .emacs.d/lisp/
+  (use-package ivy-xref :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers nil)
@@ -1893,6 +1886,7 @@ the current file."
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
+  (global-set-key (kbd "C-x C-a") 'counsel-recentf)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
   (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
@@ -1900,6 +1894,13 @@ the current file."
 
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
+  (defun my/counsel-ag-project-root ()
+    (interactive)
+    (let ((root-dir (read-file-name "Search in: " (projectile-project-root))))
+      (counsel-ag "" root-dir)))
+
+  (setq projectile-switch-project-action 'counsel-projectile-find-file)
+
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
           (ivy-bibtex . ivy--regex-ignore-order)
@@ -1907,9 +1908,20 @@ the current file."
           (insert-char . ivy--regex-ignore-order)
           (ucs-insert . ivy--regex-ignore-order)
           (counsel-unicode-char . ivy--regex-ignore-order)
+          (counsel-ag . ivy--regex-plus)
           (t . ivy--regex-fuzzy)))
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
+
+  (defun my/ivy-yank-current-word (&optional qual)
+    "Insert current word into minibuffer"
+    (interactive "P")
+    (let (text)
+      (with-ivy-window
+        (unwind-protect
+            (setq text (current-word t (not qual)))))
+      (when text (insert text))))
+  (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-word)
 
   (dolist (action '(counsel-find-file counsel-recentf))
           (ivy-set-actions
@@ -1968,6 +1980,9 @@ the current file."
         counsel-projectile-find-file-action
         ace-select-window)
       "select window")
+     ("R"
+      (lambda (f) (projectile-recentf))
+      "recent files")
      ))
 
   (ivy-set-actions
@@ -2096,9 +2111,11 @@ the current file."
 (use-package helm :ensure t)
 
 (use-package helm-xref
+  :disabled
   :ensure t
   :config
   (setq xref-show-xrefs-function 'helm-xref-show-xrefs))
+
 #+END_SRC
 
 ** Popwin
@@ -2240,7 +2257,7 @@ the current file."
 
 ** mu4e
    
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (if is-mac
     (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
   (progn
@@ -2384,6 +2401,7 @@ the number of errors.")
         spaceline-highlight-face-func 'spaceline-highlight-face-modified)
   ;; (spaceline-toggle-buffer-encoding-abbrev-off)
   (spaceline-toggle-buffer-size-off)
+  (spaceline-toggle-anzu-off)
   (spaceline-emacs-theme)
   ;; (custom-set-faces
   ;;  '(spaceline-unmodified
@@ -2463,11 +2481,11 @@ the number of errors.")
  'org-mode-hook
  (lambda ()
    (use-package ox-twbs :ensure t)
-   (use-package ox-reveal :ensure t)
+   ;; (use-package ox-reveal :ensure t)
    (use-package org-bullets :ensure t :config (org-bullets-mode))
 
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
-   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
+   ;; (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
 
    (my/set-mode-fill-width 'org-mode-hook 100)
 
@@ -2529,14 +2547,6 @@ the number of errors.")
 
 (setq x-underline-at-descent-line t)
 
-(my/set-theme)
-(my/set-font)
-
-(unless (display-graphic-p)
-  (set-face-attribute 'default nil :background "#222222")
-  (run-hooks 'my/theme-change-hook))
-
-(setq linum-format 'dynamic)
 (custom-set-faces
  '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
  '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
@@ -2548,20 +2558,19 @@ the number of errors.")
  '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
  '(whitespace-trailing ((t (:background "#602020")))))
-(set-face-attribute 'show-paren-match nil :weight 'normal)
+
+(my/set-theme)
+(my/set-font)
+
+(unless (display-graphic-p)
+  (set-face-attribute 'default nil :background "#222222")
+  (run-hooks 'my/theme-change-hook))
+
+(setq linum-format 'dynamic)
 
 (hybrid-mode)
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
-#+END_SRC
-
-** recentf
-   
-#+BEGIN_SRC emacs-lisp
-(recentf-mode 1)
-(recentf-open-files nil "*Recent Files*")
-(setq recentf-max-saved-items 100)
-(global-set-key (kbd "C-x C-a") 'counsel-recentf)
 #+END_SRC
 
