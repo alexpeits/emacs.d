@@ -1357,11 +1357,31 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
+(defun my/haskell-project-ghcid-output ()
+  (interactive)
+  (let ((ghcid-buf (my/projectile-get-ghcid-buffer)))
+    (if ghcid-buf
+        (minibuffer-message
+         (with-current-buffer ghcid-buf
+           (buffer-substring-no-properties (point-min) (point-max))))
+      (minibuffer-message "No ghcid process running for this project"))))
+
+(defun my/projectile-get-ghcid-buffer ()
+  (let* ((proj-bufs (projectile-project-buffers))
+         (ghcid-bufs (seq-filter
+                      '(lambda (buf) (string-prefix-p "*ghcid" (buffer-name buf)))
+                      proj-bufs)))
+    (car ghcid-bufs)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
   (add-hook 'haskell-mode-hook
             (lambda ()
               (if my/use-intero (intero-mode-blacklist))
               (haskell-decl-scan-mode)
-              (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)))
+              (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
+              ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
+              ))
 
   (defun my/haskell-save-and-format ()
     "Formats the import statements using haskell-stylish and saves
@@ -1371,7 +1391,7 @@ With a prefix argument, insert a newline above the current line."
     (haskell-mode-stylish-buffer)
     (save-buffer))
 #+END_SRC
-  
+ 
 ** ghc-mod (not used now but some useful stuff)
 
 #+BEGIN_SRC emacs-lisp :tangle no
