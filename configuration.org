@@ -174,7 +174,8 @@ interface and inserts it at point."
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
-(require 'use-package)
+(eval-when-compile
+  (require 'use-package))
 
 (use-package cl :ensure t)
 (use-package diminish :ensure t)
@@ -325,8 +326,6 @@ interface and inserts it at point."
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
   (sp-pair "[" nil :post-handlers
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
-
-  (sp-local-pair 'haskell-mode "'" nil :actions nil)
 
   ;; keybindings
   (sp-use-paredit-bindings)
@@ -1375,21 +1374,22 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'haskell-mode-hook
-            (lambda ()
-              (if my/use-intero (intero-mode-blacklist))
-              (haskell-decl-scan-mode)
-              (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
-              ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
-              ))
+(with-eval-after-load 'haskell-mode (sp-local-pair 'haskell-mode "'" nil :actions nil))
+(add-hook 'haskell-mode-hook
+          (lambda ()
+            (if my/use-intero (intero-mode-blacklist))
+            (haskell-decl-scan-mode)
+            (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
+            ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
+            ))
 
-  (defun my/haskell-save-and-format ()
-    "Formats the import statements using haskell-stylish and saves
-  the current file."
-    (interactive)
-    (save-buffer)
-    (haskell-mode-stylish-buffer)
-    (save-buffer))
+(defun my/haskell-save-and-format ()
+  "Formats the import statements using haskell-stylish and saves
+the current file."
+  (interactive)
+  (save-buffer)
+  (haskell-mode-stylish-buffer)
+  (save-buffer))
 #+END_SRC
  
 ** ghc-mod (not used now but some useful stuff)
@@ -1545,12 +1545,15 @@ With a prefix argument, insert a newline above the current line."
     #'(lambda () (interactive) (xref-find-definitions (current-word t t)))))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package psc-ide
   :ensure t
   :after (purescript-mode)
+  :init (setq my/use-psc-ide t)
   :config
-  (add-hook 'purescript-mode-hook #'psc-ide-mode))
+  (add-hook
+   'purescript-mode-hook
+   (lambda () (if my/use-psc-ide (psc-ide-mode)))))
 #+END_SRC
 
 * Python
@@ -1757,6 +1760,12 @@ With a prefix argument, insert a newline above the current line."
   (add-to-list 'auto-mode-alist '(".json.tmpl\\'" . json-mode)))
 
 (use-package yaml-mode :ensure t)
+
+(use-package flycheck-yamllint
+  :ensure t
+  :after flycheck yaml-mode
+  :init
+  (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
 #+END_SRC
     
 * Company
@@ -1796,7 +1805,6 @@ With a prefix argument, insert a newline above the current line."
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
-  :defer t
   :diminish flycheck-mode
   :init (global-flycheck-mode)
   :config
@@ -1806,13 +1814,15 @@ With a prefix argument, insert a newline above the current line."
     (-if-let (window (flycheck-get-error-list-window))
         (quit-window nil window)
       (flycheck-list-errors)))
-  (use-package flymake-yaml :ensure t)
-  (use-package flycheck-haskell :ensure t)
-  (use-package flycheck-yamllint :ensure t)
-  (eval-after-load 'flycheck
-    '(progn
-       (add-hook 'flycheck-mode-hook #'flycheck-yamllint-setup)
-      ))
+
+  ;; for defining syntax checkers
+  (defun my/flycheck-buffer-relevant-errors (errors)
+    "Filter out the irrelevant errors from ERRORS.
+
+Return a list of all errors that are relevant for their
+corresponding buffer."
+    (seq-filter '(lambda (err) (not (flycheck-relevant-error-other-file-p err))) errors))
+
   (define-key global-map (kbd "C-c ! t") 'flycheck-mode)
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Flycheck errors*" eos)
@@ -1835,8 +1845,57 @@ With a prefix argument, insert a newline above the current line."
 
   (defun my/flycheck-on-save ()
     (interactive)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled)))
-)
+    (setq flycheck-check-syntax-automatically '(save mode-enabled))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; use as dir-local variable
+(defvar my/flycheck-haskell-default-directory nil)
+
+(defun my/flycheck-haskell-get-default-directory ()
+  (or my/flycheck-haskell-default-directory
+      (if (projectile-project-p)
+          (projectile-project-root)
+        (flycheck-haskell--find-default-directory 'haskell-stack-ghc))))
+
+(defun my/flycheck-haskell-ghcid-file-exists ()
+  (let ((dir (my/flycheck-haskell-get-default-directory)))
+    (file-exists-p
+     (concat (file-name-as-directory dir) ".ghcid-output"))))
+
+(flycheck-define-checker haskell-ghcid
+  "syntax checker using ghcid"
+  :command ("flycheck-ghcid-check.sh" (eval (my/flycheck-haskell-get-default-directory)))
+  :error-patterns
+  ((warning line-start (file-name) ":" line ":" column ":"
+            (or " " "\n    ") (in "Ww") "arning:"
+            (optional " " "[" (id (one-or-more not-newline)) "]")
+            (optional "\n")
+            (message
+             (one-or-more " ") (one-or-more not-newline)
+             (zero-or-more "\n"
+                           (one-or-more " ")
+                           (one-or-more (not (any ?\n ?|))))))
+   (error line-start (file-name) ":" line ":" column ": error:"
+          (or (message (one-or-more not-newline))
+              (and "\n"
+                   (message
+                    (one-or-more " ") (one-or-more not-newline)
+                    (zero-or-more "\n"
+                                  (one-or-more " ")
+                                  (one-or-more (not (any ?\n ?|)))))))
+          line-end))
+  :error-filter
+  (lambda (errors)
+    (flycheck-sanitize-errors
+     (flycheck-dedent-error-messages
+      (my/flycheck-buffer-relevant-errors
+       errors))))
+  :modes haskell-mode
+  :next-checkers ((warning . haskell-hlint))
+  :predicate (lambda () (my/flycheck-haskell-ghcid-file-exists)))
+
+(add-to-list 'flycheck-checkers 'haskell-ghcid)
 #+END_SRC
 
 * Projectile
@@ -2476,8 +2535,8 @@ the number of errors.")
 (defun my/org-set-src-faces (&optional light-bg)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
          (bg (face-attribute 'default :background))
-         (bg+ (funcall func bg 1.5))
-         (bg++ (funcall func bg 6))
+         (bg+ (funcall func bg 1))
+         (bg++ (funcall func bg 4.5))
          (fg (face-attribute 'default :foreground)))
     (custom-theme-set-faces
      my/theme
