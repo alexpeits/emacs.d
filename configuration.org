@@ -1867,7 +1867,9 @@ corresponding buffer."
   "syntax checker using ghcid"
   :command ("flycheck-ghcid-check.sh" (eval (my/flycheck-haskell-get-default-directory)))
   :error-patterns
-  ((warning line-start (file-name) ":" line ":" column ":"
+  ((warning line-start (file-name) ":" line ":"
+            column (optional "-" (one-or-more digit))
+            ":"
             (or " " "\n    ") (in "Ww") "arning:"
             (optional " " "[" (id (one-or-more not-newline)) "]")
             (optional "\n")
@@ -1876,7 +1878,9 @@ corresponding buffer."
              (zero-or-more "\n"
                            (one-or-more " ")
                            (one-or-more (not (any ?\n ?|))))))
-   (error line-start (file-name) ":" line ":" column ": error:"
+   (error line-start (file-name) ":" line ":"
+          column (optional "-" (one-or-more digit))
+          ": error:"
           (or (message (one-or-more not-newline))
               (and "\n"
                    (message
@@ -1961,7 +1965,7 @@ corresponding buffer."
   (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-c i") 'counsel-imenu)
+  (global-set-key (kbd "M-i") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
@@ -2151,7 +2155,7 @@ corresponding buffer."
   :config
   ;; (setq avy-background t)
   (global-set-key
-   (kbd "M-i")
+   (kbd "C-c i")
    (my/defun-with-alt avy-goto-line
                       (lambda () (interactive) (call-interactively 'avy-goto-char-2)))))
 #+END_SRC
