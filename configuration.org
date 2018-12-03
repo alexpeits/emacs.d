@@ -1545,7 +1545,7 @@ the current file."
     #'(lambda () (interactive) (xref-find-definitions (current-word t t)))))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package psc-ide
   :ensure t
   :after (purescript-mode)
@@ -2005,6 +2005,8 @@ corresponding buffer."
             (setq text (current-word t (not qual)))))
       (when text (insert text))))
   (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-word)
+  ;; TODO
+  (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
   (dolist (action '(counsel-find-file counsel-recentf))
           (ivy-set-actions
