@@ -706,7 +706,7 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'wombat
-            '(default ((t (:foreground "#d8d8d8" :background "#202020"))))
+            '(default ((t (:foreground "#d1d1d1" :background "#202020"))))
             '(font-lock-comment-face ((t (:foreground "#797f7d"))))
             '(region ((t (:background "#515151"))))
             '(highlight ((t (:background "#3a3a3a"))))
@@ -718,11 +718,12 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line-buffer-id ((t (:weight bold))))
             '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
             '(mode-line
-              ((t (:background "#454545" :foreground "#d6d6d6" :box (:line-width 1 :color "#4a4a4a")))))
+              ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#4a4a4a")))))
             '(mode-line-inactive
               ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
             '(outline-2 ((t (:foreground "#8ac6f2" :weight bold))))
             '(outline-3 ((t (:foreground "#ccaa8f" :weight bold))))
+            ;; '(haskell-operator-face ((t (:foreground "#e5786d"))))
             )
            (my/after-set-theme)
            ))
@@ -986,6 +987,32 @@ PWD is not in a git repo (or the git command is not found)."
     :config
     (global-git-gutter+-mode)))
 
+#+END_SRC
+
+** Helpers
+   
+#+BEGIN_SRC emacs-lisp
+(defun my/git-blame-current-line ()
+  "Runs `git blame` on the current line and
+   adds the commit id to the kill ring"
+  (interactive)
+  (let* ((line-number (save-excursion
+                        (goto-char (point-at-bol))
+                        (+ 1 (count-lines 1 (point)))))
+         (line-arg (format "%d,%d" line-number line-number))
+         (commit-buf (generate-new-buffer "*git-blame-line-commit*")))
+    (call-process "git" nil commit-buf nil
+                  "blame" (buffer-file-name) "-L" line-arg)
+    (let* ((commit-id (with-current-buffer commit-buf
+                        (buffer-substring 1 9)))
+           (log-buf (generate-new-buffer "*git-blame-line-log*")))
+      (kill-new commit-id)
+      (call-process "git" nil log-buf nil
+                    "log" "-1" "--pretty=%h   %an   %s" commit-id)
+      (with-current-buffer log-buf
+        (message "Line %d: %s" line-number (buffer-string)))
+      (kill-buffer log-buf))
+    (kill-buffer commit-buf)))
 #+END_SRC
 
 * Evil-mode
@@ -1537,9 +1564,14 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (use-package purescript-mode
   :ensure t
-  :diminish purescript-indent-mode
+  :diminish purescript-indentation-mode
   :config
-  (add-hook 'purescript-mode-hook #'turn-on-purescript-indent)
+  (add-hook
+   'purescript-mode-hook
+   (lambda ()
+     (turn-on-purescript-indentation)
+     (turn-on-purescript-decl-scan)
+     (turn-on-purescript-font-lock)))
   ;; xref for purescript works a bit weird with qualified identifiers
   (define-key purescript-mode-map (kbd "M-.")
     #'(lambda () (interactive) (xref-find-definitions (current-word t t)))))
