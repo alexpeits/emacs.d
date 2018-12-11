@@ -794,8 +794,10 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
             '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
             '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#9b9b9b" :slant italic))))
+            '(font-lock-comment-face ((t (:foreground "#77808e" :slant italic))))
             '(linum ((t (:inherit fringe :foreground "#607480"))))
+            '(fringe ((t (:background "#1c2031"))))
+            '(vertical-border ((t (:foreground "#91a2bf"))))
             '(magit-section-highlight ((t (:background "#203b56"))))
             '(show-paren-match ((t (:background "#245587"))))
             '(my/fci ((t (:foreground "#233064"))))
@@ -1128,6 +1130,7 @@ PWD is not in a git repo (or the git command is not found)."
 
   ;; move state to beginning of modeline
   (setq evil-mode-line-format '(before . mode-line-front-space))
+  ;; (setq evil-mode-line-format 'nil)
 
   ;; move search result to center of the screen
   (defadvice evil-search-next
