@@ -2044,24 +2044,24 @@ corresponding buffer."
   (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
   (dolist (action '(counsel-find-file counsel-recentf))
-          (ivy-set-actions
-           action
-           `(("s"
-              ,(my/control-function-window-split
-                find-file-other-window
-                0 nil)
-              "split horizontally")
-             ("v"
-              ,(my/control-function-window-split
-                find-file-other-window
-                nil 0)
-              "split vertically")
-             ("n"
-              ,(my/execute-f-with-hook
-                find-file
-                ace-select-window)
-              "select window")
-             )))
+    (ivy-set-actions
+     action
+     `(("s"
+        ,(my/control-function-window-split
+          find-file-other-window
+          0 nil)
+        "split horizontally")
+       ("v"
+        ,(my/control-function-window-split
+          find-file-other-window
+          nil 0)
+        "split vertically")
+       ("n"
+        ,(my/execute-f-with-hook
+          find-file
+          ace-select-window)
+        "select window")
+       )))
 
   (ivy-set-actions
    'ivy-switch-buffer
@@ -2083,27 +2083,28 @@ corresponding buffer."
      ("k" kill-buffer "kill buffer")
      ))
 
-  (ivy-set-actions
-   'counsel-projectile-find-file
-   `(("s"
-      ,(my/control-function-window-split
-        counsel-projectile-find-file-action-other-window
-        0 nil)
-      "split horizontally")
-     ("v"
-      ,(my/control-function-window-split
-        counsel-projectile-find-file-action-other-window
-        nil 0)
-      "split vertically")
-     ("n"
-      ,(my/execute-f-with-hook
-        counsel-projectile-find-file-action
-        ace-select-window)
-      "select window")
-     ("R"
-      (lambda (f) (projectile-recentf))
-      "recent files")
-     ))
+  (dolist (action '(counsel-projectile-find-file projectile-recentf))
+    (ivy-set-actions
+     action
+     `(("s"
+        ,(my/control-function-window-split
+          counsel-projectile-find-file-action-other-window
+          0 nil)
+        "split horizontally")
+       ("v"
+        ,(my/control-function-window-split
+          counsel-projectile-find-file-action-other-window
+          nil 0)
+        "split vertically")
+       ("n"
+        ,(my/execute-f-with-hook
+          counsel-projectile-find-file-action
+          ace-select-window)
+        "select window")
+       ("R"
+        (lambda (f) (projectile-recentf))
+        "recent files")
+       )))
 
   (ivy-set-actions
    'projectile-switch-project
@@ -2218,7 +2219,8 @@ corresponding buffer."
   :config
   (use-package treemacs-projectile :ensure t)
   (setq treemacs-follow-mode t
-        treemacs-filewatch-mode t)
+        treemacs-filewatch-mode t
+        treemacs-silent-refresh t)
   (treemacs-git-mode 'simple)
   (define-key treemacs-mode-map (kbd "C-p") 'treemacs-previous-line)
   (define-key treemacs-mode-map (kbd "C-n") 'treemacs-next-line)
