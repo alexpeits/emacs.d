@@ -30,7 +30,7 @@
  'assemblage
 
  '(cursor                              ((t (                      :background "#99d1ce"                                                          ))))
- '(default                             ((t (:foreground "#b8cfd3" :background "#101516"                                                          ))))
+ '(default                             ((t (:foreground "#b4cacf" :background "#101516"                                                          ))))
  '(linum                               ((t (:foreground "#53676b" :background "#09150F"                                                          ))))
  '(minibuffer-prompt                   ((t (:foreground "#1278A8"                          :weight bold                                          ))))
  '(escape-glyph                        ((t (:foreground "orange"                                                                                 ))))
