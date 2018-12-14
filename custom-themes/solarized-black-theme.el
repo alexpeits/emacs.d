@@ -302,7 +302,7 @@ customize the resulting theme."
                                 :background ,s-mode-line-bg
                                 :box (:line-width 1 :color ,s-mode-line-bg
                                                   :style unspecified)))))
-     `(mode-line-buffer-id ((,class (:foreground ,s-mode-line-buffer-id-fg :weight bold))))
+     `(mode-line-buffer-id ((,class (:weight bold))))
      `(mode-line-inactive
        ((,class (:inverse-video unspecified
                                 :overline ,s-mode-line-inactive-bc
@@ -2358,7 +2358,7 @@ customize the resulting theme."
 (deftheme solarized-black "The dark variant of the solarized-black colour theme")
 (create-solarized-black-theme 'dark 'solarized-black)
 
-(provide-theme 'solarized-black-dark)
+(provide-theme 'solarized-black)
 ;; (provide 'solarized-black)
 
 ;; Local Variables:
