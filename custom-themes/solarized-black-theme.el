@@ -685,9 +685,9 @@ customize the resulting theme."
      `(diff-file-header
        ((,class (:background ,base03 :foreground ,base0 :weight bold))))
 ;;;;; diff-hl
-     `(diff-hl-change ((,class (:background ,blue-lc  :foreground ,blue-hc))))
-     `(diff-hl-delete ((,class (:background ,red-lc  :foreground ,red-hc))))
-     `(diff-hl-insert ((,class (:background ,green-lc  :foreground ,green-hc))))
+     ;; `(diff-hl-change ((,class (:background ,blue-lc  :foreground ,blue-hc))))
+     ;; `(diff-hl-delete ((,class (:background ,red-lc  :foreground ,red-hc))))
+     ;; `(diff-hl-insert ((,class (:background ,green-lc  :foreground ,green-hc))))
      `(diff-hl-unknown ((,class (:background ,cyan-lc   :foreground ,cyan-hc))))
 ;;;;; ediff
      `(ediff-fine-diff-A ((,class (:background ,orange-lc))))
@@ -1480,7 +1480,7 @@ customize the resulting theme."
 ;;;;; markdown-mode
      `(markdown-blockquote-face ((,class (:inherit font-lock-doc-face))))
      `(markdown-bold-face ((,class (:inherit bold))))
-     `(markdown-code-face ((,class (:inherit fixed-pitch :foreground ,base01
+     `(markdown-code-face ((,class (:inherit fixed-pitch :foreground ,cyan
                                              :background unspecified))))
      `(markdown-comment-face ((,class (:foreground ,base01 :strike-through t))))
      `(markdown-footnote-face ((,class (:inherit default))))
@@ -1504,7 +1504,7 @@ customize the resulting theme."
      `(markdown-metadata-key-face ((,class (:inherit font-lock-comment-face))))
      `(markdown-metadata-value-face ((,class (:inherit default))))
      `(markdown-missing-link-face ((,class (:inherit font-lock-warning-face))))
-     `(markdown-pre-face ((,class (:foreground ,base01))))
+     `(markdown-pre-face ((,class (:foreground ,cyan))))
      `(markdown-reference-face ((,class (:inherit default :foreground ,base01))))
      `(markdown-url-face ((,class (:foreground ,base01))))
 ;;;;; message-mode
@@ -1695,9 +1695,9 @@ customize the resulting theme."
                           :foreground ,blue :background ,base03))))
      `(org-agenda-done ((,class (:foreground ,base01 :slant italic))))
      `(org-archived ((,class (:foreground ,base01 :weight normal))))
-     `(org-block ((,class nil)))
-     `(org-block-begin-line ((,class (:inherit org-meta-line :underline t))))
-     `(org-block-end-line ((,class (:inherit org-meta-line :overline t))))
+     ;; `(org-block ((,class nil)))
+     ;; `(org-block-begin-line ((,class (:inherit org-meta-line :underline t))))
+     ;; `(org-block-end-line ((,class (:inherit org-meta-line :overline t))))
      `(org-checkbox ((,class (:background ,base03 :foreground ,base0
                                           :box (:line-width 1 :style released-button)))))
      `(org-code ((,class (:foreground ,base01))))
@@ -2357,6 +2357,16 @@ customize the resulting theme."
 
 (deftheme solarized-black "The dark variant of the solarized-black colour theme")
 (create-solarized-black-theme 'dark 'solarized-black)
+
+(custom-theme-set-faces
+ 'solarized-black
+ '(diff-hl-insert       ((t (:background "#143514" :foreground "#4c934c"))))
+ '(diff-hl-change       ((t (:background "#122544" :foreground "#466daf"))))
+ '(diff-hl-delete       ((t (:background "#491111" :foreground "#bc4d4d"))))
+ '(org-block            ((t (:background "#191919"))))
+ '(org-block-begin-line ((t (:background "#222222"))))
+ '(org-block-end-line   ((t (:background "#222222"))))
+ )
 
 (provide-theme 'solarized-black)
 ;; (provide 'solarized-black)
