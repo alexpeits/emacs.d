@@ -444,7 +444,7 @@ customize the resulting theme."
      `(font-lock-function-name-face ((,class (:foreground ,blue))))
      `(font-lock-keyword-face ((,class (:foreground ,green :weight ,s-maybe-bold))))
      `(font-lock-negation-char-face ((,class (:foreground ,yellow :weight bold))))
-     `(font-lock-preprocessor-face ((,class (:foreground ,blue))))
+     `(font-lock-preprocessor-face ((,class (:foreground ,magenta))))
      `(font-lock-regexp-grouping-construct ((,class (:foreground ,yellow :weight bold))))
      `(font-lock-regexp-grouping-backslash ((,class (:foreground ,green :weight bold))))
      `(font-lock-string-face ((,class (:foreground ,cyan))))
