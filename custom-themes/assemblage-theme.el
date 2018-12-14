@@ -30,7 +30,7 @@
  'assemblage
 
  '(cursor                              ((t (                      :background "#99d1ce"                                                          ))))
- '(default                             ((t (:foreground "#b4cacf" :background "#101516"                                                          ))))
+ '(default                             ((t (:foreground "#c9dee2" :background "#101516"                                                          ))))
  '(linum                               ((t (:foreground "#53676b" :background "#09150F"                                                          ))))
  '(minibuffer-prompt                   ((t (:foreground "#1278A8"                          :weight bold                                          ))))
  '(escape-glyph                        ((t (:foreground "orange"                                                                                 ))))
@@ -61,6 +61,7 @@
  `(font-lock-doc-face                  ((t (:foreground "#1e8ece" :background nil                                                                ))))
  `(font-lock-type-face                 ((t (:foreground "#74a9cc" :background nil                                                                ))))
  `(haskell-type-face                   ((t (:foreground "#55bdcc" :background nil                                                                ))))
+ `(haskell-constructor-face            ((t (:inherit default))))
  ;; `(haskell-operator-face               ((t (:foreground "#ffad3f" :inherit font-lock-variable-name-face                                          ))))
  ;; `(haskell-operator-face               ((t (:foreground "#84db2e" :background nil                                                                ))))
  ;; `(haskell-operator-face               ((t (:foreground "#00ff00" :background nil                                                                ))))
