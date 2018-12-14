@@ -2691,6 +2691,7 @@ the number of errors.")
 (setq linum-format 'dynamic)
 
 (hybrid-mode)
+(winner-mode)
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
