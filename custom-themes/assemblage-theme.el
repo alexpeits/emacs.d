@@ -30,7 +30,7 @@
  'assemblage
 
  '(cursor                              ((t (                      :background "#99d1ce"                                                          ))))
- '(default                             ((t (:foreground "#cee3e8" :background "#101516"                                                          ))))
+ '(default                             ((t (:foreground "#b6cdd3" :background "#101515"                                                          ))))
  '(linum                               ((t (:foreground "#53676b" :background "#09150F"                                                          ))))
  '(minibuffer-prompt                   ((t (:foreground "#1278A8"                          :weight bold                                          ))))
  '(escape-glyph                        ((t (:foreground "orange"                                                                                 ))))
@@ -54,7 +54,7 @@
  ;; `(font-lock-variable-name-face        ((t (:foreground "#c586c0" :background nil                                                                ))))
  ;; `(font-lock-variable-name-face        ((t (:foreground "#ffad3f" :background nil                                                                ))))
  `(font-lock-variable-name-face        ((t (:foreground "#63ff2b" :background nil                                                                ))))
- `(font-lock-keyword-face              ((t (:foreground "#2dc48c" :background nil                                                                ))))
+ `(font-lock-keyword-face              ((t (:foreground "#26b57f" :background nil                                                                ))))
  `(font-lock-string-face               ((t (:foreground "#1e8ece" :background nil                                                                ))))
  ;; `(font-lock-string-face               ((t (:foreground "#ffc63f" :background nil                                                                ))))
  `(font-lock-doc-string-face           ((t (:foreground "#1e8ece" :background nil                                                                ))))

@@ -147,7 +147,7 @@ Alpha should be a float between 0 and 1."
           (s-base03    "#181818")
           (s-base02    "#2a2a2a")
           ;; emphasized content
-          (s-base01    "#586e75")
+          (s-base01    "#5e767d")
           ;; primary content
           (s-base00    "#657b83")
           (s-base0     "#a3b4b6")
@@ -159,7 +159,7 @@ Alpha should be a float between 0 and 1."
           (s-base3     "#fdf6e3")
 
           ;; solarized-black accented colors
-          (yellow    "#b58900")
+          (yellow    "#bd9108")
           (orange    "#cb4b16")
           (red       "#dc322f")
           (magenta   "#d33682")

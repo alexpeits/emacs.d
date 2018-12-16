@@ -638,11 +638,12 @@ PWD is not in a git repo (or the git command is not found)."
 ;; hl-line
 (setq hl-line-sticky-flag nil)
 (defvar my/hl-line-contrast 5)
-(defun my/hl-line-set-bg (&optional light-bg)
+(defun my/hl-line-set-bg (&optional light-bg th)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
-         (bg (face-attribute 'default :background)))
+         (bg (face-attribute 'default :background))
+         (theme (if th th my/theme)))
     (custom-theme-set-faces
-     my/theme
+     theme
      `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast))))))))
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
@@ -963,16 +964,17 @@ PWD is not in a git repo (or the git command is not found)."
 ** Diff-hl
 
 #+BEGIN_SRC emacs-lisp
-(defun my/diff-hl-set-fringe-faces (&optional light-bg)
+(defun my/diff-hl-set-fringe-faces (&optional light-bg th)
   (let* ((dark (not light-bg))
          (ins-bg (if dark "#143514" "#b9e0b3"))
          (ins-fg (if dark "#4c934c" "#143514"))
          (ch-bg (if dark "#122544" "#b5d8f4"))
          (ch-fg (if dark "#466daf" "#122544"))
          (del-bg (if dark "#491111" "#f4b5b5"))
-         (del-fg (if dark "#bc4d4d" "#491111")))
+         (del-fg (if dark "#bc4d4d" "#491111"))
+         (theme (if th th my/theme)))
     (custom-theme-set-faces
-     my/theme
+     theme
      `(diff-hl-insert ((t (:background ,ins-bg :foreground ,ins-fg))))
      `(diff-hl-change ((t (:background ,ch-bg :foreground ,ch-fg))))
      `(diff-hl-delete ((t (:background ,del-bg :foreground ,del-fg)))))))
@@ -1028,6 +1030,8 @@ PWD is not in a git repo (or the git command is not found)."
     ("]"  find-tag-other-window)
     (";"  evilnc-comment-or-uncomment-lines)
 
+    ("a" align-regexp)
+
     ("bs" my/create-scratch-buffer-with-mode)
 
     ("el" my/toggle-flycheck-error-list)
@@ -1073,7 +1077,9 @@ PWD is not in a git repo (or the git command is not found)."
 #+BEGIN_SRC emacs-lisp
 (define-prefix-command 'my/leader-map)
 
-(define-key ctl-x-map "m" 'my/leader-map)
+;; (define-key ctl-x-map "m" 'my/leader-map)
+(define-prefix-command 'my/leader-map)
+(global-set-key (kbd "C-c m") 'my/leader-map)
 
 (dolist (i my/leader-keys)
   (let ((k (car i))
@@ -1737,7 +1743,8 @@ the current file."
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
+         ("\\.markdown\\'" . markdown-mode)
+         ("\\.page\\'" . gfm-mode))
   :config
   (my/set-mode-fill-width 'markdown-mode-hook 100)
   ;; (setq markdown-fontify-code-blocks-natively t)
@@ -2575,14 +2582,15 @@ the number of errors.")
          (path (concat templ-dir file)))
     (insert-file-contents path)))
 
-(defun my/org-set-src-faces (&optional light-bg)
+(defun my/org-set-src-faces (&optional light-bg th)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
          (bg (face-attribute 'default :background))
          (bg+ (funcall func bg 1))
          (bg++ (funcall func bg 4.5))
-         (fg (face-attribute 'default :foreground)))
+         (fg (face-attribute 'default :foreground))
+         (theme (if th th my/theme)))
     (custom-theme-set-faces
-     my/theme
+     theme
      `(org-block ((t (:background ,bg+))))
      `(org-block-begin-line ((t (:background ,bg++))))
      `(org-block-end-line ((t (:background ,bg++)))))))

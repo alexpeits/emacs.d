@@ -5,7 +5,7 @@
    'jadedragon
 
    ;; basic theming.
-   '(default                          ((t (:foreground "#eaeaea" :background "#121212" ))))
+   '(default                          ((t (:foreground "#b3cecb" :background "#101515" ))))
    '(region                           ((t (:background "#182e30"))))
    '(cursor                           ((t (:background "#00a3a2"))))
    '(fringe                           ((t (:background "#202525"))))
@@ -17,7 +17,7 @@
 
    '(font-lock-builtin-face           ((t (:foreground "#ffffff" ))))
    '(font-lock-keyword-face           ((t (:foreground "#26a2bf" ))))
-   '(font-lock-type-face              ((t (:foreground "#009975" ))))
+   '(font-lock-type-face              ((t (:foreground "#01a37d" ))))
    '(font-lock-constant-face          ((t (:foreground "#00B286" ))))
    '(font-lock-variable-name-face     ((t (:foreground "#63ff2b" ))))
    '(font-lock-function-name-face     ((t (:foreground "#36ffba" ))))
