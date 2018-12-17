@@ -331,7 +331,8 @@ interface and inserts it at point."
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "M-j") nil))
+  (define-key smartparens-mode-map (kbd "M-j") nil)
+  (define-key smartparens-mode-map (kbd "M-S") nil))
 
 (use-package which-key
   :ensure t
@@ -2700,6 +2701,8 @@ the number of errors.")
 
 (hybrid-mode)
 (winner-mode)
+(hi-lock-mode)
+(define-key hi-lock-map (kbd "M-S") (lookup-key hi-lock-map (kbd "C-x w")))
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
