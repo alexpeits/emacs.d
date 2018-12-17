@@ -331,8 +331,7 @@ interface and inserts it at point."
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "M-j") nil)
-  (define-key smartparens-mode-map (kbd "M-S") nil))
+  (define-key smartparens-mode-map (kbd "M-j") nil))
 
 (use-package which-key
   :ensure t
@@ -2010,6 +2009,11 @@ corresponding buffer."
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "M-i") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+  (global-set-key
+   (kbd "C-c C-f")
+   '(lambda () (interactive)
+      (let ((current-prefix-arg '(4)))
+        (call-interactively 'counsel-ag))))
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x C-a") 'counsel-recentf)
@@ -2701,8 +2705,8 @@ the number of errors.")
 
 (hybrid-mode)
 (winner-mode)
-(hi-lock-mode)
-(define-key hi-lock-map (kbd "M-S") (lookup-key hi-lock-map (kbd "C-x w")))
+(global-hi-lock-mode 1)
+(define-key hi-lock-map (kbd "M-H") (lookup-key hi-lock-map (kbd "C-x w")))
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
