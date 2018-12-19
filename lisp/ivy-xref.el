@@ -77,6 +77,20 @@
           (push `(,candidate . ,location) collection))))
     (nreverse collection)))
 
+(defun ivy-show-xref (buffer &optional ow)
+  (lambda (candidate)
+    (setq done (eq 'ivy-done this-command))
+    (condition-case err
+        (let* ((marker (xref-location-marker (cdr candidate)))
+               (buf (marker-buffer marker))
+               (offset (marker-position marker)))
+          (with-current-buffer buffer
+            (if ow
+                (switch-to-buffer-other-window buf)
+              (switch-to-buffer buf))
+            (goto-char offset)))
+      (user-error (message (error-message-string err))))))
+
 ;;;###autoload
 (defun ivy-xref-show-xrefs (xrefs alist)
   "Show the list of XREFS and ALIST via ivy."
@@ -90,18 +104,39 @@
     (let ((orig-buf (current-buffer))
           (orig-pos (point))
           done)
+      (ivy-set-actions
+       'ivy-xref-show-xrefs
+       `(("v"
+          ,(ivy-show-xref buffer t)
+          "other window")))
+      ;; (ivy-set-actions
+       ;; 'ivy-xref-show-xrefs
+       ;; `(("v"
+          ;; (lambda (candidate)
+            ;; (setq done (eq 'ivy-done this-command))
+            ;; (condition-case err
+                ;; (let* ((marker (xref-location-marker (cdr candidate)))
+                       ;; (buf (marker-buffer marker))
+                       ;; (offset (marker-position marker)))
+                  ;; (with-current-buffer ,buffer
+                    ;; (switch-to-buffer-other-window buf)
+                    ;; (goto-char offset)))
+              ;; (user-error (message (error-message-string err)))))
+          ;; "other window"
+          ;; )))
       (ivy-read "xref: " (ivy-xref-make-collection xrefs)
                 :require-match t
-                :action (lambda (candidate)
-                          (setq done (eq 'ivy-done this-command))
-                          (condition-case err
-                              (let* ((marker (xref-location-marker (cdr candidate)))
-                                     (buf (marker-buffer marker))
-                                     (offset (marker-position marker)))
-                                (with-current-buffer buffer
-                                  (switch-to-buffer buf)
-                                  (goto-char offset)))
-                            (user-error (message (error-message-string err)))))
+                :action (ivy-show-xref buffer nil)
+                ;; :action (lambda (candidate)
+                          ;; (setq done (eq 'ivy-done this-command))
+                          ;; (condition-case err
+                              ;; (let* ((marker (xref-location-marker (cdr candidate)))
+                                     ;; (buf (marker-buffer marker))
+                                     ;; (offset (marker-position marker)))
+                                ;; (with-current-buffer buffer
+                                  ;; (switch-to-buffer buf)
+                                  ;; (goto-char offset)))
+                            ;; (user-error (message (error-message-string err)))))
                 :unwind (lambda ()
                           (unless done
                             (switch-to-buffer orig-buf)
