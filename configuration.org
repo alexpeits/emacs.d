@@ -394,6 +394,33 @@ buffer, close it."
 (use-package misc
   :config
   (global-set-key (kbd "M-Z") 'zap-up-to-char))
+
+(use-package subword
+  :diminish subword-mode
+  :config
+  (defun my/subword-mode (&optional arg)
+    (interactive)
+    (let ((disable
+           (lambda ()
+             (progn
+               (subword-mode -1)
+               (setq evil-symbol-word-search nil)
+               ;; (minibuffer-message "subword-mode disabled")
+               (put 'my/subword-mode-enabled 'state nil))))
+          (enable
+           (lambda ()
+             (progn
+               (subword-mode 1)
+               (setq evil-symbol-word-search t)
+               ;; (minibuffer-message "subword-mode enabled")
+               (put 'my/subword-mode-enabled 'state t)))))
+      (if arg
+          (if (<= arg 0)
+              (funcall disable)
+            (funcall enable))
+        (if (get 'my/subword-mode-enabled 'state)
+            (funcall disable)
+          (funcall enable))))))
 #+END_SRC
 
 ** Jumping etc
@@ -409,6 +436,22 @@ buffer, close it."
     (linum-mode -1)))
 
 (global-set-key (kbd "M-g M-g") 'my/goto-line-show)
+
+(defadvice find-file (around find-file-line-number
+                             (filename &optional wildcards)
+                             activate)
+  "Turn files like file.txt:14 into file.txt and going to the 14-th line."
+  (save-match-data
+    (let* ((matched (string-match "^\\(.*\\):\\([0-9]+\\):?$" filename))
+           (line-number (and matched
+                             (match-string 2 filename)
+                             (string-to-number (match-string 2 filename))))
+           (filename (if matched (match-string 1 filename) filename)))
+      ad-do-it
+      (when line-number
+        ;; goto-line is for interactive use
+        (goto-char (point-min))
+        (forward-line (1- line-number))))))
 #+END_SRC
 
 ** engine-mode
@@ -1039,6 +1082,8 @@ PWD is not in a git repo (or the git command is not found)."
     ("fa" helm-ag)
     ("ff" helm-find)
 
+    ("gb" my/git-blame-current-line)
+
     ("h"  help)
 
     ("if" my/file-name-at-point)
@@ -1380,13 +1425,13 @@ With a prefix argument, insert a newline above the current line."
     :diminish intero-mode
     :init
     (setq intero-blacklist '("~/.xmonad"))
-    (setq my/use-intero t)
     :config
     ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
     ;; this has to be installed in every repo until I find a solution
     ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
     ;; don't auto insert matching single quotes in haskell mode, since I
     ;; mostly use them for promoted data types
+    (define-key intero-mode-map (kbd "M-.") nil)
     (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
     (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
 #+END_SRC
@@ -1413,8 +1458,9 @@ With a prefix argument, insert a newline above the current line."
 (with-eval-after-load 'haskell-mode (sp-local-pair 'haskell-mode "'" nil :actions nil))
 (add-hook 'haskell-mode-hook
           (lambda ()
-            (if my/use-intero (intero-mode-blacklist))
+            (intero-mode-blacklist)
             (haskell-decl-scan-mode)
+            (my/subword-mode 1)
             (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
             ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
             ))
@@ -1580,7 +1626,8 @@ the current file."
    (lambda ()
      (turn-on-purescript-indentation)
      (turn-on-purescript-decl-scan)
-     (turn-on-purescript-font-lock)))
+     (turn-on-purescript-font-lock)
+     (my/subword-mode 1)))
   ;; xref for purescript works a bit weird with qualified identifiers
   (define-key purescript-mode-map (kbd "M-.")
     #'(lambda () (interactive) (xref-find-definitions (current-word t t)))))
@@ -2005,12 +2052,11 @@ corresponding buffer."
   (setq ivy-count-format "(%d/%d) ")
   (global-set-key (kbd "C-s") 'my/swiper)
   (global-set-key (kbd "C-c r") 'ivy-resume)
-  (global-set-key (kbd "<f6>") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "M-i") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
   (global-set-key
-   (kbd "C-c C-f")
+   (kbd "C-c f")
    '(lambda () (interactive)
       (let ((current-prefix-arg '(4)))
         (call-interactively 'counsel-ag))))
@@ -2693,6 +2739,21 @@ the number of errors.")
  '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
  '(whitespace-trailing ((t (:background "#602020")))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(safe-local-variable-values
+   (quote
+    ((eval setq flycheck-disabled-checkers
+           (append flycheck-disabled-checkers
+                   (quote
+                    (intero))))
+     (psc-ide-output-directory . "build/")
+     (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
+     (projectile-tags-command . "npm run etags")
+     ))))
 
 (my/set-theme)
 (my/set-font)

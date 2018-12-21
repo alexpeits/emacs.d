@@ -277,7 +277,7 @@ customize the resulting theme."
      `(default ((,class (:foreground ,base0 :background ,base03))))
      `(error ((,class (:foreground ,orange))))
      `(escape-glyph ((,class (:foreground ,violet))))
-     `(fringe ((,class (:foreground ,s-fringe-fg :background ,s-fringe-bg))))
+     `(fringe ((,class (:foreground ,s-fringe-fg :background "#202020"))))
      `(header-line
        ((,class (:inverse-video unspecified
                                 :overline nil
@@ -293,7 +293,7 @@ customize the resulting theme."
      `(link-visited ((,class (:foreground ,yellow :underline t :weight normal))))
      `(match ((,class (:background ,base02 :foreground ,base1 :weight bold))))
      `(menu ((,class (:foreground ,base0 :background ,base03))))
-     `(minibuffer-prompt ((,class (:foreground ,base0))))
+     `(minibuffer-prompt ((,class (:foreground ,base0 :weight bold))))
      `(mode-line
        ((,class (:inverse-video unspecified
                                 :overline ,s-mode-line-bg
@@ -1384,10 +1384,10 @@ customize the resulting theme."
      `(ledger-font-reconciler-pending-face ((t (:foreground ,yellow :weight normal))))
      `(ledger-font-report-clickable-face ((t (:foreground ,yellow :weight normal))))
 ;;;;; linum-mode
-     `(linum ((,class (:weight thin :underline nil :foreground ,s-fringe-fg :background ,s-fringe-bg))))
+     `(linum ((,class (:underline nil :foreground "#44565b" :background "#202020"))))
      `(linum-relative-current-face ((,class (:inherit linum))))
 ;;;;; display-line-number-mode
-     `(line-number ((,class (:weight thin :underline nil :foreground ,s-fringe-fg :background ,s-fringe-bg))))
+     `(line-number ((,class (:underline nil :foreground "#44565b"  :background "#202020"))))
 ;;;;; lsp-ui
      `(lsp-ui-sideline-code-action ((,class (:foreground ,yellow :weight normal))))
 ;;;;; lusty-explorer
@@ -2366,6 +2366,7 @@ customize the resulting theme."
  '(org-block            ((t (:background "#191919"))))
  '(org-block-begin-line ((t (:background "#222222"))))
  '(org-block-end-line   ((t (:background "#222222"))))
+ '(nlinum-relative-current-face ((t (:inherit linum :background "#333333" :foreground "#5e767d" :weight bold))))
  )
 
 (provide-theme 'solarized-black)
