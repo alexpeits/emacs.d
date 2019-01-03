@@ -1455,17 +1455,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'haskell-mode (sp-local-pair 'haskell-mode "'" nil :actions nil))
-(setq haskell-align-imports-pad-after-name t)
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (intero-mode-blacklist)
-            (haskell-decl-scan-mode)
-            (my/subword-mode 1)
-            (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
-            ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
-            ))
-
 (defun my/haskell-save-and-format ()
   "Formats the import statements using haskell-stylish and saves
 the current file."
@@ -1473,6 +1462,25 @@ the current file."
   (save-buffer)
   (haskell-mode-stylish-buffer)
   (save-buffer))
+
+(defun my/haskell-align-and-sort-imports ()
+  (interactive)
+  (call-interactively 'haskell-align-imports)
+  (call-interactively 'haskell-sort-imports))
+
+(with-eval-after-load 'haskell-mode
+  (sp-local-pair 'haskell-mode "'" nil :actions nil)
+  (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
+  (define-key haskell-mode-map (kbd "C-c C-a i") 'my/haskell-align-and-sort-imports))
+
+(setq haskell-align-imports-pad-after-name t)
+(add-hook 'haskell-mode-hook
+          (lambda ()
+            (intero-mode-blacklist)
+            (haskell-decl-scan-mode)
+            (my/subword-mode 1)
+            ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
+            ))
 #+END_SRC
  
 ** ghc-mod (not used now but some useful stuff)
