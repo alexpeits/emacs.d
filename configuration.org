@@ -752,6 +752,7 @@ PWD is not in a git repo (or the git command is not found)."
             'wombat
             '(default ((t (:foreground "#d1d1d1" :background "#202020"))))
             '(font-lock-comment-face ((t (:foreground "#797f7d"))))
+            '(font-lock-doc-face ((t (:foreground "#2b8dc6"))))
             '(region ((t (:background "#515151"))))
             '(highlight ((t (:background "#3a3a3a"))))
             '(cursor ((t (:background "#d8d8d8"))))
