@@ -156,6 +156,19 @@ interface and inserts it at point."
         (path (read-file-name "file path: ")))
     (apply action (list path))))
 (global-set-key (kbd "C-c f") 'my/file-name-at-point)
+
+;; https://www.reddit.com/r/emacs/comments/ac9gsf/question_emacs_way_of_using_windows/
+(defun my/window-dedicated (&optional window)
+  "Toggle the dedicated flag on a window."
+  (interactive)
+  (let* ((window (or window (selected-window)))
+         (dedicated (not (window-dedicated-p window))))
+    (when (called-interactively-p)
+      (message (format "%s %sdedicated"
+                       (buffer-name (window-buffer window))
+                       (if dedicated "" "un"))))
+    (set-window-dedicated-p window dedicated)
+    dedicated))
 #+END_SRC
 
 * Package management
@@ -752,7 +765,9 @@ PWD is not in a git repo (or the git command is not found)."
             'wombat
             '(default ((t (:foreground "#d1d1d1" :background "#202020"))))
             '(font-lock-comment-face ((t (:foreground "#797f7d"))))
-            '(font-lock-doc-face ((t (:foreground "#2b8dc6"))))
+            '(font-lock-string-face ((t (:foreground "#2f8fc6"))))
+            '(font-lock-doc-face ((t (:foreground "#3a81aa"))))  ;; #3b8fbf
+            ;; '(font-lock-doc-face ((t (:inherit font-lock-string-face))))
             '(region ((t (:background "#515151"))))
             '(highlight ((t (:background "#3a3a3a"))))
             '(cursor ((t (:background "#d8d8d8"))))
@@ -810,26 +825,6 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
-           ))
-        (nord
-         (progn
-           (custom-theme-set-faces
-            'nord
-            '(default ((t (:background "#191f28" :foreground "#b6c1d3"))))
-            '(mode-line ((t (:background "#3f4758" :foreground "#9ac9d7"))))
-            '(mode-line-inactive ((t (:background "#242934" :foreground "#5e7591"))))
-            '(font-lock-doc-face ((t (:foreground "#97aa86"))))
-            '(font-lock-preprocessor-face ((t (:foreground "#B48EAD" :weight bold))))
-            '(font-lock-variable-name-face ((t (:inherit default))))
-            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
-            '(fringe ((t (:background "#1d242d"))))
-            '(show-paren-match ((t (:background "#477099" :weight bold))))
-            '(outline-2 ((t (:foreground "#8FBCBB" :weight bold))))
-            '(org-level-2 ((t (:inherit outline-2))))
-            '(outline-3 ((t (:foreground "#a3be8c" :weight bold))))
-            '(org-level-3 ((t (:inherit outline-3))))
-            )
-           (my/after-set-theme)
            ))
         (blackboard
          (progn
@@ -1637,10 +1632,14 @@ the current file."
      (turn-on-purescript-indentation)
      (turn-on-purescript-decl-scan)
      (turn-on-purescript-font-lock)
-     (my/subword-mode 1)))
+     (my/subword-mode 1)
+     (make-variable-buffer-local 'find-tag-default-function)
+     (setq find-tag-default-function (lambda () (current-word t t)))
+     ))
   ;; xref for purescript works a bit weird with qualified identifiers
-  (define-key purescript-mode-map (kbd "M-.")
-    #'(lambda () (interactive) (xref-find-definitions (current-word t t)))))
+  ;; (define-key purescript-mode-map (kbd "M-.")
+    ;; #'(lambda () (interactive) (xref-find-definitions (current-word t t))))
+  )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -2565,6 +2564,7 @@ the number of errors.")
                 (:eval (my/mode-line-flycheck))
                 (:eval (my/mode-line-venv))
                 mode-line-modes mode-line-misc-info mode-line-end-spaces))
+(setq mode-line-misc-info (cons '(:eval (if (window-dedicated-p) "× " "")) mode-line-misc-info))
 #+END_SRC
 
 ** Powerline
@@ -2779,6 +2779,9 @@ the number of errors.")
 (winner-mode)
 (global-hi-lock-mode 1)
 (define-key hi-lock-map (kbd "M-H") (lookup-key hi-lock-map (kbd "C-x w")))
+;; (setq remember-notes-initial-major-mode 'org-mode)
+;; (add-to-list 'remember-handler-functions 'remember-diary-extract-entries)
+
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
