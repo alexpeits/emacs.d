@@ -2130,6 +2130,12 @@ corresponding buffer."
      ("v" projectile-vc "Open project root in vc-dir or magit")
      ("r" projectile-remove-known-project "Remove project(s)")))
 
+  (ivy-set-actions
+   'counsel-ag
+   '(("v" (lambda (x) (split-window-right) (windmove-right) (counsel-git-grep-action x)) "split vertically")
+     ("s" (lambda (x) (split-window-below) (windmove-down) (counsel-git-grep-action x)) "split horizontally")
+     ("n" (lambda (x) (ace-select-window) (counsel-git-grep-action x)) "select window")))
+
   )
 
 (defvar my/todo-search-string
