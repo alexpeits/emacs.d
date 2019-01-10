@@ -101,52 +101,6 @@ will be killed."
     (funcall (intern mmode))
     (setq buffer-offer-save nil)))
 
-;; Jump to definition, copied from spacemacs
-
-(defvar my-default-jump-handlers '()
-  "List of jump handlers available in every mode.")
-
-(defvar-local my-jump-handlers '()
-  "List of jump handlers local to this buffer.")
-
-(defmacro my|define-jump-handlers (mode &rest handlers)
-  "Defines jump handlers for the given MODE.
-This defines a variable `my-jump-handlers-MODE' to which
-handlers can be added, and a function added to MODE-hook which
-sets `my-jump-handlers' in buffers of that mode."
-  (let ((mode-hook (intern (format "%S-hook" mode)))
-        (func (intern (format "my//init-jump-handlers-%S" mode)))
-        (handlers-list (intern (format "my-jump-handlers-%S" mode))))
-    `(progn
-       (defvar ,handlers-list ',handlers
-         ,(format (concat "List of mode-specific jump handlers for %S. "
-                          "These take priority over those in "
-                          "`my-default-jump-handlers'.")
-                  mode))
-       (defun ,func ()
-         (setq my-jump-handlers
-               (append ,handlers-list
-                       my-default-jump-handlers)))
-       (add-hook ',mode-hook ',func)
-       )))
-
-(defun my/jump-to-definition ()
-  (interactive)
-  (catch 'done
-    (let ((old-buffer (current-buffer))
-          (old-point (point)))
-      (dolist (-handler my-jump-handlers)
-        (let ((handler (if (listp -handler) (car -handler) -handler))
-              (async (when (listp -handler)
-                       (plist-get (cdr -handler) :async))))
-          (ignore-errors
-            (call-interactively handler))
-          (when (or async
-                    (not (eq old-point (point)))
-                    (not (equal old-buffer (current-buffer))))
-            (throw 'done t)))))
-    (message "No jump handler was able to find this symbol.")))
-
 ;; Thanks Tikhon Jelvis
 (defun my/file-name-at-point (add-to-kill-ring)
   "Prompts the user for a file path using the standard C-x C-f
@@ -375,7 +329,8 @@ buffer, close it."
       (my/imenu-list-jump-to-window)))
 
   ;; (global-set-key (kbd "C-\\") #'imenu-list-minor-mode)
-  (global-set-key (kbd "C-\\") #'my/imenu-list-smart-toggle)
+  ;; (global-set-key (kbd "C-\\") #'my/imenu-list-smart-toggle)
+  (global-set-key (kbd "C-|") #'my/imenu-list-smart-toggle)
   (setq imenu-list-size 30))
 
 (use-package zeal-at-point
@@ -1057,6 +1012,17 @@ PWD is not in a git repo (or the git command is not found)."
     (kill-buffer commit-buf)))
 #+END_SRC
 
+** Keys
+
+#+BEGIN_SRC emacs-lisp
+(define-prefix-command 'my/git-map)
+(global-set-key (kbd "C-c g") 'my/git-map)
+
+(define-key my/git-map (kbd "g") 'magit-status)
+(define-key my/git-map (kbd "b") 'magit-blame)
+(define-key my/git-map (kbd "l") 'my/git-blame-current-line)
+#+END_SRC
+
 * Evil-mode
 ** keybind to command mapping
 
@@ -1064,9 +1030,6 @@ PWD is not in a git repo (or the git command is not found)."
 (defvar my/leader-keys
   '(
     ("SPC" fci-mode)
-
-    ("]"  find-tag-other-window)
-    (";"  evilnc-comment-or-uncomment-lines)
 
     ("a" align-regexp)
 
@@ -1083,8 +1046,6 @@ PWD is not in a git repo (or the git command is not found)."
 
     ("if" my/file-name-at-point)
     ("iu" counsel-unicode-char)
-
-    ("j"  my/jump-to-definition)
 
     ("ps" counsel-projectile-ag)
     ("pt" my/counsel-ag-todos-global)
@@ -1485,7 +1446,6 @@ the current file."
 (use-package hindent :ensure t :defer t)
 (autoload 'ghc-init "ghc" nil t)
 (autoload 'ghc-debug "ghc" nil t)
-(my|define-jump-handlers haskell-mode)
 (setq
  ghc-report-errors nil
  haskell-process-suggest-remove-import-lines t
@@ -1507,8 +1467,6 @@ the current file."
             (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
             (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
             (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
-            (add-to-list 'my-jump-handlers-haskell-mode
-                         'haskell-mode-jump-to-def)
             ))
 (add-hook 'haskell-cabal-mode-hook
           (lambda ()
@@ -1661,8 +1619,6 @@ the current file."
 (defun eshell/deactivate () (pyvenv-deactivate))
 
 (setq python-shell-prompt-detect-failure-warning nil)
-(my|define-jump-handlers python-mode)
-(my|define-jump-handlers cython-mode anaconda-mode-goto)
 
 (defun my/mode-line-venv ()
   (if (string= major-mode "python-mode")
@@ -1687,9 +1643,7 @@ the current file."
             (define-key python-mode-map (kbd "C-c C-j") 'counsel-imenu)
             (setq-default flycheck-disabled-checkers
                           (append flycheck-disabled-checkers
-                                  '(python-pycompile)))
-            (add-to-list 'my-jump-handlers-python-mode
-                         '(anaconda-mode-find-definitions :async t))))
+                                  '(python-pycompile)))))
 
 #+END_SRC
 
@@ -1737,20 +1691,15 @@ the current file."
 
 (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
 (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
-(my|define-jump-handlers js2-mode)
-(my|define-jump-handlers rjsx-mode)
-(my|define-jump-handlers web-mode)
 
 (dolist (mode '("js2" "rjsx"))
-  (let ((hook (intern-soft (format "%s-mode-hook" mode)))
-        (handler (intern-soft (format "my-jump-handlers-%s-mode" mode))))
+  (let ((hook (intern-soft (format "%s-mode-hook" mode))))
     (add-hook hook `(lambda ()
                       (if (and (file-exists-p "~/.nvm")
                                (null my/current-node-version))
                           (my/nvm-use-ver))
                       (setq evil-shift-width 2)
-                      (use-package tern :ensure t :config (tern-mode))
-                      (add-to-list (quote ,handler) 'tern-find-definition)))))
+                      (use-package tern :ensure t :config (tern-mode))))))
 
 (setq ;; js2-mode
  js2-basic-offset 2
@@ -2031,7 +1980,7 @@ corresponding buffer."
 #+END_SRC
 
 * Ivy/Counsel/Swiper
-  
+
 #+BEGIN_SRC emacs-lisp
 (defun my/swiper (fuzzy)
   (interactive "P")
@@ -2050,6 +1999,8 @@ corresponding buffer."
   (use-package swiper :ensure t)
   (use-package flx :ensure t)  ;; better fuzzy matching
   (use-package ag :ensure t)
+  (add-to-list 'ag-arguments "--nogroup")
+  (add-to-list 'ag-arguments "--vimgrep")
   (use-package counsel-projectile :ensure t)
   (use-package ivy-bibtex :ensure t)
   ;; this has to exist e.g. in .emacs.d/lisp/
@@ -2292,6 +2243,18 @@ corresponding buffer."
   (define-key treemacs-mode-map (kbd "C-p") 'treemacs-previous-line)
   (define-key treemacs-mode-map (kbd "C-n") 'treemacs-next-line)
   (define-key global-map (kbd "M-0") 'treemacs))
+#+END_SRC
+
+** buffer-move
+
+#+BEGIN_SRC emacs-lisp
+(use-package buffer-move
+  :ensure t
+  :config
+  (global-set-key (kbd "<C-S-up>") 'buf-move-up)
+  (global-set-key (kbd "<C-S-down>") 'buf-move-down)
+  (global-set-key (kbd "<C-S-left>") 'buf-move-left)
+  (global-set-key (kbd "<C-S-right>") 'buf-move-right))
 #+END_SRC
 
 ** Helm
@@ -2773,6 +2736,8 @@ the number of errors.")
   (run-hooks 'my/theme-change-hook))
 
 (setq linum-format 'dynamic)
+
+(setq default-input-method "TeX")
 
 (hybrid-mode)
 (winner-mode)
