@@ -960,11 +960,11 @@ PWD is not in a git repo (or the git command is not found)."
 (defun my/diff-hl-set-fringe-faces (&optional light-bg th)
   (let* ((dark (not light-bg))
          (ins-bg (if dark "#143514" "#b9e0b3"))
-         (ins-fg (if dark "#4c934c" "#143514"))
+         (ins-fg (if dark "#4c934c" "#194219"))
          (ch-bg (if dark "#122544" "#b5d8f4"))
-         (ch-fg (if dark "#466daf" "#122544"))
+         (ch-fg (if dark "#517bc1" "#2b4775"))
          (del-bg (if dark "#491111" "#f4b5b5"))
-         (del-fg (if dark "#bc4d4d" "#491111"))
+         (del-fg (if dark "#bc4d4d" "#561a1a"))
          (theme (if th th my/theme)))
     (custom-theme-set-faces
      theme
@@ -1007,7 +1007,7 @@ PWD is not in a git repo (or the git command is not found)."
       (call-process "git" nil log-buf nil
                     "log" "-1" "--pretty=%h   %an   %s" commit-id)
       (with-current-buffer log-buf
-        (message "Line %d: %s" line-number (buffer-string)))
+        (message "Line %d: %s" line-number (replace-regexp-in-string "\n\\'" "" (buffer-string))))
       (kill-buffer log-buf))
     (kill-buffer commit-buf)))
 #+END_SRC
@@ -2130,6 +2130,7 @@ corresponding buffer."
      ("v" projectile-vc "Open project root in vc-dir or magit")
      ("r" projectile-remove-known-project "Remove project(s)")))
 
+  ;; also applies to counsel-projectile-ag
   (ivy-set-actions
    'counsel-ag
    '(("v" (lambda (x) (split-window-right) (windmove-right) (counsel-git-grep-action x)) "split vertically")
@@ -2164,13 +2165,11 @@ corresponding buffer."
   :init
   (use-package yasnippet-snippets :ensure t)
   :config
+  (yas-global-mode 1)
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   (define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
   (yas-reload-all))
-
-;; (yas-global-mode 1)
-(my/add-hooks '(markdown-mode-hook gfm-mode-hook) (yas-minor-mode))
 #+END_SRC
 
 * Other window management
