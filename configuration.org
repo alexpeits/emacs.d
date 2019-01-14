@@ -718,7 +718,7 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'wombat
-            '(default ((t (:foreground "#d1d1d1" :background "#202020"))))
+            '(default ((t (:foreground "#d1d1d1" :background "#1a1a1a"))))
             '(font-lock-comment-face ((t (:foreground "#797f7d"))))
             '(font-lock-string-face ((t (:foreground "#2a96d3"))))
             '(font-lock-doc-face ((t (:foreground "#348dc1"))))
@@ -800,6 +800,26 @@ PWD is not in a git repo (or the git command is not found)."
             '(ivy-current-match ((t (:background "#134a60"))))
             '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
             '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#19232d"))))
+            )
+           (my/after-set-theme)
+           ))
+        (nord
+         (progn
+           (custom-theme-set-faces
+            'nord
+            '(default ((t (:background "#191f28" :foreground "#b6c1d3"))))
+            '(mode-line ((t (:background "#3f4758" :foreground "#9ac9d7"))))
+            '(mode-line-inactive ((t (:background "#242934" :foreground "#5e7591"))))
+            '(font-lock-doc-face ((t (:foreground "#97aa86"))))
+            '(font-lock-preprocessor-face ((t (:foreground "#B48EAD" :weight bold))))
+            '(font-lock-variable-name-face ((t (:inherit default))))
+            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
+            '(fringe ((t (:background "#1d242d"))))
+            '(show-paren-match ((t (:background "#477099" :weight bold))))
+            '(outline-2 ((t (:foreground "#8FBCBB" :weight bold))))
+            '(org-level-2 ((t (:inherit outline-2))))
+            '(outline-3 ((t (:foreground "#a3be8c" :weight bold))))
+            '(org-level-3 ((t (:inherit outline-3))))
             )
            (my/after-set-theme)
            ))
@@ -1946,9 +1966,12 @@ corresponding buffer."
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
   (use-package flx :ensure t)  ;; better fuzzy matching
-  (use-package ag :ensure t)
-  (add-to-list 'ag-arguments "--nogroup")
-  (add-to-list 'ag-arguments "--vimgrep")
+  (use-package ag
+    :ensure t
+    :config
+    (add-to-list 'ag-arguments "--nogroup")
+    (add-to-list 'ag-arguments "--vimgrep")
+    (define-key ag-mode-map (kbd "Q") '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
   (use-package counsel-projectile :ensure t)
   (use-package ivy-bibtex :ensure t)
   ;; this has to exist e.g. in .emacs.d/lisp/
@@ -2195,7 +2218,24 @@ corresponding buffer."
   (treemacs-git-mode 'simple)
   (define-key treemacs-mode-map (kbd "C-p") 'treemacs-previous-line)
   (define-key treemacs-mode-map (kbd "C-n") 'treemacs-next-line)
-  (define-key global-map (kbd "M-0") 'treemacs))
+  (defun my/treemacs-smart-toggle ()
+    (interactive)
+    (if (string-match-p
+         (regexp-quote treemacs--buffer-name-prefix)
+         (buffer-name (current-buffer)))
+        (treemacs)
+      (treemacs-select-window)))
+  ;; (define-key global-map (kbd "M-0") 'treemacs)
+  (define-key global-map (kbd "M-0") 'my/treemacs-smart-toggle)
+  (defun my/kill-all-treemacs-buffers ()
+    (if (eq (treemacs-current-visibility) 'visible)
+        (dolist (buf (buffer-list))
+          (progn
+            (if (string-match-p (regexp-quote treemacs--buffer-name-prefix) (buffer-name buf))
+                (kill-buffer buf))))))
+  (defadvice persp-switch
+      (before advice-for-persp-switch activate)
+    (my/kill-all-treemacs-buffers)))
 #+END_SRC
 
 ** buffer-move
