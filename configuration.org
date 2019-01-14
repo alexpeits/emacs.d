@@ -780,25 +780,6 @@ PWD is not in a git repo (or the git command is not found)."
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
            ))
-        (blackboard
-         (progn
-           (custom-theme-set-faces
-            'blackboard
-            '(default ((t (:foreground "#b3c9c1" :background "#0c1021"))))
-            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
-            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#77808e" :slant italic))))
-            '(linum ((t (:inherit fringe :foreground "#607480"))))
-            '(fringe ((t (:background "#1c2031"))))
-            '(vertical-border ((t (:foreground "#91a2bf"))))
-            '(magit-section-highlight ((t (:background "#203b56"))))
-            '(show-paren-match ((t (:background "#245587"))))
-            '(my/fci ((t (:foreground "#233064"))))
-            '(treemacs-fringe-indicator-face ((t (:background "#589344" :foreground "#589344"))))
-            )
-           (my/after-set-theme)
-           ))
         (gotham
          (progn
            (custom-theme-set-faces
@@ -822,43 +803,10 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            ))
-        (ample-light
-         (progn
-           (custom-theme-set-faces
-            'ample-light
-            '(default ((t (:foreground "gray30" :background "#cbc9b1"))))
-            '(cursor ((t (:foreground "#cbc9b1" :background "gray30"))))
-            '(mode-line ((t (:foreground "gray30" :background "#a8a68d"))))
-            '(mode-line-inactive ((t (:foreground "gray55" :background "#bbb9a1"))))
-            '(font-lock-comment-face ((t (:foreground "#8a8a8a" :slant italic))))
-            '(company-toolti ((t (:foreground "gray43" :background "#bab8a5"))))
-            '(company-tooltip-selection ((t (:foreground "gray43" :background "#aba991"))))
-            '(company-tooltip-common ((t (:foreground "#528fd1"))))
-            '(company-tooltip-common-selection ((t (:foreground "#bbb9a1" :background "gray43"))))
-            )
-           (my/after-set-theme t)
-           (my/modeline-flycheck-darker-faces)
-           ))
         (zenburn
          (progn
            (my/hl-line-set-bg) (my/org-set-src-faces)
            (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
-           ))
-        (sunburn
-         (progn
-           (custom-theme-set-faces
-            'sunburn
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(minibuffer-prompt ((t (:foreground "#f0dfaf"))))
-            '(fringe ((t (:background "#4f4951"))))
-            '(region ((t (:background "#6b5f6f"))))
-            '(mode-line
-              ((t (:box
-                   (:line-width -1 :color nil :style released-button)
-                   :foreground "#f1f1f1" :background "#3d344c"))))
-            )
-           (my/hl-line-set-bg) (my/org-set-src-faces)
-           (setq pdf-view-midnight-colors '("#dedded" . "#413b42"))
            ))
         ))
 
@@ -960,9 +908,9 @@ PWD is not in a git repo (or the git command is not found)."
 (defun my/diff-hl-set-fringe-faces (&optional light-bg th)
   (let* ((dark (not light-bg))
          (ins-bg (if dark "#143514" "#b9e0b3"))
-         (ins-fg (if dark "#4c934c" "#194219"))
+         (ins-fg (if dark "#2b872b" "#194219"))
          (ch-bg (if dark "#122544" "#b5d8f4"))
-         (ch-fg (if dark "#517bc1" "#2b4775"))
+         (ch-fg (if dark "#4171c1" "#2b4775"))
          (del-bg (if dark "#491111" "#f4b5b5"))
          (del-fg (if dark "#bc4d4d" "#561a1a"))
          (theme (if th th my/theme)))
@@ -1718,7 +1666,7 @@ the current file."
 
 * Clojure
    
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (add-hook
  'clojure-mode-hook
  (lambda ()
