@@ -731,6 +731,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(show-paren-match ((t (:background "steelblue4" :weight bold))))
             '(mode-line-buffer-id ((t (:weight bold))))
             '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
+            '(treemacs-fringe-indicator-face ((t (:foreground "#8ac6f2"))))
             '(mode-line
               ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#4a4a4a")))))
             '(mode-line-inactive
@@ -780,25 +781,6 @@ PWD is not in a git repo (or the git command is not found)."
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
            ))
-        (blackboard
-         (progn
-           (custom-theme-set-faces
-            'blackboard
-            '(default ((t (:foreground "#b3c9c1" :background "#0c1021"))))
-            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
-            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#77808e" :slant italic))))
-            '(linum ((t (:inherit fringe :foreground "#607480"))))
-            '(fringe ((t (:background "#1c2031"))))
-            '(vertical-border ((t (:foreground "#91a2bf"))))
-            '(magit-section-highlight ((t (:background "#203b56"))))
-            '(show-paren-match ((t (:background "#245587"))))
-            '(my/fci ((t (:foreground "#233064"))))
-            '(treemacs-fringe-indicator-face ((t (:background "#589344" :foreground "#589344"))))
-            )
-           (my/after-set-theme)
-           ))
         (gotham
          (progn
            (custom-theme-set-faces
@@ -834,7 +816,10 @@ PWD is not in a git repo (or the git command is not found)."
             '(font-lock-variable-name-face ((t (:inherit default))))
             '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
             '(fringe ((t (:background "#1d242d"))))
+            '(linum ((t (:foreground "#3f4758"))))
             '(show-paren-match ((t (:background "#477099" :weight bold))))
+            '(treemacs-fringe-indicator-face ((t (:foreground "#8FBCBB"))))
+            '(lazy-highlight ((t (:background "#496665"))))
             '(outline-2 ((t (:foreground "#8FBCBB" :weight bold))))
             '(org-level-2 ((t (:inherit outline-2))))
             '(outline-3 ((t (:foreground "#a3be8c" :weight bold))))
@@ -1433,13 +1418,18 @@ the current file."
 (use-package hindent :ensure t :defer t)
 (autoload 'ghc-init "ghc" nil t)
 (autoload 'ghc-debug "ghc" nil t)
-(setq
- ghc-report-errors nil
- haskell-process-suggest-remove-import-lines t
- haskell-process-auto-import-loaded-modules t
- haskell-process-log t
- haskell-process-type 'stack-ghci
- haskell-company-ghc-show-info t)
+(setq ghc-report-errors nil
+      haskell-process-suggest-remove-import-lines t
+      haskell-process-auto-import-loaded-modules t
+      haskell-process-log t
+      haskell-process-type 'stack-ghci
+      haskell-company-ghc-show-info t
+      haskell-hoogle-command "hoogle --count=100")
+
+(use-package haskell-mode
+  :ensure t
+  :config
+  (define-key haskell-mode-map (kbd "C-c m m h") 'hoogle))
 
 (add-hook 'haskell-mode-hook
           (lambda ()
@@ -1966,6 +1956,27 @@ corresponding buffer."
       (apply out-proj-f args))))
 #+END_SRC
 
+* Searching
+** ag
+
+#+begin_src emacs-lisp
+(use-package ag
+  :ensure t
+  :config
+  (add-to-list 'ag-arguments "--nogroup")
+  (add-to-list 'ag-arguments "--vimgrep")
+  (define-key ag-mode-map (kbd "Q") '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
+#+end_src
+
+** winnow
+
+#+begin_src emacs-lisp
+(use-package winnow
+  :ensure t
+  :config
+  (add-hook 'compilation-mode-hook 'winnow-mode))
+#+end_src
+
 * Ivy/Counsel/Swiper
 
 #+BEGIN_SRC emacs-lisp
@@ -1985,12 +1996,6 @@ corresponding buffer."
   (use-package counsel :ensure t)
   (use-package swiper :ensure t)
   (use-package flx :ensure t)  ;; better fuzzy matching
-  (use-package ag
-    :ensure t
-    :config
-    (add-to-list 'ag-arguments "--nogroup")
-    (add-to-list 'ag-arguments "--vimgrep")
-    (define-key ag-mode-map (kbd "Q") '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
   (use-package counsel-projectile :ensure t)
   (use-package ivy-bibtex :ensure t)
   ;; this has to exist e.g. in .emacs.d/lisp/
@@ -2655,15 +2660,14 @@ the number of errors.")
 
    (my/set-mode-fill-width 'org-mode-hook 100)
 
-   (add-to-list
-    'org-structure-template-alist
-    '("pf" "#+BEGIN_SRC ipython :session :file %file :exports both\n?\n#+END_SRC"))
-   (add-to-list
-    'org-structure-template-alist
-    '("po" "#+BEGIN_SRC ipython :session :exports both\n?\n#+END_SRC"))
-   (add-to-list
-    'org-structure-template-alist
-    '("pr" "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW"))))
+   (if (require 'org-tempo nil 'noerror)
+       (add-to-list
+        'org-structure-template-alist
+        '("pr" . "preview"))
+     (add-to-list
+      'org-structure-template-alist
+      '("pr" . "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW")))
+   ))
 #+END_SRC
    
 * Reading papers
@@ -2738,6 +2742,7 @@ the number of errors.")
      (psc-ide-output-directory . "build/")
      (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
      (projectile-tags-command . "npm run etags")
+     (haskell-hoogle-command . "stack hoogle -- --count=100")
      ))))
 
 (my/set-theme)
