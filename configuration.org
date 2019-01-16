@@ -123,6 +123,19 @@ interface and inserts it at point."
                        (if dedicated "" "un"))))
     (set-window-dedicated-p window dedicated)
     dedicated))
+
+(defun my/try-open-dominating-file (file)
+  "Search up the file path of current file a file named FILE, and open it if it
+exists.
+
+If FILE is not provided, prompt for the filename.
+With a prefix argument, open using `find-file-other-window'."
+  (interactive (list (read-from-minibuffer "File name: ")))
+  (let ((dir (locate-dominating-file (buffer-file-name) file))
+        (find-file-func (if current-prefix-arg 'find-file-other-window 'find-file)))
+    (if dir
+        (funcall find-file-func (concat (file-name-as-directory dir) file))
+      (message "No matching file not found"))))
 #+END_SRC
 
 * Package management
@@ -507,6 +520,20 @@ buffer, close it."
 (setq recentf-max-saved-items 100)
 (recentf-mode 1)
 #+END_SRC
+
+** major mode keymap
+
+   #+begin_src emacs-lisp
+;; distinguish `C-m` from `RET`
+(define-key input-decode-map [?\C-m] [C-m])
+;; distinguish `C-i` from `TAB`
+(define-key input-decode-map [?\C-i] [C-i])
+
+(define-prefix-command 'my/major-mode-map)
+
+(define-prefix-command 'my/major-mode-map)
+(global-set-key (kbd "<C-m>") 'my/major-mode-map)
+   #+end_src
 
 * Term, eshell and comint-mode
 ** Terms
@@ -1347,21 +1374,33 @@ With a prefix argument, insert a newline above the current line."
 * Haskell
   
 #+BEGIN_SRC emacs-lisp
-  (use-package intero
-    :ensure t
-    :defer t
-    :diminish intero-mode
-    :init
-    (setq intero-blacklist '("~/.xmonad"))
-    :config
-    ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
-    ;; this has to be installed in every repo until I find a solution
-    ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
-    ;; don't auto insert matching single quotes in haskell mode, since I
-    ;; mostly use them for promoted data types
-    (define-key intero-mode-map (kbd "M-.") nil)
-    (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
-    (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
+(use-package intero
+  :ensure t
+  :defer t
+  :diminish intero-mode
+  :init
+  (setq intero-blacklist '("~/.xmonad"))
+  :config
+  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
+  ;; this has to be installed in every repo until I find a solution
+  ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+  ;; don't auto insert matching single quotes in haskell mode, since I
+  ;; mostly use them for promoted data types
+  (define-key intero-mode-map (kbd "M-.") nil)
+  (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
+  (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(setq haskell-hoogle-command "hoogle --count=100")
+
+(use-package haskell-mode
+  :ensure t
+  :config
+  (define-key my/major-mode-map (kbd "h") 'hoogle)
+  (define-key my/major-mode-map (kbd "i") 'haskell-navigate-imports)
+  (define-key my/major-mode-map (kbd "a") 'my/haskell-align-and-sort-imports)
+  (define-key my/major-mode-map (kbd "s") 'my/haskell-save-and-format))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1396,10 +1435,12 @@ the current file."
   (call-interactively 'haskell-align-imports)
   (call-interactively 'haskell-sort-imports))
 
+(defun my/haskell-open-package-yaml ()
+  (interactive)
+  (my/try-open-dominating-file "package.yaml"))
+
 (with-eval-after-load 'haskell-mode
-  (sp-local-pair 'haskell-mode "'" nil :actions nil)
-  (define-key haskell-mode-map (kbd "C-c s") 'my/haskell-save-and-format)
-  (define-key haskell-mode-map (kbd "C-c C-a i") 'my/haskell-align-and-sort-imports))
+  (sp-local-pair 'haskell-mode "'" nil :actions nil))
 
 (setq haskell-align-imports-pad-after-name t)
 (add-hook 'haskell-mode-hook
@@ -1423,13 +1464,7 @@ the current file."
       haskell-process-auto-import-loaded-modules t
       haskell-process-log t
       haskell-process-type 'stack-ghci
-      haskell-company-ghc-show-info t
-      haskell-hoogle-command "hoogle --count=100")
-
-(use-package haskell-mode
-  :ensure t
-  :config
-  (define-key haskell-mode-map (kbd "C-c m m h") 'hoogle))
+      haskell-company-ghc-show-info t)
 
 (add-hook 'haskell-mode-hook
           (lambda ()
