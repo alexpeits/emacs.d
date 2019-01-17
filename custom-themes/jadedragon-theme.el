@@ -6,20 +6,21 @@
 
    ;; basic theming.
    '(default                          ((t (:foreground "#b3cecb" :background "#101515" ))))
-   '(region                           ((t (:background "#182e30"))))
+   '(region                           ((t (:background "#1f3f3d"))))
    '(cursor                           ((t (:background "#00a3a2"))))
    '(fringe                           ((t (:background "#202525"))))
    '(linum                            ((t (:background "#002027" :foreground "#4b7684"))))
    '(minibuffer-prompt                ((t (:foreground "#14948b" :weight bold ))))
    '(minibuffer-message               ((t (:foreground "#ffffff" ))))
-   '(mode-line                        ((t (:foreground "#bee5d6" :background "#073a37"))))
-   '(mode-line-inactive               ((t (:foreground "#43827c" :background "#002320"))))
+   '(mode-line                        ((t (:foreground "#c7e2d8" :background "#073a37" :box (:line-width 1 :color "#0a4946")))))
+   '(mode-line-inactive               ((t (:inherit mode-line :foreground "#3e7772" :background "#002320"))))
 
    '(font-lock-builtin-face           ((t (:foreground "#ffffff" ))))
    '(font-lock-keyword-face           ((t (:foreground "#26a2bf" ))))
    '(font-lock-type-face              ((t (:foreground "#01a37d" ))))
    '(font-lock-constant-face          ((t (:foreground "#00B286" ))))
-   '(font-lock-variable-name-face     ((t (:foreground "#63ff2b" ))))
+   ;; '(font-lock-variable-name-face     ((t (:foreground "#63ff2b" ))))
+   '(font-lock-variable-name-face     ((t (:foreground "#69e03e" ))))
    '(font-lock-function-name-face     ((t (:foreground "#36ffba" ))))
    '(font-lock-string-face            ((t (:foreground "#039dad" ))))
    '(font-lock-comment-face           ((t (:foreground "#607784" :slant italic))))
@@ -30,7 +31,7 @@
    '(font-lock-warning-face           ((t (:foreground "#FF0000" ))))
 
    ;; '(haskell-constructor-face ((t (:foregound "#479e89"))))
-   '(haskell-constructor-face         ((t (:inherit default))))
+   ;; '(haskell-constructor-face         ((t (:inherit default))))
 
    '(org-block ((t (:foreground "#c8d0c8" :background "#141414"))))
    '(org-block-begin-line ((t (:background "#1d1d1d"))))
@@ -55,7 +56,9 @@
 
    '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
 
-   '(hl-line ((t (:background "#252525"))))
+   '(hl-line ((t (:background "#222828"))))
+
+   '(vertical-border ((t (:foreground "#789991"))))
 
    '(highlight
      ((((class color) (min-colors 88) (background light)) (:background "#003453"))
@@ -99,7 +102,7 @@
       (((class color) (min-colors 8))                     (:background "#FF0000"))
       (((class color grayscale))                          (:foreground "#888888")) (t (:inverse-video t))))
 
-   '(isearch                             ((t (:inverse-video nil :foreground "black" :background "#ad4f2d"))))
+   '(isearch                             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
    '(lazy-highlight                      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
    '(match

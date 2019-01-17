@@ -91,10 +91,16 @@ will be killed."
          (,reg)
        (,alt))))
 
-;; Create a new scratch buffer and select major mode
 (defun my/create-scratch-buffer-with-mode (other-window)
+  "Create a new scratch buffer and select major mode to use.
+
+With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (interactive "P")
-  (let* ((mmode (completing-read "buffer mode: " (apropos-internal "-mode$") nil nil nil nil (symbol-name initial-major-mode)))
+  (let* ((mmode
+          (completing-read "buffer mode: "
+                           (apropos-internal "-mode$")
+                           nil nil nil nil
+                           (symbol-name initial-major-mode)))
          (buf (generate-new-buffer (concat "*scratch" "-" mmode "*")))
          (switch-func (if other-window 'switch-to-buffer-other-window 'switch-to-buffer)))
     (funcall switch-func buf)
@@ -124,13 +130,30 @@ interface and inserts it at point."
     (set-window-dedicated-p window dedicated)
     dedicated))
 
+(defvar my/useful-files
+  '(
+    ;; haskell
+    "package.yaml"
+    "stack.yaml"
+    "shell.nix"
+    ".hlint.yaml"
+    ;; docker
+    "docker-compose.yml"
+    "Dockerfile"
+    ;; git
+    "README.md"
+    ;; emacs
+    ".dir-locals.el"))
+
 (defun my/try-open-dominating-file (file)
   "Search up the file path of current file a file named FILE, and open it if it
 exists.
 
 If FILE is not provided, prompt for the filename.
 With a prefix argument, open using `find-file-other-window'."
-  (interactive (list (read-from-minibuffer "File name: ")))
+  (interactive (list (completing-read "File name: "
+                                      my/useful-files
+                                      nil nil nil nil nil)))
   (let ((dir (locate-dominating-file (buffer-file-name) file))
         (find-file-func (if current-prefix-arg 'find-file-other-window 'find-file)))
     (if dir
@@ -434,6 +457,14 @@ buffer, close it."
         (goto-char (point-min))
         (forward-line (1- line-number))))))
 #+END_SRC
+
+** Autocompleting etc
+
+   #+begin_src emacs-lisp
+;; Don't consider punctuation part of word for completion,
+;; helps complete qualified symbols
+(setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|\\sw\\s.")
+   #+end_src
 
 ** engine-mode
    
@@ -1158,10 +1189,10 @@ PWD is not in a git repo (or the git command is not found)."
 
   (define-key evil-normal-state-map (kbd "M-.") nil)
 
-  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+  ;; (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+  ;; (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+  ;; (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+  ;; (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
 
   (define-key evil-normal-state-map (kbd ";") 'evil-ex)
   (define-key evil-visual-state-map (kbd ";") 'evil-ex)
@@ -2059,6 +2090,7 @@ corresponding buffer."
   (define-key projectile-command-map (kbd "s") 'counsel-projectile-ag)
 
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
   (defun my/counsel-ag-project-root ()
     (interactive)
