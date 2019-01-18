@@ -1101,6 +1101,7 @@ PWD is not in a git repo (or the git command is not found)."
 
     ("fa" helm-ag)
     ("ff" helm-find)
+    ("fp" my/try-open-dominating-file)
 
     ("gb" my/git-blame-current-line)
 
@@ -1143,6 +1144,7 @@ PWD is not in a git repo (or the git command is not found)."
 ;; (define-key ctl-x-map "m" 'my/leader-map)
 (define-prefix-command 'my/leader-map)
 (global-set-key (kbd "C-c m") 'my/leader-map)
+(global-set-key (kbd "C-c <C-m>") 'my/leader-map)
 
 (dolist (i my/leader-keys)
   (let ((k (car i))

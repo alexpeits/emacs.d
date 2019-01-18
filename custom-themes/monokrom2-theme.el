@@ -14,15 +14,17 @@
 
        (basic1 "#d4eee3")
        (basic2 "#c6d1cb")
-       (basic3 "#97bfad")
-       (basic4 "#90aea1")
+       (basic3 "#a1c4b4")
+       (basic4 "#7d9b8e")
        (basic5 "#656d69")
 
        (black1 "#111915")
+       (black2 "#1d2824")
 
        (green1 "#65e6a7")
        (green2 "#6fce9f")
        (green3 "#47ba99")
+       (green4 "#31564d")
 
        (red "#cd5c60")
        (orange "#dbac66")
@@ -54,9 +56,9 @@
         `(font-lock-variable-name-face ((,class (:foreground ,var))))
         `(font-lock-warning-face ((,class (:foreground ,warning :background ,bg2))))
         `(font-lock-preprocessor-face ((,class (:foreground ,green1))))
-        `(region ((,class (:background ,fg1 :foreground ,bg1))))
+        `(region ((,class (:background ,green4))))
         `(highlight ((,class (:foreground ,fg3 :background ,bg3))))
-	`(hl-line ((,class (:background ,bg3))))
+	`(hl-line ((,class (:background ,black2))))
         `(fringe ((,class (:background "#1e1e1e"))))
         `(linum ((,class (:foreground "#5a5a5a"))))
 	`(fringe ((,class (:background ,bg1 :foreground ,fg4))))
@@ -64,9 +66,9 @@
         `(show-paren-match-face ((,class (:background ,warning))))
         `(persp-selected-face ((,class (:weight bold :foreground ,blue2))))
         `(mode-line
-          ((t (:foreground "#c5d4cd" :background "#24342c" :box (:line-width 2 :color "#273931" :style nil)))))
+          ((t (:foreground "#c5d4cd" :background "#2e3f37" :box (:line-width 2 :color "#2e3f37" :style nil)))))
         `(mode-line-inactive
-          ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#1f2c26" :style nil)))))
+          ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#283830" :style nil)))))
         ;; `(mode-line ((,class (:foreground ,fg2 :background ,bg4))))
         ;; `(mode-line-inactive ((,class (:foreground "#656565" :background "#202020"))))
         `(mode-line-buffer-id ((,class (:weight bold))))
