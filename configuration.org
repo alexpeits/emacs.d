@@ -20,9 +20,6 @@
 
 (defvar is-mac (eq system-type 'darwin)
   "Whether emacs is running in mac or not")
-
-;; Can be used to debug slow packages
-;; (setq use-package-verbose t)
 #+END_SRC
    
 * Various utility functions
@@ -180,6 +177,10 @@ With a prefix argument, open using `find-file-other-window'."
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
+;; Can be used to debug slow packages
+;; (setq use-package-minimum-reported-time 0.05
+;;       use-package-verbose t)
+
 (eval-when-compile
   (require 'use-package))
 
@@ -198,6 +199,9 @@ With a prefix argument, open using `find-file-other-window'."
        :config
        (setq-default save-place t))
   (save-place-mode 1))
+
+(defun display-startup-echo-area-message ()
+  (message (format "Emacs started in %s" (emacs-init-time))))
 
 ;; undo tree
 (use-package undo-tree
@@ -1685,7 +1689,7 @@ the current file."
 * Python
    
 #+BEGIN_SRC emacs-lisp
-(use-package pyvenv) ;; this has to be downloaded
+(use-package pyvenv :after python) ;; this has to be downloaded
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
@@ -2031,7 +2035,6 @@ corresponding buffer."
   (use-package swiper :ensure t)
   (use-package flx :ensure t)  ;; better fuzzy matching
   (use-package counsel-projectile :ensure t)
-  (use-package ivy-bibtex :ensure t)
   ;; this has to exist e.g. in .emacs.d/lisp/
   (use-package ivy-xref :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
   :config
@@ -2337,18 +2340,12 @@ corresponding buffer."
 ** elfeed
    
 #+BEGIN_SRC emacs-lisp
-(use-package elfeed-goodies
-  :ensure t
-  :after elfeed)
-
-(use-package elfeed-web
-  :ensure t
-  :after elfeed)
-
 (use-package elfeed
   :ensure t
   :defer t
   :config
+  (use-package elfeed-web :ensure t)
+  (use-package elfeed-goodies :ensure t)
   (setq elfeed-search-filter "@10-days-ago +unread")
   (define-key elfeed-search-mode-map (kbd "U") #'elfeed-update)
   (setq
