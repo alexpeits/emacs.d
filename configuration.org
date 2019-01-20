@@ -778,7 +778,7 @@ PWD is not in a git repo (or the git command is not found)."
            (custom-theme-set-faces
             'wombat
             '(default ((t (:foreground "#d1d1d1" :background "#1a1a1a"))))
-            '(font-lock-comment-face ((t (:foreground "#797f7d"))))
+            '(font-lock-comment-face ((t (:foreground "#7e8583"))))
             '(font-lock-string-face ((t (:foreground "#2a96d3"))))
             '(font-lock-doc-face ((t (:foreground "#348dc1"))))
             '(region ((t (:background "#515151"))))
@@ -801,35 +801,6 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            ))
-        (kaolin-mono-dark
-         (progn
-           (custom-theme-set-faces
-            'kaolin-mono-dark
-            '(default ((t (:foreground "#c6d1cb" :background "#111915"))))
-            '(mode-line
-              ((t (:foreground "#c5d4cd" :background "#24342c" :box (:line-width 2 :color "#273931" :style nil)))))
-            '(mode-line-inactive
-              ((t (:foreground "#567668" :background "#1a2520" :box (:line-width 2 :color "#1f2c26" :style nil)))))
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(vertical-border ((t (:foreground "#5a605a"))))
-            '(fringe ((t (:background "#1d2320"))))
-            '(font-lock-function-name-face ((t (:foreground "#97bfad" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#4c6257"))))
-            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-            '(font-lock-doc-face ((t (:foreground "#6fce9f"))))
-            '(persp-selected-face ((t (:foreground "#65e6a7" :weight bold))))
-            '(show-paren-match ((t (:background "#327353" :weight bold))))
-            '(lazy-highlight ((t (:foreground "#69ceb0" :background "#25352d"))))
-            '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
-            '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
-            '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
-            '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
-            )
-           (my/diff-hl-set-fringe-faces)
-           (my/org-set-src-faces)
-           (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749"))
-           )
-         )
         (nimbus
          (progn
            (custom-theme-set-faces

@@ -15,8 +15,8 @@
        (basic1 "#d4eee3")
        (basic2 "#c6d1cb")
        (basic3 "#a1c4b4")
-       (basic4 "#7d9b8e")
-       (basic5 "#656d69")
+       (basic4 "#849b90")
+       (basic5 "#7e8582")
 
        (black1 "#111915")
        (black2 "#1d2824")
@@ -44,7 +44,7 @@
    'monokrom2
         `(default ((,class (:background ,black1 :foreground ,basic2))))
         `(font-lock-builtin-face ((,class (:foreground ,builtin))))
-        `(font-lock-comment-face ((,class (:foreground ,basic5 :slant italic))))
+        `(font-lock-comment-face ((,class (:foreground ,basic5))))
 	`(font-lock-negation-char-face ((,class (:foreground ,const))))
 	`(font-lock-reference-face ((,class (:foreground ,const))))
 	`(font-lock-constant-face ((,class (:foreground ,const))))

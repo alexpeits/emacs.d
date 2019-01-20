@@ -12,7 +12,7 @@
        (builtin "#d4d4d4")
        (keyword "#d4d4d4")
        (const   "#d4d4d4")
-       (comment "#787878")
+       (comment "#838383")
        (func    "#cacaca")
        (str     "#00af87")
        (doc     "#549385")
