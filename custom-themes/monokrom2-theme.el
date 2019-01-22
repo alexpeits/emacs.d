@@ -15,8 +15,8 @@
        (basic1 "#d4eee3")
        (basic2 "#c6d1cb")
        (basic3 "#a1c4b4")
-       (basic4 "#849b90")
-       (basic5 "#7e8582")
+       (basic4 "#8ca298")
+       (basic5 "#767d7a")
 
        (black1 "#111915")
        (black2 "#1d2824")
@@ -44,7 +44,7 @@
    'monokrom2
         `(default ((,class (:background ,black1 :foreground ,basic2))))
         `(font-lock-builtin-face ((,class (:foreground ,builtin))))
-        `(font-lock-comment-face ((,class (:foreground ,basic5))))
+        `(font-lock-comment-face ((,class (:foreground ,basic5 :slant italic))))
 	`(font-lock-negation-char-face ((,class (:foreground ,const))))
 	`(font-lock-reference-face ((,class (:foreground ,const))))
 	`(font-lock-constant-face ((,class (:foreground ,const))))
@@ -63,6 +63,7 @@
         `(linum ((,class (:foreground "#5a5a5a"))))
 	`(fringe ((,class (:background ,bg1 :foreground ,fg4))))
 	`(cursor ((,class (:background ,fg3))))
+        `(show-paren-match ((,class (:background "steelblue4"))))
         `(show-paren-match-face ((,class (:background ,warning))))
         `(persp-selected-face ((,class (:weight bold :foreground ,blue2))))
         `(mode-line

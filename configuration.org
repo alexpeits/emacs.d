@@ -455,6 +455,9 @@ buffer, close it."
         ;; goto-line is for interactive use
         (goto-char (point-min))
         (forward-line (1- line-number))))))
+
+(define-key prog-mode-map (kbd "M-a") 'beginning-of-defun)
+(define-key prog-mode-map (kbd "M-e") 'end-of-defun)
 #+END_SRC
 
 ** Autocompleting etc
@@ -462,7 +465,10 @@ buffer, close it."
    #+begin_src emacs-lisp
 ;; Don't consider punctuation part of word for completion,
 ;; helps complete qualified symbols
-(setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|\\sw\\s.")
+(add-hook
+ 'prog-mode-hook
+ (lambda ()
+   (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|\\sw\\s.")))
    #+end_src
 
 ** engine-mode
@@ -552,20 +558,6 @@ buffer, close it."
 (setq recentf-max-saved-items 100)
 (recentf-mode 1)
 #+END_SRC
-
-** major mode keymap
-
-   #+begin_src emacs-lisp
-;; distinguish `C-m` from `RET`
-(define-key input-decode-map [?\C-m] [C-m])
-;; distinguish `C-i` from `TAB`
-(define-key input-decode-map [?\C-i] [C-i])
-
-(define-prefix-command 'my/major-mode-map)
-
-(define-prefix-command 'my/major-mode-map)
-(global-set-key (kbd "<C-m>") 'my/major-mode-map)
-   #+end_src
 
 * Term, eshell and comint-mode
 ** Terms
@@ -1011,7 +1003,8 @@ PWD is not in a git repo (or the git command is not found)."
       :config
       (global-diff-hl-mode)
       (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-      (diff-hl-flydiff-mode))
+      ;; (diff-hl-flydiff-mode)
+      )
   (use-package git-gutter+
     :ensure t
     :config
@@ -1107,22 +1100,6 @@ PWD is not in a git repo (or the git command is not found)."
     ))
 #+END_SRC
 
-** For when I'm not using evil mode
-
-#+BEGIN_SRC emacs-lisp
-(define-prefix-command 'my/leader-map)
-
-;; (define-key ctl-x-map "m" 'my/leader-map)
-(define-prefix-command 'my/leader-map)
-(global-set-key (kbd "C-c m") 'my/leader-map)
-(global-set-key (kbd "C-c <C-m>") 'my/leader-map)
-
-(dolist (i my/leader-keys)
-  (let ((k (car i))
-        (f (cadr i)))
-    (define-key my/leader-map (kbd k) f)))
-#+END_SRC
-
 ** evil-mode setup
    
 #+BEGIN_SRC emacs-lisp
@@ -1195,10 +1172,10 @@ PWD is not in a git repo (or the git command is not found)."
 
   (define-key evil-normal-state-map (kbd "M-.") nil)
 
-  ;; (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-  ;; (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-  ;; (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-  ;; (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+  (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+  (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+  (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+  (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
 
   (define-key evil-normal-state-map (kbd ";") 'evil-ex)
   (define-key evil-visual-state-map (kbd ";") 'evil-ex)
@@ -1250,6 +1227,74 @@ PWD is not in a git repo (or the git command is not found)."
           (define-key m (kbd "C-c s") 'evil-surround-region)
           m))))
   (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist))
+#+END_SRC
+
+* Keybindings
+
+  #+begin_src emacs-lisp
+(define-prefix-command 'my/leader-map)
+
+;; (define-key ctl-x-map "m" 'my/leader-map)
+(define-prefix-command 'my/leader-map)
+(global-set-key (kbd "C-c m") 'my/leader-map)
+
+(dolist (i my/leader-keys)
+  (let ((k (car i))
+        (f (cadr i)))
+    (define-key my/leader-map (kbd k) f)))
+
+(define-prefix-command 'my/major-mode-map)
+
+(if (display-graphic-p)
+    (progn
+      ;; distinguish `C-m` from `RET`
+      (define-key input-decode-map [?\C-m] [C-m])
+      ;; distinguish `C-i` from `TAB`
+      (define-key input-decode-map [?\C-i] [C-i])
+
+      (global-set-key (kbd "C-c <C-m>") 'my/leader-map)
+      (global-set-key (kbd "<C-m>") 'my/major-mode-map))
+  (global-set-key (kbd "C-c m m") 'my/major-mode-map))
+  #+end_src
+
+* Keybindings (not used)
+  
+Treat hybrid mode and emacs keybindings the same way
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun my/emacs-modes-keybind (key fun)
+  (define-key global-map (kbd key) fun)
+  (define-key evil-hybrid-state-map (kbd key) fun))
+
+(define-prefix-command 'my/command-map)
+
+(define-key ctl-x-map (kbd "C-;") 'my/command-map)
+
+(define-key my/command-map (kbd "c") 'evil-surround-change)
+
+(defun vi-open-line-above ()
+  "Insert a newline above the current line and put point at beginning."
+  (interactive)
+  (unless (bolp)
+    (beginning-of-line))
+  (newline)
+  (forward-line -1)
+  (indent-according-to-mode))
+
+(defun vi-open-line-below ()
+  "Insert a newline below the current line and put point at beginning."
+  (interactive)
+  (unless (eolp)
+    (end-of-line))
+  (newline-and-indent))
+
+(defun vi-open-line (&optional abovep)
+  "Insert a newline below the current line and put point at beginning.
+With a prefix argument, insert a newline above the current line."
+  (interactive "P")
+  (if abovep
+      (vi-open-line-above)
+    (vi-open-line-below)))
 #+END_SRC
 
 * Hybrid input mode
@@ -1366,46 +1411,6 @@ PWD is not in a git repo (or the git command is not found)."
 
 (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
 (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
-#+END_SRC
-
-* Keybindings (not used)
-  
-Treat hybrid mode and emacs keybindings the same way
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(defun my/emacs-modes-keybind (key fun)
-  (define-key global-map (kbd key) fun)
-  (define-key evil-hybrid-state-map (kbd key) fun))
-
-(define-prefix-command 'my/command-map)
-
-(define-key ctl-x-map (kbd "C-;") 'my/command-map)
-
-(define-key my/command-map (kbd "c") 'evil-surround-change)
-
-(defun vi-open-line-above ()
-  "Insert a newline above the current line and put point at beginning."
-  (interactive)
-  (unless (bolp)
-    (beginning-of-line))
-  (newline)
-  (forward-line -1)
-  (indent-according-to-mode))
-
-(defun vi-open-line-below ()
-  "Insert a newline below the current line and put point at beginning."
-  (interactive)
-  (unless (eolp)
-    (end-of-line))
-  (newline-and-indent))
-
-(defun vi-open-line (&optional abovep)
-  "Insert a newline below the current line and put point at beginning.
-With a prefix argument, insert a newline above the current line."
-  (interactive "P")
-  (if abovep
-      (vi-open-line-above)
-    (vi-open-line-below)))
 #+END_SRC
 
 * Haskell
@@ -2537,7 +2542,6 @@ the number of errors.")
   :ensure t
   :config
   (powerline-default-theme)
-  (add-hook 'my/theme-change-hook #'powerline-reset)
   (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
   (setq global-mode-string
         (append global-mode-string '((:eval (my/mode-line-venv))))))
@@ -2706,8 +2710,7 @@ the number of errors.")
 (my/set-font)
 
 (unless (display-graphic-p)
-  (set-face-attribute 'default nil :background "#222222")
-  (run-hooks 'my/theme-change-hook))
+  (set-face-attribute 'default nil :background "#222222"))
 
 (setq linum-format 'dynamic)
 
