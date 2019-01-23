@@ -559,6 +559,20 @@ buffer, close it."
 (recentf-mode 1)
 #+END_SRC
 
+** hi-lock
+
+   #+begin_src emacs-lisp
+(setq hi-lock-face-defaults
+      '("hi-green"
+        "hi-blue"
+        "hi-pink"
+        "hi-yellow"
+        "hi-green-b"
+        "hi-blue-b"
+        "hi-red-b"))
+(setq hi-lock-auto-select-face t)
+   #+end_src
+
 * Term, eshell and comint-mode
 ** Terms
   
@@ -2029,28 +2043,32 @@ corresponding buffer."
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "M-i") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key
-   (kbd "C-c f")
-   '(lambda () (interactive)
-      (let ((current-prefix-arg '(4)))
-        (call-interactively 'counsel-ag))))
   (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x C-a") 'counsel-recentf)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
+  ;; counsel-projectile
   (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
   (define-key projectile-command-map (kbd "s") 'counsel-projectile-ag)
+  (setq projectile-switch-project-action 'counsel-projectile-find-file)
 
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
+
+  ;; counsel-ag
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
-  (defun my/counsel-ag-project-root ()
+
+  (defun my/counsel-ag-maybe-project-root ()
     (interactive)
+    ;; if not in a project, (projectile-project-root) returns `nil' which is fine
     (let ((root-dir (read-file-name "Search in: " (projectile-project-root))))
       (counsel-ag "" root-dir)))
 
-  (setq projectile-switch-project-action 'counsel-projectile-find-file)
+  (global-set-key
+   (kbd "C-c s")
+   '(lambda () (interactive)
+      (call-interactively 'my/counsel-ag-maybe-project-root)))
 
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
@@ -2073,9 +2091,10 @@ corresponding buffer."
             (setq text (current-word t (not qual)))))
       (when text (insert text))))
   (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-word)
-  ;; TODO
+  ;; TODO: something's up with rotation
   (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
+  ;; minibuffer actions for specific commands
   (dolist (action '(counsel-find-file counsel-recentf))
     (ivy-set-actions
      action
@@ -2162,17 +2181,13 @@ corresponding buffer."
   (let ((counsel-projectile-ag-initial-input my/todo-search-string))
     (counsel-projectile-ag)))
 
-(defun my/counsel-ag-todos ()
-  (interactive)
-  (counsel-ag my/todo-search-string))
-
 (defun my/counsel-ag-todos-global ()
   (interactive)
   (my/try-exec-in-project 'my/counsel-projectile-ag-todos 'my/counsel-ag-todos))
 #+END_SRC
 
 * Yasnippet
-  
+
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet-snippets
   :ensure t
@@ -2186,9 +2201,9 @@ corresponding buffer."
   :init
   :config
   ;; (yas-global-mode 1)
+  (add-hook 'prog-mode-hook (yas-minor-mode))
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
-  (add-hook 'prog-mode-hook (yas-minor-mode)))
+  (define-key yas-minor-mode-map (kbd "TAB") nil))
 #+END_SRC
 
 * Other window management
@@ -2226,6 +2241,26 @@ corresponding buffer."
 (require 'dired-x)
 (if is-mac (setq dired-use-ls-dired nil))
 #+END_SRC
+
+** ibuffer
+
+   #+begin_src emacs-lisp
+;; `/ R` to toggle showing these groups
+;; `/ \` to disable
+(setq-default ibuffer-saved-filter-groups
+              `(("Default"
+                 ("Ag" (name . "\*ag .*\*"))
+                 ("Dired" (mode . dired-mode))
+                 ("Scratch" (name . "\*scratch.*"))
+                 ("Temporary" (name . "\*.*\*"))
+                 )))
+(setq ibuffer-show-empty-filter-groups nil)
+(define-key ibuffer-mode-map (kbd "M-o") nil)
+
+(add-hook 'ibuffer-mode-hook
+          '(lambda ()
+             (ibuffer-auto-mode 1)))
+   #+end_src
 
 ** Avy
 
@@ -2278,6 +2313,7 @@ corresponding buffer."
           (progn
             (if (string-match-p (regexp-quote treemacs--buffer-name-prefix) (buffer-name buf))
                 (kill-buffer buf))))))
+  ;; it breaks persp-mode otherwise
   (defadvice persp-switch
       (before advice-for-persp-switch activate)
     (my/kill-all-treemacs-buffers)))
