@@ -712,6 +712,7 @@ PWD is not in a git repo (or the git command is not found)."
 (use-package fill-column-indicator
   :if (>= emacs-major-version 25)
   :ensure t
+  :commands (fci-mode)
   :init
   (setq fci-handle-truncate-lines t)
   (setq
@@ -1781,6 +1782,7 @@ the current file."
 (use-package emmet-mode
   :ensure t
   :after web-mode
+  :commands (emmet-mode)
   :init
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook 'emmet-mode))
@@ -1802,6 +1804,7 @@ the current file."
 (use-package flycheck-yamllint
   :ensure t
   :after flycheck yaml-mode
+  :commands (flycheck-yamllint-setup)
   :init
   (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
 #+END_SRC
@@ -1981,6 +1984,7 @@ corresponding buffer."
   :config
   (add-to-list 'ag-arguments "--nogroup")
   (add-to-list 'ag-arguments "--vimgrep")
+  (add-to-list 'ag-dired-arguments "--vimgrep")
   (define-key ag-mode-map (kbd "Q") '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
 #+end_src
 
@@ -2664,6 +2668,7 @@ the number of errors.")
 # thanks Nicolas Petton
 
 #+BEGIN_SRC emacs-lisp
+(defun my/after-init-local ())  ;; override this in the local file
 (defvar my/hosts-dir (expand-file-name "~/.emacs.d/hosts/"))
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
 (let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
@@ -2726,5 +2731,7 @@ the number of errors.")
 
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
+
+(my/after-init-local)
 #+END_SRC
 
