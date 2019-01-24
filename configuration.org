@@ -945,7 +945,13 @@ PWD is not in a git repo (or the git command is not found)."
 
 (defun my/set-font (&optional font)
   (let ((font (if (null font) (elt my/avail-fonts my/current-font) font)))
-    (set-frame-font font)))
+    (if (listp font)
+        (progn
+          (set-frame-font (car font))
+          (setq-default line-spacing (cdr font)))
+      (progn
+        (set-frame-font font)
+        (setq-default line-spacing 0)))))
 
 (defun my/toggle-font ()
   (interactive)
@@ -2210,6 +2216,13 @@ corresponding buffer."
 ** Dired
 
 #+BEGIN_SRC emacs-lisp
+(use-package dired-subtree
+  :ensure t
+  :commands (dired-subtree-toggle)
+  :config
+  (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-toggle)
+  (define-key dired-mode-map (kbd "TAB") 'dired-subtree-toggle))
+
 (defun my/dired-find-file-ace ()
   (interactive)
   (let ((find-file-run-dired t)
@@ -2743,6 +2756,7 @@ the number of errors.")
                     (intero))))
      (psc-ide-output-directory . "build/")
      (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
+     (projectile-tags-command . "fast-tags -e -R .")
      (projectile-tags-command . "npm run etags")
      (haskell-hoogle-command . "stack hoogle -- --count=100")
      ))))
