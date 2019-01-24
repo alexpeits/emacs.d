@@ -636,7 +636,11 @@ PWD is not in a git repo (or the git command is not found)."
   (interactive)
   (when (and (eshell-search-path "git")
              (locate-dominating-file pwd ".git"))
-    (let ((git-output (shell-command-to-string (concat "cd " pwd " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
+    (let ((git-output
+           (shell-command-to-string
+            (concat "cd "
+                    pwd
+                    " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
       (propertize (concat "["
               (if (> (length git-output) 0)
                   (substring git-output 0 -1)
@@ -647,25 +651,27 @@ PWD is not in a git repo (or the git command is not found)."
 (setq eshell-prompt-function
       (lambda ()
         (concat
-         (propertize ((lambda (p-lst)
-            (if (> (length p-lst) 3)
-                (concat
-                 (mapconcat (lambda (elm) (if (zerop (length elm)) ""
-                                            (substring elm 0 1)))
-                            (butlast p-lst 3)
-                            "/")
-                 "/"
-                 (mapconcat (lambda (elm) elm)
-                            (last p-lst 3)
-                            "/"))
-              (mapconcat (lambda (elm) elm)
-                         p-lst
-                         "/")))
-          (split-string (pwd-repl-home (eshell/pwd)) "/")) 'face 'font-lock-type-face)
+         (propertize
+          ((lambda (p-lst)
+             (if (> (length p-lst) 3)
+                 (concat
+                  (mapconcat (lambda (elm) (if (zerop (length elm)) ""
+                                             (substring elm 0 1)))
+                             (butlast p-lst 3)
+                             "/")
+                  "/"
+                  (mapconcat (lambda (elm) elm)
+                             (last p-lst 3)
+                             "/"))
+               (mapconcat (lambda (elm) elm)
+                          p-lst
+                          "/")))
+           (split-string (pwd-repl-home (eshell/pwd)) "/"))
+          'face
+          'font-lock-type-face)
          (or (curr-dir-git-branch-string (eshell/pwd)))
          (propertize " $" 'face 'font-lock-type-face)
-         (propertize " " 'face 'default)
-         )))
+         (propertize " " 'face 'default))))
 
 (require 'em-smart)
 (setq eshell-where-to-jump 'begin)
@@ -876,7 +882,7 @@ PWD is not in a git repo (or the git command is not found)."
             'nord
             '(default ((t (:background "#191f28" :foreground "#b6c1d3"))))
             '(mode-line ((t (:background "#3f4758" :foreground "#9ac9d7"))))
-            '(mode-line-inactive ((t (:background "#242934" :foreground "#5e7591"))))
+            '(mode-line-inactive ((t (:background "#292e39" :foreground "#5e7591"))))
             '(font-lock-doc-face ((t (:foreground "#97aa86"))))
             '(font-lock-preprocessor-face ((t (:foreground "#B48EAD" :weight bold))))
             '(font-lock-variable-name-face ((t (:inherit default))))
@@ -1054,7 +1060,9 @@ PWD is not in a git repo (or the git command is not found)."
       (call-process "git" nil log-buf nil
                     "log" "-1" "--pretty=%h   %an   %s" commit-id)
       (with-current-buffer log-buf
-        (message "Line %d: %s" line-number (replace-regexp-in-string "\n\\'" "" (buffer-string))))
+        (message "Line %d: %s"
+                 line-number
+                 (replace-regexp-in-string "\n\\'" "" (buffer-string))))
       (kill-buffer log-buf))
     (kill-buffer commit-buf)))
 #+END_SRC
@@ -1764,8 +1772,14 @@ the current file."
    
 #+BEGIN_SRC emacs-lisp
 ;; expand macros in another window
-(define-key lisp-mode-map (kbd "C-c C-m") #'(lambda () (interactive) (macrostep-expand t)))
-(my/add-hooks '(lisp-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook) (eldoc-mode))
+(define-key
+  lisp-mode-map
+  (kbd "C-c C-m")
+  #'(lambda () (interactive) (macrostep-expand t)))
+
+(my/add-hooks
+ '(lisp-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook)
+ (eldoc-mode))
 #+END_SRC
 
 * Markdown
@@ -1848,9 +1862,6 @@ the current file."
   (eval-after-load "company"
     '(progn
        (add-to-list 'company-backends 'company-anaconda)
-       ;; (add-to-list 'company-backends '(company-irony-c-headers company-c-headers company-irony))
-       ;; (add-to-list 'company-backends 'company-ghc)
-       ;; (add-to-list 'company-backends 'company-racer)
        (add-to-list 'company-backends 'company-files)
        (setq company-backends (delete 'company-dabbrev company-backends))
        (define-key company-active-map (kbd "C-p") 'company-select-previous)
@@ -2005,7 +2016,10 @@ corresponding buffer."
   (add-to-list 'ag-arguments "--nogroup")
   (add-to-list 'ag-arguments "--vimgrep")
   (add-to-list 'ag-dired-arguments "--vimgrep")
-  (define-key ag-mode-map (kbd "Q") '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
+  (define-key
+    ag-mode-map
+    (kbd "Q")
+    '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
 #+end_src
 
 ** winnow
@@ -2166,16 +2180,28 @@ corresponding buffer."
 
   (ivy-set-actions
    'projectile-switch-project
-   '(("d" dired "Open Dired in project's directory")
-     ("v" projectile-vc "Open project root in vc-dir or magit")
-     ("r" projectile-remove-known-project "Remove project(s)")))
+   '(("d"
+      dired
+      "Open Dired in project's directory")
+     ("v"
+      projectile-vc
+      "Open project root in vc-dir or magit")
+     ("r"
+      projectile-remove-known-project
+      "Remove project(s)")))
 
   ;; also applies to counsel-projectile-ag
   (ivy-set-actions
    'counsel-ag
-   '(("v" (lambda (x) (split-window-right) (windmove-right) (counsel-git-grep-action x)) "split vertically")
-     ("s" (lambda (x) (split-window-below) (windmove-down) (counsel-git-grep-action x)) "split horizontally")
-     ("n" (lambda (x) (ace-select-window) (counsel-git-grep-action x)) "select window")))
+   '(("v"
+      (lambda (x) (split-window-right) (windmove-right) (counsel-git-grep-action x))
+      "split vertically")
+     ("s"
+      (lambda (x) (split-window-below) (windmove-down) (counsel-git-grep-action x))
+      "split horizontally")
+     ("n"
+      (lambda (x) (ace-select-window) (counsel-git-grep-action x))
+      "select window")))
 
   )
 
@@ -2324,7 +2350,8 @@ corresponding buffer."
     (if (eq (treemacs-current-visibility) 'visible)
         (dolist (buf (buffer-list))
           (progn
-            (if (string-match-p (regexp-quote treemacs--buffer-name-prefix) (buffer-name buf))
+            (if (string-match-p
+                 (regexp-quote treemacs--buffer-name-prefix) (buffer-name buf))
                 (kill-buffer buf))))))
   ;; it breaks persp-mode otherwise
   (defadvice persp-switch
@@ -2483,8 +2510,10 @@ corresponding buffer."
 (setq mu4e-contexts
       `( ,(make-mu4e-context
            :name "Gmail"
-           :match-func (lambda (msg) (when msg
-                                       (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
+           :match-func
+           (lambda (msg)
+             (when msg
+               (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
            :vars '(
                    (mu4e-trash-folder . "/Gmail/[Gmail].Trash")
                    (mu4e-refile-folder . "/Gmail/[Gmail].Archive")
@@ -2585,7 +2614,9 @@ the number of errors.")
                 (:eval (my/mode-line-flycheck))
                 (:eval (my/mode-line-venv))
                 mode-line-modes mode-line-misc-info mode-line-end-spaces))
-(setq mode-line-misc-info (cons '(:eval (if (window-dedicated-p) "× " "")) mode-line-misc-info))
+
+(setq mode-line-misc-info
+      (cons '(:eval (if (window-dedicated-p) "× " "")) mode-line-misc-info))
 #+END_SRC
 
 ** Powerline
@@ -2713,17 +2744,34 @@ the number of errors.")
    
 * Setup
 ** Per-workstation setup
-   
-# thanks Nicolas Petton
 
 #+BEGIN_SRC emacs-lisp
-(defun my/after-init-local ())  ;; override this in the local file
+(defvar my/after-init-hook nil "Hook called after initialization")
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+;; these have to be paths to projects that projectile recognizes (e.g. git)
+(defvar my/start-up-projects '())
+
+(defun my/open-start-up-projects ()
+  (unless (null my/start-up-projects)
+    (let ((projectile-switch-project-action 'projectile-dired))
+      (dolist (proj my/start-up-projects)
+        (projectile-persp-switch-project proj)))
+    (persp-switch "main")))
+
+(add-hook 'my/after-init-hook 'my/open-start-up-projects)
+#+END_SRC
+
+# thanks Nicolas Petton
+#+BEGIN_SRC emacs-lisp
+
 (defvar my/hosts-dir (expand-file-name "~/.emacs.d/hosts/"))
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
 (let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
   (load-file host-file))
 #+END_SRC
-   
+
 ** Global setup
    
 #+BEGIN_SRC emacs-lisp
@@ -2782,6 +2830,6 @@ the number of errors.")
 (when (fboundp 'treemacs--setup-icon-background-colors)
   (treemacs--setup-icon-background-colors))
 
-(my/after-init-local)
+(run-hooks 'my/after-init-hook)
 #+END_SRC
 
