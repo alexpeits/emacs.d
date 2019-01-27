@@ -117,6 +117,13 @@ interface and inserts it at point."
     (apply action (list path))))
 (global-set-key (kbd "C-c f") 'my/file-name-at-point)
 
+(defun my/copy-file-path ()
+  (interactive)
+  (kill-new
+   (concat (buffer-file-name)
+           (concat ":"
+                   (number-to-string (line-number-at-pos))))))
+
 ;; https://www.reddit.com/r/emacs/comments/ac9gsf/question_emacs_way_of_using_windows/
 (defun my/window-dedicated (&optional window)
   "Toggle the dedicated flag on a window."
@@ -342,7 +349,8 @@ With a prefix argument, open using `find-file-other-window'."
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
   (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "M-j") nil))
+  (define-key smartparens-mode-map (kbd "M-j") nil)
+  (define-key smartparens-mode-map (kbd "M-?") nil))
 
 (use-package which-key
   :ensure t
@@ -584,7 +592,7 @@ buffer, close it."
             (set-face-background 'term (face-attribute 'default :background))))
 
 ;; automatically close term buffers on EOF
-(defun oleh-term-exec-hook ()
+(defun my/term-exec-hook ()
   (let* ((buff (current-buffer))
          (proc (get-buffer-process buff)))
     (set-process-sentinel
@@ -593,7 +601,7 @@ buffer, close it."
         (if (string= event "finished\n")
             (kill-buffer ,buff))))))
 
-(add-hook 'term-exec-hook 'oleh-term-exec-hook)
+(add-hook 'term-exec-hook 'my/term-exec-hook)
 
 ;; comint
 (setq comint-prompt-read-only t)
@@ -791,7 +799,7 @@ PWD is not in a git repo (or the git command is not found)."
            (custom-theme-set-faces
             'wombat
             '(default ((t (:foreground "#d1d1d1" :background "#1a1a1a"))))
-            '(font-lock-comment-face ((t (:foreground "#7e8583"))))
+            '(font-lock-comment-face ((t (:foreground "#828987"))))
             '(font-lock-string-face ((t (:foreground "#2a96d3"))))
             '(font-lock-doc-face ((t (:foreground "#348dc1"))))
             '(region ((t (:background "#515151"))))
@@ -813,23 +821,6 @@ PWD is not in a git repo (or the git command is not found)."
             ;; '(haskell-operator-face ((t (:foreground "#e5786d"))))
             )
            (my/after-set-theme)
-           ))
-        (nimbus
-         (progn
-           (custom-theme-set-faces
-            'nimbus
-            '(mode-line
-              ((t (:background "#505050" :foreground "#d6d6d6" :box (:line-width 1 :color "#505050")))))
-            '(mode-line-inactive
-              ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
-            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
-            '(font-lock-function-name-face ((t (:foreground "#379663"))))
-            '(region ((t (:background "#203b56"))))
-            '(fringe ((t (:background "#222222"))))
-            '(show-paren-match ((t (:background "#245587"))))
-            )
-           (my/after-set-theme)
-           (my/magit-set-diff-faces)
            ))
         (abyss
          (progn
@@ -1467,6 +1458,7 @@ With a prefix argument, insert a newline above the current line."
 
 (use-package haskell-mode
   :ensure t
+  :init
   :config
   (define-key my/major-mode-map (kbd "h") 'hoogle)
   (define-key my/major-mode-map (kbd "i") 'haskell-navigate-imports)
@@ -1516,6 +1508,7 @@ the current file."
 (setq haskell-align-imports-pad-after-name t)
 (add-hook 'haskell-mode-hook
           (lambda ()
+            (setq evil-shift-width 2)
             (intero-mode-blacklist)
             (haskell-decl-scan-mode)
             (my/subword-mode 1)
@@ -1665,10 +1658,13 @@ the current file."
 (use-package purescript-mode
   :ensure t
   :diminish purescript-indentation-mode
+  :init
+  (setq purescript-indent-offset 2)
   :config
   (add-hook
    'purescript-mode-hook
    (lambda ()
+     (setq evil-shift-width 2)
      (turn-on-purescript-indentation)
      (turn-on-purescript-decl-scan)
      (turn-on-purescript-font-lock)
