@@ -117,13 +117,6 @@ interface and inserts it at point."
     (apply action (list path))))
 (global-set-key (kbd "C-c f") 'my/file-name-at-point)
 
-(defun my/copy-file-path ()
-  (interactive)
-  (kill-new
-   (concat (buffer-file-name)
-           (concat ":"
-                   (number-to-string (line-number-at-pos))))))
-
 ;; https://www.reddit.com/r/emacs/comments/ac9gsf/question_emacs_way_of_using_windows/
 (defun my/window-dedicated (&optional window)
   "Toggle the dedicated flag on a window."
@@ -136,6 +129,32 @@ interface and inserts it at point."
                        (if dedicated "" "un"))))
     (set-window-dedicated-p window dedicated)
     dedicated))
+
+(defun my/copy-file-path (include-line-number)
+  "Copy current file path to the clipboard and show it in the minibuffer.
+
+If projectile is enabled and the file belongs in a project, copy the path
+relative to the project root. Otherwise, copy the path, abbreviating the user's
+home directory.
+
+With a prefix argument, append the current line, separating it from the file
+path with a colon."
+  (interactive "P")
+  (let* ((file-name (buffer-file-name))
+         (suffix
+          (if include-line-number
+              (concat ":"
+                      (number-to-string (line-number-at-pos)))
+            ""))
+         (file-path
+          (concat
+           (if (and (featurep 'projectile) (projectile-project-p))
+               (string-remove-prefix (projectile-project-root) file-name)
+             (abbreviate-file-name file-name))
+           suffix))
+         (current-prefix-arg nil))
+    (kill-new file-path)
+    (message file-path)))
 
 (defvar my/useful-files
   '(
@@ -570,14 +589,25 @@ buffer, close it."
 ** hi-lock
 
    #+begin_src emacs-lisp
+;; (setq hi-lock-face-defaults
+;;       '("hi-green"
+;;         "hi-blue"
+;;         "hi-pink"
+;;         "hi-yellow"
+;;         "hi-green-b"
+;;         "hi-blue-b"
+;;         "hi-red-b"))
+
+;; solarized
 (setq hi-lock-face-defaults
-      '("hi-green"
-        "hi-blue"
-        "hi-pink"
+      '("hi-pink"
+        "hi-blue-b"
+        "hi-red-b"
         "hi-yellow"
         "hi-green-b"
-        "hi-blue-b"
-        "hi-red-b"))
+        "hi-blue"
+        "hi-green"))
+
 (setq hi-lock-auto-select-face t)
    #+end_src
 
@@ -844,6 +874,21 @@ PWD is not in a git repo (or the git command is not found)."
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
            ))
+        (doom-peacock
+         (progn
+           (custom-theme-set-faces
+            'doom-peacock
+            '(default ((t (:foreground "#ede0ce" :background "#201f1c"))))
+            '(font-lock-comment-face ((t (:foreground "#71767c"))))
+            '(font-lock-doc-face ((t (:foreground "#5699af"))))
+            '(mode-line ((t (:background "#3e5656" :foreground "#ede0ce"))))
+            '(mode-line-inactive ((t (:background "#323a39" :foreground "#938e88"))))
+            '(isearch ((t (:background "#1d8691" :foreground "#dfdfdf"))))
+            '(lazy-highlight ((t (:background "#37414f" :foreground "#9f9f9f"))))
+            )
+           (my/org-set-src-faces)
+           (my/diff-hl-set-fringe-faces)
+           (my/hl-line-set-bg)))
         (gotham
          (progn
            (custom-theme-set-faces
