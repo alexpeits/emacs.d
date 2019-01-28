@@ -1803,16 +1803,21 @@ the current file."
 * Clojure
    
 #+BEGIN_SRC emacs-lisp :tangle no
-(add-hook
- 'clojure-mode-hook
- (lambda ()
-   (eldoc-mode)))
+(use-package clojure-mode
+  :ensure t
+  :mode ("\\.clj\\'" . clojure-mode)
+  :config
+  (add-hook 'clojure-mode-hook 'eldoc-mode))
 
-(add-hook
- 'cider-repl-mode-hook
- (lambda ()
-   (eldoc-mode)
-   (define-key cider-repl-mode-map "\C-c\C-l" 'cider-repl-clear-buffer)))
+(use-package cider
+  :ensure t
+  :after clojure-mode
+  :config
+  (add-hook
+   'cider-repl-mode-hook
+   (lambda ()
+     (eldoc-mode)
+     (define-key cider-repl-mode-map (kbd "C-c C-l") 'cider-repl-clear-buffer))))
 #+END_SRC
 
 * Lisps
