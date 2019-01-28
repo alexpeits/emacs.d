@@ -3,17 +3,22 @@
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/custom"))
-(add-to-list 'custom-theme-load-path (expand-file-name "~/.emacs.d/custom-themes/"))
-(setenv "PATH" (concat
-                (expand-file-name "~/bin") path-separator
-                (expand-file-name "~/.local/bin") path-separator
-                "/usr/local/bin" path-separator
-                (expand-file-name "~/.cargo/bin") path-separator
-                (getenv "PATH")))
-(add-to-list 'exec-path "/usr/local/bin")
-(add-to-list 'exec-path (expand-file-name "~/bin"))
-(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
-(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+(add-to-list 'custom-theme-load-path
+             (expand-file-name "~/.emacs.d/custom-themes/"))
+
+(setq my/path
+      '(
+        "/usr/local/bin"
+        "~/bin"
+        "~/.local/bin"
+        ))
+
+(dolist (pth my/path)
+  (add-to-list 'exec-path (expand-file-name pth))
+  (setenv "PATH" (concat (expand-file-name pth)
+                         path-separator
+                         (getenv "PATH"))))
+
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com"
       auth-sources '("~/.authinfo.gpg"))
@@ -77,10 +82,10 @@ will be killed."
     (buffer-string)))
 
 ;; read file lines into a list
-(defun my/read-file-into-list (filePath)
-  "Return a list of lines of a file at filePath."
+(defun my/read-file-into-list (file-path)
+  "Return a list of lines of a file at `file-path'."
   (with-temp-buffer
-    (insert-file-contents filePath)
+    (insert-file-contents file-path)
     (split-string (buffer-string) "\n" t)))
 
 ;; do `reg' when called, `alt' when called with C-u
@@ -197,6 +202,7 @@ With a prefix argument, open using `find-file-other-window'."
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
+
 ;; activate installed packages
 (package-initialize)
 (setq package-enable-at-startup nil)
