@@ -596,23 +596,27 @@ buffer, close it."
 
    #+begin_src emacs-lisp
 ;; (setq hi-lock-face-defaults
-;;       '("hi-green"
-;;         "hi-blue"
-;;         "hi-pink"
-;;         "hi-yellow"
-;;         "hi-green-b"
-;;         "hi-blue-b"
-;;         "hi-red-b"))
+      ;; '(
+        ;; "hi-green"
+        ;; "hi-blue"
+        ;; "hi-pink"
+        ;; "hi-yellow"
+        ;; "hi-green-b"
+        ;; "hi-blue-b"
+        ;; "hi-red-b"
+        ;; ))
 
 ;; solarized
 (setq hi-lock-face-defaults
-      '("hi-pink"
+      '(
+        "hi-green-b"
         "hi-blue-b"
         "hi-red-b"
         "hi-yellow"
-        "hi-green-b"
+        "hi-pink"
         "hi-blue"
-        "hi-green"))
+        "hi-green"
+        ))
 
 (setq hi-lock-auto-select-face t)
    #+end_src
