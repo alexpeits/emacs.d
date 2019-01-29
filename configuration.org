@@ -2146,6 +2146,9 @@ corresponding buffer."
   (setq ivy-use-virtual-buffers nil)
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
+
+  (define-key ivy-minibuffer-map (kbd "C-l") 'ivy-call-and-recenter)
+
   (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "M-i") 'counsel-imenu)
