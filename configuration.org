@@ -301,10 +301,6 @@ With a prefix argument, open using `find-file-other-window'."
 ;; (dolist (hook '(text-mode-hook change-log-mode-hook log-edit-mode-hook))
 ;;   (add-hook hook (lambda () (flyspell-mode 1))))
 
-;; IBuffer
-;; (eval-after-load "ibuffer"
-;;  (define-key ibuffer-mode-map (kbd "M-o") nil))
-
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '(".env.*\\'" . conf-mode))
@@ -620,6 +616,17 @@ buffer, close it."
 
 (setq hi-lock-auto-select-face t)
    #+end_src
+
+** aliases
+
+#+begin_src emacs-lisp
+(defalias 'rb 'revert-buffer)
+(defalias 'rab 'my/revert-all-buffers)
+(defalias 'gb 'magit-blame-addition)
+(defalias 'magb 'magit-blame-addition)
+(defalias 'gl 'magit-log-buffer-file)
+(defalias 'magl 'magit-log-buffer-file)
+#+end_src
 
 * Term, eshell and comint-mode
 ** Terms
@@ -947,6 +954,11 @@ PWD is not in a git repo (or the git command is not found)."
            ))
         (zenburn
          (progn
+           (custom-theme-set-faces
+            'zenburn
+            '(region ((t (:background "#5a5a5a"))))
+            '(vertical-border ((t (:foreground "#b5b5b5"))))
+            )
            (my/hl-line-set-bg) (my/org-set-src-faces)
            (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
            ))
@@ -2432,6 +2444,16 @@ corresponding buffer."
          ("<C-S-right>" . buf-move-right)))
 #+END_SRC
 
+** zoom
+
+#+begin_src emacs-lisp
+(use-package zoom
+  :ensure t
+  :bind ("C-c z" . zoom)
+  :config
+  (setq zoom-size '(190 . 100)))
+#+end_src
+
 * Other major modes
 ** PDF tools
 
@@ -2729,6 +2751,7 @@ the number of errors.")
       org-src-tab-acts-natively t
       org-src-window-setup 'other-window
       org-hide-leading-stars t
+      org-adapt-indentation nil
       org-directory (expand-file-name "~/org/")
       org-default-notes-file (concat org-directory "notes.org")
       org-ellipsis "…"
