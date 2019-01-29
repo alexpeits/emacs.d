@@ -429,6 +429,7 @@ buffer, close it."
 
 (use-package subword
   :diminish subword-mode
+  :commands (subword-mode my/subword-mode)
   :config
   (defun my/subword-mode (&optional arg)
     (interactive)
@@ -505,6 +506,7 @@ buffer, close it."
 #+BEGIN_SRC emacs-lisp
 (use-package engine-mode
   :ensure t
+  :bind-keymap ("C-x /" . engine-mode-map)
   :config
   (engine-mode t)
 
@@ -1724,7 +1726,7 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (use-package purescript-mode
   :ensure t
-  :diminish purescript-indentation-mode
+  :mode ("\\.purs\\'" . purescript-mode)
   :init
   (setq purescript-indent-offset 2)
   :config
@@ -2046,7 +2048,6 @@ corresponding buffer."
 #+BEGIN_SRC emacs-lisp
 (use-package perspective
   :ensure t
-  :defer t
   :config
   (persp-mode)
   ;; emacs window title
@@ -2056,14 +2057,16 @@ corresponding buffer."
 
 (use-package persp-projectile
   :ensure t
-  :after projectile)
+  :defer projectile)
 #+END_SRC
    
 #+BEGIN_SRC emacs-lisp
-(setq projectile-keymap-prefix (kbd "C-c p"))
-(setq projectile-mode-line-fn '(lambda () (format " P[%s]" (projectile-project-name))))
 (use-package projectile
   :ensure t
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :init
+  (setq projectile-keymap-prefix (kbd "C-c p"))
+  (setq projectile-mode-line-fn '(lambda () (format " P[%s]" (projectile-project-name))))
   :config
   (projectile-mode)
   (setq projectile-completion-system 'ivy
@@ -2102,6 +2105,18 @@ corresponding buffer."
 * Ivy/Counsel/Swiper
 
 #+BEGIN_SRC emacs-lisp
+(use-package counsel-projectile
+  :ensure t
+  :defer (projectile counsel)
+  :init
+  (setq projectile-switch-project-action 'counsel-projectile-find-file)
+  :config
+  (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
+  (define-key projectile-command-map (kbd "s") 'counsel-projectile-ag)
+  (define-key projectile-command-map (kbd "b") 'counsel-projectile-switch-to-buffer))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
 (defun my/swiper (fuzzy)
   (interactive "P")
   (if (null fuzzy)
@@ -2111,40 +2126,36 @@ corresponding buffer."
                                                '(swiper . ivy--regex-fuzzy))))
       (swiper))))
 
+(use-package ivy-xref
+  :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
+
+(use-package swiper
+  :ensure t
+  :commands (swiper swiper-all swiper-multi)
+  :bind ("C-s" . my/swiper))
+
 (use-package ivy
   :ensure t
   :diminish ivy-mode
   :init
   (use-package counsel :ensure t)
-  (use-package swiper :ensure t)
   (use-package flx :ensure t)  ;; better fuzzy matching
-  (use-package counsel-projectile :ensure t)
   (use-package smex :ensure t :config (setq smex-history-length 12))
   ;; this has to exist e.g. in .emacs.d/lisp/
-  (use-package ivy-xref :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers nil)
   (setq enable-recursive-minibuffers t)
   (setq ivy-count-format "(%d/%d) ")
-  (global-set-key (kbd "C-s") 'my/swiper)
   (global-set-key (kbd "C-c r") 'ivy-resume)
   (global-set-key (kbd "M-x") 'counsel-M-x)
   (global-set-key (kbd "M-i") 'counsel-imenu)
   (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "C-s-o") 'counsel-rhythmbox)
   (global-set-key (kbd "C-x r b") 'counsel-bookmark)
   (global-set-key (kbd "C-x C-a") 'counsel-recentf)
   (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
-  ;; counsel-projectile
-  (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
-  (define-key projectile-command-map (kbd "s") 'counsel-projectile-ag)
-  (define-key projectile-command-map (kbd "b") 'counsel-projectile-switch-to-buffer)
-  (setq projectile-switch-project-action 'counsel-projectile-find-file)
-
   (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-
 
   ;; counsel-ag
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
@@ -2155,10 +2166,7 @@ corresponding buffer."
     (let ((root-dir (read-file-name "Search in: " (projectile-project-root))))
       (counsel-ag "" root-dir)))
 
-  (global-set-key
-   (kbd "C-c s")
-   '(lambda () (interactive)
-      (call-interactively 'my/counsel-ag-maybe-project-root)))
+  (global-set-key (kbd "C-c s") 'my/counsel-ag-maybe-project-root)
 
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
@@ -2368,7 +2376,10 @@ corresponding buffer."
                  ("Temporary" (name . "\*.*\*"))
                  )))
 (setq ibuffer-show-empty-filter-groups nil)
-(define-key ibuffer-mode-map (kbd "M-o") nil)
+
+(use-package ibuffer
+  :config
+  (define-key ibuffer-mode-map (kbd "M-o") nil))
 
 (add-hook 'ibuffer-mode-hook
           '(lambda ()
@@ -2462,8 +2473,8 @@ corresponding buffer."
     :ensure t
     :defer t
     :init
-    (pdf-tools-install)
     :config
+    (pdf-tools-install)
     ;; temporary - will investigate breaking changes
     (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
     (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
@@ -2482,12 +2493,18 @@ corresponding buffer."
 ** elfeed
    
 #+BEGIN_SRC emacs-lisp
+(use-package elfeed-web
+  :ensure t
+  :defer elfeed)
+
+(use-package elfeed-goodies
+  :ensure t
+  :defer elfeed)
+
 (use-package elfeed
   :ensure t
   :defer t
   :config
-  (use-package elfeed-web :ensure t)
-  (use-package elfeed-goodies :ensure t)
   (setq elfeed-search-filter "@10-days-ago +unread")
   (define-key elfeed-search-mode-map (kbd "U") #'elfeed-update)
   (setq
@@ -2793,14 +2810,14 @@ the number of errors.")
      `(org-block-begin-line ((t (:background ,bg++))))
      `(org-block-end-line ((t (:background ,bg++)))))))
 
-(use-package graphviz-dot-mode :ensure t)
+;; (use-package graphviz-dot-mode :ensure t)
 
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((python . t)
    ;; (ipython . t)
    (haskell . t)
-   (dot . t)
+   ;; (dot . t)
    ;; (restclient . t)
    ))
 
