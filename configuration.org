@@ -748,7 +748,7 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * UI
-  
+
 #+BEGIN_SRC emacs-lisp
 ;; highlight numbers
 (use-package highlight-numbers
@@ -898,6 +898,7 @@ PWD is not in a git repo (or the git command is not found)."
            (custom-theme-set-faces
             'doom-peacock
             '(default ((t (:foreground "#ede0ce" :background "#201f1c"))))
+            '(fringe ((t (:background "#2b2a27"))))
             '(font-lock-comment-face ((t (:foreground "#71767c"))))
             '(font-lock-doc-face ((t (:foreground "#5699af"))))
             '(mode-line ((t (:background "#3e5656" :foreground "#ede0ce"))))
@@ -908,6 +909,24 @@ PWD is not in a git repo (or the git command is not found)."
            (my/org-set-src-faces)
            (my/diff-hl-set-fringe-faces)
            (my/hl-line-set-bg)))
+        (darktooth
+         (progn
+           (custom-theme-set-faces
+            'darktooth
+            '(fringe ((t (:background "#2d2d2d"))))
+            '(default ((t (:foreground "#ddd7b4" :background "#222222"))))
+            ;; '(persp-selected-face ((t (:foreground "#297fd6" :weight bold))))
+            '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
+            ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
+            '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
+            '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#a89984" :background "#33302d"))))
+            '(vertical-border ((t (:foreground "#a89984"))))
+            '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
+            '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
+            )
+           (my/after-set-theme)
+           ))
         (gotham
          (progn
            (custom-theme-set-faces
@@ -1285,6 +1304,24 @@ PWD is not in a git repo (or the git command is not found)."
                  (progn
                      (call-interactively 'evil-shift-right)
                      (execute-kbd-macro "gv"))))
+
+  ;; redefine so that $ doesn't include the EOL char
+  (evil-define-motion evil-end-of-line (count)
+    "Move the cursor to the end of the current line.
+
+If COUNT is given, move COUNT - 1 lines downward first."
+    :type inclusive
+    (move-end-of-line count)
+    (when evil-track-eol
+      (setq temporary-goal-column most-positive-fixnum
+            this-command 'next-line))
+    (unless (and (evil-visual-state-p) my/evil-$-include-eol)
+      (evil-adjust-cursor)
+      (when (eolp)
+        ;; prevent "c$" and "d$" from deleting blank lines
+        (setq evil-this-type 'exclusive))))
+
+  (setq my/evil-$-include-eol nil)
 
   ;; search with star while in v-mode
   (use-package evil-visualstar
@@ -2805,12 +2842,15 @@ the number of errors.")
          (bg+ (funcall func bg 1))
          (bg++ (funcall func bg 4.5))
          (fg (face-attribute 'default :foreground))
-         (theme (if th th my/theme)))
+         (theme (if th th my/theme))
+         (cur-line-fg (face-attribute 'org-block-begin-line :foreground nil t))
+         (cur-block-fg (face-attribute 'org-block :foreground nil t))
+         )
     (custom-theme-set-faces
      theme
-     `(org-block ((t (:background ,bg+))))
-     `(org-block-begin-line ((t (:background ,bg++))))
-     `(org-block-end-line ((t (:background ,bg++)))))))
+     `(org-block ((t (:background ,bg+ :foreground ,cur-block-fg))))
+     `(org-block-begin-line ((t (:background ,bg++ :foreground ,cur-line-fg))))
+     `(org-block-end-line ((t (:background ,bg++ :foreground ,cur-line-fg)))))))
 
 ;; (use-package graphviz-dot-mode :ensure t)
 
