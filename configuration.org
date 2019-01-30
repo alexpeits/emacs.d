@@ -922,6 +922,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
             '(mode-line-inactive ((t (:box nil :foreground "#a89984" :background "#33302d"))))
             '(vertical-border ((t (:foreground "#a89984"))))
+            '(markdown-pre-face ((t (:foreground "#8ec07c"))))
             '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
             '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
             )
@@ -2093,8 +2094,7 @@ corresponding buffer."
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
 
 (use-package persp-projectile
-  :ensure t
-  :defer projectile)
+  :ensure t)
 #+END_SRC
    
 #+BEGIN_SRC emacs-lisp
