@@ -913,9 +913,8 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'darktooth
-            '(fringe ((t (:background "#2b2b2b"))))
-            '(default ((t (:foreground "#ddd7b4" :background "#202020"))))
-            ;; '(persp-selected-face ((t (:foreground "#297fd6" :weight bold))))
+            '(fringe ((t (:background "#313131"))))
+            '(default ((t (:foreground "#ddd7b4" :background "#262626"))))
             '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
             ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
             '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
@@ -927,6 +926,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
             )
            (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#ddd7b4" . "#3d3d3d"))
            ))
         (gotham
          (progn
@@ -2929,7 +2929,7 @@ the number of errors.")
  '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
  '(fixed-pitch ((t nil)))
  '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
- '(flycheck-fringe-error ((t (:foreground "red1"))))
+ '(flycheck-fringe-error ((t (:foreground "#FB4933"))))
  '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
  '(flycheck-fringe-warning ((t (:foreground "orange1"))))
  '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
