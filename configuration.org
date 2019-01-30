@@ -913,8 +913,8 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'darktooth
-            '(fringe ((t (:background "#2d2d2d"))))
-            '(default ((t (:foreground "#ddd7b4" :background "#222222"))))
+            '(fringe ((t (:background "#2b2b2b"))))
+            '(default ((t (:foreground "#ddd7b4" :background "#202020"))))
             ;; '(persp-selected-face ((t (:foreground "#297fd6" :weight bold))))
             '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
             ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
@@ -2508,25 +2508,25 @@ corresponding buffer."
 ** PDF tools
 
 #+BEGIN_SRC emacs-lisp
-  (use-package pdf-tools
-    :ensure t
-    :defer t
-    :init
-    :config
-    (pdf-tools-install)
-    ;; temporary - will investigate breaking changes
-    (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
-    (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
-    (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
-    (define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
-    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)  ;; don't use swiper
-    (with-eval-after-load 'pdf-outline
-      (define-key pdf-outline-buffer-mode-map (kbd "<backtab>") 'outline-hide-sublevels))
-    (add-hook
-     'pdf-tools-enabled-hook
-     (lambda ()
-       ;; (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
-       (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749")))))
+(use-package pdf-tools
+  :ensure t
+  :defer t
+  :init
+  (pdf-tools-install)
+  :config
+  ;; temporary - will investigate breaking changes
+  (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
+  (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
+  (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
+  (define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
+  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)  ;; don't use swiper
+  (with-eval-after-load 'pdf-outline
+    (define-key pdf-outline-buffer-mode-map (kbd "<backtab>") 'outline-hide-sublevels))
+  (add-hook
+   'pdf-tools-enabled-hook
+   (lambda ()
+     ;; (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
+     (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749")))))
 #+END_SRC
 
 ** elfeed
