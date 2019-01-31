@@ -918,6 +918,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
             ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
             '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
+            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
             '(mode-line-inactive ((t (:box nil :foreground "#a89984" :background "#33302d"))))
             '(vertical-border ((t (:foreground "#a89984"))))
@@ -1797,6 +1798,18 @@ the current file."
   ;; (define-key purescript-mode-map (kbd "M-.")
     ;; #'(lambda () (interactive) (xref-find-definitions (current-word t t))))
   )
+
+;; This needs to exist in custom/
+(require 'custom-purescript-font-lock)
+;; copy these into the purescript-mode definition
+;; (setq-local font-lock-defaults
+;;             '((purescript-font-lock-keywords)
+;;               nil nil nil nil
+;;               (font-lock-syntactic-face-function
+;;                . purescript-syntactic-face-function)
+;;               (parse-sexp-lookup-properties . t)
+;;               (font-lock-extra-managed-props . (composition purescript-type))))
+;; (setq-local font-lock-multiline t)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
