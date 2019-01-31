@@ -593,28 +593,28 @@ buffer, close it."
 ** hi-lock
 
    #+begin_src emacs-lisp
-;; (setq hi-lock-face-defaults
-      ;; '(
-        ;; "hi-green"
-        ;; "hi-blue"
-        ;; "hi-pink"
-        ;; "hi-yellow"
-        ;; "hi-green-b"
-        ;; "hi-blue-b"
-        ;; "hi-red-b"
-        ;; ))
-
-;; solarized
 (setq hi-lock-face-defaults
       '(
+        "hi-green"
+        "hi-blue"
+        "hi-pink"
         "hi-green-b"
         "hi-blue-b"
-        "hi-red-b"
         "hi-yellow"
-        "hi-pink"
-        "hi-blue"
-        "hi-green"
+        "hi-red-b"
         ))
+
+;; solarized
+;; (setq hi-lock-face-defaults
+;;       '(
+;;         "hi-green-b"
+;;         "hi-blue-b"
+;;         "hi-red-b"
+;;         "hi-yellow"
+;;         "hi-pink"
+;;         "hi-blue"
+;;         "hi-green"
+;;         ))
 
 (setq hi-lock-auto-select-face t)
    #+end_src
@@ -827,7 +827,7 @@ PWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * Theme
-  
+
 #+BEGIN_SRC emacs-lisp
 (defun my/after-set-theme (&optional light-bg)
   (setq my/theme-light-bg (if light-bg t nil))
@@ -1324,6 +1324,18 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
   (setq my/evil-$-include-eol nil)
 
+  ;; https://github.com/emacs-evil/evil-surround/issues/141
+  (defmacro my/evil-define-text-object (name key start-regex end-regex)
+    (let ((inner-name (make-symbol (concat "evil-inner-" name)))
+          (outer-name (make-symbol (concat "evil-a-" name))))
+      `(progn
+         (evil-define-text-object ,inner-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+         (evil-define-text-object ,outer-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count t))
+         (define-key evil-inner-text-objects-map ,key #',inner-name)
+         (define-key evil-outer-text-objects-map ,key #',outer-name))))
+
   ;; search with star while in v-mode
   (use-package evil-visualstar
     :ensure t
@@ -1612,10 +1624,12 @@ the current file."
 (with-eval-after-load 'haskell-mode
   (sp-local-pair 'haskell-mode "'" nil :actions nil))
 
+(my/evil-define-text-object "haskell-inline-comment" "#" "{- " " -}")
 (setq haskell-align-imports-pad-after-name t)
 (add-hook 'haskell-mode-hook
           (lambda ()
             (setq evil-shift-width 2)
+            (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
             (intero-mode-blacklist)
             (haskell-decl-scan-mode)
             (my/subword-mode 1)
@@ -2219,15 +2233,19 @@ corresponding buffer."
   (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
   (setq ivy-magic-tilde nil)
 
-  (defun my/ivy-yank-current-word (&optional qual)
-    "Insert current word into minibuffer"
+  (defun my/ivy-yank-current-region-or-word (&optional qual)
+    "Insert current region, if it's active, otherwise the current word,into
+the minibuffer."
     (interactive "P")
     (let (text)
       (with-ivy-window
         (unwind-protect
-            (setq text (current-word t (not qual)))))
+            (setq text
+                  (if (region-active-p)
+                      (buffer-substring-no-properties (region-beginning) (region-end))
+                    (current-word t (not qual))))))
       (when text (insert text))))
-  (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-word)
+  (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-region-or-word)
   ;; TODO: something's up with rotation
   (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
