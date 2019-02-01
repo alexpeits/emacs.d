@@ -1789,7 +1789,7 @@ the current file."
      (setq evil-shift-width 2)
      (turn-on-purescript-indentation)
      (turn-on-purescript-decl-scan)
-     (turn-on-purescript-font-lock)
+     ;; (turn-on-purescript-font-lock)
      (my/subword-mode 1)
      (make-variable-buffer-local 'find-tag-default-function)
      (setq find-tag-default-function (lambda () (current-word t t)))
