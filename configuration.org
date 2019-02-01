@@ -171,6 +171,8 @@ path with a colon."
     ;; docker
     "docker-compose.yml"
     "Dockerfile"
+    ;; bazel
+    "BUILD.bazel"
     ;; git
     "README.md"
     ;; emacs
@@ -1391,8 +1393,40 @@ If COUNT is given, move COUNT - 1 lines downward first."
       (define-key input-decode-map [?\C-m] [C-m])
       ;; distinguish `C-i` from `TAB`
       (define-key input-decode-map [?\C-i] [C-i])
-
       (global-set-key (kbd "C-c <C-m>") 'my/leader-map)
+      (setq my/major-mode-map-key "<C-m>"))
+  (setq my/major-mode-map-key "C-c m m"))
+
+;; on hold
+;; (defun my/define-major-mode-keys (hook &rest combinations)
+;;   "Bind all pairs of (key . function) under `my/major-mode-map-key'
+;;
+;; The keys are bound after `hook'."
+;;   (add-hook
+;;    hook
+;;    `(lambda ()
+;;       (let ((map (make-sparse-keymap)))
+;;         (local-set-key (kbd ,my/major-mode-map-key) map)
+;;         (dolist (comb (quote ,combinations))
+;;           (define-key map (kbd (car comb)) (cdr comb)))))))
+
+(defun my/define-major-mode-key (mode key func)
+  (let* ((map-symbol (intern (format "my/%s-map" mode)))
+         (hook (intern (format "%s-hook" mode)))
+         (map
+          (if (boundp map-symbol)
+              (symbol-value map-symbol)
+            (progn
+              (let ((map- (make-sparse-keymap)))
+                (add-hook
+                 hook
+                 `(lambda ()
+                    (local-set-key (kbd ,my/major-mode-map-key) (quote ,map-))))
+                (set (intern (format "my/%s-map" mode)) map-))))))
+    (define-key map (kbd key) func)))
+
+(if (display-graphic-p)
+    (progn
       (global-set-key (kbd "<C-m>") 'my/major-mode-map))
   (global-set-key (kbd "C-c m m") 'my/major-mode-map))
   #+end_src
@@ -1580,10 +1614,11 @@ With a prefix argument, insert a newline above the current line."
   :ensure t
   :init
   :config
-  (define-key my/major-mode-map (kbd "h") 'hoogle)
-  (define-key my/major-mode-map (kbd "i") 'haskell-navigate-imports)
-  (define-key my/major-mode-map (kbd "a") 'my/haskell-align-and-sort-imports)
-  (define-key my/major-mode-map (kbd "s") 'my/haskell-save-and-format))
+  (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
+  (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
+  (my/define-major-mode-key 'haskell-mode "a" 'my/haskell-align-and-sort-imports)
+  (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
+  )
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -1605,7 +1640,7 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(defun my/haskell-save-and-format ()
+(defun my/haskell-format-and-save ()
   "Formats the import statements using haskell-stylish and saves
 the current file."
   (interactive)
@@ -1775,14 +1810,35 @@ the current file."
 #+END_SRC
 
 * Purescript
-  
+
+#+BEGIN_SRC emacs-lisp
+(defun my/purescript-sort-and-align-imports ()
+  (interactive)
+  (save-excursion
+    (while (purescript-navigate-imports)
+      (progn
+        (purescript-sort-imports)
+        (purescript-align-imports)))
+    (purescript-navigate-imports-return)))
+
+(defun my/purescript-format-and-save ()
+  "Formats the import statements using haskell-stylish and saves
+the current file."
+  (interactive)
+  (my/purescript-sort-and-align-imports)
+  (save-buffer))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
 (use-package purescript-mode
   :ensure t
   :mode ("\\.purs\\'" . purescript-mode)
   :init
-  (setq purescript-indent-offset 2)
+  (setq purescript-indent-offset 2
+        purescript-align-imports-pad-after-name t)
   :config
+  (my/define-major-mode-key 'purescript-mode "i" 'purescript-navigate-imports)
+  (my/define-major-mode-key 'purescript-mode "s" 'my/purescript-format-and-save)
   (add-hook
    'purescript-mode-hook
    (lambda ()
@@ -1790,6 +1846,7 @@ the current file."
      (turn-on-purescript-indentation)
      (turn-on-purescript-decl-scan)
      ;; (turn-on-purescript-font-lock)
+     (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
      (my/subword-mode 1)
      (make-variable-buffer-local 'find-tag-default-function)
      (setq find-tag-default-function (lambda () (current-word t t)))
