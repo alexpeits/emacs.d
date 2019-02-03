@@ -1880,6 +1880,14 @@ the current file."
    (lambda () (if my/use-psc-ide (psc-ide-mode)))))
 #+END_SRC
 
+* Idris
+
+#+BEGIN_SRC emacs-lisp
+(use-package idris-mode
+  :ensure t
+  :mode ("\\.idr\\'" . idris-mode))
+#+END_SRC
+
 * Python
    
 #+BEGIN_SRC emacs-lisp
