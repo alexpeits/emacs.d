@@ -632,6 +632,14 @@ buffer, close it."
 (defalias 'magl 'magit-log-buffer-file)
 #+end_src
 
+** clean unused buffers
+
+#+begin_src emacs-lisp
+(setq clean-buffer-list-delay-general 3)  ;; 3 days
+(setq clean-buffer-list-kill-regexps '("\\`\\*Customize .*\\*\\'"))
+(setq clean-buffer-list-never-regexps '("\\`TAGS\\'"))
+#+end_src
+
 * Term, eshell and comint-mode
 ** Terms
   
@@ -922,7 +930,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
             '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#a89984" :background "#33302d"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#968a79" :background "#33302d"))))
             '(vertical-border ((t (:foreground "#a89984"))))
             '(markdown-pre-face ((t (:foreground "#8ec07c"))))
             '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
@@ -1178,6 +1186,7 @@ PWD is not in a git repo (or the git command is not found)."
     ("fa" helm-ag)
     ("ff" helm-find)
     ("fp" my/try-open-dominating-file)
+    ("fc" my/copy-file-path)
 
     ("gb" my/git-blame-current-line)
 
@@ -1190,7 +1199,6 @@ PWD is not in a git repo (or the git command is not found)."
     ("pt" my/counsel-ag-todos-global)
 
     ("sd" pwd)
-    ("sf" face-at-point)
 
     ("t8" fci-mode)
     ("tc" global-company-mode)
