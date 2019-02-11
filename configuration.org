@@ -712,7 +712,7 @@ PWD is not in a git repo (or the git command is not found)."
               (if (> (length git-output) 0)
                   (substring git-output 0 -1)
                 "(no branch)")
-              "]") 'face 'font-lock-string-face)
+              "]") 'face 'font-lock-preprocessor-face)
       )))
 
 (setq eshell-prompt-function
@@ -848,8 +848,6 @@ PWD is not in a git repo (or the git command is not found)."
 (defface my/fci '((t ())) "fci rule face")
 (setq nord-comment-brightness 8)
 
-(defvar my/fewer-colors nil)
-
 ;; I am trying a lot of themes dammit
 (setq my/all-themes
       '(
@@ -903,22 +901,6 @@ PWD is not in a git repo (or the git command is not found)."
            (my/after-set-theme)
            (my/modeline-flycheck-darker-faces)
            ))
-        (doom-peacock
-         (progn
-           (custom-theme-set-faces
-            'doom-peacock
-            '(default ((t (:foreground "#ede0ce" :background "#201f1c"))))
-            '(fringe ((t (:background "#2b2a27"))))
-            '(font-lock-comment-face ((t (:foreground "#71767c"))))
-            '(font-lock-doc-face ((t (:foreground "#5699af"))))
-            '(mode-line ((t (:background "#3e5656" :foreground "#ede0ce"))))
-            '(mode-line-inactive ((t (:background "#323a39" :foreground "#938e88"))))
-            '(isearch ((t (:background "#1d8691" :foreground "#dfdfdf"))))
-            '(lazy-highlight ((t (:background "#37414f" :foreground "#9f9f9f"))))
-            )
-           (my/org-set-src-faces)
-           (my/diff-hl-set-fringe-faces)
-           (my/hl-line-set-bg)))
         (darktooth
          (progn
            (custom-theme-set-faces
@@ -943,13 +925,15 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'gotham
-            '(default ((t (:background "#11171d" :foreground "#99d1ce"))))
+            '(default ((t (:background "#11151b" :foreground "#99d1ce"))))
             '(fringe ((t (:background "#192128"))))
-            '(persp-selected-face ((t (:foreground "#3daccf" :weight bold))))
-            (if my/fewer-colors '(font-lock-type-face ((t (:foreground "#888ca6")))))
+            '(persp-selected-face ((t (:foreground "#39b6dd" :weight bold :underline t))))
             '(font-lock-keyword-face ((t (:foreground "#2884a2" :weight bold))))
             '(font-lock-comment-face ((t (:foreground "#366773" :slant italic))))
             '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+            ;; '(haskell-constructor-face ((t (:foreground "#599cab"))))
+            '(haskell-constructor-face ((t (:foreground "#9094b2"))))
+            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             '(outline-1 ((t (:foreground "#2aa889"))))
             '(shadow ((t (:foreground "#599cab"))))
             '(avy-lead-face-0 ((t (:foreground "#99d1ce" :background "#245361"))))
@@ -959,6 +943,13 @@ PWD is not in a git repo (or the git command is not found)."
             '(ivy-current-match ((t (:background "#134a60"))))
             '(mode-line ((t (:box nil :foreground "#89c9d7" :background "#233a49"))))
             '(mode-line-inactive ((t (:box nil :foreground "#245361" :background "#19232d"))))
+            '(hi-green ((t (:foreground "#191f28" :background "#2aa889"))))
+            '(hi-green-b ((t (:foreground "#2aa889" :weight bold))))
+            '(hi-blue ((t (:foreground "#191f28" :background "#599cab"))))
+            '(hi-blue-b ((t (:foreground "#599cab" :weight bold))))
+            '(hi-yellow ((t (:foreground "#191f28" :background "#edb443"))))
+            '(hi-pink ((t (:foreground "#191f28" :background "#d26937"))))
+            '(hi-red-b ((t (:foreground "#d26937" :weight bold))))
             )
            (my/after-set-theme)
            ))
