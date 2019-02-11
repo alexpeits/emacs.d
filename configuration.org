@@ -712,7 +712,7 @@ PWD is not in a git repo (or the git command is not found)."
               (if (> (length git-output) 0)
                   (substring git-output 0 -1)
                 "(no branch)")
-              "]") 'face 'font-lock-preprocessor-face)
+              "]") 'face 'font-lock-string-face)
       )))
 
 (setq eshell-prompt-function
@@ -929,7 +929,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(fringe ((t (:background "#192128"))))
             '(persp-selected-face ((t (:foreground "#39b6dd" :weight bold :underline t))))
             '(font-lock-keyword-face ((t (:foreground "#2884a2" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#366773" :slant italic))))
+            '(font-lock-comment-face ((t (:foreground "#366773"))))
             '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
             ;; '(haskell-constructor-face ((t (:foreground "#599cab"))))
             '(haskell-constructor-face ((t (:foreground "#9094b2"))))
