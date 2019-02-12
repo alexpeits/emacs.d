@@ -28,7 +28,7 @@
 #+END_SRC
    
 * Various utility functions
-   
+
 #+BEGIN_SRC emacs-lisp
 (defmacro comment (&rest body)
   "Comment out one or more s-expressions."
@@ -640,6 +640,17 @@ buffer, close it."
 (setq clean-buffer-list-never-regexps '("\\`TAGS\\'"))
 #+end_src
 
+** indent guides
+
+#+begin_src emacs-lisp
+(use-package highlight-indent-guides
+  :ensure t
+  :commands (highlight-indent-guides-mode)
+  :init
+  (setq highlight-indent-guides-method 'character)
+  (setq highlight-indent-guides-responsive nil))
+#+end_src
+
 * Term, eshell and comint-mode
 ** Terms
   
@@ -1196,6 +1207,7 @@ PWD is not in a git repo (or the git command is not found)."
     ("tf" my/toggle-font)
     ("tg" global-diff-hl-mode)
     ("tl" linum-mode)
+    ("ti" highlight-indent-guides-mode)
     ("th" hl-line-mode)
     ("ts" flycheck-mode)
     ("tt" my/toggle-theme)
