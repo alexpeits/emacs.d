@@ -548,7 +548,12 @@ buffer, close it."
 
   (defengine hoogle
     "https://hoogle.haskell.org/?hoogle=%s"
-    :keybinding "h"))
+    :keybinding "h")
+
+  (defengine haskell-language-extensions
+    "https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-%s"
+    :keybinding "#")
+  )
 #+END_SRC
 
 ** anzu
