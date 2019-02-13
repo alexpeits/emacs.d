@@ -2641,6 +2641,16 @@ the minibuffer."
      (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749")))))
 #+END_SRC
 
+** deft
+
+#+begin_src emacs-lisp
+(use-package deft
+  :bind ("<f8>" . deft)
+  :commands (deft)
+  :init
+  (setq deft-extensions '("md" "org" "txt")))
+#+end_src
+
 ** elfeed
    
 #+BEGIN_SRC emacs-lisp
