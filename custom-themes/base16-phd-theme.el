@@ -22,7 +22,7 @@
     :base07 "#ffffff"
     :base08 "#d07346"
     :base09 "#f0a000"
-    :base0A "#ccb676"
+    :base0A "#c6ad65"
     :base0B "#99bf52"
     :base0C "#72b9bf"
     :base0D "#5299bf"
