@@ -782,9 +782,6 @@ PWD is not in a git repo (or the git command is not found)."
   :config
   (my/add-hooks '(prog-mode-hook css-mode-hook) (highlight-numbers-mode)))
 
-;; visual effect after closing delimiter
-(setq show-paren-delay 0.3)
-
 ;; show column in modeline
 (setq column-number-mode t)
 
@@ -895,27 +892,18 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            ))
-        (abyss
+        (base16-phd
          (progn
            (custom-theme-set-faces
-            'abyss
-            '(default ((t (:background "#161616" :foreground "#afd0dd"))))
-            '(fringe ((t (:background "#282828"))))
-            ;; '(font-lock-doc-face ((t (:foreground "#d55e00"))))
-            ;; '(font-lock-comment-face ((t (:foreground "#727272" :slant italic))))
-            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-            '(font-lock-string-face ((t (:foreground "#ef58ef"))))
-            '(mode-line ((t (:foreground "#0d1000" :background "#52a1c9"))))
-            '(mode-line-inactive ((t (:foreground "#cc79a7" :background "#303030"))))
-            '(region ((t (:background "#253b76"))))
-            '(show-paren-match ((t (:background "#365096"))))
-            '(linum ((t (:foreground "#607480"))))
-            '(lazy-highlight ((t (:foreground "#284242" :background "paleturquoise4"))))
-            '(anzu-mode-line ((t (:foreground "#0d1000" :background "magenta" :weight bold))))
-            '(anzu-mode-line-no-match ((t (:foreground "#0d1000" :background "red" :weight bold))))
+            'base16-phd
+            '(font-lock-doc-face ((t (:inherit font-lock-string-face))))
+            '(fringe ((t (:background "#1f273d"))))
+            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
+            '(linum ((t (:foreground "#717885"))))
+            '(haskell-constructor-face ((t (:inherit default))))
+            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             )
-           (my/after-set-theme)
-           (my/modeline-flycheck-darker-faces)
+           (my/org-set-src-faces)
            ))
         (darktooth
          (progn
@@ -926,6 +914,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
             ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
             '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
+            '(font-lock-keyword-face ((t (:foreground "#dd6f48" :weight bold))))
             '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
             '(mode-line-inactive ((t (:box nil :foreground "#968a79" :background "#33302d"))))
@@ -2613,7 +2602,7 @@ the minibuffer."
   :ensure t
   :bind ("C-c z" . zoom)
   :config
-  (setq zoom-size '(190 . 100)))
+  (setq zoom-size '(190 . 92)))
 #+end_src
 
 * Other major modes
@@ -2960,13 +2949,14 @@ the number of errors.")
 
 (defun my/org-set-src-faces (&optional light-bg th)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
+         (rfunc (if light-bg 'color-lighten-name 'color-darken-name))
          (bg (face-attribute 'default :background))
          (bg+ (funcall func bg 1))
          (bg++ (funcall func bg 4.5))
          (fg (face-attribute 'default :foreground))
          (theme (if th th my/theme))
          (cur-line-fg (face-attribute 'org-block-begin-line :foreground nil t))
-         (cur-block-fg (face-attribute 'org-block :foreground nil t))
+         (cur-block-fg (funcall rfunc (face-attribute 'default :foreground nil t) 11))
          )
     (custom-theme-set-faces
      theme
