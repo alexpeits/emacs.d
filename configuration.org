@@ -2048,6 +2048,12 @@ the current file."
   (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
 #+END_SRC
     
+** Elasticsearch
+
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '(".es\\'" . js-mode))
+#+end_src
+
 * Company
    
 #+BEGIN_SRC emacs-lisp
