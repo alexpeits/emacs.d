@@ -1618,8 +1618,17 @@ With a prefix argument, insert a newline above the current line."
 
 (use-package haskell-mode
   :ensure t
-  :init
   :config
+  (defface my/haskell-dodgy-keyword-face
+    '((t :foreground "#ff5050"))
+    "Highlight error/undefined"
+    :group 'my)
+
+  (font-lock-add-keywords
+   'haskell-mode
+   '(("\\<\\(error\\)\\>" 1 font-lock-preprocessor-face prepend)
+     ("\\<\\(undefined\\)\\>" 1 font-lock-preprocessor-face prepend)))
+
   (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
   (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
   (my/define-major-mode-key 'haskell-mode "a" 'my/haskell-align-and-sort-imports)
