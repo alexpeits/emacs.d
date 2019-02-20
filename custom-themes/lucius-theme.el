@@ -88,7 +88,7 @@
  '(mode-line-highlight                 ((t (                                            :box nil                                                 ))))
  '(mode-line-emphasis                  ((t (                                                     :weight bold                                    ))))
  '(mode-line-buffer-id                 ((t (                                                     :weight bold                                    ))))
- '(mode-line ((t (:foreground "#D0E5E0" :background "#005555" :box (:line-width 1 :color "#005555")))))
+ '(mode-line ((t (:foreground "#C1EAE2" :background "#005555" :box (:line-width 1 :color "#005555")))))
  '(mode-line-inactive ((t (:foreground "#387A71" :background "#172120" :box (:line-width 1 :color "#004040")))))
  '(persp-selected-face                 ((t (:inherit font-lock-function-name-face :weight bold))))
  '(isearch-fail                        ((t (:foreground "#3f4758" :background "salmon"                                                          ))))
