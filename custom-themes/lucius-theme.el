@@ -66,8 +66,8 @@
  `(haskell-pragma-face            ((t (:foreground "#859900" :slant italic))))
  `(purescript-pragma-face            ((t (:foreground "#859900" :slant italic))))
  ;; `(haskell-operator-face               ((t (:foreground "#ffad3f" :inherit font-lock-variable-name-face                                          ))))
- ;; `(haskell-operator-face               ((t (:foreground "#84db2e" :background nil                                                                ))))
- ;; `(haskell-operator-face               ((t (:foreground "#00ff00" :background nil                                                                ))))
+ ;; `(haskell-operator-face               ((t (:foreground "#D7AFD7" :background nil                                                                ))))
+ ;; `(haskell-operator-face               ((t (:foreground "#aedbf2" :background nil                                                                ))))
  ;; `(haskell-operator-face               ((t (:foreground "#63ff2b" :background nil                                                                ))))
 
  '(font-lock-negation-char-face        ((t (:foreground "#C75311" :background nil                                                                ))))

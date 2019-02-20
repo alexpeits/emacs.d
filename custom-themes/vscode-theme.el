@@ -22,10 +22,10 @@
 ;;; Code:
 
 (deftheme vscode
-  "")
+  "Dark+ theme from Visual Studio Code")
 
 (let ((class '((class color) (min-colors 89)))
-      (black   "#1e1e1e")
+      (black   "#1d1d1d")
       (grey01  "#252526")
       (grey02  "#292929")
       (grey03  "#383b3d")
@@ -50,6 +50,7 @@
       (blue03  "#569cd6")
       (lblue   "#9ccfed")
       (cyan    "#4ec9b0")
+      (lcyan   "#87d7d7")
       (lgreen  "#b5cea8")
       (green   "#6a9955")
       (bgreen  "#77c653")
@@ -64,7 +65,6 @@
    `(highlight ((,class (:background ,grey05))))
    `(region ((t (:background "#253b76"))))
    `(hl-line ((t (:background ,grey02))))
-   ;; `(secondary-selection ((,class (:background "#333366" :foreground "#f6f3e8"))))
    `(isearch ((t (:foreground "#242424" :background "#e5786d"))))
    `(lazy-highlight ((,class (:background "#384048" :foreground "#a0a8b0"))))
    ;; Mode line faces
@@ -87,25 +87,9 @@
    `(font-lock-variable-name-face ((,class (:foreground ,lgreen))))
    `(font-lock-warning-face ((,class (:foreground ,yellow))))
    `(haskell-constructor-face ((,class (:foreground ,lblue))))
-   ;; `(haskell-constructor-face ((,class (:inherit default))))
-   `(haskell-operator-face ((,class (:foreground ,bgreen))))
+   `(haskell-operator-face ((,class (:foreground ,lcyan))))
    `(purescript-constructor-face ((,class (:foreground ,lblue))))
-   ;; `(purescript-constructor-face ((,class (:inherit default))))
-   `(purescript-operator-face ((,class (:foreground ,bgreen))))
-   ;; Button and link faces
-   ;; `(link ((,class (:foreground "#8ac6f2" :underline t))))
-   ;; `(link-visited ((,class (:foreground "#e5786d" :underline t))))
-   ;; `(button ((,class (:background "#333333" :foreground "#f6f3e8"))))
-   ;; `(header-line ((,class (:background "#303030" :foreground "#e7f6da"))))
-   ;; Gnus faces
-   ;; Message faces
-   ;; `(message-header-name ((,class (:foreground "#8ac6f2" :weight bold))))
-   ;; `(message-header-cc ((,class (:foreground "#95e454"))))
-   ;; `(message-header-other ((,class (:foreground "#95e454"))))
-   ;; `(message-header-subject ((,class (:foreground "#cae682"))))
-   ;; `(message-header-to ((,class (:foreground "#cae682"))))
-   ;; `(message-cited-text ((,class (:foreground "#99968b"))))
-   ;; `(message-separator ((,class (:foreground "#e5786d" :weight bold))))
+   `(purescript-operator-face ((,class (:foreground ,lcyan))))
    ))
 
 (provide-theme 'vscode)
