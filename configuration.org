@@ -899,7 +899,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(font-lock-doc-face ((t (:inherit font-lock-string-face))))
             '(fringe ((t (:background "#1f273d"))))
             '(hl-line ((t (:background "#232d41"))))
-            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
+            '(persp-selected-face ((t (:inherit font-lock-string-face))))
             '(linum ((t (:foreground "#717885"))))
             '(haskell-constructor-face ((t (:inherit default))))
             '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
