@@ -2053,6 +2053,19 @@ the current file."
   :init
   (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
 #+END_SRC
+
+#+begin_src emacs-lisp
+(defun my/jq-buffer-or-region ()
+  (interactive)
+  (save-excursion
+    (unless (region-active-p)
+      (mark-whole-buffer))
+    (shell-command-on-region (region-beginning)
+                             (region-end)
+                             "jq ."
+                             nil
+                             t)))
+#+end_src
     
 ** Elasticsearch
 
