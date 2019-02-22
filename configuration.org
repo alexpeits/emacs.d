@@ -305,8 +305,8 @@ With a prefix argument, open using `find-file-other-window'."
 
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '(".env.*\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("env.example\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '(".env.local\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("env\\.example\\'" . conf-mode))
 
 ;; DocView
 (setq doc-view-continuous t)
@@ -2828,6 +2828,18 @@ the minibuffer."
   (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer))
 #+END_SRC
 
+* Other minor modes
+** direnv
+
+#+begin_src emacs-lisp
+(use-package direnv
+  :ensure t
+  :init
+  (setq direnv-show-paths-in-summary nil)
+  :config
+  (direnv-mode))
+#+end_src
+
 * Modeline
 ** Regular modeline
   
@@ -3072,23 +3084,19 @@ the number of errors.")
  '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
  '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
  '(whitespace-trailing ((t (:background "#602020")))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(safe-local-variable-values
-   (quote
-    ((eval setq flycheck-disabled-checkers
-           (append flycheck-disabled-checkers
-                   (quote
-                    (intero))))
-     (psc-ide-output-directory . "build/")
-     (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
-     (projectile-tags-command . "fast-tags -e -R .")
-     (projectile-tags-command . "npm run etags")
-     (haskell-hoogle-command . "stack hoogle -- --count=100")
-     ))))
+
+(dolist (val '((eval . (setq flycheck-disabled-checkers
+                             (append flycheck-disabled-checkers
+                                     (quote
+                                      (intero)))))
+               (psc-ide-output-directory . "build/")
+               (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
+               (projectile-tags-command . "fast-tags -e -R .")
+               (projectile-tags-command . "npm run etags")
+               (haskell-hoogle-command . "stack hoogle -- --count=100")
+               (my/use-intero . nil)
+               ))
+  (add-to-list 'safe-local-variable-values val))
 
 (my/set-theme)
 (my/set-font)
