@@ -34,7 +34,8 @@
 
  '(cursor              ((t (:background "#99d1ce"))))
  '(default             ((t (:foreground "#CFE0DA" :background "#1b1b1c"))))
- '(linum               ((t (:foreground "#53676b" :background "#1e2222"))))
+ ;; '(linum               ((t (:foreground "#53676b" :background "#1e2222"))))
+ '(linum               ((t (:foreground "#5c5066" :background "#1e2222"))))
  '(minibuffer-prompt   ((t (:foreground "#12A89F" :weight bold))))
  '(escape-glyph        ((t (:foreground "orange"))))
  '(highlight           ((t (:background "#283438"))))
@@ -46,10 +47,11 @@
  '(trailing-whitespace ((t (:background "#C74000"))))
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
 
- '(mode-line-highlight ((t (:box nil))))
  '(mode-line-buffer-id ((t (:weight bold))))
- '(mode-line           ((t (:foreground "#C1EAE2" :background "#005555" :box (:line-width 1 :color "#005555")))))
- '(mode-line-inactive  ((t (:foreground "#387A71" :background "#1e2827" :box (:line-width 1 :color "#004040")))))
+ '(mode-line           ((t (:foreground "#C1EAE2" :background "#005555" :box (:line-width 1 :color "#003838")))))
+ '(mode-line-inactive  ((t (:foreground "#387A71" :background "#1e2827" :box (:line-width 1 :color "#003535")))))
+ ;; '(mode-line           ((t (:foreground "#C1EAE2" :background "#005555" :box (:line-width 1 :color "#005555")))))
+ ;; '(mode-line-inactive  ((t (:foreground "#387A71" :background "#1e2827" :box (:line-width 1 :color "#004040")))))
 
  `(font-lock-comment-face              ((t (:foreground "#808080" :background nil :slant italic))))
  `(font-lock-comment-delimiter-face    ((t (:inherit font-lock-comment-face))))
@@ -63,7 +65,8 @@
  `(font-lock-doc-face                  ((t (:inherit font-lock-string-face))))
  `(font-lock-type-face                 ((t (:foreground "#87D7D7" :background nil))))
  '(font-lock-negation-char-face        ((t (:foreground "#CB5A37" :background nil))))
- '(font-lock-preprocessor-face         ((t (:foreground "#CB5A37" :background nil))))
+ ;; '(font-lock-preprocessor-face         ((t (:foreground "#CB5A37" :background nil))))
+ '(font-lock-preprocessor-face         ((t (:foreground "#d3695f" :background nil))))
  '(font-lock-regexp-grouping-backslash ((t (:foreground "#f66500" :background nil))))
  '(font-lock-regexp-grouping-construct ((t (:foreground "red" :background nil))))
  '(font-lock-warning-face              ((t (:foreground "salmon" :background nil))))
@@ -74,8 +77,8 @@
  '(isearch             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
  '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
- `(haskell-pragma-face    ((t (:foreground "#859900" :slant italic))))
- `(purescript-pragma-face ((t (:foreground "#859900" :slant italic))))
+ `(haskell-pragma-face    ((t (:foreground "#8ba004" :slant italic))))
+ `(purescript-pragma-face ((t (:inherit haskell-pragma-face))))
 
  '(markdown-code-face ((t (:inherit font-lock-keyword-face))))
  '(markdown-pre-face  ((t (:inherit font-lock-keyword-face))))
@@ -92,12 +95,12 @@
 
  `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
 
- `(powerline-active0   ((t (:background "#005252" :foreground "#C1EAE2"))))
- `(powerline-active1   ((t (:background "#003F3F" :foreground "#C1EAE2"))))
- `(powerline-active2   ((t (:background "#002B2B" :foreground "#C1EAE2"))))
- `(powerline-inactive0 ((t (:background "#0e2626" :foreground "#387A71"))))
- `(powerline-inactive1 ((t (:background "#0e2626" :foreground "#387A71"))))
- `(powerline-inactive2 ((t (:background "#0e2626" :foreground "#387A71"))))
+ `(powerline-active0   ((t (:background "#006553" :foreground "#C1EAE2"))))
+ `(powerline-active1   ((t (:background "#004438" :foreground "#C1EAE2"))))
+ `(powerline-active2   ((t (:background "#003838" :foreground "#C1EAE2"))))
+ `(powerline-inactive0 ((t (:background "#1e2827" :foreground "#387A71"))))
+ `(powerline-inactive1 ((t (:background "#1e2827" :foreground "#387A71"))))
+ `(powerline-inactive2 ((t (:background "#1e2827" :foreground "#387A71"))))
 
  '(org-block            ((t (:foreground "#bbccc5" :background "#191e1d"))))
  '(org-block-begin-line ((t (:foreground "#768e84" :background "#1e2623" :slant italic))))
@@ -121,6 +124,8 @@
  '(company-tooltip-selection            ((t (:background "#353535" :weight bold))))
  '(company-scrollbar-bg                 ((t (:background "#252525" :foreground "#47bcb3"))))
  '(company-scrollbar-fg                 ((t (:foreground "#1b1b1b" :background "#47bcb3"))))
+
+ '(nlinum-relative-current-face ((t (:foreground "#9c90a6" :background "#3e4242"))))
 
  '(term-color-black   ((t (:foreground "#1b1b1c"))))
  '(term-color-red     ((t (:foreground "#CB5A37"))))
