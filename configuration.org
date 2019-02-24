@@ -1555,7 +1555,7 @@ With a prefix argument, insert a newline above the current line."
 ;; see https://github.com/emacs-evil/evil/blob/56e92f7cb4e04e665670460093b41f58446b7a2b/evil-states.el#L108
 (evil-define-state hybrid
   "Hybrid state for hybrid mode."
-  :tag " <H> "
+  :tag " <I> "
   :cursor (bar . 2)
   :message "-- HYBRID --"
   :entry-hook (evil-start-track-last-insertion)
@@ -2210,6 +2210,9 @@ corresponding buffer."
   :ensure t
   :config
   (persp-mode)
+  ;; (global-set-key (kbd "M-O") 'persp-next)
+  (global-set-key (kbd "M-N") 'persp-next)
+  (global-set-key (kbd "M-P") 'persp-prev)
   ;; emacs window title
   (setq frame-title-format
         '("" invocation-name "@" system-name
@@ -2223,13 +2226,12 @@ corresponding buffer."
 (use-package projectile
   :ensure t
   :bind-keymap ("C-c p" . projectile-command-map)
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p"))
-  (setq projectile-mode-line-fn '(lambda () (format " P[%s]" (projectile-project-name))))
   :config
+  (setq projectile-completion-system 'ivy)
+  (setq
+   projectile-mode-line-function
+   '(lambda () (format " P[%s]" (or (projectile-project-name) "-"))))
   (projectile-mode)
-  (setq projectile-completion-system 'ivy
-        projectile-mode-line-prefix " P")
   (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
     (if (projectile-project-p)
         (apply in-proj-f args)
@@ -2833,6 +2835,7 @@ the minibuffer."
 
 #+begin_src emacs-lisp
 (use-package direnv
+  :if (executable-find "direnv")
   :ensure t
   :init
   (setq direnv-show-paths-in-summary nil)
