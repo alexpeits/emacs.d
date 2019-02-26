@@ -33,7 +33,7 @@
  'lucius
 
  '(cursor              ((t (:background "#99d1ce"))))
- '(default             ((t (:foreground "#CFE0DA" :background "#1b1b1c"))))
+ '(default             ((t (:foreground "#c9dbd5" :background "#1b1b1c"))))
  ;; '(linum               ((t (:foreground "#53676b" :background "#1e2222"))))
  '(linum               ((t (:foreground "#5c5066" :background "#1e2222"))))
  '(minibuffer-prompt   ((t (:foreground "#12A89F" :weight bold))))
@@ -92,11 +92,12 @@
  `(diff-removed ((t (:foreground "#dc322f"))))
 
  `(ivy-grep-info ((t (:foreground "#afd787" :weight bold))))
+ `(ag-hit-face   ((t (:foreground "#afd787" :weight bold))))
 
  `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
 
  `(powerline-active0   ((t (:background "#006553" :foreground "#C1EAE2"))))
- `(powerline-active1   ((t (:background "#004438" :foreground "#C1EAE2"))))
+ `(powerline-active1   ((t (:background "#004c40" :foreground "#C1EAE2"))))
  `(powerline-active2   ((t (:background "#003838" :foreground "#C1EAE2"))))
  `(powerline-inactive0 ((t (:background "#1e2827" :foreground "#387A71"))))
  `(powerline-inactive1 ((t (:background "#1e2827" :foreground "#387A71"))))

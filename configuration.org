@@ -2833,7 +2833,7 @@ the minibuffer."
 * Other minor modes
 ** direnv
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package direnv
   :if (executable-find "direnv")
   :ensure t
