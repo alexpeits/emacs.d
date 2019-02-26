@@ -353,6 +353,8 @@ With a prefix argument, open using `find-file-other-window'."
   (my/add-hooks '(prog-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
   (setq my/lisp-mode-hooks '(emacs-lisp-mode-hook clojure-mode-hook))
   (my/add-hooks my/lisp-mode-hooks (smartparens-strict-mode) (evil-smartparens-mode))
+  (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
+
 
   :config
   (require 'smartparens-config)
@@ -1204,6 +1206,7 @@ PWD is not in a git repo (or the git command is not found)."
     ("tl" linum-mode)
     ("ti" highlight-indent-guides-mode)
     ("th" hl-line-mode)
+    ("tm" tool-bar-mode)
     ("ts" flycheck-mode)
     ("tt" my/toggle-theme)
     ("tw" toggle-truncate-lines)
@@ -1242,6 +1245,7 @@ PWD is not in a git repo (or the git command is not found)."
      prog-mode-hook
      text-mode-hook
      haskell-cabal-mode-hook
+     coq-mode-hook easycrypt-mode-hook phox-mode-hook
      conf-unix-mode-hook
      conf-colon-mode-hook
      conf-space-mode-hook
@@ -1897,6 +1901,15 @@ the current file."
 (use-package idris-mode
   :ensure t
   :mode ("\\.idr\\'" . idris-mode))
+#+END_SRC
+
+* Coq
+
+#+BEGIN_SRC emacs-lisp
+(use-package proof-general
+  :ensure t
+  :init
+  (setq proof-splash-enable nil))
 #+END_SRC
 
 * Python

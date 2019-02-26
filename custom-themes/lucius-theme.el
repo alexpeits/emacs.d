@@ -80,6 +80,8 @@
  `(haskell-pragma-face    ((t (:foreground "#8ba004" :slant italic))))
  `(purescript-pragma-face ((t (:inherit haskell-pragma-face))))
 
+ '(proof-locked-face ((t (:background "#2b303a"))))
+
  '(markdown-code-face ((t (:inherit font-lock-keyword-face))))
  '(markdown-pre-face  ((t (:inherit font-lock-keyword-face))))
 
