@@ -1172,7 +1172,7 @@ PWD is not in a git repo (or the git command is not found)."
 ** keybind to command mapping
 
 #+BEGIN_SRC emacs-lisp
-(defvar my/leader-keys
+(setq my/leader-keys
   '(
     ("SPC" fci-mode)
 
@@ -1206,13 +1206,12 @@ PWD is not in a git repo (or the git command is not found)."
     ("tl" linum-mode)
     ("ti" highlight-indent-guides-mode)
     ("th" hl-line-mode)
-    ("tm" tool-bar-mode)
     ("ts" flycheck-mode)
     ("tt" my/toggle-theme)
     ("tw" toggle-truncate-lines)
 
     ("uh" rainbow-mode)
-    ("um" menu-bar-mode)
+    ("um" (lambda () (interactive) (call-interactively 'tool-bar-mode) (call-interactively 'menu-bar-mode)))
     ("up" rainbow-delimiters-mode)
 
     ("Ts" counsel-load-theme)
@@ -1909,7 +1908,17 @@ the current file."
 (use-package proof-general
   :ensure t
   :init
-  (setq proof-splash-enable nil))
+  (setq proof-splash-enable nil
+        proof-script-fly-past-comments t)
+  (setq coq-one-command-per-line nil))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package company-coq
+  :ensure t
+  :defer (company proof-general)
+  :config
+  (add-hook 'coq-mode-hook #'company-coq-mode))
 #+END_SRC
 
 * Python
@@ -2239,6 +2248,7 @@ corresponding buffer."
 (use-package projectile
   :ensure t
   :bind-keymap ("C-c p" . projectile-command-map)
+  :diminish projectile-mode
   :config
   (setq projectile-completion-system 'ivy)
   (setq
@@ -2640,7 +2650,7 @@ the minibuffer."
 #+begin_src emacs-lisp
 (use-package zoom
   :ensure t
-  :bind ("C-c z" . zoom)
+  :bind ("C-c +" . zoom)
   :config
   (setq zoom-size '(190 . 92)))
 #+end_src
@@ -2883,10 +2893,7 @@ the minibuffer."
    '(modeline-flycheck-info ((t (:foreground "DeepSkyBlue4" :distant-foreground "DeepSkyBlue4"))))
    ))
 
-(defvar modeline-flycheck-bullet "•%s"
-  "The bullet used for the flycheck segment.
-This should be a format string with a single `%s'-expression corresponding to
-the number of errors.")
+(defvar modeline-flycheck-bullet "•%s")
 
 (defun my/mode-line-flycheck-state (state)
   (let* ((counts (flycheck-count-errors flycheck-current-errors))
@@ -2905,7 +2912,7 @@ the number of errors.")
     (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
   
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq-default mode-line-format
               '("%e"
                 mode-line-front-space
@@ -2925,12 +2932,13 @@ the number of errors.")
 
 ** Powerline
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package powerline
   :ensure t
   :config
   (powerline-default-theme)
   (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
+  (diminish-undo 'flycheck-mode)
   (setq global-mode-string
         (append global-mode-string '((:eval (my/mode-line-venv))))))
 #+END_SRC

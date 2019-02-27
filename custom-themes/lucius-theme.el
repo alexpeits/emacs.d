@@ -116,6 +116,8 @@
  '(outline-5 ((t (:foreground "#AFD787"))))
  '(outline-6 ((t (:foreground "#2aa198"))))
 
+ '(company-preview ((t (:inherit default :background "#304540"))))
+ '(company-preview-common ((t (:inherit company-preview :slant italic))))
  '(company-tooltip                      ((t (:foreground "#cfe0da" :background "#252525"))))
  '(company-tooltip-annotation           ((t (:foreground "#47bcb3"))))
  '(company-tooltip-annotation-selection ((t (:foreground "#47bcb3"))))
