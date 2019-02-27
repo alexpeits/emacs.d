@@ -1910,7 +1910,8 @@ the current file."
   :init
   (setq proof-splash-enable nil
         proof-script-fly-past-comments t)
-  (setq coq-one-command-per-line nil))
+  (setq coq-one-command-per-line nil
+        coq-compile-before-require t))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -2912,7 +2913,7 @@ the minibuffer."
     (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
   
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
               '("%e"
                 mode-line-front-space
@@ -2932,7 +2933,7 @@ the minibuffer."
 
 ** Powerline
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package powerline
   :ensure t
   :config
