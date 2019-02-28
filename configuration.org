@@ -288,6 +288,10 @@ With a prefix argument, open using `find-file-other-window'."
       mouse-wheel-progressive-speed t ;; don't accelerate scrolling
       mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
+;; turn off because it causes delays in some modes (e.g. coq-mode)
+(setq smie-blink-matching-inners nil)
+;; (setq blink-matching-paren nil)
+
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
 ;; I use that to switch to Greek layout
@@ -496,14 +500,17 @@ buffer, close it."
 
 ** Autocompleting etc
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 ;; Don't consider punctuation part of word for completion,
 ;; helps complete qualified symbols
 (add-hook
  'prog-mode-hook
  (lambda ()
    (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|\\sw\\s.")))
-   #+end_src
+
+;; Don't autofill when pressing RET
+(aset auto-fill-chars ?\n nil)
+#+end_src
 
 ** engine-mode
    
@@ -1911,7 +1918,14 @@ the current file."
   (setq proof-splash-enable nil
         proof-script-fly-past-comments t)
   (setq coq-one-command-per-line nil
-        coq-compile-before-require t))
+        coq-compile-before-require t)
+  :config
+  (add-hook 'coq-mode-hook
+            (lambda ()
+              (setq evil-shift-width 2)
+              (undo-tree-mode 1)
+              (whitespace-mode 1)
+              )))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -2028,6 +2042,8 @@ the current file."
          ("\\.page\\'" . gfm-mode))
   :config
   (my/set-mode-fill-width 'markdown-mode-hook 100)
+  (my/add-hooks '(markdown-mode-hook)
+                (auto-fill-mode 1))
   ;; (setq markdown-fontify-code-blocks-natively t)
   )
 #+END_SRC
@@ -2651,7 +2667,7 @@ the minibuffer."
 #+begin_src emacs-lisp
 (use-package zoom
   :ensure t
-  :bind ("C-c +" . zoom)
+  :bind ("M-+" . zoom)
   :config
   (setq zoom-size '(190 . 92)))
 #+end_src
@@ -2913,7 +2929,7 @@ the minibuffer."
     (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
   
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq-default mode-line-format
               '("%e"
                 mode-line-front-space
@@ -2933,7 +2949,7 @@ the minibuffer."
 
 ** Powerline
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package powerline
   :ensure t
   :config
