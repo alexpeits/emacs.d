@@ -2701,6 +2701,7 @@ the minibuffer."
 
 #+begin_src emacs-lisp
 (use-package deft
+  :ensure t
   :bind ("<f8>" . deft)
   :commands (deft)
   :init
@@ -2947,6 +2948,73 @@ the minibuffer."
       (cons '(:eval (if (window-dedicated-p) "× " "")) mode-line-misc-info))
 #+END_SRC
 
+** Experimental new modeline
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(defun my/split-mode-line-render (left right)
+  "Return a string of `window-width' length containing LEFT, and RIGHT aligned respectively."
+  (let* ((available-width (- (window-total-width)
+                             (+ (length (format-mode-line left))
+                                (length (format-mode-line right))))))
+    (append left
+            (list
+             (format
+              (format "%%%ds" available-width) ""))
+            right)))
+
+(setq global-mode-string (delete '(:eval (persp-mode-line)) global-mode-string))
+(require 'powerline)
+
+(defun my/mode-line-hud ()
+  (let* ((active (eq my/-selected-window (selected-window)))
+         (face0 (if active 'powerline-active0 'powerline-inactive0))
+         (face2 (if active 'powerline-active2 'powerline-inactive2)))
+    (pl/render (powerline-hud face0 face2))))
+
+(setq-default
+ mode-line-format
+ '((:eval
+    (my/split-mode-line-render
+     ;; left
+     (quote
+      ("%e"
+       evil-mode-line-tag " "
+       mode-line-mule-info
+       mode-line-client mode-line-modified mode-line-remote "  "
+       mode-line-buffer-identification " "
+       mode-line-position
+       ;; (vc-mode vc-mode)
+       (:eval (my/mode-line-flycheck))
+       (:eval (my/mode-line-venv))
+       mode-line-modes
+       mode-line-misc-info
+       ))
+     ;; right
+     (quote
+      (
+       (:eval (frame-parameter nil 'persp--modestring)) " "
+       ;; (:eval (pl/render (powerline-hud 'powerline-active0 'powerline-active2)))
+       (:eval (my/mode-line-hud))
+       "  "
+       ))
+     ))))
+#+END_SRC
+
+** Be able to tell which modeline is active
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/-selected-window nil)
+
+(defun my/-record-selected-window ()
+  (setq my/-selected-window (selected-window)))
+
+(defun my/-window-update-all ()
+  (force-mode-line-update t))
+
+(add-hook 'post-command-hook 'my/-record-selected-window)
+(add-hook 'buffer-list-update-hook 'my/-window-update-all)
+#+END_SRC
+
 ** Powerline
 
 #+BEGIN_SRC emacs-lisp
@@ -2958,6 +3026,11 @@ the minibuffer."
   (diminish-undo 'flycheck-mode)
   (setq global-mode-string
         (append global-mode-string '((:eval (my/mode-line-venv))))))
+
+;; Try this to see if it fixes powerline hiccups
+(defun powerline-selected-window-active ()
+  "Return whether the current window is active."
+  (eq my/-selected-window (selected-window)))
 #+END_SRC
 
 ** Spaceline
