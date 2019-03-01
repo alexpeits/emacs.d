@@ -3003,16 +3003,23 @@ the minibuffer."
 ** Be able to tell which modeline is active
 
 #+BEGIN_SRC emacs-lisp
+;; is window selected?
 (defvar my/-selected-window nil)
+;; (add-hook 'post-command-hook '(lambda () (setq my/-selected-window (selected-window))))
+(add-hook 'post-command-hook
+          '(lambda ()
+             (when (not (minibuffer-window-active-p (selected-window)))
+               (setq my/-selected-window (selected-window)))))
+(add-hook 'buffer-list-update-hook '(lambda () (force-mode-line-update t)))
 
-(defun my/-record-selected-window ()
-  (setq my/-selected-window (selected-window)))
+;; is emacs focused?
+(defvar my/-focused-in t)
+(add-hook 'focus-in-hook '(lambda () (setq my/-focused-in t)))
+(add-hook 'focus-out-hook '(lambda () (setq my/-focused-in nil)))
 
-(defun my/-window-update-all ()
-  (force-mode-line-update t))
-
-(add-hook 'post-command-hook 'my/-record-selected-window)
-(add-hook 'buffer-list-update-hook 'my/-window-update-all)
+(defun my/current-window-active-p ()
+  (and my/-focused-in
+       (eq my/-selected-window (selected-window))))
 #+END_SRC
 
 ** Powerline
@@ -3030,7 +3037,7 @@ the minibuffer."
 ;; Try this to see if it fixes powerline hiccups
 (defun powerline-selected-window-active ()
   "Return whether the current window is active."
-  (eq my/-selected-window (selected-window)))
+  (my/current-window-active-p))
 #+END_SRC
 
 ** Spaceline
