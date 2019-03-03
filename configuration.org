@@ -1008,6 +1008,9 @@ PWD is not in a git repo (or the git command is not found)."
 (defvar my/theme 'wombat)
 (defvar my/theme-light-bg nil)
 
+(defvar my/after-set-theme-hook nil
+  "Hook called after setting a theme")
+
 (defun my/set-theme (&optional theme-config light-bg)
   (let* ((theme-config (if (null theme-config)
                            (elt my/avail-themes my/current-theme)
@@ -1024,7 +1027,8 @@ PWD is not in a git repo (or the git command is not found)."
     (setq my/theme theme)
     (setq my/theme-light-bg light-bg)
     (setq pdf-view-midnight-colors '("#b3dfdd" . "#0a3749"))
-    (eval config)))
+    (eval config)
+    (run-hooks 'my/after-set-theme-hook)))
 
 (defun my/toggle-theme ()
   (interactive)
@@ -3032,7 +3036,8 @@ the minibuffer."
   (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
   (diminish-undo 'flycheck-mode)
   (setq global-mode-string
-        (append global-mode-string '((:eval (my/mode-line-venv))))))
+        (append global-mode-string '((:eval (my/mode-line-venv)))))
+  (add-hook 'my/after-set-theme-hook 'powerline-reset))
 
 ;; Try this to see if it fixes powerline hiccups
 (defun powerline-selected-window-active ()

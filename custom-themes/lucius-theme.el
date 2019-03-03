@@ -48,7 +48,7 @@
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
 
  '(mode-line-buffer-id ((t (:weight bold))))
- '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003838")))))
+ '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003535")))))
  '(mode-line-inactive  ((t (:foreground "#387a71" :background "#1e2827" :box (:line-width 1 :color "#003535")))))
  ;; '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#005555")))))
  ;; '(mode-line-inactive  ((t (:foreground "#387a71" :background "#1e2827" :box (:line-width 1 :color "#004040")))))
@@ -97,7 +97,7 @@
 
  `(powerline-active0   ((t (:background "#006553" :foreground "#c1eae2"))))
  `(powerline-active1   ((t (:background "#004c40" :foreground "#c1eae2"))))
- `(powerline-active2   ((t (:background "#003838" :foreground "#c1eae2"))))
+ `(powerline-active2   ((t (:background "#003535" :foreground "#c1eae2"))))
  `(powerline-inactive0 ((t (:background "#1e2827" :foreground "#387a71"))))
  `(powerline-inactive1 ((t (:background "#1e2827" :foreground "#387a71"))))
  `(powerline-inactive2 ((t (:background "#1e2827" :foreground "#387a71"))))
