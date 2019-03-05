@@ -292,6 +292,9 @@ With a prefix argument, open using `find-file-other-window'."
 (setq smie-blink-matching-inners nil)
 ;; (setq blink-matching-paren nil)
 
+;; who in their right mind ends sentences with 2 spaces?
+(setq sentence-end-double-space nil)
+
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
 ;; I use that to switch to Greek layout
