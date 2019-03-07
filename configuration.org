@@ -2377,6 +2377,8 @@ corresponding buffer."
       (counsel-ag "" root-dir)))
 
   (global-set-key (kbd "C-c s") 'my/counsel-ag-maybe-project-root)
+  ;; S-SPC doesn't work properly in counsel-ag anyway
+  (define-key counsel-ag-map (kbd "S-SPC") nil)
 
   (setq ivy-re-builders-alist
         '((swiper . ivy--regex-plus)
