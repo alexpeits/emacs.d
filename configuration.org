@@ -2260,6 +2260,9 @@ corresponding buffer."
   (global-set-key (kbd "M-N") 'persp-next)
   (global-set-key (kbd "M-P") 'persp-prev)
   ;; emacs window title
+  (defadvice persp-switch
+      (after advice-for-persp-switch activate)
+    (message (persp-name (persp-curr))))
   (setq frame-title-format
         '("" invocation-name "@" system-name
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
@@ -2332,6 +2335,17 @@ corresponding buffer."
            (ivy-re-builders-alist (add-to-list 'temp-builders
                                                '(swiper . ivy--regex-fuzzy))))
       (swiper))))
+
+(defun my/insert-word-boundary-regexp ()
+  (save-excursion
+    (let* ((rx "[^a-zA-Z]")
+           (start (if (region-active-p) (region-beginning) (point-min)))
+           (end (+ (length rx) (if (region-active-p) (region-end) (point-max)))))
+      (goto-char start)
+      (insert rx)
+      (goto-char end)
+      (insert rx)
+      (deactivate-mark))))
 
 (use-package ivy-xref
   :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
