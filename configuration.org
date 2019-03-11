@@ -192,6 +192,16 @@ With a prefix argument, open using `find-file-other-window'."
     (if dir
         (funcall find-file-func (concat (file-name-as-directory dir) file))
       (message "No matching file not found"))))
+
+(defun my/line-numbers (arg)
+  (interactive "P")
+  (if (< emacs-major-version 26)
+      (call-interactively 'linum-mode)
+    (if display-line-numbers
+        (setq display-line-numbers nil)
+      (if arg
+          (setq display-line-numbers 'relative)
+        (setq display-line-numbers t)))))
 #+END_SRC
 
 * Package management
@@ -904,17 +914,12 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            ))
-        (base16-phd
+        (gruvbox-dark-hard
          (progn
            (custom-theme-set-faces
-            'base16-phd
-            '(font-lock-doc-face ((t (:inherit font-lock-string-face))))
-            '(fringe ((t (:background "#1f273d"))))
-            '(hl-line ((t (:background "#232d41"))))
-            '(persp-selected-face ((t (:inherit font-lock-string-face))))
-            '(linum ((t (:foreground "#717885"))))
-            '(haskell-constructor-face ((t (:inherit default))))
-            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
+            'gruvbox-dark-hard
+            '(default ((t (:background "#1d2021" :foreground "#e2dcb1"))))
+            '(fringe ((t (:background "#252829"))))
             )
            (my/org-set-src-faces)
            ))
@@ -1217,7 +1222,8 @@ PWD is not in a git repo (or the git command is not found)."
     ("tc" global-company-mode)
     ("tf" my/toggle-font)
     ("tg" global-diff-hl-mode)
-    ("tl" linum-mode)
+    ;; ("tl" linum-mode)
+    ("tl" my/line-numbers)
     ("ti" highlight-indent-guides-mode)
     ("th" hl-line-mode)
     ("ts" flycheck-mode)

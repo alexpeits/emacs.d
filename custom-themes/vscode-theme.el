@@ -1,23 +1,10 @@
-;;; wombat-theme.el --- Custom face theme for Emacs
+;;; vscode-theme.el --- Custom face theme for Emacs
 
 ;; Copyright (C) 2011-2017 Free Software Foundation, Inc.
 
-;; Author: Kristoffer Grönlund <krig@koru.se>
+;; Author: Alex Peitsinis <alexpeitsinis@gmail.com>
 
-;; This file is part of GNU Emacs.
-
-;; GNU Emacs is free software: you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
-
-;; GNU Emacs is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+;;; Commentary:
 
 ;;; Code:
 
@@ -69,9 +56,9 @@
    `(lazy-highlight ((,class (:background "#384048" :foreground "#a0a8b0"))))
    ;; Mode line faces
    `(mode-line
-     ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#4a4a4a")))))
+     ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#454545")))))
    `(mode-line-inactive
-     ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
+     ((t (:inherit mode-line :background "#282828" :foreground "#858585" :box (:line-width 1 :color "#353535")))))
    `(persp-selected-face ((,class (:foreground ,lblue :weight bold))))
    ;; Escape and prompt faces
    `(minibuffer-prompt ((,class (:foreground ,orange))))
@@ -98,4 +85,4 @@
 ;; no-byte-compile: t
 ;; End:
 
-;;; wombat-theme.el ends here
+;;; vscode-theme.el ends here

@@ -34,8 +34,6 @@
 
  '(cursor              ((t (:background "#99d1ce"))))
  '(default             ((t (:foreground "#c9dbd5" :background "#1b1b1c"))))
- ;; '(linum               ((t (:foreground "#53676b" :background "#1e2222"))))
- '(linum               ((t (:foreground "#5c5066" :background "#1e2222"))))
  '(minibuffer-prompt   ((t (:foreground "#12a89f" :weight bold))))
  '(escape-glyph        ((t (:foreground "orange"))))
  '(highlight           ((t (:background "#283438"))))
@@ -46,6 +44,13 @@
  '(secondary-selection ((t (:background "#132125"))))
  '(trailing-whitespace ((t (:background "#c74000"))))
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
+
+ ;; Line Numbers
+ ;; >= emacs 26
+ '(line-number              ((t (:foreground "#756682" :background "#1e2222"))))
+ '(line-number-current-line ((t (:foreground "#9c90a6" :background "#3b3f3f"))))
+ ;; < emacs 26
+ '(linum                    ((t (:foreground "#756682" :background "#1e2222"))))
 
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003535")))))
