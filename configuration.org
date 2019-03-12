@@ -918,8 +918,13 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'gruvbox-dark-hard
-            '(default ((t (:background "#1d2021" :foreground "#e2dcb1"))))
-            '(fringe ((t (:background "#252829"))))
+            '(default ((t (:background "#1d2021" :foreground "#e5dfb0"))))
+            '(fringe ((t (:background "#282b2c"))))
+            '(haskell-constructor-face ((t (:inherit font-lock-variable-name-face))))
+            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
+            '(linum ((t (:background "#202324" :foreground "#6c5f54"))))
+            '(line-number ((t (:background "#202324" :foreground "#6c5f54"))))
+            '(line-number-current-line ((t (:background "#383b3c" :foreground "#fe8019"))))
             )
            (my/org-set-src-faces)
            ))
@@ -940,6 +945,12 @@ PWD is not in a git repo (or the git command is not found)."
             '(markdown-pre-face ((t (:foreground "#8ec07c"))))
             '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
             '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
+            '(powerline-active0 ((t (:background "#696461" :foreground "#e5dfbc"))))
+            '(powerline-active1 ((t (:background "#55504d" :foreground "#e5dfbc"))))
+            '(powerline-active2 ((t (:background "#433f3e" :foreground "#e5dfbc"))))
+            '(powerline-inactive0 ((t (:background "#393532" :foreground "#908473"))))
+            '(powerline-inactive1 ((t (:background "#393532" :foreground "#908473"))))
+            '(powerline-inactive2 ((t (:background "#393532" :foreground "#908473"))))
             )
            (my/after-set-theme)
            (setq pdf-view-midnight-colors '("#ddd7b4" . "#3d3d3d"))
@@ -3062,7 +3073,9 @@ the minibuffer."
   (diminish-undo 'flycheck-mode)
   (setq global-mode-string
         (append global-mode-string '((:eval (my/mode-line-venv)))))
-  (add-hook 'my/after-set-theme-hook 'powerline-reset))
+  (add-hook 'my/after-set-theme-hook 'powerline-reset)
+  (setq global-mode-string
+        (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string)))
 
 ;; Try this to see if it fixes powerline hiccups
 (defun powerline-selected-window-active ()
