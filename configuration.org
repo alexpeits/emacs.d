@@ -928,7 +928,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(powerline-active0 ((t (:background "#70655d" :foreground "#fdf4c1"))))
             '(powerline-active1 ((t (:background "#595048" :foreground "#fdf4c1"))))
             '(powerline-active2 ((t (:background "#423b38" :foreground "#fdf4c1"))))
-            '(powerline-inactive0 ((t (:background "#353130" :foreground "#a89984"))))
+            '(powerline-inactive0 ((t (:background "#454140" :foreground "#a89984"))))
             '(powerline-inactive1 ((t (:background "#353130" :foreground "#a89984"))))
             '(powerline-inactive2 ((t (:background "#353130" :foreground "#a89984"))))
             )
