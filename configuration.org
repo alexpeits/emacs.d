@@ -934,7 +934,7 @@ PWD is not in a git repo (or the git command is not found)."
             'gruvbox-dark-hard
             '(default ((t (:background "#1d2021" :foreground "#e5dfb0"))))
             '(fringe ((t (:background "#282b2c"))))
-            '(highlight ((t (:inherit default :background "#59524a"))))
+            '(highlight ((t (:background "#47423e"))))
             '(haskell-constructor-face ((t (:inherit font-lock-variable-name-face))))
             '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             '(linum ((t (:background "#202324" :foreground "#6c5f54"))))
