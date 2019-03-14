@@ -648,6 +648,11 @@ buffer, close it."
 (setq hi-lock-auto-select-face t)
    #+end_src
 
+** symbol overlays
+
+#+begin_src emacs-lisp
+#+end_src
+
 ** aliases
 
 #+begin_src emacs-lisp
@@ -676,6 +681,15 @@ buffer, close it."
   :init
   (setq highlight-indent-guides-method 'character)
   (setq highlight-indent-guides-responsive nil))
+#+end_src
+
+** yascrollbar
+
+#+begin_src emacs-lisp
+(use-package yascroll
+  :ensure t
+  :config
+  (global-yascroll-bar-mode 1))
 #+end_src
 
 * Term, eshell and comint-mode
@@ -920,6 +934,7 @@ PWD is not in a git repo (or the git command is not found)."
             'gruvbox-dark-hard
             '(default ((t (:background "#1d2021" :foreground "#e5dfb0"))))
             '(fringe ((t (:background "#282b2c"))))
+            '(highlight ((t (:inherit default :background "#59524a"))))
             '(haskell-constructor-face ((t (:inherit font-lock-variable-name-face))))
             '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
             '(linum ((t (:background "#202324" :foreground "#6c5f54"))))
@@ -931,6 +946,7 @@ PWD is not in a git repo (or the git command is not found)."
             '(powerline-inactive0 ((t (:background "#454140" :foreground "#a89984"))))
             '(powerline-inactive1 ((t (:background "#353130" :foreground "#a89984"))))
             '(powerline-inactive2 ((t (:background "#353130" :foreground "#a89984"))))
+            '(yascroll:thumb-fringe ((t (:background "#4c6363" :foreground "#4c6363"))))
             )
            (my/org-set-src-faces)
            ))
@@ -1239,8 +1255,8 @@ PWD is not in a git repo (or the git command is not found)."
     ("tc" global-company-mode)
     ("tf" my/toggle-font)
     ("tg" global-diff-hl-mode)
-    ;; ("tl" linum-mode)
     ("tl" my/line-numbers)
+    ("to" global-symbol-overlay-mode)
     ("ti" highlight-indent-guides-mode)
     ("th" hl-line-mode)
     ("ts" flycheck-mode)
@@ -1438,7 +1454,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
       ;; distinguish `C-m` from `RET`
       (define-key input-decode-map [?\C-m] [C-m])
       ;; distinguish `C-i` from `TAB`
-      (define-key input-decode-map [?\C-i] [C-i])
+      ;; (define-key input-decode-map [?\C-i] [C-i])
       (global-set-key (kbd "C-c <C-m>") 'my/leader-map)
       (setq my/major-mode-map-key "<C-m>"))
   (setq my/major-mode-map-key "C-c m m"))
@@ -3282,6 +3298,26 @@ the minibuffer."
 (winner-mode)
 (global-hi-lock-mode 1)
 (define-key hi-lock-map (kbd "M-H") (lookup-key hi-lock-map (kbd "C-x w")))
+
+;; I have to put it here in order to use hi-lock-map for some reason
+(use-package symbol-overlay
+  :ensure t
+  :config
+  (define-globalized-minor-mode global-symbol-overlay-mode
+    symbol-overlay-mode symbol-overlay-mode)
+  ;; (define-key symbol-overlay-map (kbd "d") 'symbol-overlay-remove-all)
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd ",i") 'symbol-overlay-put)
+    (define-key map (kbd ",d") 'symbol-overlay-remove-all)
+    (define-key map (kbd "n") 'symbol-overlay-jump-next)
+    (define-key map (kbd "p") 'symbol-overlay-jump-prev)
+    (define-key map (kbd ",q") 'symbol-overlay-query-replace)
+    (define-key map (kbd ",r") 'symbol-overlay-rename)
+    (define-key map (kbd ",w") 'symbol-overlay-save-symbol)
+    (define-key map (kbd ",s") 'symbol-overlay-isearch-literally)
+    (setq symbol-overlay-map map))
+  (global-set-key (kbd "M-H s") 'symbol-overlay-put)
+  (global-set-key (kbd "M-H d") 'symbol-overlay-remove-all))
 ;; (setq remember-notes-initial-major-mode 'org-mode)
 ;; (add-to-list 'remember-handler-functions 'remember-diary-extract-entries)
 
