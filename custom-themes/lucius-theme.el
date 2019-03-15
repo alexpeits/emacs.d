@@ -36,7 +36,7 @@
  '(default             ((t (:foreground "#c9dbd5" :background "#1b1b1c"))))
  '(minibuffer-prompt   ((t (:foreground "#12a89f" :weight bold))))
  '(escape-glyph        ((t (:foreground "orange"))))
- '(highlight           ((t (:background "#283438"))))
+ '(highlight           ((t (:background "#384448"))))
  '(hl-line             ((t (:background "#252a2a"))))
  '(region              ((t (:background "#004870"))))
  '(fringe              ((t (:background "#232828"))))

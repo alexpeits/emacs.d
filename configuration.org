@@ -683,15 +683,6 @@ buffer, close it."
   (setq highlight-indent-guides-responsive nil))
 #+end_src
 
-** yascrollbar
-
-#+begin_src emacs-lisp
-(use-package yascroll
-  :ensure t
-  :config
-  (global-yascroll-bar-mode 1))
-#+end_src
-
 * Term, eshell and comint-mode
 ** Terms
   
@@ -946,7 +937,6 @@ PWD is not in a git repo (or the git command is not found)."
             '(powerline-inactive0 ((t (:background "#454140" :foreground "#a89984"))))
             '(powerline-inactive1 ((t (:background "#353130" :foreground "#a89984"))))
             '(powerline-inactive2 ((t (:background "#353130" :foreground "#a89984"))))
-            '(yascroll:thumb-fringe ((t (:background "#4c6363" :foreground "#4c6363"))))
             )
            (my/org-set-src-faces)
            ))
