@@ -648,11 +648,6 @@ buffer, close it."
 (setq hi-lock-auto-select-face t)
    #+end_src
 
-** symbol overlays
-
-#+begin_src emacs-lisp
-#+end_src
-
 ** aliases
 
 #+begin_src emacs-lisp
@@ -1730,142 +1725,6 @@ the current file."
             ))
 #+END_SRC
  
-** ghc-mod (not used now but some useful stuff)
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package ghc :ensure t :defer t)
-(use-package hindent :ensure t :defer t)
-(autoload 'ghc-init "ghc" nil t)
-(autoload 'ghc-debug "ghc" nil t)
-(setq ghc-report-errors nil
-      haskell-process-suggest-remove-import-lines t
-      haskell-process-auto-import-loaded-modules t
-      haskell-process-log t
-      haskell-process-type 'stack-ghci
-      haskell-company-ghc-show-info t)
-
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (ghc-init)
-            (hindent-mode)
-            (eldoc-mode)
-            (define-key haskell-mode-map (kbd "C-c C-h") 'my/hoogle-lookup-browser)
-            (define-key haskell-mode-map (kbd "C-c h") 'my/hoogle-lookup)
-            (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-file)
-            (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-            (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
-            (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
-            (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
-            (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
-            ))
-(add-hook 'haskell-cabal-mode-hook
-          (lambda ()
-            (eldoc-mode)
-            (define-key haskell-cabal-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-            (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
-            (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
-            (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)
-            ))
-(eval-after-load 'haskell-mode '(progn (defun ghc-check-syntax ())))
-
-(defvar my/hoogle-cmd "/home/alex/.local/bin/hoogle")
-(defvar my/hoogle-server-port 26543)
-(defvar my/hoogle-server-process nil)
-(defvar my/hoogle-server-process-name "emacs-hoogle")
-(defvar my/hoogle-server-process-buffer-name (format "*%s*" my/hoogle-server-process-name))
-(defvar my/haskell-hoogle-url "http://haskell.org/hoogle/?q=%s")
-
-(defun my/hoogle-generate-local ()
-  (interactive)
-  (if (projectile-project-p)
-      (projectile-run-compilation
-       "stack exec -- hoogle generate --local --download --database=.stack-work/hoogle")
-    (error "Not in a project")))
-
-(defun my/get-hoogle-db ()
-  (let ((global-db "/home/alex/.hoogle/.hoogle"))
-    (if (projectile-project-p)
-        (progn
-          (let ((local-db (projectile-expand-root ".stack-work/hoogle")))
-            (if (file-exists-p local-db)
-                local-db
-              global-db)))
-      global-db)))
-
-(defun my/select-hoogle-db ()
-  (let* ((base-comp '("/home/alex/.hoogle/hoogle"))
-         (completions
-          (if (projectile-project-p)
-              (progn
-                (let ((proj-db (projectile-expand-root ".stack-work/hoogle")))
-                  (if (file-exists-p proj-db)
-                      (append (list proj-db) base-comp)
-                    base-comp)))
-            base-comp)))
-    (completing-read
-     "hoogle database:"
-     completions
-     nil nil nil nil (car completions))))
-
-(defun my/hoogle-server-start ()
-  (interactive)
-  (let ((db (my/select-hoogle-db)))
-    (unless (my/hoogle-server-running-p)
-      (setq my/hoogle-server-process
-            (start-process
-             my/hoogle-server-process-name
-             (get-buffer-create my/hoogle-server-process-buffer-name)
-             "hoogle" "server"
-             "-p" (number-to-string my/hoogle-server-port)
-             (format "--database=%s" db)
-             "--local")))))
-
-(defun my/hoogle-server-stop ()
-  (interactive)
-  (when (my/hoogle-server-running-p)
-    (kill-process (get-buffer-create my/hoogle-server-process-buffer-name))
-    (setq my/hoogle-server-process nil)))
-
-(defun my/hoogle-server-running-p ()
-  (condition-case _err
-      (process-live-p my/hoogle-server-process)
-    (error nil)))
-
-(defun my/hoogle-lookup-browser ()
-  (interactive)
-  (if (my/hoogle-server-running-p)
-      (browse-url (format "http://localhost:%i/?hoogle=%s"
-                          my/hoogle-server-port
-                          (read-string "hoogle: " (haskell-ident-at-point))))
-    (haskell-mode-toggle-interactive-prompt-state)
-    (unwind-protect
-        (when (y-or-n-p "Hoogle server not running, start server? ")
-          (my/hoogle-server-start)
-          (my/hoogle-lookup-browser))
-      (haskell-mode-toggle-interactive-prompt-state t))))
-
-(defun my/hoogle-lookup (query &optional info)
-  (interactive
-   (let ((def (haskell-ident-at-point)))
-     (if (and def (symbolp def)) (setq def (symbol-name def)))
-     (list (read-string (if def
-                            (format "Hoogle query (default %s): " def)
-                          "Hoogle query: ")
-                        nil nil def)
-           current-prefix-arg)))
-  (if (null my/hoogle-cmd)
-      (browse-url (format haskell-hoogle-url (url-hexify-string query)))
-    (let ((command (concat my/hoogle-cmd
-                           " --database=" (my/get-hoogle-db)
-                           (if info " -i " "")
-                           " --color " (shell-quote-argument query))))
-      (with-help-window "*hoogle*"
-        (with-current-buffer standard-output
-          (insert (shell-command-to-string command))
-          (ansi-color-apply-on-region (point-min) (point-max)))))))
-
-#+END_SRC
-
 * Purescript
 
 #+BEGIN_SRC emacs-lisp
@@ -1962,14 +1821,6 @@ the current file."
               (undo-tree-mode 1)
               (whitespace-mode 1)
               )))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package company-coq
-  :ensure t
-  :defer (company proof-general)
-  :config
-  (add-hook 'coq-mode-hook #'company-coq-mode))
 #+END_SRC
 
 * Python
@@ -2982,7 +2833,7 @@ the minibuffer."
     (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
   
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
               '("%e"
                 mode-line-front-space
@@ -3054,7 +2905,7 @@ the minibuffer."
 
 ** Be able to tell which modeline is active
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 ;; is window selected?
 (defvar my/-selected-window nil)
 ;; (add-hook 'post-command-hook '(lambda () (setq my/-selected-window (selected-window))))
@@ -3076,7 +2927,7 @@ the minibuffer."
 
 ** Powerline
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package powerline
   :ensure t
   :config
