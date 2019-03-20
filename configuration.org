@@ -612,7 +612,12 @@ buffer, close it."
   (puthash "bottom" "⊥" xah-math-input-abrvs))
 #+END_SRC
 
-** recentf #+BEGIN_SRC emacs-lisp (setq recentf-max-saved-items 100) (recentf-mode 1) #+END_SRC 
+** recentf 
+
+#+BEGIN_SRC emacs-lisp
+(setq recentf-max-saved-items 100) (recentf-mode 1)
+#+END_SRC
+
 ** hi-lock
 
    #+begin_src emacs-lisp
