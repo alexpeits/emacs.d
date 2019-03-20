@@ -2367,6 +2367,8 @@ customize the resulting theme."
  '(org-block-begin-line ((t (:background "#222222"))))
  '(org-block-end-line   ((t (:background "#222222"))))
  '(nlinum-relative-current-face ((t (:inherit linum :background "#333333" :foreground "#5e767d" :weight bold))))
+ '(haskell-constructor-face ((t (:foreground "#2aa198"))))
+ '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  )
 
 (provide-theme 'solarized-black)

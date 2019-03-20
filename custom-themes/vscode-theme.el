@@ -12,7 +12,7 @@
   "Dark+ theme from Visual Studio Code")
 
 (let ((class '((class color) (min-colors 89)))
-      (black   "#1d1d1d")
+      (black   "#1c1c1c")
       (grey01  "#252526")
       (grey02  "#292929")
       (grey03  "#383b3d")
@@ -48,7 +48,7 @@
    `(cursor ((,class (:background ,grey10))))
    ;; Highlighting faces
    `(fringe ((,class (:background ,grey02))))
-   `(vertical-border ((t (:foreground "#b0b0b0"))))
+   `(vertical-border ((t (:foreground "#a0a0a0"))))
    `(highlight ((,class (:background ,grey05))))
    `(region ((t (:background "#253b76"))))
    `(hl-line ((t (:background ,grey02))))

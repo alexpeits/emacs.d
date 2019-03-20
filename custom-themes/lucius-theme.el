@@ -50,7 +50,7 @@
  '(line-number              ((t (:foreground "#756682" :background "#1e2222"))))
  '(line-number-current-line ((t (:foreground "#9c90a6" :background "#3b3f3f"))))
  ;; < emacs 26
- '(linum                    ((t (:foreground "#756682" :background "#1e2222"))))
+ '(linum                    ((t (:inherit default :foreground "#756682" :background "#1e2222"))))
 
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003535")))))

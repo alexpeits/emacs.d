@@ -612,13 +612,7 @@ buffer, close it."
   (puthash "bottom" "⊥" xah-math-input-abrvs))
 #+END_SRC
 
-** recentf
-
-#+BEGIN_SRC emacs-lisp
-(setq recentf-max-saved-items 100)
-(recentf-mode 1)
-#+END_SRC
-
+** recentf #+BEGIN_SRC emacs-lisp (setq recentf-max-saved-items 100) (recentf-mode 1) #+END_SRC 
 ** hi-lock
 
    #+begin_src emacs-lisp
@@ -1023,6 +1017,7 @@ PWD is not in a git repo (or the git command is not found)."
             'zenburn
             '(region ((t (:background "#5a5a5a"))))
             '(vertical-border ((t (:foreground "#b5b5b5"))))
+            '(fringe ((t (:background "#4a4a4a"))))
             )
            (my/hl-line-set-bg) (my/org-set-src-faces)
            (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
@@ -3143,6 +3138,7 @@ the minibuffer."
 ;; I have to put it here in order to use hi-lock-map for some reason
 (use-package symbol-overlay
   :ensure t
+  :diminish
   :config
   (define-globalized-minor-mode global-symbol-overlay-mode
     symbol-overlay-mode symbol-overlay-mode)
