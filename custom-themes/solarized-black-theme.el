@@ -144,7 +144,7 @@ Alpha should be a float between 0 and 1."
           (light-class (append '((background light)) class))
           (dark-class (append '((background dark)) class))
           (variant ,variant)
-          (s-base03    "#181818")
+          (s-base03    "#1a1a1a")
           (s-base02    "#2a2a2a")
           ;; emphasized content
           (s-base01    "#5e767d")
@@ -299,7 +299,7 @@ customize the resulting theme."
                                 :overline ,s-mode-line-bg
                                 :underline ,s-mode-line-underline
                                 :foreground ,s-mode-line-fg
-                                :background ,s-mode-line-bg
+                                :background ,(color-lighten-name s-mode-line-bg 3)
                                 :box (:line-width 1 :color ,s-mode-line-bg
                                                   :style unspecified)))))
      `(mode-line-buffer-id ((,class (:weight bold))))
@@ -437,7 +437,7 @@ customize the resulting theme."
                                                     :slant ,s-maybe-italic))))
      `(font-lock-comment-delimiter-face
        ((,class (:foreground ,base01 :slant ,s-maybe-italic))))
-     `(font-lock-comment-face ((,class (:foreground ,base01))))
+     `(font-lock-comment-face ((,class (:foreground ,base01 :slant italic))))
      `(font-lock-constant-face ((,class (:foreground ,blue :weight bold))))
      `(font-lock-doc-face ((,class (:foreground ,(if solarized-black-distinct-doc-face violet cyan)
                                                 :slant ,s-maybe-italic))))
@@ -2240,7 +2240,7 @@ customize the resulting theme."
      `(yascroll:thumb-text-area
        ((,class (:foreground ,base01 :background ,base01))))
      `(yascroll:thumb-fringe
-       ((,class (:foreground ,base01 :background ,base01))))
+       ((,class (:foreground ,(color-darken-name base01 7) :background ,(color-darken-name base01 7)))))
 ;;;;; yasnippet
      `(yas-field-highlight-face ((,class (:inherit secondary-selection))))
 ;;;;; zencoding
@@ -2368,7 +2368,8 @@ customize the resulting theme."
  '(org-block-end-line   ((t (:background "#222222"))))
  '(nlinum-relative-current-face ((t (:inherit linum :background "#333333" :foreground "#5e767d" :weight bold))))
  ;; '(haskell-constructor-face ((t (:foreground "#2aa198"))))
- ;; '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
+ `(haskell-constructor-face ((t (:foreground "#719499"))))
+ '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  )
 
 (provide-theme 'solarized-black)
