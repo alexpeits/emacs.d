@@ -202,6 +202,16 @@ With a prefix argument, open using `find-file-other-window'."
       (if arg
           (setq display-line-numbers 'relative)
         (setq display-line-numbers t)))))
+
+(defun my/shell-command-on-buffer-or-region (cmd)
+  (save-excursion
+    (unless (region-active-p)
+      (mark-whole-buffer))
+    (shell-command-on-region (region-beginning)
+                             (region-end)
+                             cmd
+                             nil
+                             t)))
 #+END_SRC
 
 * Package management
@@ -315,6 +325,8 @@ With a prefix argument, open using `find-file-other-window'."
 (define-key 'help-command (kbd "C-f") 'find-function)
 (define-key 'help-command (kbd "C-p") 'find-function-at-point)
 (define-key 'help-command (kbd "C-v") 'find-variable)
+;; proper count-words keybinding
+(global-set-key (kbd "M-=") 'count-words)
 
 ;; flyspell on pure text buffers
 ;; (dolist (hook '(text-mode-hook change-log-mode-hook log-edit-mode-hook))
@@ -612,12 +624,7 @@ buffer, close it."
   (puthash "bottom" "⊥" xah-math-input-abrvs))
 #+END_SRC
 
-** recentf 
-
-#+BEGIN_SRC emacs-lisp
-(setq recentf-max-saved-items 100) (recentf-mode 1)
-#+END_SRC
-
+** recentf #+BEGIN_SRC emacs-lisp (setq recentf-max-saved-items 100) (recentf-mode 1) #+END_SRC 
 ** hi-lock
 
    #+begin_src emacs-lisp
@@ -677,6 +684,29 @@ buffer, close it."
   (setq highlight-indent-guides-responsive nil))
 #+end_src
 
+** alignment
+
+#+begin_src emacs-lisp
+(add-hook 'align-load-hook
+          (lambda ()
+            (add-to-list 'align-rules-list
+                         '(haskell-types
+                           (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
+            (add-to-list 'align-rules-list
+                         '(haskell-assignment
+                           (regexp . "\\(\\s-+\\)=\\s-+")
+                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
+            (add-to-list 'align-rules-list
+                         '(haskell-arrows
+                           (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
+            (add-to-list 'align-rules-list
+                         '(haskell-left-arrows
+                           (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))))
+#+end_src
+
 * Term, eshell and comint-mode
 ** Terms
   
@@ -684,7 +714,8 @@ buffer, close it."
 (add-hook 'term-mode-hook
           (lambda ()
             (linum-mode 0)
-            (define-key term-raw-map (kbd "M-o") 'other-window)
+            (define-key term-raw-map (kbd "M-o") nil)
+            (define-key term-raw-map (kbd "M-+") nil)
             (set-face-background 'term (face-attribute 'default :background))))
 
 ;; automatically close term buffers on EOF
@@ -1983,14 +2014,7 @@ the current file."
 #+begin_src emacs-lisp
 (defun my/jq-buffer-or-region ()
   (interactive)
-  (save-excursion
-    (unless (region-active-p)
-      (mark-whole-buffer))
-    (shell-command-on-region (region-beginning)
-                             (region-end)
-                             "jq ."
-                             nil
-                             t)))
+  (my/shell-command-on-buffer-or-region "jq ."))
 #+end_src
     
 ** Elasticsearch
@@ -2416,7 +2440,8 @@ the minibuffer."
 
 (use-package yasnippet
   :ensure t
-  :bind ("C-c y" . yas-expand)
+  ;; :bind ("C-c y" . yas-expand)
+  :bind ("<C-return>" . yas-expand)
   :diminish yas-minor-mode
   :init
   :config
