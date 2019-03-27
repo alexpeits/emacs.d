@@ -521,6 +521,23 @@ buffer, close it."
 
 (define-key prog-mode-map (kbd "M-a") 'beginning-of-defun)
 (define-key prog-mode-map (kbd "M-e") 'end-of-defun)
+
+(defun push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region
+   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
+
+(global-set-key (kbd "C-`") 'push-mark-no-activate)
+
+(defun jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+  This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
+
+(global-set-key (kbd "M-`") 'jump-to-mark)
 #+END_SRC
 
 ** Autocompleting etc
@@ -1758,6 +1775,7 @@ the current file."
             (intero-mode-blacklist)
             (haskell-decl-scan-mode)
             (my/subword-mode 1)
+            ;; (highlight-lines-matching-regexp "Debug.Trace\\|traceM" 'hi-red-b)
             ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
             ))
 #+END_SRC
@@ -2208,19 +2226,41 @@ corresponding buffer."
   (add-to-list 'ag-arguments "--nogroup")
   (add-to-list 'ag-arguments "--vimgrep")
   (add-to-list 'ag-dired-arguments "--vimgrep")
+  (make-variable-buffer-local 'compilation-scroll-output)
+  (add-hook 'ag-mode-hook '(lambda () (setq compilation-scroll-output nil)))
   (define-key
     ag-mode-map
     (kbd "Q")
     '(lambda () (interactive) (ag-kill-buffers) (delete-window))))
 #+end_src
 
-** winnow
+** occur
 
 #+begin_src emacs-lisp
-(use-package winnow
-  :ensure t
-  :config
-  (add-hook 'compilation-mode-hook 'winnow-mode))
+(defun get-buffers-matching-mode (mode)
+  "Returns a list of buffers where their major-mode is equal to MODE"
+  (let ((buffer-mode-matches '()))
+   (dolist (buf (buffer-list))
+     (with-current-buffer buf
+       (if (eq mode major-mode)
+           (add-to-list 'buffer-mode-matches buf))))
+   buffer-mode-matches))
+
+(defun multi-occur-in-this-mode ()
+  "Show all lines matching REGEXP in buffers with this major mode."
+  (interactive)
+  (multi-occur
+   (get-buffers-matching-mode major-mode)
+   (car (occur-read-primary-args))))
+
+;; global key for `multi-occur-in-this-mode' - you should change this.
+(global-set-key (kbd "C-<f2>") 'multi-occur-in-this-mode)
+#+end_src
+
+** grep
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "<f2>") 'rgrep)
 #+end_src
 
 * Ivy/Counsel/Swiper
@@ -2520,7 +2560,8 @@ the minibuffer."
 
 (use-package ibuffer
   :config
-  (define-key ibuffer-mode-map (kbd "M-o") nil))
+  (define-key ibuffer-mode-map (kbd "M-o") nil)
+  (global-set-key (kbd "C-x C-b") '(lambda () (interactive) (ibuffer t))))
 
 (add-hook 'ibuffer-mode-hook
           '(lambda ()
@@ -2607,6 +2648,21 @@ the minibuffer."
 #+end_src
 
 * Other major modes
+** bazel
+
+#+begin_src emacs-lisp
+(use-package bazel-mode
+  :ensure t
+  :mode (("\\.bazel\\'" . bazel-mode)
+         ("\\.bzl\\'" . bazel-mode))
+  :config
+  (add-hook
+   'bazel-mode-hook
+   '(lambda ()
+     (setq evil-shift-width 2
+           python-indent-offset 2))))
+#+end_src
+
 ** PDF tools
 
 #+BEGIN_SRC emacs-lisp
