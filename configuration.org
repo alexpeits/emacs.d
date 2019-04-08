@@ -2864,12 +2864,13 @@ the minibuffer."
 * Other minor modes
 ** direnv
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
 (use-package direnv
   :if (executable-find "direnv")
   :ensure t
   :init
-  (setq direnv-show-paths-in-summary nil)
+  (setq direnv-show-paths-in-summary nil
+        direnv-always-show-summary nil)
   :config
   (direnv-mode))
 #+end_src

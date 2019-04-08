@@ -59,7 +59,7 @@
      ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#454545")))))
    `(mode-line-inactive
      ((t (:inherit mode-line :background "#282828" :foreground "#858585" :box (:line-width 1 :color "#353535")))))
-   `(persp-selected-face ((,class (:foreground ,lblue :weight bold))))
+   `(persp-selected-face ((,class (:foreground ,cyan :weight bold))))
    ;; Escape and prompt faces
    `(minibuffer-prompt ((,class (:foreground ,orange))))
    `(escape-glyph ((,class (:foreground ,yellow :weight bold))))
@@ -77,7 +77,55 @@
    `(haskell-operator-face ((,class (:foreground ,lcyan))))
    `(purescript-constructor-face ((,class (:foreground ,lblue))))
    `(purescript-operator-face ((,class (:foreground ,lcyan))))
+
+   '(show-paren-match    ((t (:background "#2f5068" :weight bold))))
+
+   `(ivy-grep-info ((t (:foreground ,bgreen :weight bold))))
+   `(ag-hit-face   ((t (:foreground ,bgreen :weight bold))))
+
+   `(diff-hl-insert ((t (:background "#183918" :foreground "#4c934c"))))
+   `(diff-hl-change ((t (:background "#1a2d4c" :foreground "#298ed5"))))
+   `(diff-hl-delete ((t (:background "#4c1515" :foreground "#bc4d4d"))))
+
+   `(diff-added   ((t (:foreground "#859900"))))
+   `(diff-changed ((t (:foreground "#298ed5"))))
+   `(diff-removed ((t (:foreground "#dc322f"))))
+
+   `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
+
+   `(markdown-code-face     ((t (:inherit font-lock-string-face))))
+   `(markdown-pre-face      ((t (:inherit font-lock-string-face))))
+
+   ;; TODO: all of the below
+
+   `(company-preview ((t (:inherit default :background "#304540"))))
+   `(company-preview-common ((t (:inherit company-preview :slant italic))))
+   `(company-tooltip                      ((t (:foreground "#cfe0da" :background "#252525"))))
+   `(company-tooltip-annotation           ((t (:foreground ,cyan))))
+   `(company-tooltip-annotation-selection ((t (:foreground ,cyan))))
+   `(company-tooltip-common               ((t (:foreground "#cfe0da"))))
+   `(company-tooltip-common-selection     ((t (:weight bold))))
+   `(company-tooltip-mouse                ((t (:background ,cyan :foreground ,green))))
+   `(company-tooltip-search               ((t (:foreground "#d33682"))))
+   `(company-tooltip-search-selection     ((t (:foreground "#d33682" :weight bold))))
+   `(company-tooltip-selection            ((t (:background "#353535" :weight bold))))
+   `(company-scrollbar-bg                 ((t (:background "#252525" :foreground ,cyan))))
+   `(company-scrollbar-fg                 ((t (:foreground "#1b1b1b" :background ,cyan))))
+
+   `(term-color-black   ((t (:foreground "#1b1b1c"))))
+   `(term-color-red     ((t (:foreground "#cb5a37"))))
+   `(term-color-green   ((t (:foreground "#859900"))))
+   `(term-color-yellow  ((t (:foreground "#d09f07"))))
+   `(term-color-blue    ((t (:foreground "#268bd2"))))
+   `(term-color-magenta ((t (:foreground "#d33682"))))
+   `(term-color-cyan    ((t (:foreground "#47bcb3"))))
+   `(term-color-white   ((t (:foreground "#cfe0da"))))
    ))
+
+(custom-theme-set-variables
+ 'vscode
+ '(ansi-color-names-vector
+   ["#1b1b1c" "#cb5a37" "#859900" "#d09f07" "#268bd2" "#d33682" "#47bcb3" "#cfe0da"]))
 
 (provide-theme 'vscode)
 
