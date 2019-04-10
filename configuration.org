@@ -1046,29 +1046,6 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            ))
-        (nord
-         (progn
-           (custom-theme-set-faces
-            'nord
-            '(default ((t (:background "#191f28" :foreground "#b6c1d3"))))
-            '(mode-line ((t (:background "#3f4758" :foreground "#9ac9d7"))))
-            '(mode-line-inactive ((t (:background "#292e39" :foreground "#5e7591"))))
-            '(font-lock-doc-face ((t (:foreground "#97aa86"))))
-            '(font-lock-preprocessor-face ((t (:foreground "#B48EAD" :weight bold))))
-            '(font-lock-variable-name-face ((t (:inherit default))))
-            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
-            '(fringe ((t (:background "#1d242d"))))
-            '(linum ((t (:foreground "#3f4758"))))
-            '(show-paren-match ((t (:background "#477099" :weight bold))))
-            '(treemacs-fringe-indicator-face ((t (:foreground "#8FBCBB"))))
-            '(lazy-highlight ((t (:background "#496665"))))
-            '(outline-2 ((t (:foreground "#8FBCBB" :weight bold))))
-            '(org-level-2 ((t (:inherit outline-2))))
-            '(outline-3 ((t (:foreground "#a3be8c" :weight bold))))
-            '(org-level-3 ((t (:inherit outline-3))))
-            )
-           (my/after-set-theme)
-           ))
         (zenburn
          (progn
            (custom-theme-set-faces
@@ -1724,6 +1701,7 @@ With a prefix argument, insert a newline above the current line."
   (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
   (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
   (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
+  (my/define-major-mode-key 'haskell-mode "t" 'my/haskell-ask-type-region-or-word)
   )
 #+END_SRC
 
@@ -1762,6 +1740,20 @@ the current file."
 (defun my/haskell-open-package-yaml ()
   (interactive)
   (my/try-open-dominating-file "package.yaml"))
+
+(defun my/haskell-ask-type-region-or-word ()
+  (interactive)
+  (save-excursion
+    (if (region-active-p)
+        (exchange-point-and-mark)
+      (backward-word-strictly))
+    (insert "(")
+    (if (region-active-p)
+        (progn
+          (exchange-point-and-mark)
+          (forward-char))
+      (forward-word-strictly))
+    (insert " :: ())")))
 
 (with-eval-after-load 'haskell-mode
   (sp-local-pair 'haskell-mode "'" nil :actions nil))
