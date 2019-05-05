@@ -955,64 +955,33 @@ PWD is not in a git repo (or the git command is not found)."
             '(show-paren-match ((t (:background "steelblue4" :weight bold))))
             '(mode-line-buffer-id ((t (:weight bold))))
             '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
-            '(treemacs-fringe-indicator-face ((t (:foreground "#8ac6f2"))))
             '(mode-line
               ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#4a4a4a")))))
             '(mode-line-inactive
               ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
-            '(outline-2 ((t (:foreground "#8ac6f2" :weight bold))))
-            '(outline-3 ((t (:foreground "#ccaa8f" :weight bold))))
             ;; '(haskell-operator-face ((t (:foreground "#e5786d"))))
+            '(haskell-constructor-face ((t (:inherit haskell-type-face :weight normal))))
             )
            (my/after-set-theme)
            ))
-        (gruvbox-dark-hard
+        (blackboard
          (progn
            (custom-theme-set-faces
-            'gruvbox-dark-hard
-            '(default ((t (:background "#1d2021" :foreground "#e5dfb0"))))
-            '(fringe ((t (:background "#282b2c"))))
-            '(highlight ((t (:background "#47423e"))))
-            '(haskell-constructor-face ((t (:inherit font-lock-variable-name-face))))
-            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
-            '(linum ((t (:background "#202324" :foreground "#6c5f54"))))
-            '(line-number ((t (:background "#202324" :foreground "#6c5f54"))))
-            '(line-number-current-line ((t (:background "#383b3c" :foreground "#fe8019"))))
-            '(powerline-active0 ((t (:background "#70655d" :foreground "#fdf4c1"))))
-            '(powerline-active1 ((t (:background "#595048" :foreground "#fdf4c1"))))
-            '(powerline-active2 ((t (:background "#423b38" :foreground "#fdf4c1"))))
-            '(powerline-inactive0 ((t (:background "#454140" :foreground "#a89984"))))
-            '(powerline-inactive1 ((t (:background "#353130" :foreground "#a89984"))))
-            '(powerline-inactive2 ((t (:background "#353130" :foreground "#a89984"))))
-            )
-           (my/org-set-src-faces)
-           ))
-        (darktooth
-         (progn
-           (custom-theme-set-faces
-            'darktooth
-            '(fringe ((t (:background "#313131"))))
-            '(default ((t (:foreground "#ddd7b4" :background "#262626"))))
-            '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
-            ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
-            '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
-            '(font-lock-keyword-face ((t (:foreground "#dd6f48" :weight bold))))
-            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
-            '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#968a79" :background "#33302d"))))
-            '(vertical-border ((t (:foreground "#a89984"))))
-            '(markdown-pre-face ((t (:foreground "#8ec07c"))))
-            '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
-            '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
-            '(powerline-active0 ((t (:background "#696461" :foreground "#e5dfbc"))))
-            '(powerline-active1 ((t (:background "#55504d" :foreground "#e5dfbc"))))
-            '(powerline-active2 ((t (:background "#433f3e" :foreground "#e5dfbc"))))
-            '(powerline-inactive0 ((t (:background "#393532" :foreground "#908473"))))
-            '(powerline-inactive1 ((t (:background "#393532" :foreground "#908473"))))
-            '(powerline-inactive2 ((t (:background "#393532" :foreground "#908473"))))
+            'blackboard
+            '(default ((t (:foreground "#d3dde2" :background "#0c1021"))))
+            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
+            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
+            '(font-lock-comment-face ((t (:foreground "#77808e" :slant italic))))
+            '(linum ((t (:inherit fringe :foreground "#607480"))))
+            '(fringe ((t (:background "#1c2031"))))
+            '(vertical-border ((t (:foreground "#91a2bf"))))
+            '(magit-section-highlight ((t (:background "#203b56"))))
+            '(show-paren-match ((t (:background "#245587"))))
+            '(my/fci ((t (:foreground "#233064"))))
+            '(treemacs-fringe-indicator-face ((t (:background "#589344" :foreground "#589344"))))
             )
            (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#ddd7b4" . "#3d3d3d"))
            ))
         (gotham
          (progn
@@ -2884,6 +2853,10 @@ the minibuffer."
 (defface modeline-flycheck-info
   '((t (:foreground "DeepSkyBlue3" :distant-foreground "DeepSkyBlue3")))
   "Face for flycheck info feedback in the modeline."
+  :group 'modeline-flycheck)
+(defface modeline-flycheck-ok
+  '((t (:foreground "SeaGreen3" :distant-foreground "SeaGreen3")))
+  "Face for flycheck ok feedback in the modeline."
   :group 'modeline-flycheck)
 
 (defun my/modeline-flycheck-darker-faces ()
