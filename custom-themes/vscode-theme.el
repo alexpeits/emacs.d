@@ -82,6 +82,7 @@
 
    `(ivy-grep-info ((t (:foreground ,bgreen :weight bold))))
    `(ag-hit-face   ((t (:foreground ,bgreen :weight bold))))
+   `(compilation-info   ((t (:foreground ,bgreen :weight bold))))
 
    `(diff-hl-insert ((t (:background "#183918" :foreground "#4c934c"))))
    `(diff-hl-change ((t (:background "#1a2d4c" :foreground "#298ed5"))))
