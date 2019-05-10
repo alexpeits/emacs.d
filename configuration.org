@@ -979,7 +979,6 @@ PWD is not in a git repo (or the git command is not found)."
             '(magit-section-highlight ((t (:background "#203b56"))))
             '(show-paren-match ((t (:background "#245587"))))
             '(my/fci ((t (:foreground "#233064"))))
-            '(treemacs-fringe-indicator-face ((t (:background "#589344" :foreground "#589344"))))
             )
            (my/after-set-theme)
            ))
@@ -1994,6 +1993,12 @@ the current file."
   :commands (flycheck-yamllint-setup)
   :init
   (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
+
+(use-package dhall-mode
+  :ensure t
+  :mode ("\\.dhall\\'" . dhall-mode)
+  :config
+  (setq dhall-format-at-save nil))
 #+END_SRC
 
 #+begin_src emacs-lisp
