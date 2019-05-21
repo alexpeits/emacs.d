@@ -1974,32 +1974,6 @@ the current file."
   (add-hook 'css-mode-hook 'emmet-mode))
 #+END_SRC
 
-** JSON, YAML etc.
-
-#+BEGIN_SRC emacs-lisp
-(use-package json-mode
-  :ensure t
-  :mode (("\\.json\\'" . json-mode)
-         ("\\.json.tmpl\\'" . json-mode)))
-
-(use-package yaml-mode
-  :ensure t
-  :mode (("\\.yaml\\'" . yaml-mode)
-         ("\\.yml\\'" . yaml-mode)))
-
-(use-package flycheck-yamllint
-  :ensure t
-  :after flycheck yaml-mode
-  :commands (flycheck-yamllint-setup)
-  :init
-  (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
-
-(use-package dhall-mode
-  :ensure t
-  :mode ("\\.dhall\\'" . dhall-mode)
-  :config
-  (setq dhall-format-at-save nil))
-#+END_SRC
 
 #+begin_src emacs-lisp
 (defun my/jq-buffer-or-region ()
@@ -2181,6 +2155,26 @@ corresponding buffer."
         (apply in-proj-f args)
       (apply out-proj-f args))))
 #+END_SRC
+
+#+begin_src emacs-lisp
+;; override chosen project names
+(defvar my/projectile-project-name-overrides '())
+
+(defun my/projectile-add-to-project-name-overrides (proj name)
+  (add-to-list
+   'my/projectile-project-name-overrides
+   `(,(file-name-as-directory (expand-file-name proj)) . ,name)))
+
+(defun my/projectile-override-project-name (orig &rest args)
+  (let* ((dir (file-name-as-directory (expand-file-name (car args))))
+         (match (assoc dir my/projectile-project-name-overrides))
+         (name (if (null match) nil (cdr match))))
+    (if (null name)
+        (apply orig args)
+      name)))
+
+(advice-add 'projectile-default-project-name :around #'my/projectile-override-project-name)
+#+end_src
 
 * Searching
 ** ag
@@ -2614,6 +2608,42 @@ the minibuffer."
 #+end_src
 
 * Other major modes
+** json
+
+#+BEGIN_SRC emacs-lisp
+(use-package json-mode
+  :ensure t
+  :mode (("\\.json\\'" . json-mode)
+         ("\\.json.tmpl\\'" . json-mode)))
+#+END_SRC
+
+** yaml
+
+#+BEGIN_SRC emacs-lisp
+(use-package yaml-mode
+  :ensure t
+  :mode (("\\.yaml\\'" . yaml-mode)
+         ("\\.yml\\'" . yaml-mode)))
+
+(use-package flycheck-yamllint
+  :ensure t
+  :after flycheck yaml-mode
+  :commands (flycheck-yamllint-setup)
+  :init
+  (add-hook 'yaml-mode-hook #'flycheck-yamllint-setup))
+#+END_SRC
+
+** dhall
+
+#+BEGIN_SRC emacs-lisp
+(use-package dhall-mode
+  :ensure t
+  :mode ("\\.dhall\\'" . dhall-mode)
+  :config
+  (setq dhall-format-at-save nil)
+  (add-hook 'dhall-mode-hook (lambda () (setq indent-tabs-mode nil))))
+#+END_SRC
+
 ** bazel
 
 #+begin_src emacs-lisp
@@ -2627,6 +2657,14 @@ the minibuffer."
    '(lambda ()
      (setq evil-shift-width 2
            python-indent-offset 2))))
+#+end_src
+
+** terraform
+
+#+begin_src emacs-lisp
+(use-package terraform-mode
+  :ensure t
+  :mode ("\\.tf\\'" . terraform-mode))
 #+end_src
 
 ** PDF tools
