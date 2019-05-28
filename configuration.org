@@ -1213,27 +1213,41 @@ PWD is not in a git repo (or the git command is not found)."
 
     ("a" align-regexp)
 
+    ;; browsing/files
+    ("bc" my/copy-file-path)
+    ("bp" my/try-open-dominating-file)
     ("bs" my/create-scratch-buffer-with-mode)
 
+    ;; dired
+    ("dn" find-name-dired)
+    ("dg" find-grep-dired)
+    ("dv" my/git-grep-dired)
+
+    ;; errors
     ("el" my/toggle-flycheck-error-list)
 
-    ("fa" helm-ag)
-    ("ff" helm-find)
-    ("fp" my/try-open-dominating-file)
-    ("fc" my/copy-file-path)
+    ;; find/search
+    ("fa" ag)
+    ("fc" counsel-ag)
+    ("fr" rgrep)
 
+    ;; git/vc
     ("gb" my/git-blame-current-line)
 
     ("h"  help)
 
+    ;; insert
     ("if" my/file-name-at-point)
     ("iu" counsel-unicode-char)
 
+    ;; project
     ("ps" counsel-projectile-ag)
     ("pt" my/counsel-ag-todos-global)
 
+    ;; show/display
     ("sd" pwd)
 
+    ;; toggle
     ("t8" fci-mode)
     ("tc" global-company-mode)
     ("tf" my/toggle-font)
@@ -1246,10 +1260,12 @@ PWD is not in a git repo (or the git command is not found)."
     ("tt" my/toggle-theme)
     ("tw" toggle-truncate-lines)
 
+    ;; ui
     ("uh" rainbow-mode)
     ("um" (lambda () (interactive) (call-interactively 'tool-bar-mode) (call-interactively 'menu-bar-mode)))
     ("up" rainbow-delimiters-mode)
 
+    ;; theme
     ("Ts" counsel-load-theme)
 
     ("Q" evil-local-mode)
@@ -2503,6 +2519,39 @@ the minibuffer."
 (require 'dired-x)
 (if is-mac (setq dired-use-ls-dired nil))
 #+END_SRC
+
+#+begin_src emacs-lisp
+;; https://gist.github.com/surajacharya/4127526
+(defun my/git-grep-dired (repo wildcards regexp)
+  "Find Git-controlled files in DIR with a name like WILDCARDS containing a regexp REGEXP and start Dired on output."
+  (interactive "DGit-grep (directory): \nsGit-grep (filename wildcard(s), e.g. *.xml): \nsGit-grep (grep regexp): ")
+  (setq repo (file-name-as-directory (expand-file-name repo)))
+  (switch-to-buffer (concat "*Git Grep " repo "*"))
+  (fundamental-mode)
+  (setq buffer-read-only nil)
+  (erase-buffer)
+  (setq default-directory repo)
+  (let ((cmd (format "git --git-dir %s/.git ls-files -z%s | xargs -0 grep -lZ -- %s | xargs -0 ls -l"
+                     repo
+                     (apply 'concat (mapcar (lambda (s) (concat " " (shell-quote-argument s))) (split-string wildcards)))
+                     (shell-quote-argument regexp))))
+    (insert " " cmd "\n " repo ":\n")
+    (call-process-shell-command (concat cmd " | sed -e 's/^/ /g'") nil t))
+  (dired-mode)
+
+  ;; (dired-build-subdir-alist)
+  ;; From find-dired:
+  ;; Set subdir-alist so that Tree Dired will work:
+  (if (fboundp 'dired-simple-subdir-alist)
+      ;; will work even with nested dired format (dired-nstd.el,v 1.15
+      ;; and later)
+      (dired-simple-subdir-alist)
+    ;; else we have an ancient tree dired (or classic dired, where
+    ;; this does no harm)
+    (set (make-local-variable 'dired-subdir-alist)
+         (list (cons default-directory (point-min-marker)))))
+  (goto-line 2))
+#+end_src
 
 ** ibuffer
 
