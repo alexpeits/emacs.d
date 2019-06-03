@@ -727,6 +727,8 @@ buffer, close it."
                          '(haskell-left-arrows
                            (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
                            (modes quote (haskell-mode purescript-mode literate-haskell-mode))))))
+
+(global-set-key (kbd "C-c \\") 'align-regexp)
 #+end_src
 
 * Term, eshell and comint-mode
@@ -1658,13 +1660,16 @@ With a prefix argument, insert a newline above the current line."
   :init
   (setq intero-blacklist '("~/.xmonad"))
   :config
+
   ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
   ;; this has to be installed in every repo until I find a solution
   ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+
   ;; don't auto insert matching single quotes in haskell mode, since I
   ;; mostly use them for promoted data types
   (define-key intero-mode-map (kbd "M-.") nil)
   (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
+
   (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
 #+END_SRC
 
