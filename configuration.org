@@ -2677,7 +2677,9 @@ the minibuffer."
 (use-package yaml-mode
   :ensure t
   :mode (("\\.yaml\\'" . yaml-mode)
-         ("\\.yml\\'" . yaml-mode)))
+         ("\\.yml\\'" . yaml-mode)
+         ("\\.yaml.template\\'" . yaml-mode)
+         ("\\.yml.template\\'" . yaml-mode)))
 
 (use-package flycheck-yamllint
   :ensure t
@@ -2705,12 +2707,7 @@ the minibuffer."
   :ensure t
   :mode (("\\.bazel\\'" . bazel-mode)
          ("\\.bzl\\'" . bazel-mode))
-  :config
-  (add-hook
-   'bazel-mode-hook
-   '(lambda ()
-     (setq evil-shift-width 2
-           python-indent-offset 2))))
+  )
 #+end_src
 
 ** terraform
