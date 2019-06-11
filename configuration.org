@@ -2707,6 +2707,12 @@ the minibuffer."
   :ensure t
   :mode (("\\.bazel\\'" . bazel-mode)
          ("\\.bzl\\'" . bazel-mode))
+  :config
+  (my/define-major-mode-key
+   'bazel-mode "s"
+   '(lambda() (interactive)
+      (bazel-format)
+      (save-buffer)))
   )
 #+end_src
 
