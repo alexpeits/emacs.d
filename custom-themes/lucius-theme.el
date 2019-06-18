@@ -64,7 +64,7 @@
  `(font-lock-builtin-face              ((t (:foreground "#87d7ff" :background nil))))
  `(font-lock-function-name-face        ((t (:foreground "#a7d37b" :background nil))))
  `(font-lock-variable-name-face        ((t (:foreground "#87d7ff" :background nil))))
- `(font-lock-keyword-face              ((t (:foreground "#2aa198" :background nil))))
+ `(font-lock-keyword-face              ((t (:foreground "#2da49b" :background nil))))
  `(font-lock-string-face               ((t (:foreground "#d7d7af" :background nil))))
  `(font-lock-doc-string-face           ((t (:inherit font-lock-string-face))))
  `(font-lock-doc-face                  ((t (:inherit font-lock-string-face))))
@@ -82,6 +82,7 @@
  '(isearch             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
  '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
+ ;; `(haskell-type-face    ((t (:foreground "#57b5c1"))))
  `(haskell-pragma-face    ((t (:foreground "#8ba004" :slant italic))))
  `(purescript-pragma-face ((t (:inherit haskell-pragma-face))))
 
@@ -112,11 +113,11 @@
  '(org-block-end-line   ((t (:inherit org-block-begin-line))))
 
  '(outline-1 ((t (:foreground "#afd787"))))
- '(outline-2 ((t (:foreground "#2aa198"))))
+ '(outline-2 ((t (:foreground "#2da49b"))))
  '(outline-3 ((t (:foreground "#62b49f"))))
  '(outline-4 ((t (:foreground "#87d7ff"))))
  '(outline-5 ((t (:foreground "#afd787"))))
- '(outline-6 ((t (:foreground "#2aa198"))))
+ '(outline-6 ((t (:foreground "#2da49b"))))
 
  '(markdown-code-face     ((t (:inherit font-lock-keyword-face))))
  '(markdown-pre-face      ((t (:inherit font-lock-keyword-face))))
@@ -124,7 +125,7 @@
  '(markdown-header-face-2 ((t (:inherit markdown-header-face))))
  '(markdown-header-face-3 ((t (:inherit markdown-header-face :weight regular))))
  '(markdown-header-face-4 ((t (:inherit markdown-header-face :weight regular :foreground "#62b49f"))))
- '(markdown-header-face-5 ((t (:inherit markdown-header-face :weight regular :foreground "#2aa198"))))
+ '(markdown-header-face-5 ((t (:inherit markdown-header-face :weight regular :foreground "#2da49b"))))
  '(markdown-header-face-6 ((t (:inherit markdown-header-face :weight regular :foreground "#2f8e87"))))
 
  '(company-preview ((t (:inherit default :background "#304540"))))
@@ -142,6 +143,8 @@
  '(company-scrollbar-fg                 ((t (:foreground "#1b1b1b" :background "#47bcb3"))))
 
  '(nlinum-relative-current-face ((t (:foreground "#9c90a6" :background "#3e4242"))))
+
+ '(sh-quoted-exec ((t (:foreground "#8ba004"))))
 
  '(term-color-black   ((t (:foreground "#1b1b1c"))))
  '(term-color-red     ((t (:foreground "#cb5a37"))))
