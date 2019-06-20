@@ -2519,6 +2519,9 @@ the minibuffer."
      0 nil))
   (define-key dired-mode-map
     (kbd "C-c n")
+    'my/dired-find-file-ace)
+  (define-key dired-mode-map
+    (kbd "M-n")
     'my/dired-find-file-ace))
 
 (require 'dired-x)
