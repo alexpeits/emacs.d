@@ -1215,6 +1215,7 @@ PWD is not in a git repo (or the git command is not found)."
 (define-key my/git-map (kbd "g") 'magit-status)
 (define-key my/git-map (kbd "b") 'magit-blame)
 (define-key my/git-map (kbd "l") 'my/git-blame-current-line)
+(define-key my/git-map (kbd "t") 'git-timemachine-toggle)
 #+END_SRC
 
 * Evil-mode
