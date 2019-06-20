@@ -1133,6 +1133,18 @@ PWD is not in a git repo (or the git command is not found)."
                 (evil-exit-emacs-state)))))
 #+END_SRC
 
+** git-timemachine
+
+#+BEGIN_SRC emacs-lisp
+(use-package git-timemachine
+  :ensure t
+  :commands (git-timemachine)
+  :config
+  (add-hook
+   'git-timemachine-mode-hook
+   '(lambda () (evil-local-mode -1))))
+#+END_SRC
+
 ** Diff-hl
 
 #+BEGIN_SRC emacs-lisp
