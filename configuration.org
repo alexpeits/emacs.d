@@ -1027,6 +1027,16 @@ PWD is not in a git repo (or the git command is not found)."
            (my/hl-line-set-bg) (my/org-set-src-faces)
            (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
            ))
+        (anti-zenburn
+         (progn
+           (custom-theme-set-faces
+            'anti-zenburn
+            '(mode-line-buffer-id ((t (:weight bold))))
+            '(persp-selected-face ((t (:foreground "2f4070" :weight bold))))
+            )
+           (my/org-set-src-faces t)
+           (my/hl-line-set-bg t))
+         t)
         ))
 
 (defvar my/avail-themes '(wombat))
