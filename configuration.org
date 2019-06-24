@@ -1988,8 +1988,10 @@ the current file."
          ("\\.page\\'" . gfm-mode))
   :config
   (my/set-mode-fill-width 'markdown-mode-hook 100)
-  (my/add-hooks '(markdown-mode-hook)
-                (auto-fill-mode 1))
+  (my/add-hooks
+   '(markdown-mode-hook)
+   (auto-fill-mode 1)
+   (whitespace-mode +1))
   ;; (setq markdown-fontify-code-blocks-natively t)
   )
 #+END_SRC
