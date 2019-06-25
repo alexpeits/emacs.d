@@ -33,7 +33,7 @@
  'lucius
 
  '(cursor              ((t (:background "#99d1ce"))))
- '(default             ((t (:foreground "#c9dbd5" :background "#1b1b1c"))))
+ '(default             ((t (:foreground "#bedddb" :background "#1b1b1c"))))
  '(minibuffer-prompt   ((t (:foreground "#12a89f" :weight bold))))
  '(escape-glyph        ((t (:foreground "orange"))))
  '(highlight           ((t (:background "#384448"))))
