@@ -1020,23 +1020,23 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'zenburn
-            ;; '(default ((t (:foreground "#dcdccc" :background "#2a2a2a"))))
-            ;; '(region ((t (:background "#404040"))))
-            ;; '(vertical-border ((t (:foreground "#a0a0a0"))))
-            ;; '(fringe ((t (:background "#353535"))))
-            ;; '(mode-line ((t
-                          ;; (:box
-                           ;; (:line-width -1 :color nil :style released-button)
-                           ;; :foreground "#9cc19c" :background "#3d3d3d"))))
-            ;; '(mode-line-inactive ((t
-                                   ;; (:box
-                                    ;; (:line-width -1 :color nil :style released-button)
-                                    ;; :foreground "#5F7F5F" :background "#2B2B2B"))))
-            ;; '(mode-line-buffer-id ((t (:weight bold))))
-            ;; '(persp-selected-face ((t (:foreground "#d0bf8f" :weight bold))))
-            '(region ((t (:background "#5a5a5a"))))
-            '(vertical-border ((t (:foreground "#b5b5b5"))))
-            '(fringe ((t (:background "#4a4a4a"))))
+            '(default ((t (:foreground "#dcdccc" :background "#2a2a2a"))))
+            '(region ((t (:background "#404040"))))
+            '(vertical-border ((t (:foreground "#a0a0a0"))))
+            '(fringe ((t (:background "#353535"))))
+            '(mode-line ((t
+                          (:box
+                           (:line-width -1 :color nil :style released-button)
+                           :foreground "#a2c6a2" :background "#454545"))))
+            '(mode-line-inactive ((t
+                                   (:box
+                                    (:line-width -1 :color nil :style released-button)
+                                    :foreground "#5F7F5F" :background "#2B2B2B"))))
+            '(mode-line-buffer-id ((t (:weight bold))))
+            '(persp-selected-face ((t (:foreground "#d0bf8f" :weight bold))))
+            ;; '(region ((t (:background "#5a5a5a"))))
+            ;; '(vertical-border ((t (:foreground "#b5b5b5"))))
+            ;; '(fringe ((t (:background "#4a4a4a"))))
             )
            (my/hl-line-set-bg) (my/org-set-src-faces)
            (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
