@@ -1760,8 +1760,10 @@ the current file."
 
 (defun my/haskell-align-and-sort-imports ()
   (interactive)
-  (call-interactively 'haskell-align-imports)
-  (call-interactively 'haskell-sort-imports))
+  (save-excursion
+    (haskell-navigate-imports)
+    (call-interactively 'haskell-align-imports)
+    (call-interactively 'haskell-sort-imports)))
 
 (defun my/haskell-open-package-yaml ()
   (interactive)
