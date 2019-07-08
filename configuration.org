@@ -1750,20 +1750,24 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(defun my/haskell-format-and-save ()
+(defun my/haskell-format-and-save (use-haskell-mode)
   "Formats the import statements using haskell-stylish and saves
 the current file."
-  (interactive)
+  (interactive "P")
   (save-buffer)
-  (haskell-mode-stylish-buffer)
+  (if use-haskell-mode
+      (my/haskell-align-and-sort-imports)
+    (haskell-mode-stylish-buffer))
   (save-buffer))
 
 (defun my/haskell-align-and-sort-imports ()
   (interactive)
   (save-excursion
-    (haskell-navigate-imports)
-    (call-interactively 'haskell-align-imports)
-    (call-interactively 'haskell-sort-imports)))
+    (goto-line 1)
+    (while (haskell-navigate-imports)
+      (progn
+        (call-interactively 'haskell-align-imports)
+        (call-interactively 'haskell-sort-imports)))))
 
 (defun my/haskell-open-package-yaml ()
   (interactive)
@@ -1806,6 +1810,7 @@ the current file."
 (defun my/purescript-sort-and-align-imports ()
   (interactive)
   (save-excursion
+    (goto-line 1)
     (while (purescript-navigate-imports)
       (progn
         (purescript-sort-imports)
