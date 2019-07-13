@@ -137,6 +137,11 @@ Alpha should be a float between 0 and 1."
                     (color-name-to-rgb color1)
                     (color-name-to-rgb color2))))
 
+(defvar solarized-black-blue-bg nil)
+
+(defun if-blue-bg (blu blk)
+  (if solarized-black-blue-bg blu blk))
+
 ;;; Setup Start
 (defmacro solarized-black-with-color-variables (variant &rest body)
   (declare (indent defun))
@@ -144,8 +149,12 @@ Alpha should be a float between 0 and 1."
           (light-class (append '((background light)) class))
           (dark-class (append '((background dark)) class))
           (variant ,variant)
-          (s-base03    "#1a1a1a")
-          (s-base02    "#2a2a2a")
+          (s-base03    (if-blue-bg "#002b36" "#1a1a1a"))
+          (s-base02b   (if-blue-bg "#06303c" "#202020"))
+          (s-base02    (if-blue-bg "#073642" "#2a2a2a"))
+          ;; (s-base03    "#1a1a1a")
+          ;; (s-base02b   "#202020")
+          ;; (s-base02    "#2a2a2a")
           ;; emphasized content
           (s-base01    "#5e767d")
           ;; primary content
@@ -166,7 +175,7 @@ Alpha should be a float between 0 and 1."
           (violet    "#6c71c4")
           (blue      "#268bd2")
           (cyan      "#2aa198")
-          (green     "#859900")
+          (green     "#829600")
 
           ;; Darker and lighter accented colors
           ;; Only use these in exceptional circumstances!
@@ -277,7 +286,7 @@ customize the resulting theme."
      `(default ((,class (:foreground ,base0 :background ,base03))))
      `(error ((,class (:foreground ,orange))))
      `(escape-glyph ((,class (:foreground ,violet))))
-     `(fringe ((,class (:foreground ,s-fringe-fg :background "#202020"))))
+     `(fringe ((,class (:foreground ,s-fringe-fg :background ,s-base02b))))
      `(header-line
        ((,class (:inverse-video unspecified
                                 :overline nil
@@ -311,7 +320,8 @@ customize the resulting theme."
                                 :background ,s-mode-line-inactive-bg
                                 :box (:line-width 1 :color ,s-mode-line-inactive-bg
                                                   :style unspecified)))))
-     `(region ((,class (:foreground ,base03 :background ,base1))))
+     ;; `(region ((,class (:foreground ,base03 :background ,base1))))
+     `(region ((,class (:background "#043c5e"))))
      `(secondary-selection ((,class (:background ,base02))))
      `(shadow ((,class (:foreground ,base01))))
      `(success ((,class (:foreground ,green ))))
@@ -1384,10 +1394,10 @@ customize the resulting theme."
      `(ledger-font-reconciler-pending-face ((t (:foreground ,yellow :weight normal))))
      `(ledger-font-report-clickable-face ((t (:foreground ,yellow :weight normal))))
 ;;;;; linum-mode
-     `(linum ((,class (:underline nil :foreground "#44565b" :background "#202020"))))
+     `(linum ((,class (:underline nil :foreground "#44565b" :background ,s-base02b))))
      `(linum-relative-current-face ((,class (:inherit linum))))
 ;;;;; display-line-number-mode
-     `(line-number ((,class (:underline nil :foreground "#44565b"  :background "#202020"))))
+     `(line-number ((,class (:underline nil :foreground "#44565b"  :background ,s-base02b))))
 ;;;;; lsp-ui
      `(lsp-ui-sideline-code-action ((,class (:foreground ,yellow :weight normal))))
 ;;;;; lusty-explorer
