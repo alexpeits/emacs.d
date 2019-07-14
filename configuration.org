@@ -1772,6 +1772,7 @@ the current file."
 
 (defun my/haskell-insert-ghcid-repl-statement (same-line)
   (interactive "P")
+  (setq current-prefix-arg nil)
   (unless same-line
     (call-interactively 'move-end-of-line)
     (call-interactively 'newline))
