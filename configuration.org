@@ -1726,6 +1726,7 @@ With a prefix argument, insert a newline above the current line."
   (my/define-major-mode-key 'haskell-mode "c" 'projectile-compile-project)
   (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
   (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
+  (my/define-major-mode-key 'haskell-mode "r" 'my/haskell-insert-ghcid-repl-statement)
   (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
   (my/define-major-mode-key 'haskell-mode "t" 'my/haskell-ask-type-region-or-word)
   )
@@ -1768,6 +1769,15 @@ the current file."
       (progn
         (call-interactively 'haskell-align-imports)
         (call-interactively 'haskell-sort-imports)))))
+
+(defun my/haskell-insert-ghcid-repl-statement (same-line)
+  (interactive "P")
+  (unless same-line
+    (call-interactively 'move-end-of-line)
+    (call-interactively 'newline))
+  (call-interactively 'move-beginning-of-line)
+  (call-interactively 'delete-horizontal-space)
+  (insert "-- $> "))
 
 (defun my/haskell-open-package-yaml ()
   (interactive)
