@@ -2781,6 +2781,15 @@ the minibuffer."
   )
 #+end_src
 
+** nginx
+
+#+begin_src emacs-lisp
+(use-package nginx-mode
+  :ensure t
+  :mode (("nginx\\.conf\\'" . nginx-mode)
+         ("nginx\\.conf\\.template\\'" . nginx-mode)))
+#+end_src
+
 ** terraform
 
 #+begin_src emacs-lisp
