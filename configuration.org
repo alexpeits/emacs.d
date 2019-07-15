@@ -944,9 +944,9 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'wombat
-            '(default ((t (:foreground "#d1d1d1" :background "#1a1a1a"))))
+            '(default ((t (:foreground "#c7c7c7" :background "#1a1a1a"))))
             '(font-lock-comment-face ((t (:foreground "#828987"))))
-            '(font-lock-string-face ((t (:foreground "#2a96d3"))))
+            '(font-lock-string-face ((t (:foreground "#4096c9"))))
             '(font-lock-doc-face ((t (:foreground "#348dc1"))))
             '(region ((t (:background "#515151"))))
             '(highlight ((t (:background "#3a3a3a"))))
@@ -963,6 +963,9 @@ PWD is not in a git repo (or the git command is not found)."
               ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
             ;; '(haskell-operator-face ((t (:foreground "#e5786d"))))
             '(haskell-constructor-face ((t (:inherit haskell-type-face :weight normal))))
+            '(ivy-grep-info ((t (:foreground "#a4bd64" :weight bold))))
+            '(ag-hit-face   ((t (:foreground "#a4bd64" :weight bold))))
+            '(sh-quoted-exec ((t (:foreground "#72c8db"))))
             )
            (my/after-set-theme)
            ))
@@ -981,6 +984,8 @@ PWD is not in a git repo (or the git command is not found)."
             '(magit-section-highlight ((t (:background "#203b56"))))
             '(show-paren-match ((t (:background "#245587"))))
             '(my/fci ((t (:foreground "#233064"))))
+            '(ivy-grep-info ((t (:foreground "green3" :weight bold))))
+            '(ag-hit-face   ((t (:foreground "green3" :weight bold))))
             )
            (my/after-set-theme)
            ))
@@ -1770,10 +1775,10 @@ the current file."
         (call-interactively 'haskell-align-imports)
         (call-interactively 'haskell-sort-imports)))))
 
-(defun my/haskell-insert-ghcid-repl-statement (same-line)
+(defun my/haskell-insert-ghcid-repl-statement (new-line)
   (interactive "P")
   (setq current-prefix-arg nil)
-  (unless same-line
+  (when new-line
     (call-interactively 'move-end-of-line)
     (call-interactively 'newline))
   (call-interactively 'move-beginning-of-line)
