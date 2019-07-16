@@ -2584,7 +2584,10 @@ the minibuffer."
     'my/dired-find-file-ace)
   (define-key dired-mode-map
     (kbd "M-n")
-    'my/dired-find-file-ace))
+    'my/dired-find-file-ace)
+  (define-key dired-mode-map
+    (kbd "M-u")
+    'dired-up-directory))
 
 (require 'dired-x)
 (if is-mac (setq dired-use-ls-dired nil))
