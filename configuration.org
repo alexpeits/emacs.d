@@ -1727,7 +1727,8 @@ With a prefix argument, insert a newline above the current line."
    '(("\\<\\(error\\)\\>" 1 font-lock-preprocessor-face prepend)
      ("\\<\\(undefined\\)\\>" 1 font-lock-preprocessor-face prepend)))
 
-  (my/define-major-mode-key 'haskell-mode "a" 'my/haskell-align-and-sort-imports)
+  (my/define-major-mode-key 'haskell-mode "ai" 'my/haskell-align-and-sort-imports)
+  (my/define-major-mode-key 'haskell-mode "al" 'my/haskell-align-and-sort-language-extensions)
   (my/define-major-mode-key 'haskell-mode "c" 'projectile-compile-project)
   (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
   (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
