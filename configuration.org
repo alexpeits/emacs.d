@@ -1818,9 +1818,9 @@ the current file."
   (interactive "P")
   (setq current-prefix-arg nil)
   (when new-line
-    (call-interactively 'move-end-of-line)
+    (end-of-line 1)
     (call-interactively 'newline))
-  (call-interactively 'move-beginning-of-line)
+  (beginning-of-line 1)
   (call-interactively 'delete-horizontal-space)
   (insert "-- $> "))
 
