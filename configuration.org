@@ -1731,6 +1731,7 @@ With a prefix argument, insert a newline above the current line."
   (my/define-major-mode-key 'haskell-mode "c" 'projectile-compile-project)
   (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
   (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
+  (my/define-major-mode-key 'haskell-mode "l" 'my/haskell-insert-language-extension)
   (my/define-major-mode-key 'haskell-mode "r" 'my/haskell-insert-ghcid-repl-statement)
   (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
   (my/define-major-mode-key 'haskell-mode "t" 'my/haskell-ask-type-region-or-word)
@@ -1763,17 +1764,53 @@ the current file."
   (save-buffer)
   (if use-haskell-mode
       (my/haskell-align-and-sort-imports)
+      (my/haskell-align-and-sort-language-extensions)
     (haskell-mode-stylish-buffer))
   (save-buffer))
 
 (defun my/haskell-align-and-sort-imports ()
   (interactive)
   (save-excursion
-    (goto-line 1)
+    (goto-char 0)
     (while (haskell-navigate-imports)
       (progn
         (call-interactively 'haskell-align-imports)
         (call-interactively 'haskell-sort-imports)))))
+
+(defun my/-haskell-mark-language-extensions ()
+  (interactive)
+  (deactivate-mark)
+  (goto-char 0)
+  (re-search-forward "^{-# LANGUAGE" nil t)
+  (beginning-of-line 1)
+  (call-interactively 'set-mark-command)
+  (while (re-search-forward "^{-# LANGUAGE" nil t)
+    nil)
+  (end-of-line 1))
+
+(defun my/haskell-align-and-sort-language-extensions ()
+  (interactive)
+  (save-excursion
+    (my/-haskell-mark-language-extensions)
+    (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)#-")
+    (my/-haskell-mark-language-extensions)
+    (sort-lines nil (region-beginning) (region-end))))
+
+(defun my/haskell-insert-language-extension ()
+  (interactive)
+  (let* ((all-exts
+          (split-string (shell-command-to-string "ghc --supported-languages")))
+         (ext
+          (completing-read "extension: "
+                           all-exts
+                           nil nil nil nil nil)))
+    (save-excursion
+      (goto-char 0)
+      (re-search-forward "^{-#" nil t)
+      (beginning-of-line 1)
+      (open-line 1)
+      (insert (format "{-# LANGUAGE %s #-}" ext))
+      (my/haskell-align-and-sort-language-extensions))))
 
 (defun my/haskell-insert-ghcid-repl-statement (new-line)
   (interactive "P")
