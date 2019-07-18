@@ -876,6 +876,7 @@ PWD is not in a git repo (or the git command is not found)."
       initial-scratch-message nil)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
+(set-window-scroll-bars (minibuffer-window) nil nil)
 (tool-bar-mode -1)
 
 ;; linum
