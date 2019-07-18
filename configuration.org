@@ -1888,6 +1888,7 @@ the current file."
   (setq purescript-indent-offset 2
         purescript-align-imports-pad-after-name t)
   :config
+  (my/define-major-mode-key 'purescript-mode "a" 'my/purescript-sort-and-align-imports)
   (my/define-major-mode-key 'purescript-mode "i" 'purescript-navigate-imports)
   (my/define-major-mode-key 'purescript-mode "s" 'my/purescript-format-and-save)
   (add-hook
@@ -2296,6 +2297,15 @@ corresponding buffer."
       name)))
 
 (advice-add 'projectile-default-project-name :around #'my/projectile-override-project-name)
+
+;; usage:
+;; (dolist (override '(
+;;                     ("/path/to/my/project" . "some-name")
+;;                     ("/other/project" . "some-other-name")
+;;                     ))
+;;   (let ((proj (car override))
+;;         (name (cdr override)))
+;;     (my/projectile-add-to-project-name-overrides proj name)))
 #+end_src
 
 * Searching
@@ -3350,6 +3360,9 @@ the minibuffer."
     (persp-switch "main")))
 
 (add-hook 'my/after-init-hook 'my/open-start-up-projects)
+
+;; usage:
+;; (add-to-list 'my/start-up-projects "/path/to/some/project")
 #+END_SRC
 
 # thanks Nicolas Petton
