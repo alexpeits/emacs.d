@@ -96,6 +96,10 @@ will be killed."
          (,reg)
        (,alt))))
 
+(defun my/jq-buffer-or-region ()
+  (interactive)
+  (my/shell-command-on-buffer-or-region "jq ."))
+
 (defun my/create-scratch-buffer-with-mode (other-window)
   "Create a new scratch buffer and select major mode to use.
 
@@ -2026,26 +2030,6 @@ the current file."
  web-mode-attr-indent-offset 2)
 #+END_SRC
 
-* Clojure
-   
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package clojure-mode
-  :ensure t
-  :mode ("\\.clj\\'" . clojure-mode)
-  :config
-  (add-hook 'clojure-mode-hook 'eldoc-mode))
-
-(use-package cider
-  :ensure t
-  :after clojure-mode
-  :config
-  (add-hook
-   'cider-repl-mode-hook
-   (lambda ()
-     (eldoc-mode)
-     (define-key cider-repl-mode-map (kbd "C-c C-l") 'cider-repl-clear-buffer))))
-#+END_SRC
-
 * Lisps
    
 #+BEGIN_SRC emacs-lisp
@@ -2103,14 +2087,7 @@ the current file."
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook 'emmet-mode))
 #+END_SRC
-
-
-#+begin_src emacs-lisp
-(defun my/jq-buffer-or-region ()
-  (interactive)
-  (my/shell-command-on-buffer-or-region "jq ."))
-#+end_src
-    
+ 
 ** Elasticsearch
 
 #+begin_src emacs-lisp
@@ -2854,7 +2831,14 @@ the minibuffer."
 #+begin_src emacs-lisp
 (use-package terraform-mode
   :ensure t
-  :mode ("\\.tf\\'" . terraform-mode))
+  :mode ("\\.tf\\'" . terraform-mode)
+  :config
+  (my/define-major-mode-key
+   'terraform-mode "s"
+   '(lambda() (interactive)
+      (terraform-format-buffer)
+      (save-buffer)))
+  )
 #+end_src
 
 ** PDF tools
@@ -2993,44 +2977,6 @@ the minibuffer."
   (setq ledger-mode-should-check-version nil
         ledger-report-links-in-register nil
         ledger-binary-path "hledger"))
-#+END_SRC
-
-** mu4e
-   
-#+BEGIN_SRC emacs-lisp :tangle no
-(if is-mac
-    (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu/mu4e")
-  (progn
-    (defvar mu-prefix (expand-file-name "~/opt/mu"))
-    (add-to-list 'load-path (concat mu-prefix "/share/emacs/site-lisp/mu4e"))
-    (setq mu4e-mu-binary (concat mu-prefix "/bin/mu"))))
-
-(defvar mu-prefix (expand-file-name "~/opt/mu"))
-(add-to-list 'load-path (concat mu-prefix "/share/emacs/site-lisp/mu4e"))
-(setq mu4e-mu-binary (concat mu-prefix "/bin/mu"))
-(setq mu4e-get-mail-command "offlineimap -o")
-(require 'mu4e)
-(setq mu4e-contexts
-      `( ,(make-mu4e-context
-           :name "Gmail"
-           :match-func
-           (lambda (msg)
-             (when msg
-               (string-prefix-p "/Gmail" (mu4e-message-field msg :maildir))))
-           :vars '(
-                   (mu4e-trash-folder . "/Gmail/[Gmail].Trash")
-                   (mu4e-refile-folder . "/Gmail/[Gmail].Archive")
-                   (mu4e-drafts-folder . "/Gmail/[Gmail].Drafts")
-                   (mu4e-sent-folder . "/Gmail/[Gmail].Sent Mail")
-                   ))))
-;; smtpmail
-(require 'smtpmail)
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-stream-type 'starttls
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-user "alexpeitsinis@gmail.com"
-      smtpmail-smtp-service 587)
 #+END_SRC
 
 ** erc
