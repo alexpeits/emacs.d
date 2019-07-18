@@ -604,6 +604,10 @@ buffer, close it."
   (defengine haskell-language-extensions
     "https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-%s"
     :keybinding "#")
+
+  (defengine pursuit
+    "https://pursuit.purescript.org/search?q=%s"
+    :keybinding "p")
   )
 #+END_SRC
 
@@ -1736,6 +1740,8 @@ With a prefix argument, insert a newline above the current line."
   (my/define-major-mode-key 'haskell-mode "r" 'my/haskell-insert-ghcid-repl-statement)
   (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
   (my/define-major-mode-key 'haskell-mode "t" 'my/haskell-ask-type-region-or-word)
+  (my/define-major-mode-key 'haskell-mode "/" 'engine/search-hoogle)
+  (my/define-major-mode-key 'haskell-mode "#" 'engine/search-haskell-language-extensions)
   )
 #+END_SRC
 
@@ -1891,6 +1897,7 @@ the current file."
   (my/define-major-mode-key 'purescript-mode "a" 'my/purescript-sort-and-align-imports)
   (my/define-major-mode-key 'purescript-mode "i" 'purescript-navigate-imports)
   (my/define-major-mode-key 'purescript-mode "s" 'my/purescript-format-and-save)
+  (my/define-major-mode-key 'purescript-mode "/" 'engine/search-pursuit)
   (add-hook
    'purescript-mode-hook
    (lambda ()
