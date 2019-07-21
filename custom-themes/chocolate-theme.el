@@ -75,7 +75,7 @@
   (link-visited (:foreground chocolate-hue-1 :underline nil))
   (mode-line (:foreground "#ccb3a1" :background "#59484d" :box nil))
   (mode-line-inactive (:foreground chocolate-hue-4-2 :background "#423539" :box nil))
-  (fringe (:background chocolate-syntax-bg))
+  (fringe (:background "#3b2d30"))
   (linum (:foreground chocolate-hue-4-2))
   (region (:background chocolate-syntax-light :distant-foreground chocolate-hue-4))
   (secondary-selection (:background chocolate-syntax-light))
@@ -1532,7 +1532,7 @@
   (show-paren-mismatch
    (:weight 'bold :foreground chocolate-syntax-bg-dark :background chocolate-hue-5))
   (show-paren-match
-   (:weight 'bold :foreground chocolate-hue-5 :background chocolate-syntax-bg-dark))
+   (:weight 'bold :foreground chocolate-hue-5 :background "#5e4c50"))
   (tty-menu-selected-face
    (:background chocolate-syntax-accent))
   (tty-menu-disabled-face
@@ -1639,6 +1639,12 @@
    (:foreground chocolate-hue-1))
   (persp-selected-face
    (:foreground chocolate-syntax-modified :weight 'bold))
+  (org-block
+   (:background "#35292C" :foreground "#B29079"))
+  (org-block-begin-line
+   (:background "#403034" :foreground "#705B5F"))
+  (org-block-end-line
+   (:inherit 'org-block-begin-line))
   ))
 
 
