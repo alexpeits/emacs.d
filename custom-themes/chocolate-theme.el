@@ -73,7 +73,7 @@
   (cursor (:background chocolate-hue-4))
   (link (:foreground chocolate-hue-1 :underline t))
   (link-visited (:foreground chocolate-hue-1 :underline nil))
-  (mode-line (:foreground chocolate-hue-4 :background "#59484d" :box nil))
+  (mode-line (:foreground "#ccb3a1" :background "#59484d" :box nil))
   (mode-line-inactive (:foreground chocolate-hue-4-2 :background "#423539" :box nil))
   (fringe (:background chocolate-syntax-bg))
   (linum (:foreground chocolate-hue-4-2))
@@ -1389,8 +1389,12 @@
    (:inherit 'font-lock-preprocessor-face))
   (haskell-operator-face
    (:inherit 'font-lock-variable-name-face))
+  ;; (haskell-constructor-face
+   ;; (:inherit 'font-lock-type-face))
+  ;; (haskell-constructor-face
+   ;; (:foreground chocolate-hue-7-5))
   (haskell-constructor-face
-   (:inherit 'font-lock-type-face))
+   (:inherit 'default))
   (haskell-type-face
    (:inherit 'font-lock-type-face))
   (haskell-keyword-face
@@ -1563,7 +1567,7 @@
   (window-divider
    (:inherit 'vertical-border))
   (vertical-border
-   (:foreground chocolate-syntax-bg-dark :background chocolate-syntax-bg-dark))
+   (:foreground chocolate-dark-yellow :background chocolate-hue-4-2))
   (header-line
    (:inherit 'mode-line))
   (mode-line-buffer-id
@@ -1633,6 +1637,8 @@
    (:background chocolate-hue-6-3))
   (which-func
    (:foreground chocolate-hue-1))
+  (persp-selected-face
+   (:foreground chocolate-syntax-modified :weight 'bold))
   ))
 
 
