@@ -2821,6 +2821,15 @@ the minibuffer."
   )
 #+end_src
 
+** nix
+
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode
+  :ensure t
+  :mode (("\\.nix\\'" . nix-mode))
+  )
+#+END_SRC
+
 ** nginx
 
 #+begin_src emacs-lisp
