@@ -26,7 +26,7 @@
 (defvar is-mac (eq system-type 'darwin)
   "Whether emacs is running in mac or not")
 #+END_SRC
-   
+
 * Various utility functions
 
 #+BEGIN_SRC emacs-lisp
@@ -228,6 +228,9 @@ With a prefix argument, open using `find-file-other-window'."
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
+
+;; Some sort of emacs bug workaround
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
 
 ;; activate installed packages
 (package-initialize)
