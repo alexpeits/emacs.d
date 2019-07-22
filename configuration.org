@@ -230,7 +230,8 @@ With a prefix argument, open using `find-file-other-window'."
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
 
 ;; Some sort of emacs bug workaround
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+(when (>= emacs-major-version 26)
+  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 ;; activate installed packages
 (package-initialize)
