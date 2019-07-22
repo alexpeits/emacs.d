@@ -3012,6 +3012,8 @@ the minibuffer."
   :init
   (setq direnv-show-paths-in-summary nil
         direnv-always-show-summary nil)
+  (unless (fboundp 'file-attribute-size)
+    (defun file-attribute-size (attrs) (elt attrs 7)))
   :config
   (direnv-mode))
 #+end_src
