@@ -1826,10 +1826,6 @@ the current file."
   (call-interactively 'delete-horizontal-space)
   (insert "-- $> "))
 
-(defun my/haskell-open-package-yaml ()
-  (interactive)
-  (my/try-open-dominating-file "package.yaml"))
-
 (defun my/haskell-ask-type-region-or-word ()
   (interactive)
   (save-excursion
@@ -1848,7 +1844,9 @@ the current file."
   (sp-local-pair 'haskell-mode "'" nil :actions nil))
 
 (my/evil-define-text-object "haskell-inline-comment" "#" "{- " " -}")
+
 (setq haskell-align-imports-pad-after-name t)
+
 (add-hook 'haskell-mode-hook
           (lambda ()
             (setq evil-shift-width 2)
