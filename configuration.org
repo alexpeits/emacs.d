@@ -1006,10 +1006,10 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'chocolate
+            '(fringe ((t (:background "#3b2d30"))))
             '(mode-line ((t (:foreground "#ccb3a1" :background "#5f4e53"))))
             '(mode-line-inactive ((t (:foreground "#937F73" :background "#423539"))))
             '(mode-line-buffer-id ((t (:weight bold))))
-            '(fringe ((t (:background "#3b2d30"))))
             '(font-lock-comment-face ((t (:foreground "#7b666a"))))
             '(font-lock-doc-face ((t (:foreground "#AA8768"))))
             '(diff-hl-change ((t (:background "#122544" :foreground "#466daf"))))
@@ -1026,9 +1026,10 @@ PWD is not in a git repo (or the git command is not found)."
            (custom-theme-set-faces
             'zenburn
             '(default ((t (:foreground "#dcdccc" :background "#2a2a2a"))))
+            '(linum ((t (:inherit font-lock-comment-face :background "#323232"))))
             '(region ((t (:background "#404040"))))
             '(vertical-border ((t (:foreground "#a0a0a0"))))
-            '(fringe ((t (:background "#353535"))))
+            '(fringe ((t (:background "#383838"))))
             '(mode-line ((t
                           (:box
                            (:line-width -1 :color nil :style released-button)
@@ -2400,13 +2401,23 @@ corresponding buffer."
   ;; counsel-ag
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
 
+  (defun my/counsel-ag ()
+    (interactive)
+    (cond
+     ((= (prefix-numeric-value current-prefix-arg) 4) (counsel-ag nil nil "" nil))
+     ((= (prefix-numeric-value current-prefix-arg) 16) (counsel-ag nil nil nil nil))
+     (t (my/counsel-ag-maybe-project-root))))
+
+  (global-set-key (kbd "C-c C-f") 'my/counsel-ag)
+
   (defun my/counsel-ag-maybe-project-root ()
     (interactive)
     ;; if not in a project, (projectile-project-root) returns `nil' which is fine
     (let ((root-dir (read-file-name "Search in: " (projectile-project-root))))
       (counsel-ag "" root-dir)))
 
-  (global-set-key (kbd "C-c s") 'my/counsel-ag-maybe-project-root)
+  ;; (global-set-key (kbd "C-c s") 'my/counsel-ag-maybe-project-root)
+
   ;; S-SPC doesn't work properly in counsel-ag anyway
   (define-key counsel-ag-map (kbd "S-SPC") nil)
 
