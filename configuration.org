@@ -1027,7 +1027,7 @@ PWD is not in a git repo (or the git command is not found)."
             'zenburn
             '(default ((t (:foreground "#dcdccc" :background "#2a2a2a"))))
             '(linum ((t (:inherit font-lock-comment-face :background "#323232"))))
-            '(region ((t (:background "#404040"))))
+            '(region ((t (:background "#5a5a5a"))))
             '(vertical-border ((t (:foreground "#a0a0a0"))))
             '(fringe ((t (:background "#383838"))))
             '(mode-line ((t
@@ -1060,6 +1060,26 @@ PWD is not in a git repo (or the git command is not found)."
            (my/org-set-src-faces t)
            (my/hl-line-set-bg t))
          t)
+        (one-dark
+         (progn
+           (custom-theme-set-faces
+            'one-dark
+            '(default                ((t (:foreground "#bac2d1" :background "#171920"))))
+            '(mode-line              ((t (:box nil :foreground "#ced4e0" :background "#464c57"))))
+            '(mode-line-inactive     ((t (:box nil :foreground "#646c7d" :background "#2c323c"))))
+            '(mode-line-buffer-id    ((t (:weight bold))))
+            '(persp-selected-face    ((t (:foreground "#66b1ff" :weight bold))))
+            '(vertical-border        ((t (:foreground "#546276"))))
+            '(fringe                 ((t (:background "#20222b"))))
+            '(font-lock-comment-face ((t (:foreground "#747c8e" :slant italic))))
+            '(font-lock-doc-face     ((t (:foreground "#9fb893"))))
+            '(markdown-code-face     ((t (:inherit font-lock-string-face))))
+            '(show-paren-match       ((t (:background "#245587"))))
+            )
+           (my/org-set-src-faces)
+           (my/hl-line-set-bg)
+           (my/diff-hl-set-fringe-faces)
+           ))
         ))
 
 (defvar my/avail-themes '(wombat))
@@ -2012,7 +2032,8 @@ the current file."
   :config
   (add-hook 'rjsx-mode-hook
     (lambda ()
-      (setq evil-shift-width 2))))
+      (setq evil-shift-width 2)
+      (define-key js2-mode-map (kbd "C-c C-f") nil))))
 
 (setq ;; js2-mode
  js-indent-level 2
