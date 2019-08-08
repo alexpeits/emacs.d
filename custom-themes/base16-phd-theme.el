@@ -696,7 +696,7 @@ return the actual color value.  Otherwise return the value unchanged."
      (org-footnote                                 :foreground base0C)
      (org-formula                                  :foreground base08)
      (org-hide                                     :foreground base03)
-     (org-link                                     :foreground base0D)
+     (org-link                                     :foreground base0C :underline t)
      (org-scheduled                                :foreground base0B)
      (org-scheduled-previously                     :foreground base09)
      (org-scheduled-today                          :foreground base0B)
