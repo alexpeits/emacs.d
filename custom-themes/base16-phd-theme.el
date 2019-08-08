@@ -187,7 +187,7 @@ return the actual color value.  Otherwise return the value unchanged."
      (link                                         :foreground base0D :underline t)
      (link-visited                                 :foreground base0E :underline t)
      (minibuffer-prompt                            :foreground base0D)
-     (region                                       :background base02)
+     (region                                       :background "#444d5d")
      (secondary-selection                          :background base03)
      (trailing-whitespace                          :foreground base0A :background base0C)
      (vertical-border                              :foreground base02)
@@ -517,7 +517,7 @@ return the actual color value.  Otherwise return the value unchanged."
      (highlight-indentation-face                   :background base01)
 
 ;;;; hl-line-mode
-     (hl-line                                      :background base01)
+     (hl-line                                      :background "#20293d")
      (col-highlight                                :background base01)
 
 ;;;; hl-sexp-mode
@@ -681,7 +681,9 @@ return the actual color value.  Otherwise return the value unchanged."
      (org-agenda-date                              :foreground base0D :underline nil)
      (org-agenda-done                              :foreground base0B)
      (org-agenda-dimmed-todo-face                  :foreground base04)
-     (org-block                                    :foreground base09)
+     (org-block                                    :foreground "#999ea8" :background "#06132d")
+     (org-block-begin-line                         :foreground "#717885" :background "#081a3d")
+     (org-block-end-line                           :inherit org-block-begin-line)
      (org-code                                     :foreground base0A)
      (org-column                                   :background base01)
      (org-column-title                             :weight bold :underline t :inherit org-column)
@@ -754,7 +756,7 @@ return the actual color value.  Otherwise return the value unchanged."
      (sh-quoted-exec                               :foreground nil :inherit font-lock-preprocessor-face)
 
 ;;;; show-paren-mode
-     (show-paren-match                             :foreground base01 :background base0D)
+     (show-paren-match                             :background "#3e6275" :weight bold)
      (show-paren-mismatch                          :foreground base01 :background base09)
 
 ;;;; slime-mode

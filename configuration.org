@@ -1751,6 +1751,7 @@ With a prefix argument, insert a newline above the current line."
    '(("\\<\\(error\\)\\>" 1 font-lock-preprocessor-face prepend)
      ("\\<\\(undefined\\)\\>" 1 font-lock-preprocessor-face prepend)))
 
+  (my/define-major-mode-key 'haskell-mode "aa" 'my/haskell-align-and-sort-everything)
   (my/define-major-mode-key 'haskell-mode "ai" 'my/haskell-align-and-sort-imports)
   (my/define-major-mode-key 'haskell-mode "al" 'my/haskell-align-and-sort-language-extensions)
   (my/define-major-mode-key 'haskell-mode "c" 'projectile-compile-project)
@@ -1839,6 +1840,11 @@ the current file."
       (open-line 1)
       (insert (format "{-# LANGUAGE %s #-}" ext))
       (my/haskell-align-and-sort-language-extensions))))
+
+(defun my/haskell-align-and-sort-everything ()
+  (interactive)
+  (my/haskell-align-and-sort-imports)
+  (my/haskell-align-and-sort-language-extensions))
 
 (defun my/haskell-insert-ghcid-repl-statement (new-line)
   (interactive "P")
@@ -2639,6 +2645,9 @@ the minibuffer."
      0 nil))
   (define-key dired-mode-map
     (kbd "C-c n")
+    'my/dired-find-file-ace)
+  (define-key dired-mode-map
+    (kbd "N")
     'my/dired-find-file-ace)
   (define-key dired-mode-map
     (kbd "M-n")
