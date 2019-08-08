@@ -2614,10 +2614,8 @@ the minibuffer."
   (define-key dired-mode-map (kbd "<tab>") 'dired-subtree-toggle)
   (define-key dired-mode-map (kbd "TAB") 'dired-subtree-toggle))
 
-(use-package dired-collapse
-  :ensure t
-  :config
-  (define-key dired-mode-map (kbd "/") 'dired-collapse-mode))
+(use-package dired-filter
+  :ensure t)
 
 (defun my/dired-find-file-ace ()
   (interactive)
