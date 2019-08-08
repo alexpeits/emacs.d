@@ -646,6 +646,8 @@ return the actual color value.  Otherwise return the value unchanged."
 ;;;; markdown-mode
      (markdown-url-face                            :inherit link)
      (markdown-link-face                           :foreground base0D :underline t)
+     (markdown-code-face                           :foreground base0B)
+     (markdown-pre-face                            :inherit markdown-code-face)
 
 ;;;; message-mode
      (message-header-other                         :foreground nil :background nil :weight normal)
@@ -826,6 +828,9 @@ return the actual color value.  Otherwise return the value unchanged."
 ;;;; which-func-mode
      (which-func                                   :foreground base0D :background nil :weight bold)
      (persp-selected-face                          :foreground base0C                 :weight bold)
+
+     ;; haskell
+     ;; (haskell-constructor-face :foreground "#de935f")
 
 ;;;; whitespace-mode
      (whitespace-empty                             :foreground base08 :background base0A)
