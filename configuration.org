@@ -990,9 +990,10 @@ PWD is not in a git repo (or the git command is not found)."
             '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
             '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
             '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#77808e" :slant italic))))
+            '(font-lock-comment-face ((t (:foreground "#818a98" :slant italic))))
             '(linum ((t (:inherit fringe :foreground "#607480"))))
-            '(fringe ((t (:background "#1c2031"))))
+            '(line-number ((t (:background "#141829" :foreground "#607480"))))
+            '(fringe ((t (:background "#222637"))))
             '(vertical-border ((t (:foreground "#91a2bf"))))
             '(magit-section-highlight ((t (:background "#203b56"))))
             '(show-paren-match ((t (:background "#245587"))))
@@ -1001,25 +1002,6 @@ PWD is not in a git repo (or the git command is not found)."
             '(ag-hit-face   ((t (:foreground "green3" :weight bold))))
             )
            (my/after-set-theme)
-           ))
-        (chocolate
-         (progn
-           (custom-theme-set-faces
-            'chocolate
-            '(fringe ((t (:background "#3b2d30"))))
-            '(mode-line ((t (:foreground "#ccb3a1" :background "#5f4e53"))))
-            '(mode-line-inactive ((t (:foreground "#937F73" :background "#423539"))))
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#7b666a"))))
-            '(font-lock-doc-face ((t (:foreground "#AA8768"))))
-            '(diff-hl-change ((t (:background "#122544" :foreground "#466daf"))))
-            '(show-paren-match ((t (:background "#5e4c50" :foreground "#DF6B75" :weight bold))))
-            '(persp-selected-face ((t (:foregorund "#e0c184" :weight bold))))
-            '(haskell-constructor-face ((t (:inherit default))))
-            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
-            )
-           (my/org-set-src-faces)
-           (my/hl-line-set-bg)
            ))
         (zenburn
          (progn
@@ -1969,6 +1951,24 @@ the current file."
 (use-package idris-mode
   :ensure t
   :mode ("\\.idr\\'" . idris-mode))
+#+END_SRC
+
+* Agda
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/agda-mode-path
+  (expand-file-name
+   "~/.emacs.d/lisp/agda-mode"))
+
+(defvar my/agda-path "agda")
+
+(use-package agda2-mode
+  :if (and (file-directory-p my/agda-mode-path)
+           (executable-find my/agda-path))
+  :load-path my/agda-mode-path
+  :mode ("\\.l?agda\\'" . agda2-mode)
+  :init
+  (setq agda2-program-name my/agda-path))
 #+END_SRC
 
 * Coq
