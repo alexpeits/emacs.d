@@ -29,7 +29,7 @@ Also affects `linum-mode' background."
   :type 'boolean
   :group 'base16)
 
-(defcustom base16-highlight-mode-line nil
+(defcustom base16-highlight-mode-line 'contrast
   "Make the active mode line stand out more.
 
 There are two choices for applying the emphasis:
