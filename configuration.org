@@ -986,7 +986,8 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'blackboard
-            '(default ((t (:foreground "#d3dde2" :background "#0c1021"))))
+            ;; '(default ((t (:foreground "#ccdae0" :background "#0c1021"))))
+            '(default ((t (:foreground "#ccdae0" :background "#131728"))))
             '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
             '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
             '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
@@ -1000,6 +1001,8 @@ PWD is not in a git repo (or the git command is not found)."
             '(my/fci ((t (:foreground "#233064"))))
             '(ivy-grep-info ((t (:foreground "green3" :weight bold))))
             '(ag-hit-face   ((t (:foreground "green3" :weight bold))))
+            '(org-link ((t (:foreground "skyblue2" :underline t))))
+            ;; '(markdown-pre-face ((t (:foreground "#6ac214"))))
             )
            (my/after-set-theme)
            ))
