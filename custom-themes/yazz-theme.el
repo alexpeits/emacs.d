@@ -61,6 +61,7 @@
       (yazz-bg+1     (color-lighten-name "#202020" 3))
       (yazz-bg+1b    (color-lighten-name "#363636" 3))
       (yazz-bg+2     (color-lighten-name "#505050" 10))
+      (yazz-bg+2b    (color-lighten-name "#565656" 10))
       (yazz-bg+3     (color-lighten-name "#606060" 10))
 
       (yazz-red+1    (color-lighten-name "#8d4a4a" 10))
@@ -169,7 +170,7 @@
 
    ;;; font lock
    `(font-lock-builtin-face ((,class (:foreground ,yazz-blue))))
-   `(font-lock-comment-face ((,class (:foreground ,yazz-bg+3))))
+   `(font-lock-comment-face ((,class (:foreground ,yazz-bg+2b))))
    `(font-lock-comment-delimiter-face ((,class (:inherit font-lock-comment-face))))
    `(font-lock-constant-face ((,class (:foreground ,yazz-magenta))))
    `(font-lock-doc-face ((,class (:foreground ,yazz-green+1))))
