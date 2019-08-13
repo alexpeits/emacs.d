@@ -100,6 +100,18 @@ will be killed."
   (interactive)
   (my/shell-command-on-buffer-or-region "jq ."))
 
+(defun my/indent-region-or-buffer ()
+  "Indent a region if selected, otherwise the whole buffer."
+  (interactive)
+  (save-excursion
+    (if (region-active-p)
+        (progn
+          (indent-region (region-beginning) (region-end))
+          (message "Indented selected region."))
+      (progn
+        (indent-region (point-min) (point-max))
+        (message "Indented buffer.")))))
+
 (defun my/create-scratch-buffer-with-mode (other-window)
   "Create a new scratch buffer and select major mode to use.
 
@@ -251,7 +263,7 @@ With a prefix argument, open using `find-file-other-window'."
 #+END_SRC
    
 * Various configurations
-** TODO sort these
+** emacs UI & editing
    
 #+BEGIN_SRC emacs-lisp
 ;; remember last position
@@ -348,18 +360,46 @@ With a prefix argument, open using `find-file-other-window'."
 ;; DocView
 (setq doc-view-continuous t)
 
-(defun my/indent-region-or-buffer ()
-  "Indent a region if selected, otherwise the whole buffer."
-  (interactive)
-  (save-excursion
-    (if (region-active-p)
-        (progn
-          (indent-region (region-beginning) (region-end))
-          (message "Indented selected region."))
-      (progn
-        (indent-region (point-min) (point-max))
-        (message "Indented buffer.")))))
+(use-package expand-region
+  :ensure t
+  :bind (("C-=" . er/expand-region)
+         ("C-M-=" . er/contract-region)))
 
+(use-package misc
+  :bind ("M-Z" . zap-up-to-char))
+
+(use-package subword
+  :diminish subword-mode
+  :commands (subword-mode my/subword-mode)
+  :config
+  (defun my/subword-mode (&optional arg)
+    (interactive)
+    (let ((disable
+           (lambda ()
+             (progn
+               (subword-mode -1)
+               (setq evil-symbol-word-search nil)
+               ;; (minibuffer-message "subword-mode disabled")
+               (put 'my/subword-mode-enabled 'state nil))))
+          (enable
+           (lambda ()
+             (progn
+               (subword-mode 1)
+               (setq evil-symbol-word-search t)
+               ;; (minibuffer-message "subword-mode enabled")
+               (put 'my/subword-mode-enabled 'state t)))))
+      (if arg
+          (if (<= arg 0)
+              (funcall disable)
+            (funcall enable))
+        (if (get 'my/subword-mode-enabled 'state)
+            (funcall disable)
+          (funcall enable))))))
+#+END_SRC
+
+** Smartparens
+
+#+BEGIN_SRC emacs-lisp
 (use-package smartparens
   :ensure t
   :defer t
@@ -413,38 +453,16 @@ With a prefix argument, open using `find-file-other-window'."
   (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
   (define-key smartparens-mode-map (kbd "M-j") nil)
   (define-key smartparens-mode-map (kbd "M-?") nil))
+#+END_SRC
 
+** Documentation & help
+
+#+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure t
   :diminish which-key-mode
   :config
   (which-key-mode))
-
-(use-package imenu-list
-  :ensure t
-  :bind ("C-|" . my/imenu-list-smart-toggle)
-  :config
-
-  (defun my/imenu-list-jump-to-window ()
-    "Jump to imenu-list window if visible, otherwise create it and jump."
-    (interactive)
-    (if (get-buffer-window imenu-list-buffer-name)
-        (select-window (get-buffer-window imenu-list-buffer-name))
-      (progn
-        (imenu-list-minor-mode)
-        (select-window (get-buffer-window imenu-list-buffer-name)))))
-
-  (defun my/imenu-list-smart-toggle ()
-    "If imenu-list window doesn't exist, create it and jump. If if does but
-it is not the current buffer, jump there. If it exists and it's the current
-buffer, close it."
-    (interactive)
-    (if (eq (current-buffer) (get-buffer imenu-list-buffer-name))
-        (imenu-list-quit-window)
-      (my/imenu-list-jump-to-window)))
-
-  ;; (global-set-key (kbd "C-|") #'my/imenu-list-smart-toggle)
-  (setq imenu-list-size 30))
 
 (use-package zeal-at-point
   :unless is-mac
@@ -459,42 +477,6 @@ buffer, close it."
   :if is-mac
   :ensure t
   :bind ("C-c d" . dash-at-point))
-
-(use-package expand-region
-  :ensure t
-  :bind (("C-=" . er/expand-region)
-         ("C-M-=" . er/contract-region)))
-
-(use-package misc
-  :bind ("M-Z" . zap-up-to-char))
-
-(use-package subword
-  :diminish subword-mode
-  :commands (subword-mode my/subword-mode)
-  :config
-  (defun my/subword-mode (&optional arg)
-    (interactive)
-    (let ((disable
-           (lambda ()
-             (progn
-               (subword-mode -1)
-               (setq evil-symbol-word-search nil)
-               ;; (minibuffer-message "subword-mode disabled")
-               (put 'my/subword-mode-enabled 'state nil))))
-          (enable
-           (lambda ()
-             (progn
-               (subword-mode 1)
-               (setq evil-symbol-word-search t)
-               ;; (minibuffer-message "subword-mode enabled")
-               (put 'my/subword-mode-enabled 'state t)))))
-      (if arg
-          (if (<= arg 0)
-              (funcall disable)
-            (funcall enable))
-        (if (get 'my/subword-mode-enabled 'state)
-            (funcall disable)
-          (funcall enable))))))
 #+END_SRC
 
 ** Jumping etc
@@ -546,6 +528,34 @@ buffer, close it."
   (set-mark-command 1))
 
 (global-set-key (kbd "M-`") 'jump-to-mark)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(use-package imenu-list
+  :ensure t
+  :bind ("C-|" . my/imenu-list-smart-toggle)
+  :config
+
+  (defun my/imenu-list-jump-to-window ()
+    "Jump to imenu-list window if visible, otherwise create it and jump."
+    (interactive)
+    (if (get-buffer-window imenu-list-buffer-name)
+        (select-window (get-buffer-window imenu-list-buffer-name))
+      (progn
+        (imenu-list-minor-mode)
+        (select-window (get-buffer-window imenu-list-buffer-name)))))
+
+  (defun my/imenu-list-smart-toggle ()
+    "If imenu-list window doesn't exist, create it and jump. If if does but
+it is not the current buffer, jump there. If it exists and it's the current
+buffer, close it."
+    (interactive)
+    (if (eq (current-buffer) (get-buffer imenu-list-buffer-name))
+        (imenu-list-quit-window)
+      (my/imenu-list-jump-to-window)))
+
+  ;; (global-set-key (kbd "C-|") #'my/imenu-list-smart-toggle)
+  (setq imenu-list-size 30))
 #+END_SRC
 
 ** Autocompleting etc
@@ -653,7 +663,7 @@ buffer, close it."
   (puthash "bottom" "⊥" xah-math-input-abrvs))
 #+END_SRC
 
-** recentf  
+** recentf
 
 #+BEGIN_SRC emacs-lisp 
 (setq recentf-max-saved-items 100) (recentf-mode 1)
@@ -986,8 +996,8 @@ PWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'blackboard
-            ;; '(default ((t (:foreground "#ccdae0" :background "#0c1021"))))
-            '(default ((t (:foreground "#ccdae0" :background "#131728"))))
+            '(default ((t (:foreground "#ccdae0" :background "#0c1021"))))
+            ;; '(default ((t (:foreground "#ccdae0" :background "#131728"))))
             '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
             '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
             '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
@@ -1045,25 +1055,33 @@ PWD is not in a git repo (or the git command is not found)."
            (my/org-set-src-faces t)
            (my/hl-line-set-bg t))
          t)
-        (one-dark
+        (darktooth
          (progn
            (custom-theme-set-faces
-            'one-dark
-            '(default                ((t (:foreground "#bac2d1" :background "#171920"))))
-            '(mode-line              ((t (:box nil :foreground "#ced4e0" :background "#464c57"))))
-            '(mode-line-inactive     ((t (:box nil :foreground "#646c7d" :background "#2c323c"))))
-            '(mode-line-buffer-id    ((t (:weight bold))))
-            '(persp-selected-face    ((t (:foreground "#66b1ff" :weight bold))))
-            '(vertical-border        ((t (:foreground "#546276"))))
-            '(fringe                 ((t (:background "#20222b"))))
-            '(font-lock-comment-face ((t (:foreground "#747c8e" :slant italic))))
-            '(font-lock-doc-face     ((t (:foreground "#9fb893"))))
-            '(markdown-code-face     ((t (:inherit font-lock-string-face))))
-            '(show-paren-match       ((t (:background "#245587"))))
+            'darktooth
+            '(fringe ((t (:background "#313131"))))
+            '(default ((t (:foreground "#ddd7b4" :background "#262626"))))
+            '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
+            ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
+            '(font-lock-function-name-face ((t (:foreground "#afa08b"))))
+            '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
+            '(font-lock-keyword-face ((t (:foreground "#dd6f48"))))
+            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
+            '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
+            '(mode-line-inactive ((t (:box nil :foreground "#968a79" :background "#33302d"))))
+            '(vertical-border ((t (:foreground "#a89984"))))
+            '(markdown-pre-face ((t (:foreground "#8ec07c"))))
+            '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
+            '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
+            '(powerline-active0 ((t (:background "#696461" :foreground "#e5dfbc"))))
+            '(powerline-active1 ((t (:background "#55504d" :foreground "#e5dfbc"))))
+            '(powerline-active2 ((t (:background "#433f3e" :foreground "#e5dfbc"))))
+            '(powerline-inactive0 ((t (:background "#393532" :foreground "#908473"))))
+            '(powerline-inactive1 ((t (:background "#393532" :foreground "#908473"))))
+            '(powerline-inactive2 ((t (:background "#393532" :foreground "#908473"))))
             )
-           (my/org-set-src-faces)
-           (my/hl-line-set-bg)
-           (my/diff-hl-set-fringe-faces)
+           (my/after-set-theme)
+           (setq pdf-view-midnight-colors '("#ddd7b4" . "#3d3d3d"))
            ))
         ))
 
