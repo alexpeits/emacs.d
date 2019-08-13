@@ -94,7 +94,9 @@
       (yazz-blue-4   (color-lighten-name "#385e6b" 10))
       (yazz-blue-5   (color-lighten-name "#385e6b" 10))
 
-      (yazz-magenta  (color-lighten-name "#7f355e" 10)))
+      (yazz-magenta    (color-lighten-name "#7f355e" 10))
+      (yazz-magenta+1  (color-lighten-name "#7f355e" 20))
+      )
   (custom-theme-set-faces
    'yazz
    '(button ((t (:underline t))))
@@ -446,11 +448,12 @@
    `(magit-item-highlight ((t (:background ,yazz-bg+1))))
 
    ;; markdown
-   `(markdown-header-face ((,class (:inherit variable-pitch))))
-   `(markdown-header-face-1 ((,class (:height 1.8 :inherit markdown-header-face))))
-   `(markdown-header-face-2 ((,class (:height 1.4 :inherit markdown-header-face))))
-   `(markdown-header-face-3 ((,class (:height 1.2 :inherit markdown-header-face))))
-   `(markdown-header-face-4 ((,class (:height 1.0 :inherit markdown-header-face))))
+   `(markdown-header-face-1 ((,class (:background ,yazz-bg+1 :inherit markdown-header-face))))
+   `(markdown-header-face-2 ((,class (:background ,yazz-bg+1 :inherit markdown-header-face))))
+   `(markdown-header-face-3 ((,class (:background ,yazz-bg+1 :inherit markdown-header-face))))
+   `(markdown-header-face-4 ((,class (:background ,yazz-bg+1 :inherit markdown-header-face))))
+   ;; `(markdown-code-face ((,class (:foreground ,yazz-magenta+1))))
+   `(markdown-pre-face ((,class (:foreground ,yazz-magenta+1))))
 
    ;; message-mode
    `(message-cited-text ((,class (:inherit font-lock-comment))))
