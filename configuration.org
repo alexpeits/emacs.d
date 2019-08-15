@@ -1759,6 +1759,7 @@ With a prefix argument, insert a newline above the current line."
   (my/define-major-mode-key 'haskell-mode "h" 'hoogle)
   (my/define-major-mode-key 'haskell-mode "i" 'haskell-navigate-imports)
   (my/define-major-mode-key 'haskell-mode "l" 'my/haskell-insert-language-extension)
+  (my/define-major-mode-key 'haskell-mode "o" 'my/haskell-insert-ghc-option)
   (my/define-major-mode-key 'haskell-mode "r" 'my/haskell-insert-ghcid-repl-statement)
   (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
   (my/define-major-mode-key 'haskell-mode "t" 'my/haskell-ask-type-region-or-word)
@@ -1845,6 +1846,21 @@ the current file."
       (insert (format "{-# LANGUAGE %s #-}" ext))
       (my/haskell-align-and-sort-language-extensions))))
 
+(defun my/haskell-insert-ghc-option ()
+  (interactive)
+  (let* ((all-opts
+          (split-string (shell-command-to-string "ghc --show-options")))
+         (ext
+          (completing-read "option: "
+                           all-opts
+                           nil nil nil nil nil)))
+    (save-excursion
+      (goto-char 0)
+      (re-search-forward "^module" nil t)
+      (beginning-of-line 1)
+      (open-line 1)
+      (insert (format "{-# OPTIONS_GHC %s #-}" ext)))))
+
 (defun my/haskell-align-and-sort-everything ()
   (interactive)
   (my/haskell-align-and-sort-imports)
@@ -1896,6 +1912,8 @@ the current file."
 * Purescript
 
 #+BEGIN_SRC emacs-lisp
+(defvar my/purescript-align-stuff t)
+
 (defun my/purescript-sort-and-align-imports ()
   (interactive)
   (save-excursion
@@ -1903,7 +1921,7 @@ the current file."
     (while (purescript-navigate-imports)
       (progn
         (purescript-sort-imports)
-        (purescript-align-imports)))
+        (when my/purescript-align-stuff (purescript-align-imports))))
     (purescript-navigate-imports-return)))
 
 (defun my/purescript-format-and-save ()
@@ -3423,6 +3441,7 @@ the minibuffer."
                (haskell-hoogle-command)
                (my/use-intero)
                (my/haskell-align-stuff)
+               (my/purescript-align-stuff)
                ))
   (add-to-list 'safe-local-variable-values val))
 
