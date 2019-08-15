@@ -1039,8 +1039,8 @@ PWD is not in a git repo (or the git command is not found)."
             'cyberpunk
             '(default ((t (:foreground "#c0ccd1" :background "#141415"))))
             '(font-lock-comment-face ((t (:foreground "#929090"))))
-            '(mode-line ((t (:foreground "#bdd0f0" :background "#233954" :box (:line-width 1 :color "#233954")))))
-            '(mode-line-inactive ((t (:foreground "#3f718a" :background "#1e2628" :box (:line-width 1 :color "#233954")))))
+            '(mode-line ((t (:foreground "#afc2e3" :background "#253857" :box (:line-width 1 :color "#253857")))))
+            '(mode-line-inactive ((t (:foreground "#3f718a" :background "#1e2628" :box (:line-width 1 :color "#253857")))))
             '(mode-line-buffer-id ((t (:weight bold))))
             '(persp-selected-face ((t (:inherit font-lock-type-face :weight bold))))
             '(fringe ((t (:background "#282828"))))
