@@ -337,6 +337,8 @@ With a prefix argument, open using `find-file-other-window'."
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
+(global-set-key (kbd "C-c h") 'previous-buffer)
+(global-set-key (kbd "C-c l") 'next-buffer)
 ;; I use that to switch to Greek layout
 (global-set-key (kbd "M-SPC") nil)
 ;; used in help
@@ -992,30 +994,6 @@ PWD is not in a git repo (or the git command is not found)."
             )
            (my/after-set-theme)
            ))
-        (blackboard
-         (progn
-           (custom-theme-set-faces
-            'blackboard
-            '(default ((t (:foreground "#ccdae0" :background "#0c1021"))))
-            ;; '(default ((t (:foreground "#ccdae0" :background "#131728"))))
-            '(mode-line ((t (:box nil :foreground "#ced4e0" :background "#414968"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#4b7192" :background "#272a34"))))
-            '(persp-selected-face ((t (:foreground "#66b1ff" :weight bold))))
-            '(font-lock-comment-face ((t (:foreground "#818a98" :slant italic))))
-            '(linum ((t (:inherit fringe :foreground "#607480"))))
-            '(line-number ((t (:background "#141829" :foreground "#607480"))))
-            '(fringe ((t (:background "#222637"))))
-            '(vertical-border ((t (:foreground "#91a2bf"))))
-            '(magit-section-highlight ((t (:background "#203b56"))))
-            '(show-paren-match ((t (:background "#245587"))))
-            '(my/fci ((t (:foreground "#233064"))))
-            '(ivy-grep-info ((t (:foreground "green3" :weight bold))))
-            '(ag-hit-face   ((t (:foreground "green3" :weight bold))))
-            '(org-link ((t (:foreground "skyblue2" :underline t))))
-            ;; '(markdown-pre-face ((t (:foreground "#6ac214"))))
-            )
-           (my/after-set-theme)
-           ))
         (zenburn
          (progn
            (custom-theme-set-faces
@@ -1055,6 +1033,26 @@ PWD is not in a git repo (or the git command is not found)."
            (my/org-set-src-faces t)
            (my/hl-line-set-bg t))
          t)
+        (cyberpunk
+         (progn
+           (custom-theme-set-faces
+            'cyberpunk
+            '(default                ((t (:foreground "#c0ccd1" :background "#141415"))))
+            '(font-lock-comment-face ((t (:foreground "#929090"))))
+            '(mode-line           ((t (:foreground "#bdd0f0" :background "#233954" :box (:line-width 1 :color "#233954")))))
+            '(mode-line-inactive  ((t (:foreground "#3f718a" :background "#1e2628" :box (:line-width 1 :color "#233954")))))
+            '(mode-line-buffer-id ((t (:weight bold))))
+            '(persp-selected-face ((t (:inherit font-lock-type-face :weight bold))))
+            '(fringe              ((t (:background "#282828"))))
+            '(vertical-border     ((t (:foreground "#757f8a"))))
+            '(show-paren-match    ((t (:background "#456665" :weight bold))))
+            '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
+            '(org-block-background ((t (:background nil))))
+            )
+           (my/hl-line-set-bg)
+           (my/diff-hl-set-fringe-faces)
+           (my/org-set-src-faces)
+           ))
         (darktooth
          (progn
            (custom-theme-set-faces
@@ -1788,6 +1786,8 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
+(defvar my/haskell-align-stuff t)
+
 (defun my/haskell-format-and-save (use-stylish-haskell)
   "Formats the import statements using haskell-stylish and saves
 the current file."
@@ -1806,7 +1806,7 @@ the current file."
     (goto-char 0)
     (while (haskell-navigate-imports)
       (progn
-        (call-interactively 'haskell-align-imports)
+        (when my/haskell-align-stuff (call-interactively 'haskell-align-imports))
         (call-interactively 'haskell-sort-imports)))))
 
 (defun my/-haskell-mark-language-extensions ()
@@ -1823,8 +1823,9 @@ the current file."
 (defun my/haskell-align-and-sort-language-extensions ()
   (interactive)
   (save-excursion
-    (my/-haskell-mark-language-extensions)
-    (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)#-")
+    (when my/haskell-align-stuff
+      (my/-haskell-mark-language-extensions)
+      (align-regexp (region-beginning) (region-end) "\\(\\s-*\\)#-"))
     (my/-haskell-mark-language-extensions)
     (sort-lines nil (region-beginning) (region-end))))
 
@@ -3415,12 +3416,13 @@ the minibuffer."
                              (append flycheck-disabled-checkers
                                      (quote
                                       (intero)))))
-               (psc-ide-output-directory . "build/")
-               (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
-               (projectile-tags-command . "fast-tags -e -R .")
-               (projectile-tags-command . "npm run etags")
-               (haskell-hoogle-command . "stack hoogle -- --count=100")
-               (my/use-intero . nil)
+               (psc-ide-output-directory)
+               (projectile-tags-command)
+               (projectile-tags-command)
+               (projectile-tags-command)
+               (haskell-hoogle-command)
+               (my/use-intero)
+               (my/haskell-align-stuff)
                ))
   (add-to-list 'safe-local-variable-values val))
 
