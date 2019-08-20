@@ -3438,11 +3438,11 @@ the minibuffer."
                              (append flycheck-disabled-checkers
                                      (quote
                                       (intero)))))
-               (psc-ide-output-directory)
-               (projectile-tags-command)
-               (projectile-tags-command)
-               (projectile-tags-command)
-               (haskell-hoogle-command)
+               (haskell-hoogle-command . "stack hoogle -- --count=100")
+               (projectile-tags-command . "npm run etags")
+               (projectile-tags-command . "fast-tags -e -R .")
+               (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
+               (psc-ide-output-directory . "build/")
                (my/use-intero)
                (my/haskell-align-stuff)
                (my/purescript-align-stuff)
