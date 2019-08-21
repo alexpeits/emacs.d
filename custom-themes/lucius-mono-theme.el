@@ -33,7 +33,7 @@
  'lucius-mono
 
  '(cursor              ((t (:background "#99d1ce"))))
- '(default             ((t (:foreground "#bedddb" :background "#1b1b1c"))))
+ '(default             ((t (:foreground "#c3dedc" :background "#1b1b1c"))))
  '(minibuffer-prompt   ((t (:foreground "#12a89f" :weight bold))))
  '(escape-glyph        ((t (:foreground "orange"))))
  '(highlight           ((t (:background "#384448"))))
@@ -65,11 +65,12 @@
  `(font-lock-doc-face                  ((t (:inherit font-lock-string-face))))
  `(font-lock-doc-string-face           ((t (:inherit font-lock-doc-face))))
  `(font-lock-constant-face             ((t (:inherit default))))
+ ;; `(font-lock-constant-face             ((t (:foreground "#87d7ff" :background nil))))
  `(font-lock-builtin-face              ((t (:inherit default))))
  `(font-lock-function-name-face        ((t (:foreground "#a7d37b" :background nil))))
  `(font-lock-variable-name-face        ((t (:inherit default))))
  `(font-lock-keyword-face              ((t (:foreground "#86b8b5" :weight bold))))
- `(font-lock-string-face               ((t (:foreground "#49c4bb" :background nil))))
+ `(font-lock-string-face               ((t (:foreground "#1cada3" :background nil))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37" :background nil))))
  ;; '(font-lock-preprocessor-face         ((t (:foreground "#cb5a37" :background nil))))
@@ -121,8 +122,8 @@
  '(outline-5 ((t (:foreground "#afd787"))))
  '(outline-6 ((t (:foreground "#2da49b"))))
 
- '(markdown-code-face     ((t (:inherit font-lock-keyword-face))))
- '(markdown-pre-face      ((t (:inherit font-lock-keyword-face))))
+ '(markdown-code-face     ((t (:inherit font-lock-string-face))))
+ '(markdown-pre-face      ((t (:inherit font-lock-string-face))))
  '(markdown-header-face-1 ((t (:inherit markdown-header-face :background "#2d3d38"))))
  '(markdown-header-face-2 ((t (:inherit markdown-header-face))))
  '(markdown-header-face-3 ((t (:inherit markdown-header-face :weight regular))))

@@ -2093,6 +2093,16 @@ the current file."
  web-mode-css-indent-offset 2
  web-mode-code-indent-offset 2
  web-mode-attr-indent-offset 2)
+
+(use-package prettier-js
+  :ensure t
+  :commands (prettier-js)
+  :init
+  (defun my/js-format-and-save ()
+    (interactive)
+    (prettier-js)
+    (save-buffer))
+  (my/define-major-mode-key 'rjsx-mode "s" 'my/js-format-and-save))
 #+END_SRC
 
 * Lisps
