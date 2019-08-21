@@ -2098,6 +2098,8 @@ the current file."
   :ensure t
   :commands (prettier-js)
   :init
+  (setq prettier-js-args '("--trailing-comma" "es5"
+                           "--bracket-spacing" "false"))
   (defun my/js-format-and-save ()
     (interactive)
     (prettier-js)
