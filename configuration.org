@@ -2080,6 +2080,7 @@ the current file."
   :mode (("\\.js\\'" . rjsx-mode)
          ("\\.jsx\\'" . rjsx-mode))
   :config
+  (my/set-mode-fill-width 'js2-mode-hook 100)
   (add-hook 'rjsx-mode-hook
     (lambda ()
       (setq evil-shift-width 2)

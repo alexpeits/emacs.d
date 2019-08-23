@@ -33,7 +33,8 @@
  'lucius-mono
 
  '(cursor              ((t (:background "#99d1ce"))))
- '(default             ((t (:foreground "#c3dedc" :background "#1b1b1c"))))
+ ;; '(default             ((t (:foreground "#c3dedc" :background "#1b1b1c"))))
+ '(default             ((t (:foreground "#c5cdcd" :background "#1b1b1c"))))
  '(minibuffer-prompt   ((t (:foreground "#12a89f" :weight bold))))
  '(escape-glyph        ((t (:foreground "orange"))))
  '(highlight           ((t (:background "#384448"))))
@@ -69,7 +70,7 @@
  `(font-lock-builtin-face              ((t (:inherit default))))
  `(font-lock-function-name-face        ((t (:foreground "#a7d37b" :background nil))))
  `(font-lock-variable-name-face        ((t (:inherit default))))
- `(font-lock-keyword-face              ((t (:foreground "#86b8b5" :weight bold))))
+ `(font-lock-keyword-face              ((t (:foreground "#86b8b5"))))
  `(font-lock-string-face               ((t (:foreground "#1cada3" :background nil))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37" :background nil))))
@@ -85,8 +86,9 @@
  '(isearch             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
  '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
- ;; `(haskell-type-face    ((t (:foreground "#57b5c1"))))
+ `(haskell-constructor-face    ((t (:inherit default))))
  `(haskell-pragma-face    ((t (:foreground "#8ba004" :slant italic))))
+ `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  `(purescript-pragma-face ((t (:inherit haskell-pragma-face))))
 
  '(proof-locked-face ((t (:background "#2b303a"))))
