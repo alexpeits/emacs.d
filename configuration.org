@@ -1374,7 +1374,7 @@ PWD is not in a git repo (or the git command is not found)."
      conf-colon-mode-hook
      conf-space-mode-hook
      conf-windows-mode-hook
-     toml-mode-hook
+     conf-toml-mode-hook
      )
    (if my/use-evil-mode (evil-local-mode)))
 
@@ -2106,6 +2106,42 @@ the current file."
     (prettier-js)
     (save-buffer))
   (my/define-major-mode-key 'rjsx-mode "s" 'my/js-format-and-save))
+#+END_SRC
+
+* Rust
+
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode
+  :ensure t
+  :mode ("\\.rs\\'" . rust-mode)
+  :init
+  (use-package racer :ensure t :after rust-mode)
+  (use-package cargo :ensure t :after rust-mode)
+  (use-package flycheck-rust
+    :ensure t
+    :after rust-mode
+    :config
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup))
+  :config
+  (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
+  (add-hook 'rust-mode-hook
+            (lambda ()
+              (cargo-minor-mode)
+              (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)
+              (racer-mode)
+              (eldoc-mode)))
+  (defvar my/rust-sysroot  "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu")
+  (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
+  (setq racer-cmd "~/.cargo/bin/racer")
+  (setq racer-rust-src-path my/rust-src-path)
+  (setenv "RUST_SRC_PATH" my/rust-src-path)
+  (my/define-major-mode-key 'rust-mode "s" 'my/rust-format-and-save)
+  )
+
+(defun my/rust-format-and-save ()
+  (interactive)
+  (call-interactively 'rust-format-buffer)
+  (save-buffer))
 #+END_SRC
 
 * Lisps
