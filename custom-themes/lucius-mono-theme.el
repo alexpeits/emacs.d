@@ -71,7 +71,7 @@
  `(font-lock-function-name-face        ((t (:foreground "#a7d37b" :background nil))))
  `(font-lock-variable-name-face        ((t (:inherit default))))
  `(font-lock-keyword-face              ((t (:foreground "#86b8b5"))))
- `(font-lock-string-face               ((t (:foreground "#1cada3" :background nil))))
+ `(font-lock-string-face               ((t (:foreground "#1da89f" :background nil))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37" :background nil))))
  ;; '(font-lock-preprocessor-face         ((t (:foreground "#cb5a37" :background nil))))

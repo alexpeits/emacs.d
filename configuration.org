@@ -230,6 +230,22 @@ With a prefix argument, open using `find-file-other-window'."
                              t)))
 #+END_SRC
 
+* Helpers
+
+#+BEGIN_SRC emacs-lisp
+;; clipboard content to qr code image
+(defun my/clipboard-to-qr ()
+  "Convert text in clipboard to qrcode and display within Emacs."
+  (interactive)
+  (let ((temp-file (concat temporary-file-directory "qr-code")))
+    (if (eq 0 (shell-command (format "qrencode -s10 -o %s %s"
+                                     temp-file
+                                     (shell-quote-argument (current-kill 0)))
+                             "*qrencode*"))
+        (switch-to-buffer (find-file-noselect temp-file t))
+      (error "Error: Could not create qrcode, check *qrencode* buffer"))))
+#+END_SRC
+
 * Package management
    
 #+BEGIN_SRC emacs-lisp
