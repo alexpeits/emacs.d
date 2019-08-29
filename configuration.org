@@ -831,23 +831,72 @@ buffer, close it."
   (concat "~" (substring pwd home-len))
       pwd)))
 
-(defun curr-dir-git-branch-string (pwd)
+(defun curr-dir-git-branch-string (cwd)
   "Returns current git branch as a string, or the empty string if
-PWD is not in a git repo (or the git command is not found)."
+CWD is not in a git repo (or the git command is not found)."
   (interactive)
   (when (and (eshell-search-path "git")
-             (locate-dominating-file pwd ".git"))
+             (locate-dominating-file cwd ".git"))
     (let ((git-output
            (shell-command-to-string
             (concat "cd "
-                    pwd
+                    cwd
                     " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
-      (propertize (concat "["
-              (if (> (length git-output) 0)
-                  (substring git-output 0 -1)
-                "(no branch)")
-              "]") 'face 'font-lock-string-face)
+      (concat
+       (propertize
+        (concat "["
+                (if (> (length git-output) 0)
+                    (substring git-output 0 -1)
+                  "(no branch)")
+                )
+        'face 'font-lock-string-face)
+       (my/git-collect-status cwd)
+       (propertize "]" 'face 'font-lock-string-face)
+       )
       )))
+
+;; TODO
+;; https://github.com/xuchunyang/eshell-git-prompt/blob/master/eshell-git-prompt.el
+(defun my/git-collect-status (cwd)
+  (when (and (eshell-search-path "git")
+             (locate-dominating-file cwd ".git"))
+    (let ((git-output
+           (split-string
+            (shell-command-to-string
+             (concat "cd "
+                     cwd
+                     " && git status --porcelain"))
+            "\n" t))
+          (untracked 0)
+          (modified 0)
+          (modified-updated 0)
+          (new-added 0)
+          (deleted 0)
+          (deleted-updated 0)
+          (renamed-updated 0)
+          (commits-ahead 0) ;; TODO
+          (commits-behind 0) ;; TODO
+          )
+      (dolist (x git-output)
+        (pcase (substring x 0 2)
+          ("??" (cl-incf untracked))
+          ("MM" (progn (cl-incf modified)
+                       (cl-incf modified-updated)))
+          (" M" (cl-incf modified))
+          ("M " (cl-incf modified-updated))
+          ("A " (cl-incf new-added))
+          (" D" (cl-incf deleted))
+          ("D " (cl-incf deleted-updated))
+          ("R " (cl-incf renamed-updated))
+          )
+        )
+      (concat
+       (propertize (if (> (+ untracked deleted) 0) "•" "") 'face '(:foreground "salmon3"))
+       (propertize (if (> modified 0) "•" "") 'face '(:foreground "goldenrod3"))
+       (propertize (if (> modified-updated 0) "•" "") 'face '(:foreground "SeaGreen4"))
+       )
+      )
+    ))
 
 (setq eshell-prompt-function
       (lambda ()
