@@ -831,6 +831,13 @@ buffer, close it."
   (concat "~" (substring pwd home-len))
       pwd)))
 
+(defun my/eshell-in-dir (dir-or-file)
+  (let* ((dir (if (file-directory-p dir-or-file)
+                 dir-or-file
+               (file-name-directory dir-or-file)))
+         (default-directory dir))
+    (eshell)))
+
 (defun curr-dir-git-branch-string (cwd)
   "Returns current git branch as a string, or the empty string if
 CWD is not in a git repo (or the git command is not found)."
@@ -2641,7 +2648,8 @@ the minibuffer."
   (dolist (action '(counsel-find-file counsel-recentf))
     (ivy-set-actions
      action
-     `(("s"
+     `(
+       ("s"
         ,(my/control-function-window-split
           find-file-other-window
           0 nil)
@@ -2656,6 +2664,9 @@ the minibuffer."
           find-file
           ace-select-window)
         "select window")
+       ("e"
+        my/eshell-in-dir
+        "eshell")
        )))
 
   (ivy-set-actions
@@ -2699,6 +2710,9 @@ the minibuffer."
        ("R"
         (lambda (f) (projectile-recentf))
         "recent files")
+       ("e"
+        (lambda (f) (my/eshell-in-dir (projectile-expand-root f)))
+        "eshell")
        )))
 
   (ivy-set-actions
