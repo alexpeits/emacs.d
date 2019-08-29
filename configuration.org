@@ -832,11 +832,12 @@ buffer, close it."
       pwd)))
 
 (defun my/eshell-in-dir (dir-or-file)
+  (interactive "DOpen eshell in: ")
   (let* ((dir (if (file-directory-p dir-or-file)
                  dir-or-file
                (file-name-directory dir-or-file)))
          (default-directory dir))
-    (eshell)))
+    (eshell t)))
 
 (defun curr-dir-git-branch-string (cwd)
   "Returns current git branch as a string, or the empty string if
