@@ -930,7 +930,7 @@ CWD is not in a git repo (or the git command is not found)."
           'face
           'font-lock-type-face)
          (or (curr-dir-git-branch-string (eshell/pwd)))
-         (propertize (if my/eshell-prompt-multiline "\n " " ") 'face 'default)
+         (propertize (if my/eshell-prompt-multiline "\n" " ") 'face 'default)
          (propertize "$" 'face 'font-lock-type-face)
          (propertize " " 'face 'default))))
 
@@ -940,10 +940,10 @@ CWD is not in a git repo (or the git command is not found)."
 (setq eshell-smart-space-goes-to-end t)
 
 (defun eshell/clear ()
+  (interactive)
   "Clear the eshell buffer."
-  (let ((inhibit-read-only t))
-    (erase-buffer)
-    (eshell-send-input)))
+  (let ((eshell-buffer-maximum-lines (if my/eshell-prompt-multiline 1 0)))
+    (eshell-truncate-buffer)))
 
 (defun eshell/sp ()
   "Clear the eshell buffer."
