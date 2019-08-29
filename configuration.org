@@ -906,6 +906,8 @@ CWD is not in a git repo (or the git command is not found)."
       )
     ))
 
+(defvar my/eshell-prompt-multiline nil)
+
 (setq eshell-prompt-function
       (lambda ()
         (concat
@@ -928,7 +930,8 @@ CWD is not in a git repo (or the git command is not found)."
           'face
           'font-lock-type-face)
          (or (curr-dir-git-branch-string (eshell/pwd)))
-         (propertize " $" 'face 'font-lock-type-face)
+         (propertize (if my/eshell-prompt-multiline "\n " " ") 'face 'default)
+         (propertize "$" 'face 'font-lock-type-face)
          (propertize " " 'face 'default))))
 
 (require 'em-smart)
@@ -937,11 +940,14 @@ CWD is not in a git repo (or the git command is not found)."
 (setq eshell-smart-space-goes-to-end t)
 
 (defun eshell/clear ()
-  (interactive)
   "Clear the eshell buffer."
   (let ((inhibit-read-only t))
     (erase-buffer)
     (eshell-send-input)))
+
+(defun eshell/sp ()
+  "Clear the eshell buffer."
+  (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline)))
 
 (add-hook 'eshell-mode-hook
           (lambda ()
