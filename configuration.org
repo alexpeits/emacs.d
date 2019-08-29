@@ -911,6 +911,7 @@ CWD is not in a git repo (or the git command is not found)."
 (setq eshell-prompt-function
       (lambda ()
         (concat
+         (propertize (if my/eshell-prompt-multiline "┌─╼ " "") 'face 'font-lock-type-face)
          (propertize
           ((lambda (p-lst)
              (if (> (length p-lst) 3)
@@ -930,8 +931,8 @@ CWD is not in a git repo (or the git command is not found)."
           'face
           'font-lock-type-face)
          (or (curr-dir-git-branch-string (eshell/pwd)))
-         (propertize (if my/eshell-prompt-multiline "\n" " ") 'face 'default)
-         (propertize "$" 'face 'font-lock-type-face)
+         (propertize (if my/eshell-prompt-multiline "\n└╼ " " ") 'face 'font-lock-type-face)
+         (propertize "$" 'face 'font-lock-function-name-face)
          (propertize " " 'face 'default))))
 
 (require 'em-smart)
