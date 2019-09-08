@@ -1,5 +1,5 @@
 * Variables and PATH
-   
+
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/custom"))
@@ -247,7 +247,7 @@ With a prefix argument, open using `find-file-other-window'."
 #+END_SRC
 
 * Package management
-   
+
 #+BEGIN_SRC emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
@@ -277,10 +277,10 @@ With a prefix argument, open using `find-file-other-window'."
 (use-package cl :ensure t)
 (use-package diminish :ensure t)
 #+END_SRC
-   
+
 * Various configurations
 ** emacs UI & editing
-   
+
 #+BEGIN_SRC emacs-lisp
 ;; remember last position
 (if (<= emacs-major-version 24)
@@ -350,6 +350,9 @@ With a prefix argument, open using `find-file-other-window'."
 
 ;; who in their right mind ends sentences with 2 spaces?
 (setq sentence-end-double-space nil)
+
+;; always trim whitespace before saving
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
@@ -500,7 +503,7 @@ With a prefix argument, open using `find-file-other-window'."
 #+END_SRC
 
 ** Jumping etc
-   
+
 #+BEGIN_SRC emacs-lisp
 (defun my/goto-line-show ()
   "Show line numbers temporarily, while prompting for the line number input."
@@ -593,7 +596,7 @@ buffer, close it."
 #+end_src
 
 ** engine-mode
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package engine-mode
   :ensure t
@@ -666,7 +669,7 @@ buffer, close it."
 #+END_SRC
 
 ** math input
-   
+
 # http://ergoemacs.org/emacs/xmsi-math-symbols-input.html
 # https://github.com/roelvandijk/base-unicode-symbols/blob/master/Prelude/Unicode.hs
 
@@ -685,7 +688,7 @@ buffer, close it."
 
 ** recentf
 
-#+BEGIN_SRC emacs-lisp 
+#+BEGIN_SRC emacs-lisp
 (setq recentf-max-saved-items 100) (recentf-mode 1)
 #+END_SRC
 
@@ -775,7 +778,7 @@ buffer, close it."
 
 * Term, eshell and comint-mode
 ** Terms
-  
+
 #+BEGIN_SRC emacs-lisp
 (add-hook 'term-mode-hook
           (lambda ()
@@ -824,11 +827,11 @@ buffer, close it."
 (defun pwd-repl-home (pwd)
   (interactive)
   (let* ((home (expand-file-name (getenv "HOME")))
-   (home-len (length home)))
+         (home-len (length home)))
     (if (and
-   (>= (length pwd) home-len)
-   (equal home (substring pwd 0 home-len)))
-  (concat "~" (substring pwd home-len))
+         (>= (length pwd) home-len)
+         (equal home (substring pwd 0 home-len)))
+        (concat "~" (substring pwd home-len))
       pwd)))
 
 (defun my/eshell-in-dir (dir-or-file)
@@ -948,7 +951,8 @@ CWD is not in a git repo (or the git command is not found)."
 
 (defun eshell/sp ()
   "Clear the eshell buffer."
-  (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline)))
+  (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline))
+  nil)
 
 (add-hook 'eshell-mode-hook
           (lambda ()
@@ -1020,7 +1024,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 ** highlight trailing whitespace
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package whitespace
   :ensure t
@@ -1206,7 +1210,7 @@ CWD is not in a git repo (or the git command is not found)."
   (my/set-theme)
   (setq linum-format 'dynamic))
 #+END_SRC
-   
+
 * Font
 
 #+BEGIN_SRC emacs-lisp
@@ -1242,7 +1246,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 * VCS
 ** Magit
-   
+
 #+BEGIN_SRC emacs-lisp
 (defun my/magit-set-diff-faces ()
   (custom-theme-set-faces
@@ -1317,7 +1321,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 ** Helpers
-   
+
 #+BEGIN_SRC emacs-lisp
 (defun my/git-blame-current-line ()
   "Runs `git blame` on the current line and
@@ -1426,7 +1430,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 ** evil-mode setup
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package evil-leader
   :ensure t
@@ -1646,7 +1650,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   #+end_src
 
 * Keybindings (not used)
-  
+
 Treat hybrid mode and emacs keybindings the same way
 
 #+BEGIN_SRC emacs-lisp :tangle no
@@ -1686,7 +1690,7 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 * Hybrid input mode
-  
+
 # Copied directly from spacemacs
 
 #+BEGIN_SRC emacs-lisp
@@ -1802,7 +1806,7 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 * Haskell
-  
+
 #+BEGIN_SRC emacs-lisp
 (use-package intero
   :ensure t
@@ -1992,7 +1996,7 @@ the current file."
             ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
             ))
 #+END_SRC
- 
+
 * Purescript
 
 #+BEGIN_SRC emacs-lisp
@@ -2115,7 +2119,7 @@ the current file."
 #+END_SRC
 
 * Python
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package pyvenv :after python) ;; this has to be downloaded
 
@@ -2153,7 +2157,7 @@ the current file."
 #+END_SRC
 
 * Javascript
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package rjsx-mode
   :ensure t
@@ -2225,7 +2229,7 @@ the current file."
 #+END_SRC
 
 * Lisps
-   
+
 #+BEGIN_SRC emacs-lisp
 ;; expand macros in another window
 (define-key
@@ -2281,7 +2285,7 @@ the current file."
   (add-hook 'web-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook 'emmet-mode))
 #+END_SRC
- 
+
 ** Elasticsearch
 
 #+begin_src emacs-lisp
@@ -2289,7 +2293,7 @@ the current file."
 #+end_src
 
 * Company
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package company
   :ensure t
@@ -2317,7 +2321,7 @@ the current file."
 #+END_SRC
 
 * Flycheck
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :ensure t
@@ -2419,7 +2423,7 @@ corresponding buffer."
 #+END_SRC
 
 * Projectile
-  
+
 #+BEGIN_SRC emacs-lisp
 (use-package perspective
   :ensure t
@@ -2439,7 +2443,7 @@ corresponding buffer."
 (use-package persp-projectile
   :ensure t)
 #+END_SRC
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
@@ -2902,7 +2906,7 @@ the minibuffer."
   :ensure t
   :bind ("C-c i" . avy-goto-line))
 #+END_SRC
-    
+
 ** Ace-window
 
 #+BEGIN_SRC emacs-lisp
@@ -2916,7 +2920,7 @@ the minibuffer."
 #+END_SRC
 
 ** Treemacs
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package treemacs-projectile
   :ensure t
@@ -2970,7 +2974,7 @@ the minibuffer."
 (use-package zoom
   :ensure t
   :bind ("M-+" . zoom)
-  :config
+  :init
   (setq zoom-size '(190 . 92)))
 #+end_src
 
@@ -3098,7 +3102,7 @@ the minibuffer."
 #+end_src
 
 ** elfeed
-   
+
 #+BEGIN_SRC emacs-lisp
 (use-package elfeed-web
   :ensure t
@@ -3240,7 +3244,7 @@ the minibuffer."
 
 * Modeline
 ** Regular modeline
-  
+
 # Copied from spacemacs
 
 #+BEGIN_SRC emacs-lisp
@@ -3287,7 +3291,7 @@ the minibuffer."
          (ml-status (concat ml-error ml-warning ml-info)))
     (if (null ml-status) "" (concat " " ml-status " "))))
 #+END_SRC
-  
+
 #+BEGIN_SRC emacs-lisp
 (setq-default mode-line-format
               '("%e"
@@ -3422,7 +3426,7 @@ the minibuffer."
 #+END_SRC
 
 * Org-mode
-   
+
 #+BEGIN_SRC emacs-lisp
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
@@ -3516,7 +3520,7 @@ the minibuffer."
       '("pr" . "#+BEGIN_PREVIEW\n?\n#+END_PREVIEW")))
    ))
 #+END_SRC
-   
+
 * Setup
 ** Per-workstation setup
 
@@ -3551,7 +3555,7 @@ the minibuffer."
 #+END_SRC
 
 ** Global setup
-   
+
 #+BEGIN_SRC emacs-lisp
 (setq custom-file "~/.emacs.d/custom.el")
 ;; (load custom-file 'noerror)
@@ -3629,4 +3633,3 @@ the minibuffer."
 
 (run-hooks 'my/after-init-hook)
 #+END_SRC
-
