@@ -776,6 +776,47 @@ buffer, close it."
 (global-set-key (kbd "C-c \\") 'align-regexp)
 #+end_src
 
+** highlight keywords in some modes
+
+#+BEGIN_SRC emacs-lisp
+(defface my/special-keyword-face
+  '((t (:inherit font-lock-keyword-face)))
+  "Face for highlighting special keywords"
+  :group 'my/faces)
+
+(defun my/highlight-keyword-in-mode (mode kw &optional in-comment face)
+  (let ((fc (or face 'my/special-keyword-face))
+        (str (format "\\<\\(%s\\)\\>" kw)))
+    (font-lock-add-keywords
+     mode
+     (if in-comment
+         `((,str 1 ,`(quote ,fc) prepend))
+       `((,str . ,`(quote ,fc)))))))
+
+(defvar my/comment-keywords
+  '("TODO" "TO DO" "NOTE" "FIXME" "FIX ME" "WARNING" "HACK"))
+
+(defun my/highlight-comment-keywords (mode &optional face)
+  (dolist (kw my/comment-keywords)
+    (my/highlight-keyword-in-mode mode kw t face)))
+
+(dolist
+    (mode '(haskell-mode
+            literate-haskell-mode
+            purescript-mode
+            js2-mode
+            html-mode
+            python-mode
+            idris-mode
+            agda-mode
+            rust-mode
+            c-mode
+            emacs-lisp-mode
+            markdown-mode
+            ))
+  (my/highlight-comment-keywords mode))
+#+END_SRC
+
 * Term, eshell and comint-mode
 ** Terms
 
@@ -1072,7 +1113,7 @@ CWD is not in a git repo (or the git command is not found)."
               ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#4a4a4a")))))
             '(mode-line-inactive
               ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
-            ;; '(haskell-operator-face ((t (:foreground "#e5786d"))))
+            ;; '(-operator-face ((t (:foreground "#e5786d"))))
             '(haskell-constructor-face ((t (:inherit haskell-type-face :weight normal))))
             '(ivy-grep-info ((t (:foreground "#a4bd64" :weight bold))))
             '(ag-hit-face   ((t (:foreground "#a4bd64" :weight bold))))
@@ -1813,10 +1854,8 @@ With a prefix argument, insert a newline above the current line."
   :ensure t
   :config
 
-  (font-lock-add-keywords
-   'haskell-mode
-   '(("\\<\\(error\\)\\>" 1 font-lock-preprocessor-face prepend)
-     ("\\<\\(undefined\\)\\>" 1 font-lock-preprocessor-face prepend)))
+  (my/highlight-keyword-in-mode 'haskell-mode "error" nil 'font-lock-preprocessor-face)
+  (my/highlight-keyword-in-mode 'haskell-mode "undefined" nil 'font-lock-preprocessor-face)
 
   (my/define-major-mode-key 'haskell-mode "aa" 'my/haskell-align-and-sort-everything)
   (my/define-major-mode-key 'haskell-mode "ai" 'my/haskell-align-and-sort-imports)
