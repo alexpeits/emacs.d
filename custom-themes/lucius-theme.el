@@ -151,6 +151,18 @@
  '(term-color-magenta ((t (:foreground "#d33682"))))
  '(term-color-cyan    ((t (:foreground "#47bcb3"))))
  '(term-color-white   ((t (:foreground "#cfe0da"))))
+
+ '(elfeed-search-title-face ((t (:inherit shadow))))
+ '(elfeed-search-unread-title-face ((t (:foreground "#d5ddcd"))))
+ '(elfeed-search-feed-face ((t (:foreground "#d09f07"))))
+ '(elfeed-search-tag-face ((t (:foreground "#859900"))))
+
+ '(message-header-name ((t (:foreground "#859900"))))
+ '(message-header-subject ((t (:inherit font-lock-function-name-face))))
+ '(message-header-to ((t (:inherit font-lock-function-name-face :weight bold))))
+ '(message-header-other ((t (:foreground "#d33682"))))
+
+ '(shr-link ((t (:foreground "#47bcb3" :underline t))))
  )
 
 (custom-theme-set-variables

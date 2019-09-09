@@ -41,7 +41,7 @@
  '(hl-line             ((t (:background "#252a2a"))))
  '(region              ((t (:background "#004870"))))
  '(fringe              ((t (:background "#232828"))))
- '(shadow              ((t (:foreground "#808080"))))
+ '(shadow              ((t (:foreground "#808484"))))
  '(secondary-selection ((t (:background "#132125"))))
  '(trailing-whitespace ((t (:background "#c74000"))))
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
@@ -65,6 +65,7 @@
  `(font-lock-builtin-face              ((t (:inherit default))))
  `(font-lock-function-name-face        ((t (:foreground "#a7d37b"))))
  `(font-lock-variable-name-face        ((t (:inherit default))))
+ ;; `(font-lock-variable-name-face        ((t (:foreground "#c9c9ad"))))
  `(font-lock-keyword-face              ((t (:foreground "#86b8b5"))))
  `(font-lock-string-face               ((t (:foreground "#1da89f"))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
@@ -80,8 +81,7 @@
  '(isearch             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
  '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
- ;; `(haskell-constructor-face    ((t (:inherit default))))
- `(haskell-pragma-face         ((t (:foreground "#8ba004" :slant italic))))
+ ;; `(haskell-constructor-face    ((t (:inherit default)))) `(haskell-pragma-face         ((t (:foreground "#8ba004" :slant italic))))
  `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  `(purescript-pragma-face      ((t (:inherit haskell-pragma-face))))
 
@@ -154,6 +154,17 @@
  '(term-color-cyan    ((t (:foreground "#47bcb3"))))
  '(term-color-white   ((t (:foreground "#cfe0da"))))
 
+ '(elfeed-search-title-face ((t (:inherit shadow))))
+ '(elfeed-search-unread-title-face ((t (:foreground "#d5ddcd"))))
+ '(elfeed-search-feed-face ((t (:foreground "#d09f07"))))
+ '(elfeed-search-tag-face ((t (:foreground "#859900"))))
+
+ '(message-header-name ((t (:foreground "#859900"))))
+ '(message-header-subject ((t (:inherit font-lock-function-name-face))))
+ '(message-header-to ((t (:inherit font-lock-function-name-face :weight bold))))
+ '(message-header-other ((t (:foreground "#d33682"))))
+
+ '(shr-link ((t (:foreground "#47bcb3" :underline t))))
  )
 
 (custom-theme-set-variables

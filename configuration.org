@@ -1119,28 +1119,6 @@ CWD is not in a git repo (or the git command is not found)."
            (my/org-set-src-faces t)
            (my/hl-line-set-bg t))
          t)
-        (cyberpunk
-         (progn
-           (custom-theme-set-faces
-            'cyberpunk
-            '(default ((t (:foreground "#c0ccd1" :background "#141415"))))
-            '(font-lock-comment-face ((t (:foreground "#929090"))))
-            '(font-lock-doc-face ((t (:foreground "#e3cd46"))))
-            '(mode-line ((t (:foreground "#afc2e3" :background "#293d5e" :box (:line-width 1 :color "#293d5e")))))
-            '(mode-line-inactive ((t (:foreground "#3f718a" :background "#1e2628" :box (:line-width 1 :color "#293d5e")))))
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(persp-selected-face ((t (:inherit font-lock-type-face :weight bold))))
-            '(fringe ((t (:background "#282828"))))
-            '(vertical-border ((t (:foreground "#757f8a"))))
-            '(show-paren-match ((t (:background "#456665" :weight bold))))
-            '(lazy-highlight ((t (:foreground "#a0a8b0" :background "#3d464f"))))
-            '(minibuffer-prompt ((t (:inherit font-lock-type-face :weight bold))))
-            '(org-block-background ((t (:background nil))))
-            )
-           (my/hl-line-set-bg)
-           (my/diff-hl-set-fringe-faces)
-           (my/org-set-src-faces)
-           ))
         (darktooth
          (progn
            (custom-theme-set-faces
@@ -3118,6 +3096,8 @@ the minibuffer."
   :config
   (setq elfeed-search-filter "@10-days-ago +unread")
   (define-key elfeed-search-mode-map (kbd "U") #'elfeed-update)
+  (push '(emacs font-lock-function-name-face) elfeed-search-face-alist)
+  (push '(fp font-lock-keyword-face) elfeed-search-face-alist)
   (setq
    elfeed-feeds
    '(
@@ -3143,31 +3123,31 @@ the minibuffer."
      "https://microservices.io/feed.xml"
 
      ;; Emacs
-     "http://nullprogram.com/feed/"
-     "http://endlessparentheses.com/atom.xml"
-     "http://irreal.org/blog/?feed=rss2"
-     "https://ekaschalk.github.io/index.xml"
-     "http://oremacs.com/atom.xml"
-     "https://emacs.cafe/feed.xml"
+     ("http://nullprogram.com/feed/" emacs)
+     ("http://endlessparentheses.com/atom.xml" emacs)
+     ("http://irreal.org/blog/?feed=rss2" emacs)
+     ("https://ekaschalk.github.io/index.xml" emacs)
+     ("http://oremacs.com/atom.xml" emacs)
+     ("https://emacs.cafe/feed.xml" emacs)
 
      ;; FP
-     "http://www.haskellforall.com/feeds/posts/default"
-     "http://jaspervdj.be/rss.xml"
-     "http://neilmitchell.blogspot.com/feeds/posts/default"
-     "https://blog.qfpl.io/rss.xml"
-     "http://bitemyapp.com/rss.xml"
-     "http://feeds.feedburner.com/incodeblog"
-     "http://www.tomharding.me/atom.xml"
-     "http://www.serpentine.com/blog/feed/"
-     "http://reasonablypolymorphic.com/atom.xml"
-     "https://chrispenner.ca/atom.xml"
-     "https://bartoszmilewski.com/feed/"
-     "https://doisinkidney.com/rss.xml"
-     "http://planet.haskell.org/rss20.xml"
-     "http://fpcomplete.com/feed/"
-     "http://taylor.fausak.me/sitemap.atom"
-     "http://argumatronic.com/rss.xml"
-     "https://teh.id.au/posts/atom.xml"
+     ("http://www.haskellforall.com/feeds/posts/default" fp)
+     ("http://jaspervdj.be/rss.xml" fp)
+     ("http://neilmitchell.blogspot.com/feeds/posts/default" fp)
+     ("https://blog.qfpl.io/rss.xml" fp)
+     ("http://bitemyapp.com/rss.xml" fp)
+     ("http://feeds.feedburner.com/incodeblog" fp)
+     ("http://www.tomharding.me/atom.xml" fp)
+     ("http://www.serpentine.com/blog/feed/" fp)
+     ("http://reasonablypolymorphic.com/atom.xml" fp)
+     ("https://chrispenner.ca/atom.xml" fp)
+     ("https://bartoszmilewski.com/feed/" fp)
+     ("https://doisinkidney.com/rss.xml" fp)
+     ("http://planet.haskell.org/rss20.xml" fp)
+     ("http://fpcomplete.com/feed/" fp)
+     ("http://taylor.fausak.me/sitemap.atom" fp)
+     ("http://argumatronic.com/rss.xml" fp)
+     ("https://teh.id.au/posts/atom.xml" fp)
 
      ;; Podcasts
      "http://www.magicreadalong.com/episode?format=rss"
