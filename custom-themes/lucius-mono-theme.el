@@ -81,7 +81,8 @@
  '(isearch             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
  '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
- ;; `(haskell-constructor-face    ((t (:inherit default)))) `(haskell-pragma-face         ((t (:foreground "#8ba004" :slant italic))))
+ ;; `(haskell-constructor-face    ((t (:inherit default))))
+ `(haskell-pragma-face         ((t (:foreground "#8ba004" :slant italic))))
  `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  `(purescript-pragma-face      ((t (:inherit haskell-pragma-face))))
 
