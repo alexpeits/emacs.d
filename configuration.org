@@ -2678,6 +2678,16 @@ the minibuffer."
   ;; TODO: something's up with rotation
   (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
+  ;; https://www.reddit.com/r/emacs/comments/cz1xt6/weekly_tipstricketc_thread/f03pkn8
+  (defun my/ivy-minibuffer-grow ()
+    (interactive)
+    (let ((lines (prefix-numeric-value current-prefix-arg)))
+      (while (> lines 0)
+        (ivy-minibuffer-grow)
+        (setq lines (1- lines)))))
+
+  (define-key ivy-minibuffer-map (kbd "C-o") #'my/ivy-minibuffer-grow)
+
   ;; minibuffer actions for specific commands
   (dolist (action '(counsel-find-file counsel-recentf))
     (ivy-set-actions
@@ -3657,3 +3667,5 @@ the minibuffer."
 
 (run-hooks 'my/after-init-hook)
 #+END_SRC
+
+# end of configuration.org
