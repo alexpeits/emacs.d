@@ -48,7 +48,7 @@
 
  ;; Line Numbers
  ;; >= emacs 26
- '(line-number              ((t (:foreground "#756682" :background "#1e2222"))))
+ '(line-number              ((t (:foreground "#756682" :background "#202424"))))
  '(line-number-current-line ((t (:foreground "#9c90a6" :background "#3b3f3f"))))
  ;; < emacs 26
  '(linum                    ((t (:inherit default :foreground "#756682" :background "#1e2222"))))
@@ -57,7 +57,7 @@
  '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003535")))))
  '(mode-line-inactive  ((t (:foreground "#387a71" :background "#1e2827" :box (:line-width 1 :color "#003535")))))
 
- `(font-lock-comment-face              ((t (:foreground "#868686" :slant italic))))
+ `(font-lock-comment-face              ((t (:foreground "#7a8080" :slant italic))))
  `(font-lock-comment-delimiter-face    ((t (:inherit font-lock-comment-face))))
  `(font-lock-doc-face                  ((t (:inherit font-lock-string-face))))
  `(font-lock-doc-string-face           ((t (:inherit font-lock-doc-face))))

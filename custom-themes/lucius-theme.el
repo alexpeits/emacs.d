@@ -57,7 +57,7 @@
  '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003535")))))
  '(mode-line-inactive  ((t (:foreground "#387a71" :background "#1e2827" :box (:line-width 1 :color "#003535")))))
 
- `(font-lock-comment-face              ((t (:foreground "#808080" :slant italic))))
+ `(font-lock-comment-face              ((t (:foreground "#7a8080" :slant italic))))
  `(font-lock-comment-delimiter-face    ((t (:inherit font-lock-comment-face))))
  `(font-lock-constant-face             ((t (:foreground "#87d7ff"))))
  `(font-lock-builtin-face              ((t (:foreground "#87d7ff"))))
