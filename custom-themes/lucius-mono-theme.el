@@ -32,19 +32,19 @@
 (custom-theme-set-faces
  'lucius-mono
 
- '(cursor              ((t (:background "#99d1ce"))))
- ;; '(default             ((t (:foreground "#c3dedc" :background "#1b1b1c"))))
- '(default             ((t (:foreground "#c5cdcd" :background "#1d1e1e"))))
- '(minibuffer-prompt   ((t (:foreground "#12a89f" :weight bold))))
- '(escape-glyph        ((t (:foreground "orange"))))
- '(highlight           ((t (:background "#384448"))))
- '(hl-line             ((t (:background "#252a2a"))))
- '(region              ((t (:background "#004870"))))
- '(fringe              ((t (:background "#232828"))))
- '(shadow              ((t (:foreground "#808484"))))
- '(secondary-selection ((t (:background "#132125"))))
- '(trailing-whitespace ((t (:background "#c74000"))))
- '(show-paren-match    ((t (:background "#456665" :weight bold))))
+ '(cursor                ((t (:background "#99d1ce"))))
+ '(default               ((t (:foreground "#c5cdcd" :background "#1d1e1e"))))
+ '(minibuffer-prompt     ((t (:foreground "#12a89f" :weight bold))))
+ '(escape-glyph          ((t (:foreground "orange"))))
+ '(highlight             ((t (:background "#384448"))))
+ '(hl-line               ((t (:background "#252a2a"))))
+ '(region                ((t (:background "#004870"))))
+ '(fringe                ((t (:background "#232828"))))
+ '(shadow                ((t (:foreground "#808484"))))
+ '(secondary-selection   ((t (:background "#132125"))))
+ '(trailing-whitespace   ((t (:background "#c74000"))))
+ '(show-paren-match      ((t (:background "#456665" :weight bold))))
+ '(fill-column-indicator ((t (:foreground "#3e3f3f"))))
 
  ;; Line Numbers
  ;; >= emacs 26

@@ -258,7 +258,7 @@ With a prefix argument, open using `find-file-other-window'."
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
 
 ;; Some sort of emacs bug workaround
-(when (>= emacs-major-version 26)
+(when (= emacs-major-version 26)
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
 ;; activate installed packages
@@ -274,7 +274,8 @@ With a prefix argument, open using `find-file-other-window'."
 (eval-when-compile
   (require 'use-package))
 
-(use-package cl :ensure t)
+(if (< emacs-major-version 27)
+  (require 'cl))
 (use-package diminish :ensure t)
 #+END_SRC
 
@@ -1042,31 +1043,50 @@ CWD is not in a git repo (or the git command is not found)."
      `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast))))))))
 ;; (add-hook 'prog-mode-hook 'hl-line-mode)
 
+(setq
+ fci-mode-hooks
+ '(python-mode-hook
+   markdown-mode-hook))
+(defvar my/fci-contrast 10)
+
 (use-package fill-column-indicator
-  :if (>= emacs-major-version 25)
+  :if (and (>= emacs-major-version 25) (< emacs-major-version 27))
   :ensure t
   :commands (fci-mode)
   :init
+  (defalias 'my/fci-mode 'fci-mode)
+  (defface fill-column-indicator '((t ())) "fci rule face")
   (setq fci-handle-truncate-lines t)
-  (setq
-   fci-mode-hooks
-   '(python-mode-hook
-     markdown-mode-hook))
-  (defvar my/fci-contrast 10)
-  (defun my/set-fci-rule-color ()
+  (defun my/fci-set-rule-color ()
     (setq fci-rule-color
-          (let ((fci-face (face-attribute 'my/fci :foreground))
+          (let ((fci-face (face-attribute 'fill-column-indicator :foreground))
                 (bg-color (face-attribute 'default :background)))
             (if (eq fci-face 'unspecified)
                 (if my/theme-light-bg
                     (color-darken-name bg-color my/fci-contrast)
                   (color-lighten-name bg-color my/fci-contrast))
               fci-face))))
-  (add-hook 'fci-mode-hook #'my/set-fci-rule-color)
+  (add-hook 'fci-mode-hook #'my/fci-set-rule-color)
   (my/add-hooks
    fci-mode-hooks
    (my/set-fci-rule-color) (fci-mode)))
 
+(use-package display-fill-column-indicator
+  :if (>= emacs-major-version 27)
+  :ensure t
+  :commands (display-fill-column-indicator-mode)
+  :init
+  (defalias 'my/fci-mode 'display-fill-column-indicator-mode)
+  (defun my/fci-set-rule-color (&optional light-bg th)
+    (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
+           (bg (face-attribute 'default :background))
+           (theme (if th th my/theme)))
+      (custom-theme-set-faces
+       theme
+       `(fill-column-indicator ((t (:foreground ,(funcall func bg my/fci-contrast))))))))
+  (my/add-hooks
+   fci-mode-hooks
+   (display-fill-column-indicator-mode)))
 #+END_SRC
 
 ** highlight trailing whitespace
@@ -1091,7 +1111,6 @@ CWD is not in a git repo (or the git command is not found)."
   (my/hl-line-set-bg light-bg)
   (my/org-set-src-faces light-bg))
 
-(defface my/fci '((t ())) "fci rule face")
 (setq nord-comment-brightness 8)
 
 ;; I am trying a lot of themes dammit
@@ -1130,7 +1149,7 @@ CWD is not in a git repo (or the git command is not found)."
          (progn
            (custom-theme-set-faces
             'zenburn
-            '(default ((t (:foreground "#dcdccc" :background "#2a2a2a"))))
+            '(default ((t (:foreground "#dcdccc" :background "#2f2f2f"))))
             '(linum ((t (:inherit font-lock-comment-face :background "#323232"))))
             '(region ((t (:background "#5a5a5a"))))
             '(vertical-border ((t (:foreground "#a0a0a0"))))
@@ -1390,7 +1409,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+BEGIN_SRC emacs-lisp
 (setq my/leader-keys
   '(
-    ("SPC" fci-mode)
+    ("SPC" my/fci-mode)
 
     ("a" align-regexp)
 
@@ -1429,7 +1448,7 @@ CWD is not in a git repo (or the git command is not found)."
     ("sd" pwd)
 
     ;; toggle
-    ("t8" fci-mode)
+    ("t8" my/fci-mode)
     ("tc" global-company-mode)
     ("tf" my/toggle-font)
     ("tg" global-diff-hl-mode)
