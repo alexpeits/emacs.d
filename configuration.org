@@ -3415,9 +3415,21 @@ the minibuffer."
      ))))
 #+END_SRC
 
-** Be able to tell which modeline is active
+** Powerline
 
 #+BEGIN_SRC emacs-lisp :tangle no
+(use-package powerline
+  :ensure t
+  :config
+  (powerline-default-theme)
+  (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
+  (diminish-undo 'flycheck-mode)
+  (setq global-mode-string
+        (append global-mode-string '((:eval (my/mode-line-venv)))))
+  (add-hook 'my/after-set-theme-hook 'powerline-reset)
+  (setq global-mode-string
+        (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string)))
+
 ;; is window selected?
 (defvar my/-selected-window nil)
 ;; (add-hook 'post-command-hook '(lambda () (setq my/-selected-window (selected-window))))
@@ -3435,22 +3447,6 @@ the minibuffer."
 (defun my/current-window-active-p ()
   (and my/-focused-in
        (eq my/-selected-window (selected-window))))
-#+END_SRC
-
-** Powerline
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package powerline
-  :ensure t
-  :config
-  (powerline-default-theme)
-  (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
-  (diminish-undo 'flycheck-mode)
-  (setq global-mode-string
-        (append global-mode-string '((:eval (my/mode-line-venv)))))
-  (add-hook 'my/after-set-theme-hook 'powerline-reset)
-  (setq global-mode-string
-        (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string)))
 
 ;; Try this to see if it fixes powerline hiccups
 (defun powerline-selected-window-active ()
