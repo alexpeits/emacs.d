@@ -44,7 +44,7 @@
  '(secondary-selection   ((t (:background "#132125"))))
  '(trailing-whitespace   ((t (:background "#c74000"))))
  '(show-paren-match      ((t (:background "#456665" :weight bold))))
- '(fill-column-indicator ((t (:foreground "#3e3f3f"))))
+ '(fill-column-indicator ((t (:foreground "#424343"))))
 
  ;; Line Numbers
  ;; >= emacs 26
