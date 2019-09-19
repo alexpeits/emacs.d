@@ -823,6 +823,44 @@ buffer, close it."
   (my/highlight-comment-keywords mode))
 #+END_SRC
 
+** imenu
+
+#+BEGIN_SRC emacs-lisp
+;; this fixes a bug on emacs HEAD
+(require 'imenu)
+(if (>= emacs-major-version 27)
+    (defun imenu--make-index-alist (&optional noerror)
+      "Create an index alist for the definitions in the current buffer.
+    This works by using the hook function `imenu-create-index-function'.
+    Report an error if the list is empty unless NOERROR is supplied and
+    non-nil.
+
+    See `imenu--index-alist' for the format of the index alist."
+      (or (and imenu--index-alist
+               (or (not imenu-auto-rescan)
+                   (and imenu-auto-rescan
+                        (> (buffer-size)  imenu-auto-rescan-maxout))))
+        ;; Get the index; truncate if necessary.
+          (progn
+            (setq imenu--index-alist
+                  (save-excursion
+                    (save-restriction
+                      (widen)
+                      (funcall imenu-create-index-function))))
+            (imenu--truncate-items imenu--index-alist)))
+      (or imenu--index-alist noerror
+          (imenu-unavailable-error
+           "No items suitable for an index found in this buffer"))
+      (or imenu--index-alist
+          (setq imenu--index-alist (list nil)))
+      ;; this is the fix
+      (if imenu-auto-rescan
+          imenu--index-alist
+        ;; Add a rescan option to the index.
+        (cons imenu--rescan-item imenu--index-alist)))
+  )
+#+END_SRC
+
 * Term, eshell and comint-mode
 ** Terms
 
@@ -3417,7 +3455,7 @@ the minibuffer."
 
 ** Powerline
 
-#+BEGIN_SRC emacs-lisp :tangle no
+#+BEGIN_SRC emacs-lisp
 (use-package powerline
   :ensure t
   :config
