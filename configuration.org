@@ -3080,6 +3080,14 @@ the minibuffer."
          ("nginx\\.conf\\.template\\'" . nginx-mode)))
 #+end_src
 
+** docker
+
+#+BEGIN_SRC emacs-lisp
+(use-package dockerfile-mode
+  :ensure t
+  :mode ("Dockerfile.*" . dockerfile-mode))
+#+END_SRC
+
 ** terraform
 
 #+begin_src emacs-lisp

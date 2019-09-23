@@ -61,12 +61,12 @@
  `(font-lock-comment-delimiter-face    ((t (:inherit font-lock-comment-face))))
  `(font-lock-doc-face                  ((t (:inherit font-lock-string-face))))
  `(font-lock-doc-string-face           ((t (:inherit font-lock-doc-face))))
- `(font-lock-constant-face             ((t (:inherit default))))
  `(font-lock-builtin-face              ((t (:inherit default))))
  `(font-lock-function-name-face        ((t (:foreground "#a7d37b"))))
  `(font-lock-variable-name-face        ((t (:inherit default))))
  ;; `(font-lock-variable-name-face        ((t (:foreground "#c9c9ad"))))
  `(font-lock-keyword-face              ((t (:foreground "#86b8b5"))))
+ `(font-lock-constant-face             ((t (:inherit font-lock-keyword-face))))
  `(font-lock-string-face               ((t (:foreground "#1da89f"))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37"))))
@@ -85,6 +85,8 @@
  `(haskell-pragma-face         ((t (:foreground "#8ba004" :slant italic))))
  `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  `(purescript-pragma-face      ((t (:inherit haskell-pragma-face))))
+
+ `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
 
  '(proof-locked-face ((t (:background "#2b303a"))))
 

@@ -84,6 +84,8 @@
  `(haskell-pragma-face    ((t (:foreground "#8ba004" :slant italic))))
  `(purescript-pragma-face ((t (:inherit haskell-pragma-face))))
 
+ `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
+
  '(proof-locked-face ((t (:background "#2b303a"))))
 
  `(diff-hl-insert ((t (:background "#183918" :foreground "#4c934c"))))
