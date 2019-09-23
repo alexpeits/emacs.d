@@ -1852,6 +1852,15 @@ With a prefix argument, insert a newline above the current line."
 (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
+* nix
+
+#+BEGIN_SRC emacs-lisp
+(use-package nix-mode
+  :ensure t
+  :mode (("\\.nix\\'" . nix-mode))
+  )
+#+END_SRC
+
 * Haskell
 
 #+BEGIN_SRC emacs-lisp
@@ -3061,15 +3070,6 @@ the minibuffer."
       (save-buffer)))
   )
 #+end_src
-
-** nix
-
-#+BEGIN_SRC emacs-lisp
-(use-package nix-mode
-  :ensure t
-  :mode (("\\.nix\\'" . nix-mode))
-  )
-#+END_SRC
 
 ** nginx
 
