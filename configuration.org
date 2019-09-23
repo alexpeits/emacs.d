@@ -1902,24 +1902,6 @@ With a prefix argument, insert a newline above the current line."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(defun my/haskell-project-ghcid-output ()
-  (interactive)
-  (let ((ghcid-buf (my/projectile-get-ghcid-buffer)))
-    (if ghcid-buf
-        (minibuffer-message
-         (with-current-buffer ghcid-buf
-           (buffer-substring-no-properties (point-min) (point-max))))
-      (minibuffer-message "No ghcid process running for this project"))))
-
-(defun my/projectile-get-ghcid-buffer ()
-  (let* ((proj-bufs (projectile-project-buffers))
-         (ghcid-bufs (seq-filter
-                      '(lambda (buf) (string-prefix-p "*ghcid" (buffer-name buf)))
-                      proj-bufs)))
-    (car ghcid-bufs)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
 (defvar my/haskell-align-stuff t)
 
 (defun my/haskell-format-and-save (use-stylish-haskell)
