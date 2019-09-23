@@ -309,7 +309,11 @@ With a prefix argument, open using `find-file-other-window'."
 (defun my/set-mode-fill-width (mode-hook width)
   (add-hook mode-hook `(lambda () (setq fill-column ,width))))
 
-(use-package autorevert :diminish auto-revert-mode)
+(use-package autorevert
+  :diminish auto-revert-mode
+  :config
+  (setq auto-revert-verbose nil)
+  (global-auto-revert-mode +1))
 (use-package eldoc :diminish eldoc-mode)
 
 ;; store all backup and autosave files in
@@ -821,44 +825,6 @@ buffer, close it."
             markdown-mode
             ))
   (my/highlight-comment-keywords mode))
-#+END_SRC
-
-** imenu
-
-#+BEGIN_SRC emacs-lisp
-;; this fixes a bug on emacs HEAD
-(require 'imenu)
-(if (>= emacs-major-version 27)
-    (defun imenu--make-index-alist (&optional noerror)
-      "Create an index alist for the definitions in the current buffer.
-    This works by using the hook function `imenu-create-index-function'.
-    Report an error if the list is empty unless NOERROR is supplied and
-    non-nil.
-
-    See `imenu--index-alist' for the format of the index alist."
-      (or (and imenu--index-alist
-               (or (not imenu-auto-rescan)
-                   (and imenu-auto-rescan
-                        (> (buffer-size)  imenu-auto-rescan-maxout))))
-        ;; Get the index; truncate if necessary.
-          (progn
-            (setq imenu--index-alist
-                  (save-excursion
-                    (save-restriction
-                      (widen)
-                      (funcall imenu-create-index-function))))
-            (imenu--truncate-items imenu--index-alist)))
-      (or imenu--index-alist noerror
-          (imenu-unavailable-error
-           "No items suitable for an index found in this buffer"))
-      (or imenu--index-alist
-          (setq imenu--index-alist (list nil)))
-      ;; this is the fix
-      (if imenu-auto-rescan
-          imenu--index-alist
-        ;; Add a rescan option to the index.
-        (cons imenu--rescan-item imenu--index-alist)))
-  )
 #+END_SRC
 
 * Term, eshell and comint-mode
@@ -2903,7 +2869,13 @@ the minibuffer."
   (use-local-map (copy-keymap dired-mode-map))
   (local-set-key (kbd "RET") #'my/dired-find-file-ace))
 
+;; hide files being edited + flycheck files from dired
+(setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_")
+
 (with-eval-after-load 'dired
+  (add-hook 'dired-mode-hook #'auto-revert-mode)
+  (add-hook 'dired-mode-hook #'dired-omit-mode)
+
   (define-key dired-mode-map
     (kbd "C-c v")
     (my/control-function-window-split
@@ -3003,7 +2975,7 @@ the minibuffer."
   :ensure t
   :bind ("C-c o" . ace-window)
   :config
-  (setq aw-dispatch-always t)
+  (setq aw-dispatch-always nil)
   (custom-set-faces
    '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.8))))))
 #+END_SRC
