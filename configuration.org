@@ -1895,7 +1895,6 @@ With a prefix argument, insert a newline above the current line."
   (my/define-major-mode-key 'haskell-mode "o" 'my/haskell-insert-ghc-option)
   (my/define-major-mode-key 'haskell-mode "r" 'my/haskell-insert-ghcid-repl-statement)
   (my/define-major-mode-key 'haskell-mode "s" 'my/haskell-format-and-save)
-  (my/define-major-mode-key 'haskell-mode "t" 'my/haskell-ask-type-region-or-word)
   (my/define-major-mode-key 'haskell-mode "/" 'engine/search-hoogle)
   (my/define-major-mode-key 'haskell-mode "#" 'engine/search-haskell-language-extensions)
   )
@@ -1991,20 +1990,7 @@ the current file."
   (call-interactively 'delete-horizontal-space)
   (insert "-- $> "))
 
-(defun my/haskell-ask-type-region-or-word ()
-  (interactive)
-  (save-excursion
-    (if (region-active-p)
-        (exchange-point-and-mark)
-      (backward-word-strictly))
-    (insert "(")
-    (if (region-active-p)
-        (progn
-          (exchange-point-and-mark)
-          (forward-char))
-      (forward-word-strictly))
-    (insert " :: ())")))
-
+;; DataKinds (how often does anyone use characters anyway)
 (with-eval-after-load 'haskell-mode
   (sp-local-pair 'haskell-mode "'" nil :actions nil))
 
