@@ -803,7 +803,7 @@ buffer, close it."
        `((,str . ,`(quote ,fc)))))))
 
 (defvar my/comment-keywords
-  '("TODO" "TO DO" "NOTE" "FIXME" "FIX ME" "WARNING" "HACK"))
+  '("TODO" "TO DO" "NOTE" "FIXME" "FIX ME" "WARNING" "HACK" "XXX" "DONE"))
 
 (defun my/highlight-comment-keywords (mode &optional face)
   (dolist (kw my/comment-keywords)
@@ -2683,13 +2683,17 @@ the minibuffer."
   ;; TODO: something's up with rotation
   (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
-  ;; https://www.reddit.com/r/emacs/comments/cz1xt6/weekly_tipstricketc_thread/f03pkn8
   (defun my/ivy-minibuffer-grow ()
     (interactive)
-    (let ((lines (prefix-numeric-value current-prefix-arg)))
-      (while (> lines 0)
+    (let* ((prefix (prefix-numeric-value current-prefix-arg))
+           (nlines (cond
+                    ((= prefix 1) 1)
+                    ((= prefix 4) (/ (frame-height) 2))
+                    (t (- (frame-height) 5))))
+           (current-prefix-arg nil))
+      (while (> nlines 0)
         (ivy-minibuffer-grow)
-        (setq lines (1- lines)))))
+        (setq nlines (1- nlines)))))
 
   (define-key ivy-minibuffer-map (kbd "C-o") #'my/ivy-minibuffer-grow)
 
