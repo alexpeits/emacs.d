@@ -455,7 +455,6 @@ With a prefix argument, open using `find-file-other-window'."
     :ensure t
     :diminish evil-smartparens-mode)
 
-  (my/add-hooks '(prog-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
   (setq my/lisp-mode-hooks '(emacs-lisp-mode-hook clojure-mode-hook))
   (my/add-hooks my/lisp-mode-hooks (smartparens-strict-mode) (evil-smartparens-mode))
   (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
@@ -1928,10 +1927,16 @@ the current file."
   (interactive)
   (save-excursion
     (goto-char 0)
-    (while (haskell-navigate-imports)
-      (progn
-        (when my/haskell-align-stuff (call-interactively 'haskell-align-imports))
-        (call-interactively 'haskell-sort-imports)))))
+    (let ((n-runs 0)
+          (max-runs 10))
+      (while (and (< n-runs max-runs)
+                  (haskell-navigate-imports))
+        (progn
+          (setq n-runs (1+ n-runs))
+          (when my/haskell-align-stuff (call-interactively 'haskell-align-imports))
+          (call-interactively 'haskell-sort-imports)))
+      (if (>= n-runs max-runs)
+          (message "Sorting/aligning imports probably timed out")))))
 
 (defun my/-haskell-mark-language-extensions ()
   (interactive)
