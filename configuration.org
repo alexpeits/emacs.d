@@ -1,10 +1,10 @@
 * Variables and PATH
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/custom"))
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "/lisp")))
+(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "/custom")))
 (add-to-list 'custom-theme-load-path
-             (expand-file-name "~/.emacs.d/custom-themes/"))
+             (expand-file-name (concat user-emacs-directory "/custom-themes/")))
 
 (setq my/path
       '(
@@ -2113,7 +2113,7 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (defvar my/agda-mode-path
   (expand-file-name
-   "~/.emacs.d/lisp/agda-mode"))
+   (concat user-emacs-directory "/lisp/agda-mode")))
 
 (defvar my/agda-path "agda")
 
@@ -3508,7 +3508,7 @@ the minibuffer."
 
 (defun my/org-insert-template ()
   (interactive)
-  (let* ((templ-dir (expand-file-name "~/.emacs.d/org-templates/"))
+  (let* ((templ-dir (expand-file-name (concat user-emacs-directory "/org-templates/")))
          (ls (directory-files templ-dir nil "^[^.]"))
          (file (completing-read "Template: " ls))
          (path (concat templ-dir file)))
@@ -3592,7 +3592,7 @@ the minibuffer."
 # thanks Nicolas Petton
 #+BEGIN_SRC emacs-lisp
 
-(defvar my/hosts-dir (expand-file-name "~/.emacs.d/hosts/"))
+(defvar my/hosts-dir (expand-file-name (concat user-emacs-directory "/hosts/")))
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
 (let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
   (load-file host-file))
@@ -3601,7 +3601,7 @@ the minibuffer."
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-file "~/.emacs.d/custom.el")
+(setq custom-file (concat user-emacs-directory "/custom.el"))
 ;; (load custom-file 'noerror)
 
 (setq x-underline-at-descent-line t)

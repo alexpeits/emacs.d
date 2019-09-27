@@ -48,8 +48,8 @@
 
  ;; Line Numbers
  ;; >= emacs 26
- '(line-number              ((t (:foreground "#756682" :background "#202424"))))
- '(line-number-current-line ((t (:foreground "#9c90a6" :background "#3b3f3f"))))
+ '(line-number              ((t (:inherit default :foreground "#756682" :background "#202424"))))
+ '(line-number-current-line ((t (:inherit default :foreground "#9c90a6" :background "#3b3f3f"))))
  ;; < emacs 26
  '(linum                    ((t (:inherit default :foreground "#756682" :background "#1e2222"))))
 
