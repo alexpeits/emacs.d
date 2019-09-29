@@ -1857,7 +1857,14 @@ With a prefix argument, insert a newline above the current line."
 (use-package nix-mode
   :ensure t
   :mode (("\\.nix\\'" . nix-mode))
+  :config
+  (my/define-major-mode-key 'nix-mode "s" 'my/nix-format-and-save)
   )
+
+(defun my/nix-format-and-save ()
+  (interactive)
+  (nix-format-buffer)
+  (save-buffer))
 #+END_SRC
 
 * Haskell
@@ -3605,6 +3612,8 @@ the minibuffer."
 ;; (load custom-file 'noerror)
 
 (setq x-underline-at-descent-line t)
+
+(my/flycheck-on-save)
 
 (custom-set-faces
  '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))

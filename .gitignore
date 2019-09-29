@@ -1,5 +1,7 @@
 auto-save-list/
 configuration.el
+session*
+bookmarks
 elpa/
 places
 projectile-bookmarks.eld
