@@ -66,7 +66,8 @@
  `(font-lock-variable-name-face        ((t (:inherit default))))
  ;; `(font-lock-variable-name-face        ((t (:foreground "#c9c9ad"))))
  `(font-lock-keyword-face              ((t (:foreground "#86b8b5"))))
- `(font-lock-constant-face             ((t (:inherit font-lock-keyword-face))))
+ ;; `(font-lock-constant-face             ((t (:inherit font-lock-keyword-face))))
+ '(font-lock-constant-face             ((t (:foreground "#87d7af"))))
  `(font-lock-string-face               ((t (:foreground "#1da89f"))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
  ;; `(font-lock-type-face                 ((t (:foreground "#87d7d7"))))
@@ -88,6 +89,7 @@
  `(purescript-pragma-face      ((t (:inherit haskell-pragma-face))))
 
  `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
+ ;; `(nix-antiquote-face ((t (:foreground "#8ba004"))))
 
  '(proof-locked-face ((t (:background "#2b303a"))))
 
