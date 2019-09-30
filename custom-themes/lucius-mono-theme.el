@@ -69,6 +69,7 @@
  `(font-lock-constant-face             ((t (:inherit font-lock-keyword-face))))
  `(font-lock-string-face               ((t (:foreground "#1da89f"))))
  `(font-lock-type-face                 ((t (:foreground "#86b8b5"))))
+ ;; `(font-lock-type-face                 ((t (:foreground "#87d7d7"))))
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37"))))
  '(font-lock-preprocessor-face         ((t (:foreground "#d3695f"))))
  '(font-lock-regexp-grouping-backslash ((t (:foreground "#f66500"))))
