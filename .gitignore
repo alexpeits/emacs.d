@@ -1,0 +1,16 @@
+auto-save-list/
+custom.el
+configuration.el
+session*
+bookmarks
+eshell/
+elpa/
+places
+projectile-bookmarks.eld
+projectile.cache
+recentf
+smex-items
+transient/
+anaconda-mode/
+url/
+result

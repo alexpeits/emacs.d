@@ -1,0 +1,4 @@
+*
+!.gitignore
+!init-nixos.el
+!init-mac.el

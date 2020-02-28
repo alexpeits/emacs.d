@@ -1,0 +1,3 @@
+# name: Side note
+# --
+{% sidenote '${1:id}' '${2:content}' %}
