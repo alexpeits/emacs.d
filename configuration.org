@@ -135,6 +135,12 @@
 
 (defvar is-mac (eq system-type 'darwin)
   "Whether emacs is running in mac or not")
+
+(defvar is-gui (display-graphic-p)
+  "Whether emacs is running in gui mode or not")
+
+(defvar is-term (not is-gui)
+  "Whether emacs is running in a terminal or not")
 #+END_SRC
 
 * Package management
@@ -1586,7 +1592,7 @@ CWD is not in a git repo (or the git command is not found)."
      `(diff-hl-change ((t (:background ,ch-bg :foreground ,ch-fg))))
      `(diff-hl-delete ((t (:background ,del-bg :foreground ,del-fg)))))))
 
-(if (display-graphic-p)
+(if is-gui
     (use-package diff-hl
       :ensure t
       :hook (after-init . global-diff-hl-mode)
@@ -1716,7 +1722,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 (define-prefix-command 'my/major-mode-map)
 
-(if (display-graphic-p)
+(if is-gui
     (progn
       ;; distinguish `C-m` from `RET`
       (define-key input-decode-map [?\C-m] [C-m])
@@ -1755,7 +1761,7 @@ CWD is not in a git repo (or the git command is not found)."
     (define-key map (kbd key) func)
     (evil-leader/set-key-for-mode mode (kbd (format "m %s" key)) func)))
 
-(if (display-graphic-p)
+(if is-gui
     (global-set-key (kbd "<C-m>") 'my/major-mode-map)
   (global-set-key (kbd "C-c m m") 'my/major-mode-map))
 #+end_src
@@ -3279,13 +3285,25 @@ erc-modified-channels-alist. Should be executed on window change."
         (swiper))
     (swiper)))
 
+(defun my/swiper-isearch (fuzzy)
+  (interactive "P")
+  (if fuzzy
+      (let* ((temp-builders
+              (copy-alist ivy-re-builders-alist))
+             (ivy-re-builders-alist
+              (add-to-list 'temp-builders
+                           '(swiper-isearch . ivy--regex-fuzzy))))
+        (swiper-isearch))
+    (swiper-isearch)))
+
 (use-package ivy-xref  ;; currently in lisp/ because of patches
   :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
 
 (use-package swiper
   :ensure t
-  :bind ("C-s" . my/swiper)
-  :commands (swiper swiper-all swiper-multi))
+  ;; :bind ("C-s" . my/swiper)
+  :bind ("C-s" . my/swiper-isearch)
+  :commands (swiper swiper-isearch swiper-all swiper-multi))
 
 (use-package ivy
   :ensure t
@@ -3866,7 +3884,7 @@ the minibuffer."
 #+BEGIN_SRC emacs-lisp
 (use-package powerline
   :ensure t
-  :if (display-graphic-p)
+  :if is-gui
   :config
   (powerline-default-theme)
   (setq powerline-display-buffer-size nil)
@@ -3919,7 +3937,6 @@ the minibuffer."
       org-src-preserve-indentation t
       org-src-tab-acts-natively t
       org-src-window-setup 'other-window
-      org-hide-leading-stars t
       org-adapt-indentation nil
       org-directory (expand-file-name "~/org/")
       org-default-notes-file (concat org-directory "notes.org")
@@ -3976,6 +3993,8 @@ the minibuffer."
 
 (use-package org-bullets
   :ensure t
+  :if is-gui
+  :init (setq org-hide-leading-stars t)
   :hook (org-mode . org-bullets-mode))
 
 ;; auto-generated if a heading has a :TOC: tag
@@ -3995,6 +4014,7 @@ the minibuffer."
  (lambda ()
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key org-mode-map (kbd "<tab>") 'org-cycle)
+   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
    (my/set-mode-fill-width 'org-mode-hook 100)
    ))
 #+END_SRC
