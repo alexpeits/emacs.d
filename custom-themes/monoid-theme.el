@@ -25,16 +25,14 @@
   "A light theme inspired by vim-lucius")
 
 (defvar monoid-theme-hues
-  '((white . ("white"    "grey97"  "grey96"  "grey90"  "grey85"))
-    (tan .   ("#fbf4e8"  "#f3ede1" "#f2eadc" "#efe6d5" "#e7dbc2"))
-    (cyan .  ("honeydew" "#e9f7e9" "#e7f6e7" "#d6eed6" "#d0dfd0"))))
+;;            foreground   org-block   hl-line     org-block   fci
+  '((white . ("white"      "grey97"    "grey96"    "grey90"    "grey85"))
+    (tan .   ("#fbf4e8"    "#f3ede1"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
+    (cyan .  ("honeydew"   "#e9f7e9"   "#e7f6e7"   "#d6eed6"   "#d0dfd0"))))
 
 (defvar monoid-theme-variant 'white)
 
-(when (null (assoc monoid-theme-variant monoid-theme-hues))
-  (user-error (format "Unknown monoid-theme variant %s" monoid-theme-variant)))
-
-(let* ((hues (cdr (assoc monoid-theme-variant monoid-theme-hues)))
+(let* ((hues (cdr (assoc (or monoid-theme-variant 'white) monoid-theme-hues)))
        (h1 (elt hues 0))
        (h2 (elt hues 1))
        (h3 (elt hues 2))
