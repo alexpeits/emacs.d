@@ -175,6 +175,9 @@
 (if (< emacs-major-version 27)
   (require 'cl))
 (use-package diminish :ensure t)
+
+;; `dash' is used in various places
+(use-package dash :ensure t)
 #+END_SRC
 
 * Various utility functions
@@ -2842,7 +2845,7 @@ the current file."
 (use-package deft
   :ensure t
   :bind ("<f8>" . deft)
-  :commands (deft)
+  :commands (deft deft-cache-initialize deft-parse-title)
   :init
   (setq deft-extensions '("md" "org" "txt")
         deft-markdown-mode-title-level 1
@@ -2852,19 +2855,15 @@ the current file."
         deft-file-naming-rules '((noslash . "_")
                                  (nospace . "_")
                                  (case-fn . downcase)))
-  :config
   (with-eval-after-load 'markdown-mode
     (define-key markdown-mode-map (kbd "C-c <f8>") 'my/generate-deft-link)))
 
 (defun my/get-deft-file-by-title ()
+  (if (or (not (boundp 'deft-hash-mtimes)) (null deft-hash-mtimes))
+      (deft-cache-initialize)
+    (deft-cache-update-all))
   (let* ((files (deft-find-all-files))
-         (titles
-          (mapcar
-           (lambda (fp)
-             (deft-parse-title fp (with-temp-buffer
-                                    (insert-file-contents fp)
-                                    (buffer-string))))
-           files))
+         (titles (mapcar 'deft-file-title files))
          (cands (-zip titles files))
          (title (completing-read "Deft file: " titles)))
     (assoc title cands)))
@@ -3548,19 +3547,41 @@ the minibuffer."
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet-snippets
   :ensure t
-  :after yasnippet
-  :config (yas-reload-all))
+  :defer t)
 
 (use-package yasnippet
   :ensure t
-  :bind (("<C-return>" . yas-expand)
-         ("C-c y" . yas-expand))
-  :commands (yas-expand)
+  :defer t
+  :commands (yas-minor-mode yas-expand)
   :diminish yas-minor-mode
-  :hook (prog-mode . yas-minor-mode)
+  :init
+  (define-key prog-mode-map (kbd "<C-return>") 'my/yas-lazy-load)
+  (define-key prog-mode-map (kbd "C-c y") 'my/yas-lazy-load)
   :config
+  (define-key yas-minor-mode-map (kbd "<C-return>") 'yas-expand)
+  (define-key yas-minor-mode-map (kbd "C-c y") 'yas-expand)
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil))
+
+;; loading snippets on startup takes a while and I'm not using them a lot so
+;; defer them by invoking this monstrosity
+(defun my/yas-lazy-load ()
+  (interactive)
+  (message "Loading yasnippet for the first time...")
+  ;; remove temporary keybindings
+  (define-key prog-mode-map (kbd "<C-return>") nil)
+  (define-key prog-mode-map (kbd "C-c y") nil)
+  ;; load yasnippet
+  (require 'yasnippet)
+  (yas-minor-mode)
+  ;; setup snippets
+  (require 'yasnippet-snippets)
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  ;; remove temporary function
+  (fmakunbound 'my/yas-lazy-load)
+  ;; actually do what user wanted
+  (call-interactively 'yas-expand))
 #+END_SRC
 
 * Other window management

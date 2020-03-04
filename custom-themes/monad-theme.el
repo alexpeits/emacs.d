@@ -44,7 +44,6 @@
 
  '(cursor              ((t (:background "#99d1ce"))))
  '(default             ((t (:foreground "#b1cbcb" :background "#181818"))))
- '(minibuffer-prompt   ((t (:inherit font-lock-function-name-face :weight bold))))
  '(escape-glyph        ((t (:foreground "orange2"))))
  '(highlight           ((t (:background "#3d494d"))))
  '(hl-line             ((t (:background "#252a2a"))))
@@ -57,6 +56,9 @@
  '(link                ((t (:foreground "#56dbdb" :underline t))))
  '(warning             ((t (:foreground "orange2" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
+ `(minibuffer-prompt   ((t (:weight bold :inherit ,(-monad-theme-alt
+                                                    'font-lock-function-name-face
+                                                    'font-lock-string-face)))))
 
  ;; emacs >= 27
  '(fill-column-indicator ((t (:foreground "#494b4b"))))
@@ -71,6 +73,8 @@
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line           ((t (:foreground "#6abd17" :background "#2e342e"))))
  '(mode-line-inactive  ((t (:foreground "#676d61" :background "#262c26"))))
+ ;; '(mode-line           ((t (:foreground "#6abd17" :background "#2e342e" :box (:line-width 1 :color "#333933")))))
+ ;; '(mode-line-inactive  ((t (:foreground "#676d61" :background "#252b25" :box (:line-width 1 :color "#373c37")))))
 
  `(powerline-active0   ((t (:inherit mode-line :background "#3c473c"))))
  `(powerline-active1   ((t (:inherit mode-line))))
