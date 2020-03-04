@@ -3552,17 +3552,24 @@ the minibuffer."
 (use-package yasnippet
   :ensure t
   :commands (yas-expand)
-  :bind (:map prog-mode-map
-              ("<C-return>" . yas-expand)
-              ("C-c y" . yas-expand))
   :diminish yas-minor-mode
+  :init
+  ;; setup keys in `prog-mode-map' initially ...
+  (define-key prog-mode-map (kbd "<C-return>") 'yas-expand)
+  (define-key prog-mode-map (kbd "C-c y") 'yas-expand)
   :config
-  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  ;; ... remove them from `prog-mode-map' when mode is initialized ...
+  (define-key prog-mode-map (kbd "<C-return>") nil)
+  (define-key prog-mode-map (kbd "C-c y") nil)
+  ;; ... and add them to `yas-minor-mode-map'
+  (define-key yas-minor-mode-map (kbd "<C-return>") 'yas-expand)
+  (define-key yas-minor-mode-map (kbd "C-c y") 'yas-expand)
   ;; this will run once (since it's in :config)
   (when (derived-mode-p 'prog-mode)
     (yas-minor-mode))
   (require 'yasnippet-snippets)
-  (yas-reload-all))
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook #'yas-minor-mode))
 #+END_SRC
 
 * Other window management
