@@ -3551,37 +3551,18 @@ the minibuffer."
 
 (use-package yasnippet
   :ensure t
-  :defer t
-  :commands (yas-minor-mode yas-expand)
+  :commands (yas-expand)
+  :bind (:map prog-mode-map
+              ("<C-return>" . yas-expand)
+              ("C-c y" . yas-expand))
   :diminish yas-minor-mode
-  :init
-  (define-key prog-mode-map (kbd "<C-return>") 'my/yas-lazy-load)
-  (define-key prog-mode-map (kbd "C-c y") 'my/yas-lazy-load)
   :config
-  (define-key yas-minor-mode-map (kbd "<C-return>") 'yas-expand)
-  (define-key yas-minor-mode-map (kbd "C-c y") 'yas-expand)
-  (define-key yas-minor-mode-map (kbd "<tab>") nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil))
-
-;; loading snippets on startup takes a while and I'm not using them a lot so
-;; defer them by invoking this monstrosity
-(defun my/yas-lazy-load ()
-  (interactive)
-  (message "Loading yasnippet for the first time...")
-  ;; remove temporary keybindings
-  (define-key prog-mode-map (kbd "<C-return>") nil)
-  (define-key prog-mode-map (kbd "C-c y") nil)
-  ;; load yasnippet
-  (require 'yasnippet)
-  (yas-minor-mode)
-  ;; setup snippets
+  (add-hook 'prog-mode-hook #'yas-minor-mode)
+  ;; this will run once (since it's in :config)
+  (when (derived-mode-p 'prog-mode)
+    (yas-minor-mode))
   (require 'yasnippet-snippets)
-  (yas-reload-all)
-  (add-hook 'prog-mode-hook 'yas-minor-mode)
-  ;; remove temporary function
-  (fmakunbound 'my/yas-lazy-load)
-  ;; actually do what user wanted
-  (call-interactively 'yas-expand))
+  (yas-reload-all))
 #+END_SRC
 
 * Other window management
