@@ -166,14 +166,14 @@
   (package-install 'use-package))
 
 ;; Can be used to debug slow packages
-;; (setq use-package-minimum-reported-time 0.05
-;;       use-package-verbose t)
+(setq use-package-minimum-reported-time 0.05
+      use-package-verbose t)
 
 (eval-when-compile
   (require 'use-package))
 
 (if (< emacs-major-version 27)
-  (require 'cl))
+    (require 'cl))
 (use-package diminish :ensure t)
 
 ;; `dash' is used in various places
@@ -303,12 +303,12 @@ modeline)."
 (defun my/select-a-major-mode ()
   "Interactively select a major mode and return it as a string."
   (let* ((def (or
-              my/select-a-major-mode-last-selected
-              (symbol-name initial-major-mode)))
-        (choice (completing-read "major mode: "
-                                 (apropos-internal "-mode$")
-                                 nil nil nil nil
-                                 def)))
+               my/select-a-major-mode-last-selected
+               (symbol-name initial-major-mode)))
+         (choice (completing-read "major mode: "
+                                  (apropos-internal "-mode$")
+                                  nil nil nil nil
+                                  def)))
     (setq my/select-a-major-mode-last-selected choice)))
 
 (defun my/create-scratch-buffer-with-mode (other-window)
@@ -419,9 +419,9 @@ With a prefix argument, open using `find-file-other-window'."
 ;; remember last position
 (if (<= emacs-major-version 24)
     (use-package saveplace
-       :ensure t
-       :config
-       (setq-default save-place t))
+      :ensure t
+      :config
+      (setq-default save-place t))
   (save-place-mode 1))
 
 (defun display-startup-echo-area-message ()
@@ -586,7 +586,7 @@ With a prefix argument, open using `find-file-other-window'."
 ;; disable interactive prompt about restoring the buffer when on a client
 ;; session since it makes emacsclient hang
 (defadvice desktop-restore-file-buffer
-  (around my-desktop-restore-file-buffer-advice)
+    (around my-desktop-restore-file-buffer-advice)
   "Be non-interactive while starting a daemon."
   (if (and (daemonp)
            (not server-process))
@@ -852,7 +852,7 @@ buffer, close it."
 
 ** hi-lock & symbol overlay
 
-   #+begin_src emacs-lisp
+#+begin_src emacs-lisp
 (use-package hi-lock
   :hook (after-init . global-hi-lock-mode)
   :init
@@ -901,7 +901,7 @@ buffer, close it."
     (define-key map (kbd ",w") 'symbol-overlay-save-symbol)
     (define-key map (kbd ",s") 'symbol-overlay-isearch-literally)
     (setq symbol-overlay-map map)))
-   #+end_src
+#+end_src
 
 ** aliases
 
@@ -1040,16 +1040,16 @@ buffer, close it."
   (add-hook 'edit-indirect-before-commit-hook 'my/edit-indirect-indent))
 
 (defun my/edit-indirect-region ()
-    (interactive)
-    (unless (region-active-p) (user-error "No region selected"))
-    (save-excursion
-      (let* ((begin (region-beginning))
-             (end (region-end))
-             (mode (my/select-a-major-mode))
-             (edit-indirect-guess-mode-function
-              (lambda (_parent _beg _end)
-                (funcall (intern mode)))))
-        (edit-indirect-region begin end 'display-buffer))))
+  (interactive)
+  (unless (region-active-p) (user-error "No region selected"))
+  (save-excursion
+    (let* ((begin (region-beginning))
+           (end (region-end))
+           (mode (my/select-a-major-mode))
+           (edit-indirect-guess-mode-function
+            (lambda (_parent _beg _end)
+              (funcall (intern mode)))))
+      (edit-indirect-region begin end 'display-buffer))))
 
 (defun my/get-buffer-min-leading-spaces (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
@@ -1139,8 +1139,8 @@ buffer, close it."
 (defun my/eshell-in-dir (dir-or-file)
   (interactive "DOpen eshell in: ")
   (let* ((dir (if (file-directory-p dir-or-file)
-                 dir-or-file
-               (file-name-directory dir-or-file)))
+                  dir-or-file
+                (file-name-directory dir-or-file)))
          (default-directory dir))
     (eshell t)))
 
@@ -1595,15 +1595,17 @@ CWD is not in a git repo (or the git command is not found)."
      `(diff-hl-change ((t (:background ,ch-bg :foreground ,ch-fg))))
      `(diff-hl-delete ((t (:background ,del-bg :foreground ,del-fg)))))))
 
-(if is-gui
-    (use-package diff-hl
-      :ensure t
-      :hook (after-init . global-diff-hl-mode)
-      :config
-      (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
-  (use-package git-gutter+
-    :ensure t
-    :hook (after-init . global-git-gutter+-mode)))
+(use-package diff-hl
+  :ensure t
+  :if is-gui
+  :hook (after-init . global-diff-hl-mode)
+  :config
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+
+(use-package git-gutter+
+  :ensure t
+  :unless is-gui
+  :hook (after-init . global-git-gutter+-mode))
 #+END_SRC
 
 ** Helpers
@@ -1639,74 +1641,74 @@ CWD is not in a git repo (or the git command is not found)."
 
 #+BEGIN_SRC emacs-lisp
 (setq my/leader-keys
-  '(
-    ("SPC" display-fill-column-indicator-mode)
+      '(
+        ("SPC" display-fill-column-indicator-mode)
 
-    ("a" align-regexp)
+        ("a" align-regexp)
 
-    ;; dired
-    ("dn" find-name-dired)
-    ("dg" find-grep-dired)
-    ("dv" my/git-grep-dired)
+        ;; dired
+        ("dn" find-name-dired)
+        ("dg" find-grep-dired)
+        ("dv" my/git-grep-dired)
 
-    ;; errors
-    ("el" my/toggle-flycheck-error-list)
+        ;; errors
+        ("el" my/toggle-flycheck-error-list)
 
-    ;; browsing/files
-    ("fc" my/copy-file-path)
-    ("fd" pwd)
-    ("fp" my/try-open-dominating-file)
-    ("fs" my/create-scratch-buffer-with-mode)
+        ;; browsing/files
+        ("fc" my/copy-file-path)
+        ("fd" pwd)
+        ("fp" my/try-open-dominating-file)
+        ("fs" my/create-scratch-buffer-with-mode)
 
-    ;; git/vc
-    ("gb" my/git-blame-current-line)
+        ;; git/vc
+        ("gb" my/git-blame-current-line)
 
-    ("h"  help)
+        ("h"  help)
 
-    ;; insert
-    ("iu" counsel-unicode-char)
+        ;; insert
+        ("iu" counsel-unicode-char)
 
-    ;; project
-    ("pa" counsel-projectile-ag)
-    ("pr" counsel-projectile-rg)
-    ("pt" my/counsel-ag-todos-global)
+        ;; project
+        ("pa" counsel-projectile-ag)
+        ("pr" counsel-projectile-rg)
+        ("pt" my/counsel-ag-todos-global)
 
-    ;; show/display
-    ("sd" pwd)
-    ;; find/search
-    ("sa" ag)
-    ("sr" rg)
-    ("sca" counsel-ag)
-    ("scr" counsel-rg)
-    ("sr" rgrep)
+        ;; show/display
+        ("sd" pwd)
+        ;; find/search
+        ("sa" ag)
+        ("sr" rg)
+        ("sca" counsel-ag)
+        ("scr" counsel-rg)
+        ("sr" rgrep)
 
-    ;; toggle
-    ("t8" display-fill-column-indicator-mode)
-    ("tc" global-company-mode)
-    ("tf" my/toggle-font)
-    ("tg" global-diff-hl-mode)
-    ("tl" my/line-numbers)
-    ("to" global-symbol-overlay-mode)
-    ("ti" highlight-indent-guides-mode)
-    ("th" hl-line-mode)
-    ("ts" flycheck-mode)
-    ("tt" my/toggle-theme)
-    ("tw" toggle-truncate-lines)
+        ;; toggle
+        ("t8" display-fill-column-indicator-mode)
+        ("tc" global-company-mode)
+        ("tf" my/toggle-font)
+        ("tg" global-diff-hl-mode)
+        ("tl" my/line-numbers)
+        ("to" global-symbol-overlay-mode)
+        ("ti" highlight-indent-guides-mode)
+        ("th" hl-line-mode)
+        ("ts" flycheck-mode)
+        ("tt" my/toggle-theme)
+        ("tw" toggle-truncate-lines)
 
-    ;; ui
-    ("uh" rainbow-mode)
-    ("um" (lambda () (interactive) (call-interactively 'tool-bar-mode) (call-interactively 'menu-bar-mode)))
-    ("up" rainbow-delimiters-mode)
+        ;; ui
+        ("uh" rainbow-mode)
+        ("um" (lambda () (interactive) (call-interactively 'tool-bar-mode) (call-interactively 'menu-bar-mode)))
+        ("up" rainbow-delimiters-mode)
 
-    ;; windows
-    ("wf" my/window-fixed)
-    ("wd" my/window-dedicated)
+        ;; windows
+        ("wf" my/window-fixed)
+        ("wd" my/window-dedicated)
 
-    ;; theme
-    ("Ts" counsel-load-theme)
+        ;; theme
+        ("Ts" counsel-load-theme)
 
-    ("Q" evil-local-mode)
-    ))
+        ("Q" evil-local-mode)
+        ))
 #+END_SRC
 
 ** setup keybindings
@@ -1783,6 +1785,10 @@ CWD is not in a git repo (or the git command is not found)."
     (let ((k (car i))
           (f (cadr i)))
       (evil-leader/set-key k f))))
+
+(use-package evil-visualstar
+  :hook (evil-local-mode . evil-visualstar-mode)
+  :ensure t)
 
 (use-package evil
   :ensure t
@@ -1863,16 +1869,16 @@ CWD is not in a git repo (or the git command is not found)."
   (define-key evil-insert-state-map (kbd "C-M-i") 'company-complete)
 
   (define-key evil-visual-state-map (kbd "<") #'(lambda ()
-                 (interactive)
-                 (progn
-                     (call-interactively 'evil-shift-left)
-                     (execute-kbd-macro "gv"))))
+                                                  (interactive)
+                                                  (progn
+                                                    (call-interactively 'evil-shift-left)
+                                                    (execute-kbd-macro "gv"))))
 
   (define-key evil-visual-state-map (kbd ">") #'(lambda ()
-                 (interactive)
-                 (progn
-                     (call-interactively 'evil-shift-right)
-                     (execute-kbd-macro "gv"))))
+                                                  (interactive)
+                                                  (progn
+                                                    (call-interactively 'evil-shift-right)
+                                                    (execute-kbd-macro "gv"))))
 
   ;; redefine so that $ doesn't include the EOL char
   (evil-define-motion evil-end-of-line (count)
@@ -1902,13 +1908,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
          (evil-define-text-object ,outer-name (count &optional beg end type)
            (evil-select-paren ,start-regex ,end-regex beg end type count t))
          (define-key evil-inner-text-objects-map ,key #',inner-name)
-         (define-key evil-outer-text-objects-map ,key #',outer-name))))
-
-  ;; search with star while in v-mode
-  (use-package evil-visualstar
-    :hook (evil-local-mode . evil-visualstar-mode)
-    :ensure t)
-  )
+         (define-key evil-outer-text-objects-map ,key #',outer-name)))))
 #+END_SRC
 
 ** evil packages that can be used without evil-mode
@@ -1927,10 +1927,10 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (global-evil-surround-mode 1)
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
   (defconst my/mark-active-alist
-  `((mark-active
-      ,@(let ((m (make-sparse-keymap)))
-          (define-key m (kbd "C-c s") 'evil-surround-region)
-          m))))
+    `((mark-active
+       ,@(let ((m (make-sparse-keymap)))
+           (define-key m (kbd "C-c s") 'evil-surround-region)
+           m))))
   (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist))
 #+END_SRC
 
@@ -2404,7 +2404,7 @@ the current file."
      ))
   ;; xref for purescript works a bit weird with qualified identifiers
   ;; (define-key purescript-mode-map (kbd "M-.")
-    ;; #'(lambda () (interactive) (xref-find-definitions (current-word t t))))
+  ;; #'(lambda () (interactive) (xref-find-definitions (current-word t t))))
   )
 
 ;; This needs to exist in custom/
@@ -2481,9 +2481,9 @@ the current file."
          ("\\.jsx\\'" . rjsx-mode))
   :config
   (add-hook 'rjsx-mode-hook
-    (lambda ()
-      (setq evil-shift-width 2)
-      (define-key js2-mode-map (kbd "C-c C-f") nil))))
+            (lambda ()
+              (setq evil-shift-width 2)
+              (define-key js2-mode-map (kbd "C-c C-f") nil))))
 
 (setq ;; js2-mode
  js-indent-level 2
@@ -2509,6 +2509,7 @@ the current file."
   :init
   (setq prettier-js-args '("--trailing-comma" "es5"
                            "--bracket-spacing" "true"))
+  :config
   (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
   (my/define-major-mode-key 'typescript-mode "s" 'my/prettier-and-save)
   (my/define-major-mode-key 'web-mode "s" 'my/prettier-and-save))
@@ -2557,11 +2558,11 @@ the current file."
          ("\\.page\\'" . gfm-mode))
   :config
   (if (executable-find "marked")
-    (setq markdown-command "marked"))
+      (setq markdown-command "marked"))
   (setq markdown-asymmetric-header t
         markdown-gfm-use-electric-backquote nil
         markdown-css-paths
-          (list (expand-file-name (concat user-emacs-directory "static/github.css")))
+        (list (expand-file-name (concat user-emacs-directory "static/github.css")))
         )
   (my/add-hooks
    '(markdown-mode-hook)
@@ -2660,31 +2661,32 @@ the current file."
 ** Rust
 
 #+BEGIN_SRC emacs-lisp :tangle no
+(use-package racer
+  :ensure t
+  :hook (rust-mode . racer-mode))
+
+(use-package cargo
+  :ensure t
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package flycheck-rust
+  :ensure t
+  :hook (flycheck-mode . flycheck-rust-setup))
+
 (use-package rust-mode
   :ensure t
   :mode ("\\.rs\\'" . rust-mode)
   :init
-  (use-package racer :ensure t :after rust-mode)
-  (use-package cargo :ensure t :after rust-mode)
-  (use-package flycheck-rust
-    :ensure t
-    :after rust-mode
-    :hook (flycheck-mode . flycheck-rust-setup))
-  :config
-  (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
-  (add-hook 'rust-mode-hook
-            (lambda ()
-              (cargo-minor-mode)
-              (local-set-key (kbd "C-c <tab>") #'rust-format-buffer)
-              (racer-mode)
-              (eldoc-mode)))
   (defvar my/rust-sysroot  "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu")
   (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
   (setq racer-cmd "~/.cargo/bin/racer")
   (setq racer-rust-src-path my/rust-src-path)
   (setenv "RUST_SRC_PATH" my/rust-src-path)
-  (my/define-major-mode-key 'rust-mode "s" 'my/rust-format-and-save)
-  )
+  (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
+  :config
+  (add-hook 'rust-mode-hook 'eldoc-mode)
+  (my/define-major-mode-key 'rust-mode "f" 'rust-format-buffer)
+  (my/define-major-mode-key 'rust-mode "s" 'my/rust-format-and-save))
 
 (defun my/rust-format-and-save ()
   (interactive)
@@ -2723,8 +2725,9 @@ the current file."
 (use-package dhall-mode
   :ensure t
   :mode ("\\.dhall\\'" . dhall-mode)
-  :config
+  :init
   (setq dhall-format-at-save nil)
+  :config
   (add-hook 'dhall-mode-hook (lambda () (setq indent-tabs-mode nil)))
   (my/define-major-mode-key 'dhall-mode "s" #'my/dhall-format-and-save))
 
@@ -2825,7 +2828,7 @@ the current file."
 
 (use-package flycheck-yamllint
   :ensure t
-  :after flycheck yaml-mode
+  :after (flycheck yaml-mode)
   :commands (flycheck-yamllint-setup)
   :hook (yaml-mode . flycheck-yamllint-setup))
 #+END_SRC
@@ -2971,15 +2974,16 @@ instead of the title as seen by deft."
 
 #+BEGIN_SRC emacs-lisp
 ;; https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/
+(use-package erc-hl-nicks
+  :ensure t
+  :after erc
+  :init
+  (setq erc-hl-nicks-skip-nicks '("so" "So" "bind" "hackage")))
+
 (use-package erc
   :defer t
   :commands (erc my/erc-freenode)
-  :config
-  (use-package erc-hl-nicks
-    :ensure t
-    :after erc
-    :init
-    (setq erc-hl-nicks-skip-nicks '("so" "So" "bind" "hackage")))
+  :init
   (setq erc-rename-buffers t
         erc-prompt-for-nickserv-password nil
         erc-autojoin-timing 'ident
@@ -2993,7 +2997,7 @@ instead of the title as seen by deft."
         erc-fill-column 80
         my/erc-default-nick "runforestrun"
         )
-
+  :config
   (defun my/erc-freenode (select-nick)
     (interactive "P")
     (let ((nick
@@ -3081,30 +3085,35 @@ erc-modified-channels-alist. Should be executed on window change."
 * Company
 
 #+BEGIN_SRC emacs-lisp
+(use-package company-quickhelp
+  :ensure t
+  :after company)
+
+(use-package company-anaconda
+  :ensure t
+  :after (company anaconda-mode))
+
 (use-package company
   :ensure t
   :diminish company-mode
-  :hook (after-init . global-company-mode)
+  :bind (("C-M-i" . company-complete)
+         :map company-active-map
+         ("C-p" . company-select-previous)
+         ("C-n" . company-select-next)
+         ("C-f" . company-show-location)
+         ("TAB" . company-complete-common-or-cycle)
+         ("<tab>" . company-complete-common-or-cycle)
+         ("<escape>" . company-abort))
+  :hook ((after-init . global-company-mode)
+         (global-company-mode . company-quickhelp-mode))
   :init
   (setq company-dabbrev-downcase nil
         company-minimum-prefix-length 3
         company-idle-delay 0.4)
   :config
-  (use-package company-quickhelp :ensure t)
-  (use-package company-anaconda :ensure t :defer t)
-  (company-quickhelp-mode 1)
-  (global-set-key (kbd "C-M-i") 'company-complete)
-  (eval-after-load "company"
-    '(progn
-       (add-to-list 'company-backends 'company-anaconda)
-       (add-to-list 'company-backends 'company-files)
-       (setq company-backends (delete 'company-dabbrev company-backends))
-       (define-key company-active-map (kbd "C-p") 'company-select-previous)
-       (define-key company-active-map (kbd "C-n") 'company-select-next)
-       (define-key company-active-map (kbd "<escape>") 'company-abort)
-       (define-key company-active-map (kbd "TAB") 'company-complete-common-or-cycle)
-       (define-key company-active-map (kbd "<tab>") 'company-complete-common-or-cycle)
-       (define-key company-active-map (kbd "C-f") 'company-show-location))))
+  (setq company-backends (delete 'company-dabbrev company-backends))
+  (add-to-list 'company-backends 'company-anaconda)
+  (add-to-list 'company-backends 'company-files))
 #+END_SRC
 
 * Flycheck
@@ -3113,8 +3122,15 @@ erc-modified-channels-alist. Should be executed on window change."
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
+  :bind (("C-c ! t" . flycheck-mode))
   :hook (after-init . global-flycheck-mode)
-  :init (global-flycheck-mode)
+  :init
+  (setq flycheck-temp-prefix ".flycheck"
+        flycheck-emacs-lisp-load-path 'inherit
+        flycheck-check-syntax-automatically '(save mode-enabled)
+        ;; to check while typing:
+        ;; flycheck-check-syntax-automatically '(save idle-change new-line mode-enabled)
+        )
   :config
   (defun my/toggle-flycheck-error-list ()
     (interactive)
@@ -3122,7 +3138,6 @@ erc-modified-channels-alist. Should be executed on window change."
         (quit-window nil window)
       (flycheck-list-errors)))
 
-  (define-key global-map (kbd "C-c ! t") 'flycheck-mode)
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Flycheck errors*" eos)
                  (display-buffer-reuse-window
@@ -3135,24 +3150,15 @@ erc-modified-channels-alist. Should be executed on window change."
                 (append flycheck-disabled-checkers
                         '(javascript-jshint haskell-ghc haskell-stack-ghc)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'javascript-eslint 'js2-mode)
-  (setq-default flycheck-temp-prefix ".flycheck")
-  (setq-default flycheck-emacs-lisp-load-path 'inherit)
-  (defun my/flycheck-always ()
-    (interactive)
-    (setq flycheck-check-syntax-automatically '(save idle-change new-line mode-enabled)))
-
-  (defun my/flycheck-on-save ()
-    (interactive)
-    (setq flycheck-check-syntax-automatically '(save mode-enabled))))
+  (flycheck-add-mode 'javascript-eslint 'js2-mode))
 #+END_SRC
 
 * Projectile
 
 #+BEGIN_SRC emacs-lisp
 (use-package perspective
-  :hook (after-init . persp-mode)
   :ensure t
+  :hook (after-init . persp-mode)
   :config
   ;; (global-set-key (kbd "M-O") 'persp-next)
   (global-set-key (kbd "M-N") 'persp-next)
@@ -3167,20 +3173,22 @@ erc-modified-channels-alist. Should be executed on window change."
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
 
 (use-package persp-projectile
-  :ensure t)
+  :ensure t
+  :after (perspective projectile))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
+  :hook (after-init . projectile-mode)
   :bind-keymap ("C-c p" . projectile-command-map)
   :diminish projectile-mode
-  :config
+  :init
   (setq projectile-completion-system 'ivy)
   (setq
    projectile-mode-line-function
    '(lambda () (format " P[%s]" (or (projectile-project-name) "-"))))
-  (projectile-mode)
+  :config
   (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
     (if (projectile-project-p)
         (apply in-proj-f args)
@@ -3238,9 +3246,10 @@ erc-modified-channels-alist. Should be executed on window change."
 #+BEGIN_SRC emacs-lisp
 (use-package rg
   :ensure t
-  :config
+  :init
   (setq rg-group-result t
         rg-ignore-case 'smart)
+  :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
 
   (define-key rg-mode-map "m" #'rg-menu)
@@ -3256,7 +3265,7 @@ erc-modified-channels-alist. Should be executed on window change."
                             (progn
                               (ace-window nil)
                               (switch-to-buffer buf))))))
-    (compile-goto-error event)))
+        (compile-goto-error event)))
 #+END_SRC
 
 * Ivy/Counsel/Swiper
@@ -3264,6 +3273,7 @@ erc-modified-channels-alist. Should be executed on window change."
 #+BEGIN_SRC emacs-lisp
 (use-package counsel-projectile
   :ensure t
+  :after (counsel projectile)
   :init
   (setq projectile-switch-project-action 'counsel-projectile-find-file)
   :config
@@ -3296,7 +3306,8 @@ erc-modified-channels-alist. Should be executed on window change."
     (swiper-isearch)))
 
 (use-package ivy-xref  ;; currently in lisp/ because of patches
-  :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs))
+  :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs)
+  :after ivy)
 
 (use-package swiper
   :ensure t
@@ -3304,45 +3315,57 @@ erc-modified-channels-alist. Should be executed on window change."
   :bind ("C-s" . my/swiper-isearch)
   :commands (swiper swiper-isearch swiper-all swiper-multi))
 
-(use-package ivy
+;; better fuzzy matching
+(use-package flx
   :ensure t
-  :diminish ivy-mode
+  :after ivy)
+
+;; mostly to bring recently used M-x targets at the top
+(use-package smex
+  :ensure t
+  :after ivy
   :init
-  (use-package counsel :ensure t)
-  (use-package flx :ensure t)  ;; better fuzzy matching
-  ;; mostly to bring recently used M-x targets at the top
-  (use-package smex :ensure t :config (setq smex-history-length 12))
+  (setq smex-history-length 12))
+
+(defun my/ivy-reset-builders ()
+  (setq ivy-re-builders-alist
+        '((swiper               . ivy--regex-plus)
+          (swiper-isearch       . ivy--regex-plus)
+          (ivy-bibtex           . ivy--regex-ignore-order)
+          (counsel-unicode-char . ivy--regex-ignore-order)
+          (insert-char          . ivy--regex-ignore-order)
+          (ucs-insert           . ivy--regex-ignore-order)
+          (counsel-unicode-char . ivy--regex-ignore-order)
+          (counsel-ag           . ivy--regex-ignore-order)  ;; NOTE: testing
+          (counsel-rg           . ivy--regex-ignore-order)
+          (t                    . ivy--regex-fuzzy))))
+
+(use-package counsel
+  :ensure t
+  :bind (("M-x" . counsel-M-x)
+         ("M-i" . counsel-imenu)
+         ("M-I" . counsel-outline)
+         ("C-x C-f" . counsel-find-file)
+         ("C-x f" . counsel-file-jump)
+         ("C-x r b" . counsel-bookmark)
+         ("C-x C-a" . counsel-recentf))
+  :after ivy
+  :init
+  (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s"
+        counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s")
   :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers nil)
-  (setq ivy-count-format "(%d/%d) ")
-
-  (define-key ivy-minibuffer-map (kbd "C-l") 'ivy-call-and-recenter)
-
-  (global-set-key (kbd "C-c r") 'ivy-resume)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "M-i") 'counsel-imenu)
-  (global-set-key (kbd "M-I") 'counsel-outline)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "C-x r b") 'counsel-bookmark)
-  (global-set-key (kbd "C-x C-a") 'counsel-recentf)
-  (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
-
+  (my/ivy-reset-builders)
+  (setq ivy-initial-inputs-alist nil) ;; no ^ initially
   ;; counsel-ag
-  (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
   ;; S-SPC doesn't work properly in counsel-ag anyway
   ;; NOTE: this also applies to rg
   (define-key counsel-ag-map (kbd "S-SPC") nil)
-
   ;; counsel-rg
   ;; NOTE: testing this (added `-S' for smart case in ivy-occur buffers)
-  (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s")
   (global-set-key (kbd "C-c s")
                   (lambda ()
                     (interactive)
                     (counsel-rg nil (read-directory-name "rg in: ") "")))
-
-  (global-set-key (kbd "C-x f") #'counsel-file-jump)
 
   (defun my/counsel-file-jump-temp-root (reset)
     (interactive "P")
@@ -3360,50 +3383,6 @@ erc-modified-channels-alist. Should be executed on window change."
 
   (global-set-key (kbd "C-S-s") #'my/counsel-rg-temp-root)
 
-  (setq ivy-re-builders-alist
-        '((swiper               . ivy--regex-plus)
-          (swiper-isearch       . ivy--regex-plus)
-          (ivy-bibtex           . ivy--regex-ignore-order)
-          (counsel-unicode-char . ivy--regex-ignore-order)
-          (insert-char          . ivy--regex-ignore-order)
-          (ucs-insert           . ivy--regex-ignore-order)
-          (counsel-unicode-char . ivy--regex-ignore-order)
-          (counsel-ag           . ivy--regex-ignore-order)  ;; NOTE: testing
-          (counsel-rg           . ivy--regex-ignore-order)
-          (t                    . ivy--regex-fuzzy)))
-  (setq ivy-initial-inputs-alist nil)  ;; no ^ initially
-  (setq ivy-magic-tilde nil)
-
-  (defun my/ivy-yank-current-region-or-word (&optional qual)
-    "Insert current region, if it's active, otherwise the current word,into
-the minibuffer."
-    (interactive "P")
-    (let (text)
-      (with-ivy-window
-        (unwind-protect
-            (setq text
-                  (if (region-active-p)
-                      (buffer-substring-no-properties (region-beginning) (region-end))
-                    (current-word t (not qual))))))
-      (when text (insert text))))
-  (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-region-or-word)
-  ;; TODO: something's up with rotation
-  (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
-
-  (defun my/ivy-minibuffer-grow ()
-    (interactive)
-    (let* ((prefix (prefix-numeric-value current-prefix-arg))
-           (nlines (cond
-                    ((= prefix 1) 1)
-                    ((= prefix 4) (/ (frame-height) 2))
-                    (t (- (frame-height) 5))))
-           (current-prefix-arg nil))
-      (while (> nlines 0)
-        (ivy-minibuffer-grow)
-        (setq nlines (1- nlines)))))
-
-  (define-key ivy-minibuffer-map (kbd "C-o") #'my/ivy-minibuffer-grow)
-
   (defun my/counsel-file-jump-from-here (path)
     (interactive)
     (let ((dir (if (file-directory-p path)
@@ -3415,7 +3394,6 @@ the minibuffer."
     (setq my/temp-project-root dir)
     (my/counsel-file-jump-temp-root nil))
 
-  ;; minibuffer actions for specific commands
   (dolist (action '(counsel-find-file counsel-file-jump counsel-recentf))
     (ivy-set-actions
      action
@@ -3449,26 +3427,6 @@ the minibuffer."
         "counsel-rg")
        )))
 
-  (ivy-set-actions
-   'ivy-switch-buffer
-   `(("s"
-      ,(my/control-function-window-split
-        ivy--switch-buffer-other-window-action
-        0 nil)
-      "split horizontally")
-     ("v"
-      ,(my/control-function-window-split
-        ivy--switch-buffer-other-window-action
-        nil 0)
-      "split vertically")
-     ("n"
-      ,(my/execute-f-with-hook
-        (lambda (b) (switch-to-buffer b nil 'force-same-window))
-        ace-select-window)
-      "select window")
-     ("k" kill-buffer "kill buffer")
-     ))
-
   (dolist (action '(counsel-projectile-find-file projectile-recentf))
     (ivy-set-actions
      action
@@ -3495,18 +3453,6 @@ the minibuffer."
         "eshell")
        )))
 
-  (ivy-set-actions
-   'projectile-switch-project
-   '(("d"
-      dired
-      "Open Dired in project's directory")
-     ("v"
-      projectile-vc
-      "Open project root in vc-dir or magit")
-     ("r"
-      projectile-remove-known-project
-      "Remove project(s)")))
-
   ;; also applies to counsel-projectile-ag
   (dolist (action '(counsel-ag counsel-rg))
     (ivy-set-actions
@@ -3527,19 +3473,101 @@ the minibuffer."
                (replace-regexp-in-string "^[^:]+:[^:]+:[^:]+:" "" x)
              (car x))))
         "insert just content"))))
+
+  (defvar my/todo-search-string
+    "TODO|NOTE|FIXME|XXX|DONE|HACK")
+
+  (defun my/counsel-projectile-ag-todos ()
+    (interactive)
+    (let ((counsel-projectile-ag-initial-input my/todo-search-string))
+      (counsel-projectile-ag)))
+
+  (defun my/counsel-ag-todos-global ()
+    (interactive)
+    (my/try-exec-in-project 'my/counsel-projectile-ag-todos 'my/counsel-ag-todos))
   )
 
-(defvar my/todo-search-string
-  "TODO|NOTE|FIXME|XXX|DONE|HACK")
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :hook (after-init . ivy-mode)
+  :bind (("C-c r" . ivy-resume)
+         ("C-x b" . ivy-switch-buffer)
+         :map ivy-minibuffer-map
+         ("C-l" . ivy-call-and-recenter))
+  :init
+  (setq ivy-use-virtual-buffers nil
+        ivy-count-format "(%d/%d) "
+        ivy-magic-tilde nil)
+  :config
+  (my/ivy-reset-builders)
+  (setq ivy-initial-inputs-alist nil) ;; no ^ initially
+  (define-key ivy-minibuffer-map (kbd "C-l") 'ivy-call-and-recenter)
 
-(defun my/counsel-projectile-ag-todos ()
-  (interactive)
-  (let ((counsel-projectile-ag-initial-input my/todo-search-string))
-    (counsel-projectile-ag)))
+  (defun my/ivy-yank-current-region-or-word (&optional qual)
+    "Insert current region, if it's active, otherwise the current word,into
+the minibuffer."
+    (interactive "P")
+    (let (text)
+      (with-ivy-window
+        (unwind-protect
+            (setq text
+                  (if (region-active-p)
+                      (buffer-substring-no-properties (region-beginning) (region-end))
+                    (current-word t (not qual))))))
+      (when text (insert text))))
+  (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-region-or-word)
+  ;; TODO: something's up with rotation
+  (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
 
-(defun my/counsel-ag-todos-global ()
-  (interactive)
-  (my/try-exec-in-project 'my/counsel-projectile-ag-todos 'my/counsel-ag-todos))
+  (defun my/ivy-minibuffer-grow ()
+    (interactive)
+    (let* ((prefix (prefix-numeric-value current-prefix-arg))
+           (nlines (cond
+                    ((= prefix 1) 1)
+                    ((= prefix 4) (/ (frame-height) 2))
+                    (t (- (frame-height) 5))))
+           (current-prefix-arg nil))
+      (while (> nlines 0)
+        (ivy-minibuffer-grow)
+        (setq nlines (1- nlines)))))
+
+  (define-key ivy-minibuffer-map (kbd "C-o") #'my/ivy-minibuffer-grow)
+
+  ;; minibuffer actions for specific commands
+
+  (ivy-set-actions
+   'ivy-switch-buffer
+   `(("s"
+      ,(my/control-function-window-split
+        ivy--switch-buffer-other-window-action
+        0 nil)
+      "split horizontally")
+     ("v"
+      ,(my/control-function-window-split
+        ivy--switch-buffer-other-window-action
+        nil 0)
+      "split vertically")
+     ("n"
+      ,(my/execute-f-with-hook
+        (lambda (b) (switch-to-buffer b nil 'force-same-window))
+        ace-select-window)
+      "select window")
+     ("k" kill-buffer "kill buffer")
+     ))
+
+  (ivy-set-actions
+   'projectile-switch-project
+   '(("d"
+      dired
+      "Open Dired in project's directory")
+     ("v"
+      projectile-vc
+      "Open project root in vc-dir or magit")
+     ("r"
+      projectile-remove-known-project
+      "Remove project(s)")))
+  )
 #+END_SRC
 
 * Yasnippet
@@ -3620,21 +3648,32 @@ the minibuffer."
             (kill-buffer buf)))
         (buffer-list)))
 
-;; hide files being edited + flycheck files from dired
-(setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
-      dired-omit-verbose nil)
+(use-package dired-x
+  :after dired
+  :init
+  (if is-mac (setq dired-use-ls-dired nil)))
 
-(with-eval-after-load 'dired
+(use-package dired
+  :bind (:map dired-mode-map
+              ("j" . dired-next-line)
+              ("J" . dired-next-dirline)
+              ("k" . dired-previous-line)
+              ("K" . dired-prev-dirline)
+              ("h" . backward-char)
+              ("l" . forward-char)
+              ("C-c n" . my/dired-find-file-ace)
+              ("N" . my/dired-find-file-ace)
+              ("M-n" . my/dired-find-file-ace)
+              ("M-j" . my/dired-file-jump-from-here)
+              ("M-u" . dired-up-directory)
+              ("C-c q" . my/dired-kill-all-buffers))
+  :init
+  ;; hide files being edited + flycheck files from dired
+  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
+        dired-omit-verbose nil)
+  :config
   (add-hook 'dired-mode-hook #'auto-revert-mode)
   (add-hook 'dired-mode-hook #'dired-omit-mode)
-
-  ;; some vim keybindings, makes it similar to Ex
-  (define-key dired-mode-map (kbd "j") 'dired-next-line)
-  (define-key dired-mode-map (kbd "J") 'dired-next-dirline)
-  (define-key dired-mode-map (kbd "k") 'dired-previous-line)
-  (define-key dired-mode-map (kbd "K") 'dired-prev-dirline)
-  (define-key dired-mode-map (kbd "h") 'backward-char)
-  (define-key dired-mode-map (kbd "l") 'forward-char)
 
   (define-key dired-mode-map
     (kbd "C-c v")
@@ -3646,27 +3685,7 @@ the minibuffer."
     (my/control-function-window-split
      dired-find-file-other-window
      0 nil))
-  (define-key dired-mode-map
-    (kbd "C-c n")
-    'my/dired-find-file-ace)
-  (define-key dired-mode-map
-    (kbd "N")
-    'my/dired-find-file-ace)
-  (define-key dired-mode-map
-    (kbd "M-n")
-    'my/dired-find-file-ace)
-  (define-key dired-mode-map
-    (kbd "M-j")
-    'my/dired-file-jump-from-here)
-  (define-key dired-mode-map
-    (kbd "M-u")
-    'dired-up-directory)
-  (define-key dired-mode-map
-    (kbd "C-c q")
-    'my/dired-kill-all-buffers))
-
-(require 'dired-x)
-(if is-mac (setq dired-use-ls-dired nil))
+  )
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -3704,27 +3723,25 @@ the minibuffer."
 
 ** ibuffer
 
-   #+begin_src emacs-lisp
-;; `/ R` to toggle showing these groups
-;; `/ \` to disable
-(setq-default ibuffer-saved-filter-groups
-              `(("Default"
-                 ("rg" (name . "\*rg.*\*"))
-                 ("Dired" (mode . dired-mode))
-                 ("Scratch" (name . "\*scratch.*"))
-                 ("Temporary" (name . "\*.*\*"))
-                 )))
-(setq ibuffer-show-empty-filter-groups nil)
+#+begin_src emacs-lisp
 
 (use-package ibuffer
+  :init
+  ;; `/ R` to toggle showing these groups
+  ;; `/ \` to disable
+  (setq-default ibuffer-saved-filter-groups
+                `(("Default"
+                   ("rg" (name . "\*rg.*\*"))
+                   ("Dired" (mode . dired-mode))
+                   ("Scratch" (name . "\*scratch.*"))
+                   ("Temporary" (name . "\*.*\*"))
+                   )))
+  (setq ibuffer-show-empty-filter-groups nil)
   :config
   (define-key ibuffer-mode-map (kbd "M-o") nil)
-  (global-set-key (kbd "C-x C-b") 'ibuffer))
-
-(add-hook 'ibuffer-mode-hook
-          '(lambda ()
-             (ibuffer-auto-mode 1)))
-   #+end_src
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (add-hook 'ibuffer-mode-hook #'(lambda () (ibuffer-auto-mode 1))))
+#+end_src
 
 ** Avy
 
@@ -3740,9 +3757,10 @@ the minibuffer."
 (use-package ace-window
   :ensure t
   :bind ("C-c o" . ace-window)
-  :config
+  :init
   (setq aw-dispatch-always nil
         aw-keys (string-to-list "asdfghjkl;"))
+  :config
   (custom-set-faces
    '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.8))))))
 #+END_SRC
@@ -3893,19 +3911,21 @@ the minibuffer."
 #+BEGIN_SRC emacs-lisp
 (use-package powerline
   :ensure t
+  :after flycheck
   :if is-gui
-  :config
-  (powerline-default-theme)
+  :init
   (setq powerline-display-buffer-size nil)
   (setq powerline-display-mule-info nil)
   (setq flycheck-mode-line '(:eval (my/mode-line-flycheck)))
-  (diminish-undo 'flycheck-mode)
   (setq global-mode-string
         (append global-mode-string '((:eval (my/mode-line-venv)))))
-  (add-hook 'my/after-set-theme-hook 'powerline-reset)
-  (add-hook 'my/after-set-font-hook 'powerline-reset)
   (setq global-mode-string
-        (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string)))
+        (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string))
+  :config
+  (powerline-default-theme)
+  (diminish-undo 'flycheck-mode)
+  (add-hook 'my/after-set-theme-hook 'powerline-reset)
+  (add-hook 'my/after-set-font-hook 'powerline-reset))
 
 ;; is window selected?
 (defvar my/-selected-window nil)
@@ -4003,8 +4023,9 @@ the minibuffer."
 (use-package org-bullets
   :ensure t
   :if is-gui
-  :init (setq org-hide-leading-stars t)
-  :hook (org-mode . org-bullets-mode))
+  :hook (org-mode . org-bullets-mode)
+  :init
+  (setq org-hide-leading-stars t))
 
 ;; auto-generated if a heading has a :TOC: tag
 (use-package toc-org
@@ -4067,8 +4088,6 @@ the minibuffer."
 ;; (load custom-file 'noerror)
 
 (setq x-underline-at-descent-line t)
-
-(my/flycheck-on-save)
 
 (custom-set-faces
  '(anzu-mode-line ((t (:inherit mode-line :foreground "magenta" :weight bold))))
