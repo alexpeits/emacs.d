@@ -101,6 +101,7 @@
 - [[#org-mode][Org-mode]]
 - [[#setup][Setup]]
   - [[#per-workstation-setup][Per-workstation setup]]
+  - [[#performance][Performance]]
   - [[#global-setup][Global setup]]
 
 * Variables and PATH
@@ -166,8 +167,8 @@
   (package-install 'use-package))
 
 ;; Can be used to debug slow packages
-;; (setq use-package-minimum-reported-time 0.05
-;;       use-package-verbose t)
+(setq use-package-minimum-reported-time 0.05
+      use-package-verbose t)
 
 (eval-when-compile
   (require 'use-package))
@@ -459,6 +460,7 @@ With a prefix argument, open using `find-file-other-window'."
       `((".*" ,temporary-file-directory t)))
 
 ;; only with this set to nil can org-mode export & open too
+;; ... but it also breaks some stuff so it's disabled
 ;; (setq process-connection-type nil)
 
 ;; yesss
@@ -479,7 +481,7 @@ With a prefix argument, open using `find-file-other-window'."
 ;; vim-like scrolling (emacs=0)
 (setq scroll-conservatively 101)
 
-;; smooth scrolling
+;; smooth mouse scrolling
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1)) ;; one line at a time
       mouse-wheel-progressive-speed t ;; don't accelerate scrolling
       mouse-wheel-follow-mouse 't) ;; scroll window under mouse
@@ -568,8 +570,7 @@ With a prefix argument, open using `find-file-other-window'."
   :defer t
   :bind (:map outline-minor-mode-map
               ("<tab>" . outline-toggle-children))
-  :diminish outline-minor-mode
-  )
+  :diminish outline-minor-mode)
 
 (use-package rainbow-mode
   :ensure t
@@ -682,8 +683,8 @@ With a prefix argument, open using `find-file-other-window'."
 
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
-  :hook (after-init . which-key-mode)
   :ensure t
+  :hook (after-init . which-key-mode)
   :diminish which-key-mode)
 #+END_SRC
 
@@ -705,22 +706,22 @@ With a prefix argument, open using `find-file-other-window'."
 (define-key prog-mode-map (kbd "M-a") 'beginning-of-defun)
 (define-key prog-mode-map (kbd "M-e") 'end-of-defun)
 
-(defun push-mark-no-activate ()
+(defun my/push-mark-no-activate ()
   "Pushes `point' to `mark-ring' and does not activate the region
    Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
   (interactive)
   (push-mark (point) t nil)
   (message "Pushed mark to ring"))
 
-(global-set-key (kbd "C-`") 'push-mark-no-activate)
+(global-set-key (kbd "C-`") 'my/push-mark-no-activate)
 
-(defun jump-to-mark ()
+(defun my/jump-to-mark ()
   "Jumps to the local mark, respecting the `mark-ring' order.
   This is the same as using \\[set-mark-command] with the prefix argument."
   (interactive)
   (set-mark-command 1))
 
-(global-set-key (kbd "M-`") 'jump-to-mark)
+(global-set-key (kbd "M-`") 'my/jump-to-mark)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -768,8 +769,8 @@ buffer, close it."
 
 #+BEGIN_SRC emacs-lisp
 (use-package engine-mode
-  :hook (after-init . engine-mode)
   :ensure t
+  :hook (after-init . engine-mode)
   :bind-keymap ("C-x /" . engine-mode-map)
   :config
   (defengine google
@@ -854,7 +855,10 @@ buffer, close it."
 ** recentf
 
 #+BEGIN_SRC emacs-lisp
-(setq recentf-max-saved-items 100) (recentf-mode 1)
+(use-package recentf
+  :hook (after-init . recentf-mode)
+  :init
+  (setq recentf-max-saved-items 100))
 #+END_SRC
 
 ** hi-lock & symbol overlay
@@ -924,9 +928,14 @@ buffer, close it."
 ** clean unused buffers
 
 #+begin_src emacs-lisp
-(setq clean-buffer-list-delay-general 3)  ;; 3 days
-(setq clean-buffer-list-kill-regexps '("\\`\\*Customize .*\\*\\'"))
-(setq clean-buffer-list-never-regexps '("\\`TAGS\\'"))
+(use-package midnight
+  :commands (clean-buffer-list midnight-delay-set)
+  ;; :hook (after-init . midnight-mode)
+  :init
+  ;; (midnight-delay-set 'midnight-delay 0)
+  (setq clean-buffer-list-delay-general 3  ;; 3 days
+        clean-buffer-list-kill-regexps '("\\`\\*Customize .*\\*\\'")
+        clean-buffer-list-never-regexps '("\\`TAGS\\'")))
 #+end_src
 
 ** indent guides
@@ -1124,7 +1133,7 @@ buffer, close it."
 ** eshell
 
 #+BEGIN_SRC emacs-lisp
-(use-package em-hist)
+(use-package em-hist :after eshell)
 
 (defun eshell/clear ()
   (interactive)
@@ -1292,20 +1301,23 @@ CWD is not in a git repo (or the git command is not found)."
 (set-window-scroll-bars (minibuffer-window) nil nil)
 (tool-bar-mode -1)
 
-;; linum
-(setq linum-format 'dynamic)
+(use-package linum
+  :if (< emacs-major-version 26)
+  :init (setq linum-format 'dynamic))
 
-;; hl-line
-(setq hl-line-sticky-flag nil)
-(defvar my/hl-line-contrast 5)
-(defun my/hl-line-set-bg (&optional light-bg th)
-  (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
-         (bg (face-attribute 'default :background))
-         (theme (if th th my/theme)))
-    (custom-theme-set-faces
-     theme
-     `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast))))))))
-;; (add-hook 'prog-mode-hook 'hl-line-mode)
+(use-package hl-line
+  ;; :hook (prog-mode . hl-line-mode)
+  :commands (hl-line-mode global-hl-line-mode)
+  :init
+  (setq hl-line-sticky-flag nil)
+  (defvar my/hl-line-contrast 5)
+  (defun my/hl-line-set-bg (&optional light-bg th)
+    (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
+           (bg (face-attribute 'default :background))
+           (theme (if th th my/theme)))
+      (custom-theme-set-faces
+       theme
+       `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast)))))))))
 
 (use-package display-fill-column-indicator
   :if (>= emacs-major-version 27)
@@ -3169,6 +3181,22 @@ erc-modified-channels-alist. Should be executed on window change."
 * Projectile
 
 #+BEGIN_SRC emacs-lisp
+(use-package projectile
+  :ensure t
+  :hook (after-init . projectile-mode)
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :diminish projectile-mode
+  :init
+  (setq projectile-completion-system 'ivy)
+  (setq
+   projectile-mode-line-function
+   '(lambda () (format " P[%s]" (or (projectile-project-name) "-"))))
+  :config
+  (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
+    (if (projectile-project-p)
+        (apply in-proj-f args)
+      (apply out-proj-f args))))
+
 (use-package perspective
   :ensure t
   :hook (after-init . persp-mode)
@@ -3188,24 +3216,6 @@ erc-modified-channels-alist. Should be executed on window change."
 (use-package persp-projectile
   :ensure t
   :after (perspective projectile))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(use-package projectile
-  :ensure t
-  :hook (after-init . projectile-mode)
-  :bind-keymap ("C-c p" . projectile-command-map)
-  :diminish projectile-mode
-  :init
-  (setq projectile-completion-system 'ivy)
-  (setq
-   projectile-mode-line-function
-   '(lambda () (format " P[%s]" (or (projectile-project-name) "-"))))
-  :config
-  (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
-    (if (projectile-project-p)
-        (apply in-proj-f args)
-      (apply out-proj-f args))))
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -3241,17 +3251,18 @@ erc-modified-channels-alist. Should be executed on window change."
 ** isearch
 
 #+BEGIN_SRC emacs-lisp
-(setq search-whitespace-regexp ".*?"  ;; spaces match anything
-      isearch-lax-whitespace t  ;; the default
-      isearch-regex-lax-whitespace nil
-      isearch-lazy-count t  ;; show match count and current match index
-      lazy-count-prefix-format "(%s/%s) "
-      lazy-count-suffix-format nil)
-
-;; switch to swiper
-(define-key isearch-mode-map
-  (kbd "M-s M-s")
-  (lambda () (interactive) (isearch-exit) (swiper isearch-string)))
+(use-package isearch
+  :init
+  (setq search-whitespace-regexp ".*?"  ;; spaces match anything
+        isearch-lax-whitespace t  ;; the default
+        isearch-regex-lax-whitespace nil
+        isearch-lazy-count t  ;; show match count and current match index
+        lazy-count-prefix-format "(%s/%s) "
+        lazy-count-suffix-format nil)
+  :config
+  (define-key isearch-mode-map
+    (kbd "M-s M-s")
+    (lambda () (interactive) (isearch-exit) (swiper isearch-string))))
 #+END_SRC
 
 ** rg
@@ -3265,7 +3276,6 @@ erc-modified-channels-alist. Should be executed on window change."
         rg-ignore-case 'smart)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
-
   (define-key rg-mode-map "m" #'rg-menu)
   (define-key rg-mode-map "N" #'my/rg-open-ace-window))
 
@@ -3588,7 +3598,9 @@ the minibuffer."
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet-snippets
   :ensure t
-  :defer t)
+  :after yasnippet
+  :config
+  (yas-reload-all))
 
 (use-package yasnippet
   :ensure t
@@ -3608,8 +3620,6 @@ the minibuffer."
   ;; this will run once (since it's in :config)
   (when (derived-mode-p 'prog-mode)
     (yas-minor-mode))
-  (require 'yasnippet-snippets)
-  (yas-reload-all)
   (add-hook 'prog-mode-hook #'yas-minor-mode))
 #+END_SRC
 
@@ -3737,7 +3747,6 @@ the minibuffer."
 ** ibuffer
 
 #+begin_src emacs-lisp
-
 (use-package ibuffer
   :init
   ;; `/ R` to toggle showing these groups
@@ -4100,6 +4109,23 @@ the minibuffer."
   (load-file host-file))
 #+END_SRC
 
+** Performance
+
+#+BEGIN_SRC emacs-lisp
+;; stolen from doom
+(defun my/defer-garbage-collection-h ()
+  (setq gc-cons-threshold 100000000))
+
+(defun my/restore-garbage-collection-h ()
+  ;; Defer it so that commands launched immediately after will enjoy the
+  ;; benefits.
+  (run-at-time
+   1 nil (lambda () (setq gc-cons-threshold 800000))))
+
+(add-hook 'minibuffer-setup-hook #'my/defer-garbage-collection-h)
+(add-hook 'minibuffer-exit-hook #'my/restore-garbage-collection-h)
+#+END_SRC
+
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
@@ -4145,8 +4171,6 @@ the minibuffer."
 
 (hybrid-mode)
 (winner-mode)
-
-;; I have to put it here in order to use hi-lock-map for some reason
 
 (run-hooks 'my/after-init-hook)
 #+END_SRC
