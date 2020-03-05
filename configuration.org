@@ -2145,13 +2145,21 @@ If COUNT is given, move COUNT - 1 lines downward first."
          ("\\.dump-simpl\\'" . ghc-core-mode))
   :init
   (setq haskell-align-imports-pad-after-name t
-        haskell-hoogle-command "hoogle --count=100")
+        haskell-hoogle-command "hoogle --count=100"
+        haskell-interactive-popup-errors nil
+        ;; choices: auto, ghci, cabal-repl, cabal-new-repl, stack-ghci
+        ;; cabal-new-repl is the one to use with nix-shell & direnv
+        haskell-process-type 'cabal-new-repl
+        )
+
   (with-eval-after-load 'evil
     (my/evil-define-text-object "haskell-inline-comment" "#" "{- " " -}"))
+
   ;; TODO: sort out this shit
   (with-eval-after-load 'smartparens
     (with-eval-after-load 'haskell-mode
       (sp-local-pair 'haskell-mode "'" nil :actions nil)))
+
   :config
   (my/highlight-keyword-in-mode 'haskell-mode "error" nil 'font-lock-preprocessor-face)
   (my/highlight-keyword-in-mode 'haskell-mode "undefined" nil 'font-lock-preprocessor-face)
