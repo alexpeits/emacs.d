@@ -558,15 +558,18 @@ With a prefix argument, open using `find-file-other-window'."
 
 (use-package outshine
   :ensure t
+  :after outline
+  :bind (:map outline-minor-mode-map
+              ("<S-iso-lefttab>" . outshine-cycle-buffer))
   :commands (outshine-mode))
 
 (use-package outline
   :ensure t
   :defer t
+  :bind (:map outline-minor-mode-map
+              ("<tab>" . outline-toggle-children))
   :diminish outline-minor-mode
-  :config
-  (define-key outline-minor-mode-map (kbd "<tab>") #'outline-toggle-children)
-  (define-key outline-minor-mode-map (kbd "<S-iso-lefttab>") #'outshine-cycle-buffer))
+  )
 
 (use-package rainbow-mode
   :ensure t
@@ -622,15 +625,6 @@ With a prefix argument, open using `find-file-other-window'."
   :ensure t
   :diminish smartparens-mode
   :init
-  (defun my/smartparens-pair-newline (id action context)
-    (save-excursion
-      (newline)
-      (indent-according-to-mode)))
-
-  (defun my/smartparens-pair-newline-and-indent (id action context)
-    (my/smartparens-pair-newline id action context)
-    (indent-according-to-mode))
-
   (setq sp-show-pair-delay 0.2
         ;; fix paren highlighting in normal mode
         sp-show-pair-from-inside t
@@ -639,16 +633,22 @@ With a prefix argument, open using `find-file-other-window'."
         sp-highlight-wrap-overlay nil
         sp-highlight-wrap-tag-overlay nil)
 
-  (setq my/lisp-mode-hooks '(emacs-lisp-mode-hook clojure-mode-hook))
-  (my/add-hooks my/lisp-mode-hooks (smartparens-strict-mode) (evil-smartparens-mode))
-  (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook) (smartparens-mode))
-
+  (my/add-hooks '(emacs-lisp-mode-hook clojure-mode-hook)
+                (smartparens-strict-mode)
+                (evil-smartparens-mode))
+  (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook)
+                (smartparens-mode))
   :config
-  (require 'smartparens-config)
+  ;; (require 'smartparens-config)
   (show-smartparens-global-mode +1)
   ;; don't create a pair with single quote in minibuffer
   (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
 
+  (defun my/smartparens-pair-newline-and-indent (id action context)
+    (save-excursion
+      (newline)
+      (indent-according-to-mode))
+    (indent-according-to-mode))
   (sp-pair "(" nil :post-handlers
            '(:add (my/smartparens-pair-newline-and-indent "RET")))
   (sp-pair "{" nil :post-handlers
@@ -1117,14 +1117,37 @@ buffer, close it."
 ** eshell
 
 #+BEGIN_SRC emacs-lisp
-(setq eshell-destroy-buffer-when-process-dies t)
-(setq eshell-history-size 1024)
-(setq eshell-prompt-regexp "^[^#$]* [#$] ")
-(load "em-hist")           ; So the history vars are defined
-(if (boundp 'eshell-save-history-on-exit)
-    (setq eshell-save-history-on-exit t)) ; Don't ask, just save
-(if (boundp 'eshell-ask-to-save-history)
-    (setq eshell-ask-to-save-history 'always)) ; For older(?) version
+(use-package em-hist)
+
+(defun eshell/clear ()
+  (interactive)
+  "Clear the eshell buffer."
+  (let ((eshell-buffer-maximum-lines (if my/eshell-prompt-multiline 1 0)))
+    (eshell-truncate-buffer)))
+
+(defun eshell/sp ()
+  "Clear the eshell buffer."
+  (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline))
+  nil)
+
+(use-package eshell
+  :bind (:map eshell-mode-map
+              ("C-l" . eshell/clear))
+  :init
+  (setq eshell-destroy-buffer-when-process-dies t
+        eshell-history-size 1024
+        eshell-prompt-regexp "^[^#$]* [#$] ")
+  (if (boundp 'eshell-save-history-on-exit)
+      (setq eshell-save-history-on-exit t)) ; Don't ask, just save
+  (if (boundp 'eshell-ask-to-save-history)
+      (setq eshell-ask-to-save-history 'always)) ; For older(?) version
+  )
+
+(use-package em-smart
+  :init
+  (setq eshell-where-to-jump 'begin
+        eshell-review-quick-commands nil
+        eshell-smart-space-goes-to-end t))
 
 (defun pwd-repl-home (pwd)
   (interactive)
@@ -1239,26 +1262,6 @@ CWD is not in a git repo (or the git command is not found)."
          (propertize (if my/eshell-prompt-multiline "\n└╼ " " ") 'face 'font-lock-type-face)
          (propertize "$" 'face 'font-lock-function-name-face)
          (propertize " " 'face 'default))))
-
-(require 'em-smart)
-(setq eshell-where-to-jump 'begin)
-(setq eshell-review-quick-commands nil)
-(setq eshell-smart-space-goes-to-end t)
-
-(defun eshell/clear ()
-  (interactive)
-  "Clear the eshell buffer."
-  (let ((eshell-buffer-maximum-lines (if my/eshell-prompt-multiline 1 0)))
-    (eshell-truncate-buffer)))
-
-(defun eshell/sp ()
-  "Clear the eshell buffer."
-  (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline))
-  nil)
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (define-key eshell-mode-map (kbd "C-l") 'eshell/clear)))
 #+END_SRC
 
 * UI
@@ -1481,7 +1484,6 @@ CWD is not in a git repo (or the git command is not found)."
     (load-theme theme t)
     (setq my/theme theme)
     (setq my/theme-light-bg light-bg)
-    (setq pdf-view-midnight-colors '("#b3dfdd" . "#0a3749"))
     (eval config)
     (run-hooks 'my/after-set-theme-hook)))
 
@@ -1917,14 +1919,14 @@ If COUNT is given, move COUNT - 1 lines downward first."
 (use-package evil-nerd-commenter
   :ensure t
   :bind ("M-;" . evilnc-comment-or-uncomment-lines)
-  :config
+  :init
   ;; evilnc toggles instead of commenting/uncommenting
   (setq evilnc-invert-comment-line-by-line t))
 
 (use-package evil-surround
   :ensure t
+  :hook (after-init . global-evil-surround-mode)
   :config
-  (global-evil-surround-mode 1)
   (evil-define-key 'visual evil-surround-mode-map "s" 'evil-surround-region)
   (defconst my/mark-active-alist
     `((mark-active
@@ -2408,7 +2410,10 @@ the current file."
   )
 
 ;; This needs to exist in custom/
-(require 'custom-purescript-font-lock)
+;; (require 'custom-purescript-font-lock)
+(use-package custom-purescript-font-lock
+  :after purescript-mode)
+
 ;; copy these into the purescript-mode definition
 ;; (setq-local font-lock-defaults
 ;;             '((purescript-font-lock-keywords)
@@ -2952,22 +2957,23 @@ instead of the title as seen by deft."
 (use-package pdf-tools
   :ensure t
   :defer t
+  :magic ("%PDF" . pdf-view-mode)
+  :bind (:map pdf-view-mode-map
+              ("j" . pdf-view-next-line-or-next-page)
+              ("k" . pdf-view-previous-line-or-previous-page)
+              ("h" . image-backward-hscroll)
+              ("l" . image-forward-hscroll)
+              ("C-s" . isearch-forward))
   :init
-  (pdf-tools-install)
+  (setq pdf-view-display-size 'fit-page
+        pdf-view-midnight-colors '("#b3dfdd" . "#0a3749"))
   :config
-  ;; temporary - will investigate breaking changes
-  (define-key pdf-view-mode-map (kbd "j") 'pdf-view-next-line-or-next-page)
-  (define-key pdf-view-mode-map (kbd "k") 'pdf-view-previous-line-or-previous-page)
-  (define-key pdf-view-mode-map (kbd "h") 'image-backward-hscroll)
-  (define-key pdf-view-mode-map (kbd "l") 'image-forward-hscroll)
-  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)  ;; don't use swiper
-  (with-eval-after-load 'pdf-outline
-    (define-key pdf-outline-buffer-mode-map (kbd "<backtab>") 'outline-hide-sublevels))
-  (add-hook
-   'pdf-tools-enabled-hook
-   (lambda ()
-     ;; (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
-     (setq pdf-view-midnight-colors '("#a2d8d5" . "#0a3749")))))
+  (pdf-tools-install :no-query))
+
+(use-package pdf-outline
+  :defer t
+  :bind (:map pdf-outline-buffer-mode-map
+              ("<backtab>" . outline-hide-sublevels)))
 #+END_SRC
 
 ** erc
@@ -3246,6 +3252,7 @@ erc-modified-channels-alist. Should be executed on window change."
 #+BEGIN_SRC emacs-lisp
 (use-package rg
   :ensure t
+  :commands (rg)
   :init
   (setq rg-group-result t
         rg-ignore-case 'smart)
@@ -3273,13 +3280,12 @@ erc-modified-channels-alist. Should be executed on window change."
 #+BEGIN_SRC emacs-lisp
 (use-package counsel-projectile
   :ensure t
-  :after (counsel projectile)
+  :bind (:map projectile-command-map
+              ("f" . counsel-projectile-find-file)
+              ("s" . counsel-projectile-rg)
+              ("b" . counsel-projectile-switch-to-buffer))
   :init
-  (setq projectile-switch-project-action 'counsel-projectile-find-file)
-  :config
-  (define-key projectile-command-map (kbd "f") 'counsel-projectile-find-file)
-  (define-key projectile-command-map (kbd "s") 'counsel-projectile-rg)
-  (define-key projectile-command-map (kbd "b") 'counsel-projectile-switch-to-buffer))
+  (setq projectile-switch-project-action 'counsel-projectile-find-file))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
