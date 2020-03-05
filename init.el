@@ -1,3 +1,4 @@
+;; https://blog.d46.us/advanced-emacs-startup/
 ;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
 (setq gc-cons-threshold 100000000
       gc-cons-percentage 0.6

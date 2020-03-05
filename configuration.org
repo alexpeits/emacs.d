@@ -646,6 +646,32 @@ With a prefix argument, open using `find-file-other-window'."
 (use-package smartparens
   :ensure t
   :hook (after-init . show-smartparens-global-mode)
+  :bind (:map smartparens-mode-map
+              ;; paredit bindings
+              ("C-M-f" . sp-forward-sexp)
+              ("C-M-b" . sp-backward-sexp)
+              ("C-M-u" . sp-backward-up-sexp)
+              ("C-M-d" . sp-down-sexp)
+              ("C-M-p" . sp-backward-down-sexp)
+              ("C-M-n" . sp-up-sexp)
+              ("M-s" . sp-splice-sexp)
+              ("M-<up>" . sp-splice-sexp-killing-backward)
+              ("M-<down>" . sp-splice-sexp-killing-forward)
+              ("M-r" . sp-splice-sexp-killing-around)
+              ("M-(" . sp-wrap-round)
+              ("C-)" . sp-forward-slurp-sexp)
+              ("C-<right>" . sp-forward-slurp-sexp)
+              ("C-}" . sp-forward-barf-sexp)
+              ("C-<left>" . sp-forward-barf-sexp)
+              ("C-(" . sp-backward-slurp-sexp)
+              ("C-M-<left>" . sp-backward-slurp-sexp)
+              ("C-{" . sp-backward-barf-sexp)
+              ("C-M-<right>" . sp-backward-barf-sexp)
+              ("M-S" . sp-split-sexp)
+              ;; mine
+              ("C-M-k" . sp-kill-sexp)
+              ("C-M-w" . sp-copy-sexp)
+              )
   :diminish smartparens-mode
   :init
   (setq sp-show-pair-delay 0.2
@@ -660,15 +686,7 @@ With a prefix argument, open using `find-file-other-window'."
                 (smartparens-strict-mode)
                 (evil-smartparens-mode))
   (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook)
-                (smartparens-mode))
-
-  :config
-  ;; keybindings
-  (sp-use-paredit-bindings)
-  (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
-  (define-key smartparens-mode-map (kbd "C-M-w") 'sp-copy-sexp)
-  (define-key smartparens-mode-map (kbd "M-j") nil)
-  (define-key smartparens-mode-map (kbd "M-?") nil))
+                (smartparens-mode)))
 
 (use-package evil-smartparens
   :ensure t
@@ -1819,10 +1837,12 @@ CWD is not in a git repo (or the git command is not found)."
           conf-windows-mode
           conf-toml-mode)
          . evil-local-mode)
-  :config
-  (setq evil-want-C-i-jump nil)
+  :init
+  (setq evil-want-C-i-jump nil
+        evil-intercept-esc t
+        evil-mode-line-format '(before . mode-line-front-space))
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
-
+  :config
   (defun my/make-emacs-mode (mode)
     "Make `mode' use emacs keybindings."
     (delete mode evil-insert-state-modes)
@@ -1845,12 +1865,7 @@ CWD is not in a git repo (or the git command is not found)."
   (evil-define-key 'normal magit-blame-mode-map (kbd "q") 'magit-blame-quit)
 
   ;; intercept ESC when running in terminal
-  (setq evil-intercept-esc t)
   (evil-esc-mode)
-
-  ;; move state to beginning of modeline
-  (setq evil-mode-line-format '(before . mode-line-front-space))
-  ;; (setq evil-mode-line-format 'nil)
 
   ;; move search result to center of the screen
   (defadvice evil-search-next
@@ -1898,6 +1913,7 @@ CWD is not in a git repo (or the git command is not found)."
                                                     (execute-kbd-macro "gv"))))
 
   ;; redefine so that $ doesn't include the EOL char
+  (setq my/evil-$-include-eol nil)
   (evil-define-motion evil-end-of-line (count)
     "Move the cursor to the end of the current line.
 
@@ -1912,8 +1928,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
       (when (eolp)
         ;; prevent "c$" and "d$" from deleting blank lines
         (setq evil-this-type 'exclusive))))
-
-  (setq my/evil-$-include-eol nil)
 
   ;; https://github.com/emacs-evil/evil-surround/issues/141
   (defmacro my/evil-define-text-object (name key start-regex end-regex)
@@ -3982,6 +3996,10 @@ the minibuffer."
 * Org-mode
 
 #+BEGIN_SRC emacs-lisp
+;; this is the same as doing org-babel-load-languages
+(use-package ob-python :commands (org-babel-execute:python))
+(use-package ob-sql :commands (org-babel-execute:sql))
+
 (use-package org-mode
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
@@ -4026,15 +4044,8 @@ the minibuffer."
            (path (concat templ-dir file)))
       (insert-file-contents path)))
 
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)
-     (sql . t)
-     ;; (dot . t)
-     ;; (restclient . t)
-     ))
   :config
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (my/add-hooks
    '(org-mode-hook)
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
