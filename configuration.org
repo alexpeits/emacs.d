@@ -621,8 +621,33 @@ With a prefix argument, open using `find-file-other-window'."
 ** Smartparens
 
 #+BEGIN_SRC emacs-lisp
+(use-package smartparens-config
+  :after smartparens
+  :config
+  ;; don't create a pair with single quote in minibuffer
+  (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
+
+  ;; because DataKinds
+  ;;(with-eval-after-load 'haskell-mode
+  ;;  (sp-local-pair 'haskell-mode "'" nil :actions nil))
+
+  ;; indent after inserting any kinds of parens
+  (defun my/smartparens-pair-newline-and-indent (id action context)
+    (save-excursion
+      (newline)
+      (indent-according-to-mode))
+    (indent-according-to-mode))
+  (sp-pair "(" nil :post-handlers
+           '(:add (my/smartparens-pair-newline-and-indent "RET")))
+  (sp-pair "{" nil :post-handlers
+           '(:add (my/smartparens-pair-newline-and-indent "RET")))
+  (sp-pair "[" nil :post-handlers
+           '(:add (my/smartparens-pair-newline-and-indent "RET")))
+  )
+
 (use-package smartparens
   :ensure t
+  :hook (after-init . show-smartparens-global-mode)
   :diminish smartparens-mode
   :init
   (setq sp-show-pair-delay 0.2
@@ -638,24 +663,8 @@ With a prefix argument, open using `find-file-other-window'."
                 (evil-smartparens-mode))
   (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook)
                 (smartparens-mode))
+
   :config
-  ;; (require 'smartparens-config)
-  (show-smartparens-global-mode +1)
-  ;; don't create a pair with single quote in minibuffer
-  (sp-local-pair 'minibuffer-inactive-mode "'" nil :actions nil)
-
-  (defun my/smartparens-pair-newline-and-indent (id action context)
-    (save-excursion
-      (newline)
-      (indent-according-to-mode))
-    (indent-according-to-mode))
-  (sp-pair "(" nil :post-handlers
-           '(:add (my/smartparens-pair-newline-and-indent "RET")))
-  (sp-pair "{" nil :post-handlers
-           '(:add (my/smartparens-pair-newline-and-indent "RET")))
-  (sp-pair "[" nil :post-handlers
-           '(:add (my/smartparens-pair-newline-and-indent "RET")))
-
   ;; keybindings
   (sp-use-paredit-bindings)
   (define-key smartparens-mode-map (kbd "C-M-k") 'sp-kill-sexp)
@@ -812,17 +821,15 @@ buffer, close it."
 
 #+BEGIN_SRC emacs-lisp
 (use-package anzu
-  :hook (after-init . global-anzu-mode)
   :ensure t
+  :hook (after-init . global-anzu-mode)
   :diminish
-  :config
+  :init
   (setq anzu-mode-lighter ""))
 
 (use-package evil-anzu
   :ensure t
-  :after anzu
-  :config
-  (with-eval-after-load 'evil (require 'evil-anzu)))
+  :after (evil anzu))
 #+END_SRC
 
 ** math input
@@ -1909,7 +1916,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
          (evil-define-text-object ,outer-name (count &optional beg end type)
            (evil-select-paren ,start-regex ,end-regex beg end type count t))
          (define-key evil-inner-text-objects-map ,key #',inner-name)
-         (define-key evil-outer-text-objects-map ,key #',outer-name)))))
+         (define-key evil-outer-text-objects-map ,key #',outer-name))))
+  )
 #+END_SRC
 
 ** evil packages that can be used without evil-mode
@@ -1940,124 +1948,128 @@ If COUNT is given, move COUNT - 1 lines downward first."
 # Copied directly from spacemacs
 
 #+BEGIN_SRC emacs-lisp
-(defcustom hybrid-mode-default-state 'normal
-  "Value of `evil-default-state' for hybrid-mode."
-  :group 'my
-  :type 'symbol)
+(with-eval-after-load 'evil
+  (defcustom hybrid-mode-default-state 'normal
+    "Value of `evil-default-state' for hybrid-mode."
+    :group 'my
+    :type 'symbol)
 
-(defcustom hybrid-mode-enable-evilified-state t
-  "If non nil then evilified states is enabled in buffer supporting it."
-  :group 'my
-  :type 'boolean)
+  (defcustom hybrid-mode-enable-evilified-state t
+    "If non nil then evilified states is enabled in buffer supporting it."
+    :group 'my
+    :type 'boolean)
 
-(defvar hybrid-mode-default-state-backup evil-default-state
-  "Backup of `evil-default-state'.")
+  (defvar hybrid-mode-default-state-backup evil-default-state
+    "Backup of `evil-default-state'.")
 
-(defadvice evil-insert-state (around hybrid-insert-to-hybrid-state disable)
-  "Forces Hybrid state."
-  (evil-hybrid-state))
+  (defadvice evil-insert-state (around hybrid-insert-to-hybrid-state disable)
+    "Forces Hybrid state."
+    (evil-hybrid-state))
 
-(defadvice evil-evilified-state (around hybrid-evilified-to-hybrid-state disable)
-  "Forces Hybrid state."
-  (if (equal -1 (ad-get-arg 0))
-      ad-do-it
-    (if hybrid-mode-enable-evilified-state
+  (defadvice evil-evilified-state (around hybrid-evilified-to-hybrid-state disable)
+    "Forces Hybrid state."
+    (if (equal -1 (ad-get-arg 0))
         ad-do-it
-      ;; seems better to set the emacs state instead of hybrid for evilified
-      ;; buffers
-      (evil-emacs-state))))
+      (if hybrid-mode-enable-evilified-state
+          ad-do-it
+        ;; seems better to set the emacs state instead of hybrid for evilified
+        ;; buffers
+        (evil-emacs-state))))
 
 ;;;###autoload
-(define-minor-mode hybrid-mode
-  "Global minor mode to replace insert state by hybrid state."
-  :global t
-  :lighter ""
-  :group 'my
-  (if hybrid-mode
-      (enable-hybrid-editing-style)
-    (disable-hybrid-editing-style)))
+  (define-minor-mode hybrid-mode
+    "Global minor mode to replace insert state by hybrid state."
+    :global t
+    :lighter ""
+    :group 'my
+    (if hybrid-mode
+        (enable-hybrid-editing-style)
+      (disable-hybrid-editing-style)))
 
-(defun enable-hybrid-editing-style ()
-  "Enable the hybrid editing style."
-  (setq hybrid-mode-default-state-backup evil-default-state
-        evil-default-state hybrid-mode-default-state)
-  ;; replace evil states by `hybrid state'
-  (ad-enable-advice 'evil-insert-state
-                    'around 'hybrid-insert-to-hybrid-state)
-  (ad-enable-advice 'evil-evilified-state
-                    'around 'hybrid-evilified-to-hybrid-state)
-  (ad-activate 'evil-insert-state)
-  (ad-activate 'evil-evilified-state)
-  ;; key bindings hooks for dynamic switching of editing styles
-  (run-hook-with-args 'spacemacs-editing-style-hook 'hybrid)
-  ;; initiate `hybrid state'
+  (defun enable-hybrid-editing-style ()
+    "Enable the hybrid editing style."
+    (setq hybrid-mode-default-state-backup evil-default-state
+          evil-default-state hybrid-mode-default-state)
+    ;; replace evil states by `hybrid state'
+    (ad-enable-advice 'evil-insert-state
+                      'around 'hybrid-insert-to-hybrid-state)
+    (ad-enable-advice 'evil-evilified-state
+                      'around 'hybrid-evilified-to-hybrid-state)
+    (ad-activate 'evil-insert-state)
+    (ad-activate 'evil-evilified-state)
+    ;; key bindings hooks for dynamic switching of editing styles
+    (run-hook-with-args 'spacemacs-editing-style-hook 'hybrid)
+    ;; initiate `hybrid state'
+    )
+
+  (defun disable-hybrid-editing-style ()
+    "Disable the hybrid editing style (reverting to 'vim style)."
+    (setq evil-default-state hybrid-mode-default-state-backup)
+    ;; restore evil states
+    (ad-disable-advice 'evil-insert-state
+                       'around 'hybrid-insert-to-hybrid-state)
+    (ad-disable-advice 'evil-evilified-state
+                       'around 'hybrid-evilified-to-hybrid-state)
+    (ad-activate 'evil-insert-state)
+    (ad-activate 'evil-evilified-state)
+    ;; restore key bindings
+    (run-hook-with-args 'spacemacs-editing-style-hook 'vim)
+    ;; restore the states
+    )
+
+  ;; This code is from evil insert state definition, any change upstream
+  ;; should be reflected here
+  ;; see https://github.com/emacs-evil/evil/blob/56e92f7cb4e04e665670460093b41f58446b7a2b/evil-states.el#L108
+  (evil-define-state hybrid
+    "Hybrid state for hybrid mode."
+    :tag " <I> "
+    :cursor (bar . 2)
+    :message "-- HYBRID --"
+    :entry-hook (evil-start-track-last-insertion)
+    :exit-hook (evil-cleanup-insert-state evil-stop-track-last-insertion)
+    :input-method t
+    (cond
+     ((evil-hybrid-state-p)
+      (add-hook 'post-command-hook #'evil-maybe-remove-spaces)
+      (add-hook 'pre-command-hook #'evil-insert-repeat-hook)
+      (setq evil-maybe-remove-spaces t)
+      (unless (eq evil-want-fine-undo t)
+        (evil-start-undo-step)))
+     (t
+      (remove-hook 'post-command-hook #'evil-maybe-remove-spaces)
+      (remove-hook 'pre-command-hook #'evil-insert-repeat-hook)
+      (evil-maybe-remove-spaces t)
+      (setq evil-insert-repeat-info evil-repeat-info)
+      (evil-set-marker ?^ nil t)
+      (unless (eq evil-want-fine-undo t)
+        (evil-end-undo-step))
+      (when evil-move-cursor-back
+        (when (or (evil-normal-state-p evil-next-state)
+                  (evil-motion-state-p evil-next-state))
+          (evil-move-cursor-back))))))
+
+  (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
+
+  ;; Override stock evil function `evil-insert-state-p'
+  (defun evil-insert-state-p (&optional state)
+    "Whether the current state is insert."
+    (and evil-local-mode
+         (memq (or state evil-state) '(insert hybrid))))
+
+  (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
+  (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
   )
-
-(defun disable-hybrid-editing-style ()
-  "Disable the hybrid editing style (reverting to 'vim style)."
-  (setq evil-default-state hybrid-mode-default-state-backup)
-  ;; restore evil states
-  (ad-disable-advice 'evil-insert-state
-                     'around 'hybrid-insert-to-hybrid-state)
-  (ad-disable-advice 'evil-evilified-state
-                     'around 'hybrid-evilified-to-hybrid-state)
-  (ad-activate 'evil-insert-state)
-  (ad-activate 'evil-evilified-state)
-  ;; restore key bindings
-  (run-hook-with-args 'spacemacs-editing-style-hook 'vim)
-  ;; restore the states
-  )
-
-;; This code is from evil insert state definition, any change upstream
-;; should be reflected here
-;; see https://github.com/emacs-evil/evil/blob/56e92f7cb4e04e665670460093b41f58446b7a2b/evil-states.el#L108
-(evil-define-state hybrid
-  "Hybrid state for hybrid mode."
-  :tag " <I> "
-  :cursor (bar . 2)
-  :message "-- HYBRID --"
-  :entry-hook (evil-start-track-last-insertion)
-  :exit-hook (evil-cleanup-insert-state evil-stop-track-last-insertion)
-  :input-method t
-  (cond
-   ((evil-hybrid-state-p)
-    (add-hook 'post-command-hook #'evil-maybe-remove-spaces)
-    (add-hook 'pre-command-hook #'evil-insert-repeat-hook)
-    (setq evil-maybe-remove-spaces t)
-    (unless (eq evil-want-fine-undo t)
-      (evil-start-undo-step)))
-   (t
-    (remove-hook 'post-command-hook #'evil-maybe-remove-spaces)
-    (remove-hook 'pre-command-hook #'evil-insert-repeat-hook)
-    (evil-maybe-remove-spaces t)
-    (setq evil-insert-repeat-info evil-repeat-info)
-    (evil-set-marker ?^ nil t)
-    (unless (eq evil-want-fine-undo t)
-      (evil-end-undo-step))
-    (when evil-move-cursor-back
-      (when (or (evil-normal-state-p evil-next-state)
-                (evil-motion-state-p evil-next-state))
-        (evil-move-cursor-back))))))
-
-(define-key evil-hybrid-state-map [escape] 'evil-normal-state)
-
-;; Override stock evil function `evil-insert-state-p'
-(defun evil-insert-state-p (&optional state)
-  "Whether the current state is insert."
-  (and evil-local-mode
-       (memq (or state evil-state) '(insert hybrid))))
-
-(define-key evil-hybrid-state-map [escape] 'evil-normal-state)
-(define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
 #+END_SRC
 
 * Spell checking
 
 #+BEGIN_SRC emacs-lisp
-(require 'flyspell)
+(use-package flyspell
+  :commands (flyspell-mode)
+  :config
+  (add-hook 'flyspell-mode-hook
+            (lambda () (add-hook 'hack-local-variables-hook 'flyspell-buffer))))
 
-(add-hook 'flyspell-mode-hook
-          (lambda () (add-hook 'hack-local-variables-hook 'flyspell-buffer)))
 #+END_SRC
 
 * nix
@@ -2110,43 +2122,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
 * Haskell
 
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package intero
-  :ensure t
-  :defer t
-  :diminish intero-mode
-  :init
-  (setq intero-blacklist '("~/.xmonad"))
-  :config
-
-  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
-  ;; this has to be installed in every repo until I find a solution
-  ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
-
-  ;; don't auto insert matching single quotes in haskell mode, since I
-  ;; mostly use them for promoted data types
-  (define-key intero-mode-map (kbd "M-.") nil)
-  (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
-
-  (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package dante
-  :ensure t
-  :after haskell-mode
-  :commands 'dante-mode
-  :hook (haskell-mode . dante-mode)
-  :init
-  (add-hook 'dante-mode-hook
-            '(lambda () (flycheck-add-next-checker
-                         'haskell-dante
-                         '(warning . haskell-hlint)))))
-#+END_SRC
-
 #+BEGIN_SRC emacs-lisp
-(setq haskell-hoogle-command "hoogle --count=100")
-
 (use-package haskell-mode
   :ensure t
   :mode (("\\.hs\\'" . haskell-mode)
@@ -2155,8 +2131,16 @@ If COUNT is given, move COUNT - 1 lines downward first."
          ("\\.c2hs\\'" . haskell-c2hs-mode)
          ("\\.hcr\\'" . ghc-core-mode)
          ("\\.dump-simpl\\'" . ghc-core-mode))
+  :init
+  (setq haskell-align-imports-pad-after-name t
+        haskell-hoogle-command "hoogle --count=100")
+  (with-eval-after-load 'evil
+    (my/evil-define-text-object "haskell-inline-comment" "#" "{- " " -}"))
+  ;; TODO: sort out this shit
+  (with-eval-after-load 'smartparens
+    (with-eval-after-load 'haskell-mode
+      (sp-local-pair 'haskell-mode "'" nil :actions nil)))
   :config
-
   (my/highlight-keyword-in-mode 'haskell-mode "error" nil 'font-lock-preprocessor-face)
   (my/highlight-keyword-in-mode 'haskell-mode "undefined" nil 'font-lock-preprocessor-face)
 
@@ -2174,6 +2158,14 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (my/define-major-mode-key 'haskell-mode "/" 'engine/search-hoogle)
   (my/define-major-mode-key 'haskell-mode "?" 'engine/search-stackage)
   (my/define-major-mode-key 'haskell-mode "#" 'engine/search-haskell-language-extensions)
+
+  (my/add-hooks
+   '(haskell-mode-hook)
+   (setq evil-shift-width 2)
+   (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
+   (haskell-decl-scan-mode)
+   (my/subword-mode 1)
+   )
   )
 
 (use-package ormolu
@@ -2190,9 +2182,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
           "-o" "-XPatternSynonyms"
           "-o" "-XUnicodeSyntax"
           )))
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
 (defvar my/haskell-align-stuff t)
 (defvar my/haskell-use-ormolu nil)
 
@@ -2326,27 +2316,6 @@ the current file."
         (eww url)
       (browse-url url))))
 
-;; DataKinds (how often does anyone use characters anyway)
-(with-eval-after-load 'haskell-mode
-  (sp-local-pair 'haskell-mode "'" nil :actions nil))
-
-(my/evil-define-text-object "haskell-inline-comment" "#" "{- " " -}")
-
-(setq haskell-align-imports-pad-after-name t)
-
-(add-hook 'haskell-mode-hook
-          (lambda ()
-            (setq evil-shift-width 2)
-            (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
-            ;; (intero-mode-blacklist)
-            (haskell-decl-scan-mode)
-            (my/subword-mode 1)
-            ;; (highlight-lines-matching-regexp "Debug.Trace\\|traceM" 'hi-red-b)
-            ;; (add-hook 'after-save-hook 'my/haskell-project-ghcid-output nil 'make-it-local)
-            ))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
 (defvar my/ghc-source-path (expand-file-name "~/sources/ghc/"))
 
 (defun my/visit-ghc-tags-table ()
@@ -2355,6 +2324,41 @@ the current file."
     (if (file-exists-p tags)
         (visit-tags-table tags)
       (error "No TAGS file found in ghc source directory"))))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package intero
+  :ensure t
+  :after haskell-mode
+  :commands (intero-mode-blacklist)
+  :hook (haskell-mode . intero-mode-blacklist)
+  :diminish intero-mode
+  :init
+  (setq intero-blacklist '("~/.xmonad"))
+  :config
+  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
+  ;; this has to be installed in every repo until I find a solution
+  ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
+
+  ;; don't auto insert matching single quotes in haskell mode, since I
+  ;; mostly use them for promoted data types
+  (define-key intero-mode-map (kbd "M-.") nil)
+  (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
+
+  (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package dante
+  :ensure t
+  :after haskell-mode
+  :commands (dante-mode)
+  :hook (haskell-mode . dante-mode)
+  :init
+  (add-hook 'dante-mode-hook
+            '(lambda () (flycheck-add-next-checker
+                         'haskell-dante
+                         '(warning . haskell-hlint)))))
 #+END_SRC
 
 * Purescript
@@ -2410,7 +2414,6 @@ the current file."
   )
 
 ;; This needs to exist in custom/
-;; (require 'custom-purescript-font-lock)
 (use-package custom-purescript-font-lock
   :after purescript-mode)
 
@@ -2543,12 +2546,16 @@ the current file."
 ** emacs lisp
 
 #+BEGIN_SRC emacs-lisp
-(defun my/emacs-lisp-format-and-save ()
-  (interactive)
-  (my/indent-region-or-buffer)
-  (save-buffer))
+(use-package elisp-mode
+  :mode (("\\.el\\'" . emacs-lisp-mode)
+         ("\\.elc\\'" . elisp-byte-code-mode))
+  :config
+  (defun my/emacs-lisp-format-and-save ()
+    (interactive)
+    (my/indent-region-or-buffer)
+    (save-buffer))
 
-(my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save)
+  (my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save))
 #+END_SRC
 
 * Markdown
@@ -3863,6 +3870,8 @@ the minibuffer."
 ** Experimental new modeline
 
 #+BEGIN_SRC emacs-lisp :tangle no
+(use-package powerline :ensure t)
+
 (defun my/split-mode-line-render (left right)
   "Return a string of `window-width' length containing LEFT, and RIGHT aligned respectively."
   (let* ((available-width (- (window-total-width)
@@ -3874,14 +3883,13 @@ the minibuffer."
               (format "%%%ds" available-width) ""))
             right)))
 
-(setq global-mode-string (delete '(:eval (persp-mode-line)) global-mode-string))
-(require 'powerline)
-
 (defun my/mode-line-hud ()
   (let* ((active (eq my/-selected-window (selected-window)))
          (face0 (if active 'powerline-active0 'powerline-inactive0))
          (face2 (if active 'powerline-active2 'powerline-inactive2)))
     (pl/render (powerline-hud face0 face2))))
+
+(setq global-mode-string (delete '(:eval (persp-mode-line)) global-mode-string))
 
 (setq-default
  mode-line-format
@@ -3960,46 +3968,67 @@ the minibuffer."
 * Org-mode
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-c l") 'org-store-link)
-(global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-c c") 'org-capture)
-(global-set-key (kbd "C-c b") 'org-iswitchb)
+(use-package org-mode
+  :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c a" . org-agenda)
+         ("C-c b" . org-iswitchb)
+         ("C-c c" . org-capture)
+         ("C-c l" . org-store-link)
+         )
+  :init
+  (setq org-log-done 'time
+        org-confirm-babel-evaluate nil
+        org-clock-into-drawer nil
+        org-src-fontify-natively t
+        org-src-preserve-indentation t
+        org-src-tab-acts-natively t
+        org-src-window-setup 'other-window
+        org-adapt-indentation nil
+        org-directory (expand-file-name "~/org/")
+        org-default-notes-file (concat org-directory "notes.org")
+        org-ellipsis "…"
+        org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
+        org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold)))
+        )
 
-(setq org-log-done 'time
-      org-confirm-babel-evaluate nil
-      org-clock-into-drawer nil
-      org-src-fontify-natively t
-      org-src-preserve-indentation t
-      org-src-tab-acts-natively t
-      org-src-window-setup 'other-window
-      org-adapt-indentation nil
-      org-directory (expand-file-name "~/org/")
-      org-default-notes-file (concat org-directory "notes.org")
-      org-ellipsis "…"
-      org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
-      org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold)))
-      )
+  ;; org-capture
+  (setq org-capture-templates
+        '(("c"
+           "Code comment"
+           entry
+           (file+headline org-default-notes-file "Code comments")
+           "\n\n* %?\n\n#+BEGIN_SRC %^{Language}\n%i\n#+END_SRC\n\n%a\n")))
 
-;; org-capture
-(setq org-capture-templates
-      '(("c"
-         "Code comment"
-         entry
-         (file+headline org-default-notes-file "Code comments")
-         "\n\n* %?\n\n#+BEGIN_SRC %^{Language}\n%i\n#+END_SRC\n\n%a\n")))
+  ;; format string used when creating CLOCKSUM lines and when generating a
+  ;; time duration (avoid showing days)
+  (setq org-time-clocksum-format
+        '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
 
-;; format string used when creating CLOCKSUM lines and when generating a
-;; time duration (avoid showing days)
-(setq org-time-clocksum-format
-      '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+  (defun my/org-insert-template ()
+    (interactive)
+    (let* ((templ-dir (expand-file-name (concat user-emacs-directory "org-templates/")))
+           (ls (directory-files templ-dir nil "^[^.]"))
+           (file (completing-read "Template: " ls))
+           (path (concat templ-dir file)))
+      (insert-file-contents path)))
 
-(defun my/org-insert-template ()
-  (interactive)
-  (let* ((templ-dir (expand-file-name (concat user-emacs-directory "org-templates/")))
-         (ls (directory-files templ-dir nil "^[^.]"))
-         (file (completing-read "Template: " ls))
-         (path (concat templ-dir file)))
-    (insert-file-contents path)))
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+     (sql . t)
+     ;; (dot . t)
+     ;; (restclient . t)
+     ))
+  :config
+  (my/add-hooks
+   '(org-mode-hook)
+   (define-key org-mode-map (kbd "TAB") 'org-cycle)
+   (define-key org-mode-map (kbd "<tab>") 'org-cycle)
+   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
+   (my/set-mode-fill-width 'org-mode-hook 100)
+   )
+  )
 
 (defun my/org-set-src-faces (&optional light-bg th)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
@@ -4018,17 +4047,10 @@ the minibuffer."
      `(org-block-begin-line ((t (:background ,bg++ :foreground ,cur-line-fg))))
      `(org-block-end-line ((t (:background ,bg++ :foreground ,cur-line-fg)))))))
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((python . t)
-   (sql . t)
-   ;; (dot . t)
-   ;; (restclient . t)
-   ))
-
 (use-package org-bullets
   :ensure t
   :if is-gui
+  :after org
   :hook (org-mode . org-bullets-mode)
   :init
   (setq org-hide-leading-stars t))
@@ -4036,6 +4058,7 @@ the minibuffer."
 ;; auto-generated if a heading has a :TOC: tag
 (use-package toc-org
   :ensure t
+  :after org
   :hook (org-mode . toc-org-mode))
 
 (use-package htmlize
@@ -4043,16 +4066,6 @@ the minibuffer."
   :defer t
   :init
   (setq org-html-htmlize-output-type 'css))
-
-(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
-(add-hook
- 'org-mode-hook
- (lambda ()
-   (define-key org-mode-map (kbd "TAB") 'org-cycle)
-   (define-key org-mode-map (kbd "<tab>") 'org-cycle)
-   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
-   (my/set-mode-fill-width 'org-mode-hook 100)
-   ))
 #+END_SRC
 
 * Setup
