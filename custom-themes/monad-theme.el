@@ -202,7 +202,7 @@
  `(markdown-header-face           ((t (:inherit font-lock-string-face :weight bold))))
  `(markdown-language-keyword-face ((t (:inherit font-lock-function-name-face))))
 
- `(markup-gen-face                 ((t (:inherit font-lock-keyword-face))))
+ `(markup-gen-face                 ((t (:inherit font-lock-type-face))))
  `(markup-strong-face              ((t (:inherit markup-gen-face :weight bold))))
  `(markup-italic-face              ((t (:inherit markup-gen-face :slant italic))))
  `(markup-typewriter-face          ((t (:inherit default))))

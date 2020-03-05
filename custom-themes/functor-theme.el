@@ -82,7 +82,7 @@
  '(font-lock-regexp-grouping-construct ((t (:foreground "red"))))
  '(font-lock-warning-face              ((t (:foreground "#cb5a37"))))
 
- ;; '(font-lock-preprocessor-face         ((t (:foreground "#d3695f"))))
+ ;; '(font-lock-preprocessor-face         ((t (:foreground "#d7afd7"))))
  '(font-lock-preprocessor-face         ((t (:foreground "#8ba004"))))
  `(font-lock-comment-face              ((((type tty)) (:foreground "#707070"))
                                         (t (:foreground "#828787" :slant italic))))
@@ -187,7 +187,7 @@
  `(markdown-url-face    ((t (:inherit link))))
  `(markdown-header-face ((t (:inherit font-lock-preprocessor-face :weight bold))))
 
- `(markup-gen-face                 ((t (:inherit font-lock-keyword-face))))
+ `(markup-gen-face                 ((t (:inherit font-lock-string-face))))
  `(markup-strong-face              ((t (:inherit markup-gen-face :weight bold))))
  `(markup-italic-face              ((t (:inherit markup-gen-face :slant italic))))
  `(markup-typewriter-face          ((t (:inherit default))))
