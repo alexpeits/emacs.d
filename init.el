@@ -3,13 +3,18 @@
       gc-cons-percentage 0.6
       tmp--file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
+
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold 800000
                   gc-cons-percentage 0.1
                   file-name-handler-alist tmp--file-name-handler-alist)
             (makunbound 'tmp--file-name-handler-alist)
-            ))
+            (message "Emacs started in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
 (require 'org)
 (org-babel-load-file (concat user-emacs-directory "configuration.org"))

@@ -425,9 +425,6 @@ With a prefix argument, open using `find-file-other-window'."
       (setq-default save-place t))
   (save-place-mode 1))
 
-(defun display-startup-echo-area-message ()
-  (message (format "Emacs started in %s" (emacs-init-time))))
-
 ;; undo tree
 ;; NOTE: latest version with fixes not on MELPA yet
 (use-package undo-tree
