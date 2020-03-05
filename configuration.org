@@ -1600,9 +1600,8 @@ CWD is not in a git repo (or the git command is not found)."
 (use-package diff-hl
   :ensure t
   :if is-gui
-  :hook (after-init . global-diff-hl-mode)
-  :config
-  (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+  :hook ((after-init . global-diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode)))
 
 (use-package git-gutter+
   :ensure t
@@ -2057,7 +2056,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+BEGIN_SRC emacs-lisp
 (require 'flyspell)
 
-(add-hook 'flyspell-mode-hook (lambda () (add-hook 'hack-local-variables-hook 'flyspell-buffer)))
+(add-hook 'flyspell-mode-hook
+          (lambda () (add-hook 'hack-local-variables-hook 'flyspell-buffer)))
 #+END_SRC
 
 * nix
