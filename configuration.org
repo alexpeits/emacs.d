@@ -165,8 +165,8 @@
   (package-install 'use-package))
 
 ;; Can be used to debug slow packages
-;; (setq use-package-minimum-reported-time 0.05
-;;       use-package-verbose t)
+(setq use-package-minimum-reported-time 0.05
+      use-package-verbose t)
 
 (eval-when-compile
   (require 'use-package))
@@ -477,6 +477,7 @@ With a prefix argument, open using `find-file-other-window'."
       mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
 ;; turn off because it causes delays in some modes (e.g. coq-mode)
+;; TODO: not sure if this makes a difference
 (setq smie-blink-matching-inners nil)
 ;; (setq blink-matching-paren nil)
 
@@ -548,19 +549,19 @@ With a prefix argument, open using `find-file-other-window'."
             (funcall disable)
           (funcall enable))))))
 
-(use-package outshine
-  :ensure t
-  :after outline
-  :bind (:map outline-minor-mode-map
-              ("<S-iso-lefttab>" . outshine-cycle-buffer))
-  :commands (outshine-mode))
-
 (use-package outline
   :ensure t
   :defer t
   :bind (:map outline-minor-mode-map
               ("<tab>" . outline-toggle-children))
   :diminish outline-minor-mode)
+
+(use-package outshine
+  :ensure t
+  :after outline
+  :bind (:map outline-minor-mode-map
+              ("<S-iso-lefttab>" . outshine-cycle-buffer))
+  :commands (outshine-mode))
 
 (use-package rainbow-mode
   :ensure t
@@ -1114,36 +1115,37 @@ buffer, close it."
 ** Terms
 
 #+BEGIN_SRC emacs-lisp
-(add-hook 'term-mode-hook
-          (lambda ()
-            (linum-mode 0)
-            (define-key term-raw-map (kbd "M-o") nil)
-            (define-key term-raw-map (kbd "M-+") nil)
-            (set-face-background 'term (face-attribute 'default :background))))
+(use-package term
+  :defer t
+  :config
+  (my/add-hooks
+   '(term-mode-hook)
+   (define-key term-raw-map (kbd "M-o") nil)
+   (define-key term-raw-map (kbd "M-+") nil))
 
-;; automatically close term buffers on EOF
-(defun my/term-exec-hook ()
-  (let* ((buff (current-buffer))
-         (proc (get-buffer-process buff)))
-    (set-process-sentinel
-     proc
-     `(lambda (process event)
-        (if (string= event "finished\n")
-            (kill-buffer ,buff))))))
+  ;; automatically close term buffers on EOF
+  (defun my/term-exec-hook ()
+    (let* ((buff (current-buffer))
+           (proc (get-buffer-process buff)))
+      (set-process-sentinel
+       proc
+       `(lambda (process event)
+          (if (string= event "finished\n")
+              (kill-buffer ,buff))))))
+  (add-hook 'term-exec-hook 'my/term-exec-hook))
 
-(add-hook 'term-exec-hook 'my/term-exec-hook)
-
-;; comint
-(setq comint-prompt-read-only t)
-
-(defun my/comint-clear-buffer ()
-  (interactive)
-  (let ((comint-buffer-maximum-size 0))
-    (comint-truncate-buffer)))
-
-(add-hook 'comint-mode-hook
-          (lambda ()
-            (define-key comint-mode-map (kbd "C-l") 'my/comint-clear-buffer)))
+(use-package comint
+  :defer t
+  :init
+  (setq comint-prompt-read-only t)
+  :config
+  (defun my/comint-clear-buffer ()
+    (interactive)
+    (let ((comint-buffer-maximum-size 0))
+      (comint-truncate-buffer)))
+  (add-hook 'comint-mode-hook
+            (lambda ()
+              (define-key comint-mode-map (kbd "C-l") 'my/comint-clear-buffer))))
 #+END_SRC
 
 ** eshell
@@ -1151,24 +1153,57 @@ buffer, close it."
 #+BEGIN_SRC emacs-lisp
 (use-package em-hist :after eshell)
 
-(defun eshell/clear ()
-  (interactive)
-  "Clear the eshell buffer."
-  (let ((eshell-buffer-maximum-lines (if my/eshell-prompt-multiline 1 0)))
-    (eshell-truncate-buffer)))
-
-(defun eshell/sp ()
-  "Clear the eshell buffer."
-  (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline))
-  nil)
-
 (use-package eshell
+  :commands (eshell)
   :bind (:map eshell-mode-map
-              ("C-l" . eshell/clear))
+              ("C-l" . my/eshell-clear))
   :init
+  ;; eshell/clear doesn't work anymore because eshell has its own clear function
+  (defun my/eshell-clear ()
+    (interactive)
+    "Clear the eshell buffer."
+    (let ((eshell-buffer-maximum-lines (if my/eshell-prompt-multiline 1 0)))
+      (eshell-truncate-buffer)))
+
+  ;; toggle between single line/multiline prompt
+  (defun eshell/sp ()
+    "Clear the eshell buffer."
+    (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline))
+    nil)
+
   (setq eshell-destroy-buffer-when-process-dies t
         eshell-history-size 1024
         eshell-prompt-regexp "^[^#$]* [#$] ")
+
+  (defvar my/eshell-prompt-multiline nil)
+
+  (setq eshell-prompt-function
+        (lambda ()
+          (concat
+           (propertize (if my/eshell-prompt-multiline "┌─╼ " "") 'face 'font-lock-type-face)
+           (propertize
+            ((lambda (p-lst)
+               (if (> (length p-lst) 3)
+                   (concat
+                    (mapconcat (lambda (elm) (if (zerop (length elm)) ""
+                                               (substring elm 0 1)))
+                               (butlast p-lst 3)
+                               "/")
+                    "/"
+                    (mapconcat (lambda (elm) elm)
+                               (last p-lst 3)
+                               "/"))
+                 (mapconcat (lambda (elm) elm)
+                            p-lst
+                            "/")))
+             (split-string (pwd-repl-home (eshell/pwd)) "/"))
+            'face
+            'font-lock-type-face)
+           (or (curr-dir-git-branch-string (eshell/pwd)))
+           (propertize (if my/eshell-prompt-multiline "\n└╼ " " ") 'face 'font-lock-type-face)
+           (propertize "$" 'face 'font-lock-function-name-face)
+           (propertize " " 'face 'default))))
+  :config
   (if (boundp 'eshell-save-history-on-exit)
       (setq eshell-save-history-on-exit t)) ; Don't ask, just save
   (if (boundp 'eshell-ask-to-save-history)
@@ -1176,6 +1211,7 @@ buffer, close it."
   )
 
 (use-package em-smart
+  :after eshell
   :init
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
@@ -1265,35 +1301,6 @@ CWD is not in a git repo (or the git command is not found)."
        )
       )
     ))
-
-(defvar my/eshell-prompt-multiline nil)
-
-(setq eshell-prompt-function
-      (lambda ()
-        (concat
-         (propertize (if my/eshell-prompt-multiline "┌─╼ " "") 'face 'font-lock-type-face)
-         (propertize
-          ((lambda (p-lst)
-             (if (> (length p-lst) 3)
-                 (concat
-                  (mapconcat (lambda (elm) (if (zerop (length elm)) ""
-                                             (substring elm 0 1)))
-                             (butlast p-lst 3)
-                             "/")
-                  "/"
-                  (mapconcat (lambda (elm) elm)
-                             (last p-lst 3)
-                             "/"))
-               (mapconcat (lambda (elm) elm)
-                          p-lst
-                          "/")))
-           (split-string (pwd-repl-home (eshell/pwd)) "/"))
-          'face
-          'font-lock-type-face)
-         (or (curr-dir-git-branch-string (eshell/pwd)))
-         (propertize (if my/eshell-prompt-multiline "\n└╼ " " ") 'face 'font-lock-type-face)
-         (propertize "$" 'face 'font-lock-function-name-face)
-         (propertize " " 'face 'default))))
 #+END_SRC
 
 * UI
@@ -1584,22 +1591,27 @@ CWD is not in a git repo (or the git command is not found)."
    '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
    ))
 
-(use-package magit-todos
-  :ensure t
-  :after magit)
-
 (use-package magit
   :ensure t
+  :commands (magit-status
+             magit-dispatch-popup
+             magit-blame-addition
+             magit-log-buffer-file)
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch-popup))
   :config
-  (magit-todos-mode)
   (add-hook 'magit-blame-mode-hook
             (lambda ()
               (if (or (not (boundp 'magit-blame-mode))
                       magit-blame-mode)
                   (evil-emacs-state)
                 (evil-exit-emacs-state)))))
+
+(use-package magit-todos
+  :ensure t
+  :after magit
+  :config
+  (magit-todos-mode))
 #+END_SRC
 
 ** git-timemachine
@@ -2093,7 +2105,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :config
   (add-hook 'flyspell-mode-hook
             (lambda () (add-hook 'hack-local-variables-hook 'flyspell-buffer))))
-
 #+END_SRC
 
 * nix
@@ -2133,15 +2144,14 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
 #+begin_src emacs-lisp
 (use-package direnv
-  :if (executable-find "direnv")
   :ensure t
+  :if (executable-find "direnv")
+  :hook (after-init . direnv-mode)
   :init
   (setq direnv-show-paths-in-summary nil
         direnv-always-show-summary nil)
   (unless (fboundp 'file-attribute-size)
-    (defun file-attribute-size (attrs) (elt attrs 7)))
-  :config
-  (direnv-mode))
+    (defun file-attribute-size (attrs) (elt attrs 7))))
 #+end_src
 
 * Haskell
@@ -2463,53 +2473,60 @@ the current file."
 * Python
 
 #+BEGIN_SRC emacs-lisp
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+  :bind (:map python-mode-map
+              ("C-c C-j" . counsel-imenu))
+  :init
+  (setq python-shell-prompt-detect-failure-warning nil)
+  :config
+  (my/add-hooks
+   '(python-mode-hook)
+   (setq-default flycheck-disabled-checkers
+                 (append flycheck-disabled-checkers
+                         '(python-pycompile)))))
+
+(defun my/mode-line-venv ())
 (use-package pyvenv
   :ensure t
-  :commands (pyvenv-workon))
+  :after python
+  :commands (pyvenv-workon)
+  :config
+  (defun my/mode-line-venv ()
+    (if (string= major-mode "python-mode")
+        (let ((venv (if (null pyvenv-virtual-env-name)
+                        "-"
+                      pyvenv-virtual-env-name)))
+          (concat
+           "["
+           (propertize venv 'face '(:underline t))
+           "] "))
+      "")))
 
 (use-package blacken
-  :if (executable-find "black")
   :ensure t
+  :if (executable-find "black")
+  :after python
   :commands (blacken-mode blacken-buffer)
   :init
   (setq blacken-line-length 80)
-  :config
   (defun my/python-format-and-save ()
     (interactive)
     (blacken-buffer)
     (save-buffer))
   (my/define-major-mode-key 'python-mode "s" 'my/python-format-and-save))
 
-(defun eshell/workon (arg) (pyvenv-workon arg))
-(defun eshell/deactivate () (pyvenv-deactivate))
-
-(setq python-shell-prompt-detect-failure-warning nil)
-
-(defun my/mode-line-venv ()
-  (if (string= major-mode "python-mode")
-      (let ((venv (if (null pyvenv-virtual-env-name)
-                      "-"
-                    pyvenv-virtual-env-name)))
-        (concat
-         "["
-         (propertize venv 'face '(:underline t))
-         "] "))
-    ""))
-
 (use-package anaconda-mode
   :ensure t
   :defer t
+  :hook ((python-mode . anaconda-mode)
+         (python-mode . anaconda-eldoc-mode)
+         )
   :diminish anaconda-mode
   :diminish anaconda-eldoc-mode)
 
-(add-hook 'python-mode-hook
-          (lambda ()
-            (anaconda-mode)
-            (anaconda-eldoc-mode)
-            (define-key python-mode-map (kbd "C-c C-j") 'counsel-imenu)
-            (setq-default flycheck-disabled-checkers
-                          (append flycheck-disabled-checkers
-                                  '(python-pycompile)))))
+(defun eshell/workon (arg) (pyvenv-workon arg))
+(defun eshell/deactivate () (pyvenv-deactivate))
 #+END_SRC
 
 * Javascript/Typescript
@@ -2595,11 +2612,16 @@ the current file."
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
+  :bind (:map markdown-mode-map
+              ("M-a" . beginning-of-defun)
+              ("M-e" . end-of-defun)
+              ("TAB" . my/markdown-toggle-heading)
+              ("<tab>" . my/markdown-toggle-heading))
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)
          ("\\.page\\'" . gfm-mode))
-  :config
+  :init
   (if (executable-find "marked")
       (setq markdown-command "marked"))
   (setq markdown-asymmetric-header t
@@ -2607,21 +2629,13 @@ the current file."
         markdown-css-paths
         (list (expand-file-name (concat user-emacs-directory "static/github.css")))
         )
+  :config
   (my/add-hooks
    '(markdown-mode-hook)
    (auto-fill-mode 1)
    (whitespace-mode +1)
    ;; (orgtbl-mode +1)
    (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))
-  (define-key markdown-mode-map (kbd "M-a") 'beginning-of-defun)
-  (define-key markdown-mode-map (kbd "M-e") 'end-of-defun)
-
-  (defun my/markdown-toggle-heading ()
-    (interactive)
-    (when (markdown-heading-at-point)
-      (outline-toggle-children)))
-  (define-key markdown-mode-map (kbd "TAB") 'my/markdown-toggle-heading)
-  (define-key markdown-mode-map (kbd "<tab>") 'my/markdown-toggle-heading)
 
   (defun markdown-org-table-align-advice ()
     "Replace \"+\" sign with \"|\" in tables."
@@ -2633,7 +2647,11 @@ the current file."
           (while (search-forward "-+-" nil t)
             (replace-match "-|-"))))))
   (advice-add 'org-table-align :after 'markdown-org-table-align-advice)
-  )
+
+  (defun my/markdown-toggle-heading ()
+    (interactive)
+    (when (markdown-heading-at-point)
+      (outline-toggle-children))))
 
 (use-package markdown-toc
   :ensure t
@@ -2689,33 +2707,20 @@ the current file."
   :ensure t
   :init
   (setq proof-splash-enable nil
-        proof-script-fly-past-comments t)
-  (setq coq-one-command-per-line nil
+        proof-script-fly-past-comments t
+        coq-one-command-per-line nil
         coq-compile-before-require t)
   :config
-  (add-hook 'coq-mode-hook
-            (lambda ()
-              (setq evil-shift-width 2)
-              (undo-tree-mode 1)
-              (whitespace-mode 1)
-              )))
+  (my/add-hooks
+   '(coq-mode-hook)
+   (setq evil-shift-width 2)
+   (undo-tree-mode 1)
+   (whitespace-mode 1)))
 #+END_SRC
 
 ** Rust
 
 #+BEGIN_SRC emacs-lisp :tangle no
-(use-package racer
-  :ensure t
-  :hook (rust-mode . racer-mode))
-
-(use-package cargo
-  :ensure t
-  :hook (rust-mode . cargo-minor-mode))
-
-(use-package flycheck-rust
-  :ensure t
-  :hook (flycheck-mode . flycheck-rust-setup))
-
 (use-package rust-mode
   :ensure t
   :mode ("\\.rs\\'" . rust-mode)
@@ -2735,6 +2740,21 @@ the current file."
   (interactive)
   (call-interactively 'rust-format-buffer)
   (save-buffer))
+
+(use-package racer
+  :ensure t
+  :after rust-mode
+  :hook (rust-mode . racer-mode))
+
+(use-package cargo
+  :ensure t
+  :after rust-mode
+  :hook (rust-mode . cargo-minor-mode))
+
+(use-package flycheck-rust
+  :ensure t
+  :after (flycheck rust-mode)
+  :hook (flycheck-mode . flycheck-rust-setup))
 #+END_SRC
 
 ** c/c++
@@ -2751,7 +2771,9 @@ the current file."
   :ensure t
   :mode ("\\.html\\'" . web-mode))
 
-(with-eval-after-load 'css-mode
+(use-package css-mode
+  :mode ("\\.css\\'" . css-mode)
+  :config
   (setq css-fontify-colors nil))
 
 (use-package emmet-mode
@@ -2799,8 +2821,7 @@ the current file."
          (tp (cond
               ((string= fn "BUILD.bazel") "build")
               ((string= ext "bzl") "bzl")
-              (t (user-error (format "Not a bazel file extension: %s" ext)))))
-         )
+              (t (user-error (format "Not a bazel file extension: %s" ext))))))
     (my/format-and-save "buildifier" "--type" tp))
   (save-buffer))
 #+end_src
@@ -2958,7 +2979,6 @@ instead of the title as seen by deft."
   :init
   (setq elfeed-db-directory (concat my/dropbox-dir "elfeed"))
   :config
-
   (defun my/elfeed-hide-images (tog)
     (interactive "P")
     (let ((shr-inhibit-images (not tog)))
@@ -3017,13 +3037,6 @@ instead of the title as seen by deft."
 ** erc
 
 #+BEGIN_SRC emacs-lisp
-;; https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/
-(use-package erc-hl-nicks
-  :ensure t
-  :after erc
-  :init
-  (setq erc-hl-nicks-skip-nicks '("so" "So" "bind" "hackage")))
-
 (use-package erc
   :defer t
   :commands (erc my/erc-freenode)
@@ -3064,44 +3077,52 @@ instead of the title as seen by deft."
 
 ;; put a bar after the last read message in erc
 ;; https://www.emacswiki.org/emacs/ErcBar
-(eval-after-load 'erc-track
-  '(progn
-     (defun erc-bar-move-back (n)
-       "Moves back n message lines. Ignores wrapping, and server messages."
-       (interactive "nHow many lines ? ")
-       (re-search-backward "^.*<.*>" nil t n))
+(use-package erc-track
+  :after erc
+  :config
+  (defun erc-bar-move-back (n)
+    "Moves back n message lines. Ignores wrapping, and server messages."
+    (interactive "nHow many lines ? ")
+    (re-search-backward "^.*<.*>" nil t n))
 
-     (defun erc-bar-update-overlay ()
-       "Update the overlay for current buffer, based on the content of
+  (defun erc-bar-update-overlay ()
+    "Update the overlay for current buffer, based on the content of
 erc-modified-channels-alist. Should be executed on window change."
-       (interactive)
-       (let* ((info (assq (current-buffer) erc-modified-channels-alist))
-	      (count (cadr info)))
-	 (if (and info (> count erc-bar-threshold))
-	     (save-excursion
-	       (end-of-buffer)
-	       (when (erc-bar-move-back count)
-		 (let ((inhibit-field-text-motion t))
-		   (move-overlay erc-bar-overlay
-				 (line-beginning-position)
-				 (line-end-position)
-				 (current-buffer)))))
-	   (delete-overlay erc-bar-overlay))))
+    (interactive)
+    (let* ((info (assq (current-buffer) erc-modified-channels-alist))
+	   (count (cadr info)))
+      (if (and info (> count erc-bar-threshold))
+	  (save-excursion
+	    (end-of-buffer)
+	    (when (erc-bar-move-back count)
+	      (let ((inhibit-field-text-motion t))
+		(move-overlay erc-bar-overlay
+			      (line-beginning-position)
+			      (line-end-position)
+			      (current-buffer)))))
+	(delete-overlay erc-bar-overlay))))
 
-     (defvar erc-bar-threshold 0
-       "Display bar when there are more than erc-bar-threshold unread messages.")
-     (defvar erc-bar-overlay nil
-       "Overlay used to set bar")
-     (setq erc-bar-overlay (make-overlay 0 0))
-     (overlay-put erc-bar-overlay 'face '(:overline "grey40"))
-     ;;put the hook before erc-modified-channels-update
-     (defadvice erc-track-mode (after erc-bar-setup-hook
-				      (&rest args) activate)
-       ;;remove and add, so we know it's in the first place
-       (remove-hook 'window-configuration-change-hook 'erc-bar-update-overlay)
-       (add-hook 'window-configuration-change-hook 'erc-bar-update-overlay))
-     (add-hook 'erc-send-completed-hook (lambda (str)
-					  (erc-bar-update-overlay)))))
+  (defvar erc-bar-threshold 0
+    "Display bar when there are more than erc-bar-threshold unread messages.")
+  (defvar erc-bar-overlay nil
+    "Overlay used to set bar")
+  (setq erc-bar-overlay (make-overlay 0 0))
+  (overlay-put erc-bar-overlay 'face '(:overline "grey40"))
+  ;;put the hook before erc-modified-channels-update
+  (defadvice erc-track-mode (after erc-bar-setup-hook
+				   (&rest args) activate)
+    ;;remove and add, so we know it's in the first place
+    (remove-hook 'window-configuration-change-hook 'erc-bar-update-overlay)
+    (add-hook 'window-configuration-change-hook 'erc-bar-update-overlay))
+  (add-hook 'erc-send-completed-hook (lambda (str)
+				       (erc-bar-update-overlay))))
+
+;; https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/
+(use-package erc-hl-nicks
+  :ensure t
+  :after erc
+  :init
+  (setq erc-hl-nicks-skip-nicks '("so" "So" "bind" "hackage")))
 #+END_SRC
 
 ** restclient
@@ -3129,14 +3150,6 @@ erc-modified-channels-alist. Should be executed on window change."
 * Company
 
 #+BEGIN_SRC emacs-lisp
-(use-package company-quickhelp
-  :ensure t
-  :after company)
-
-(use-package company-anaconda
-  :ensure t
-  :after (company anaconda-mode))
-
 (use-package company
   :ensure t
   :diminish company-mode
@@ -3158,11 +3171,21 @@ erc-modified-channels-alist. Should be executed on window change."
   (setq company-backends (delete 'company-dabbrev company-backends))
   (add-to-list 'company-backends 'company-anaconda)
   (add-to-list 'company-backends 'company-files))
+
+(use-package company-quickhelp
+  :ensure t
+  :after company)
+
+(use-package company-anaconda
+  :ensure t
+  :after (company anaconda-mode))
 #+END_SRC
 
 * Flycheck
 
 #+BEGIN_SRC emacs-lisp
+(defun my/mode-line-flycheck ())
+
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
@@ -3194,7 +3217,43 @@ erc-modified-channels-alist. Should be executed on window change."
                 (append flycheck-disabled-checkers
                         '(javascript-jshint haskell-ghc haskell-stack-ghc)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
-  (flycheck-add-mode 'javascript-eslint 'js2-mode))
+  (flycheck-add-mode 'javascript-eslint 'js2-mode)
+
+  ;; modeline stuff
+  (defface modeline-flycheck-error
+    '((t (:foreground "#e05e5e" :distant-foreground "#e05e5e")))
+    "Face for flycheck error feedback in the modeline."
+    :group 'modeline-flycheck)
+  (defface modeline-flycheck-warning
+    '((t (:foreground "#bfb03d" :distant-foreground "#bfb03d")))
+    "Face for flycheck warning feedback in the modeline."
+    :group 'modeline-flycheck)
+  (defface modeline-flycheck-info
+    '((t (:foreground "DeepSkyBlue3" :distant-foreground "DeepSkyBlue3")))
+    "Face for flycheck info feedback in the modeline."
+    :group 'modeline-flycheck)
+  (defface modeline-flycheck-ok
+    '((t (:foreground "SeaGreen3" :distant-foreground "SeaGreen3")))
+    "Face for flycheck ok feedback in the modeline."
+    :group 'modeline-flycheck)
+
+  (defvar modeline-flycheck-bullet "•%s")
+
+  (defun my/mode-line-flycheck-state (state)
+    (let* ((counts (flycheck-count-errors flycheck-current-errors))
+           (errorp (flycheck-has-current-errors-p state))
+           (err (or (cdr (assq state counts)) "?"))
+           (running (eq 'running flycheck-last-status-change))
+           (face (intern (format "modeline-flycheck-%S" state))))
+      (if (or errorp running)
+          (propertize (format modeline-flycheck-bullet err) 'face face))))
+
+  (defun my/mode-line-flycheck ()
+    (let* ((ml-error (my/mode-line-flycheck-state 'error))
+           (ml-warning (my/mode-line-flycheck-state 'warning))
+           (ml-info (my/mode-line-flycheck-state 'info))
+           (ml-status (concat ml-error ml-warning ml-info)))
+      (if (null ml-status) "" (concat " " ml-status " ")))))
 #+END_SRC
 
 * Projectile
@@ -3219,11 +3278,10 @@ erc-modified-channels-alist. Should be executed on window change."
 (use-package perspective
   :ensure t
   :hook (after-init . persp-mode)
+  :bind (("M-N" . persp-next)
+         ("M-P" . persp-prev)
+         ("M-J" . persp-switch))
   :config
-  ;; (global-set-key (kbd "M-O") 'persp-next)
-  (global-set-key (kbd "M-N") 'persp-next)
-  (global-set-key (kbd "M-P") 'persp-prev)
-  (global-set-key (kbd "M-J") 'persp-switch)
   ;; emacs window title
   (defadvice persp-switch
       (after advice-for-persp-switch activate)
@@ -3830,67 +3888,19 @@ the minibuffer."
 * Modeline
 ** Regular modeline
 
-# Copied from spacemacs
-
 #+BEGIN_SRC emacs-lisp
-(defface modeline-flycheck-error
-  '((t (:foreground "#e05e5e" :distant-foreground "#e05e5e")))
-  "Face for flycheck error feedback in the modeline."
-  :group 'modeline-flycheck)
-(defface modeline-flycheck-warning
-  '((t (:foreground "#bfb03d" :distant-foreground "#bfb03d")))
-  "Face for flycheck warning feedback in the modeline."
-  :group 'modeline-flycheck)
-(defface modeline-flycheck-info
-  '((t (:foreground "DeepSkyBlue3" :distant-foreground "DeepSkyBlue3")))
-  "Face for flycheck info feedback in the modeline."
-  :group 'modeline-flycheck)
-(defface modeline-flycheck-ok
-  '((t (:foreground "SeaGreen3" :distant-foreground "SeaGreen3")))
-  "Face for flycheck ok feedback in the modeline."
-  :group 'modeline-flycheck)
-
-(defun my/modeline-flycheck-darker-faces ()
-  (custom-theme-set-faces
-   my/theme
-   '(modeline-flycheck-error ((t (:foreground "#c63d3d" :distant-foreground "#c63d3d"))))
-   '(modeline-flycheck-warning ((t (:foreground "#84781a" :distant-foreground "#84781a"))))
-   '(modeline-flycheck-info ((t (:foreground "DeepSkyBlue4" :distant-foreground "DeepSkyBlue4"))))
-   ))
-
-(defvar modeline-flycheck-bullet "•%s")
-
-(defun my/mode-line-flycheck-state (state)
-  (let* ((counts (flycheck-count-errors flycheck-current-errors))
-         (errorp (flycheck-has-current-errors-p state))
-         (err (or (cdr (assq state counts)) "?"))
-         (running (eq 'running flycheck-last-status-change))
-         (face (intern (format "modeline-flycheck-%S" state))))
-    (if (or errorp running)
-        (propertize (format modeline-flycheck-bullet err) 'face face))))
-
-(defun my/mode-line-flycheck ()
-  (let* ((ml-error (my/mode-line-flycheck-state 'error))
-         (ml-warning (my/mode-line-flycheck-state 'warning))
-         (ml-info (my/mode-line-flycheck-state 'info))
-         (ml-status (concat ml-error ml-warning ml-info)))
-    (if (null ml-status) "" (concat " " ml-status " "))))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(with-eval-after-load 'flycheck
-  (setq-default mode-line-format
-                '("%e"
-                  mode-line-front-space
-                  ;; evil-mode-line-tag
-                  mode-line-mule-info
-                  mode-line-client mode-line-modified mode-line-remote
-                  mode-line-frame-identification mode-line-buffer-identification " "
-                  mode-line-position
-                  (vc-mode vc-mode)
-                  (:eval (my/mode-line-flycheck))
-                  (:eval (my/mode-line-venv))
-                  mode-line-modes mode-line-misc-info mode-line-end-spaces)))
+(setq-default mode-line-format
+              '("%e"
+                mode-line-front-space
+                ;; evil-mode-line-tag
+                mode-line-mule-info
+                mode-line-client mode-line-modified mode-line-remote
+                mode-line-frame-identification mode-line-buffer-identification " "
+                mode-line-position
+                (vc-mode vc-mode)
+                (:eval (my/mode-line-flycheck))
+                (:eval (my/mode-line-venv))
+                mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
 (setq mode-line-misc-info
       (cons '(:eval (if (window-dedicated-p) "× " "")) mode-line-misc-info))
