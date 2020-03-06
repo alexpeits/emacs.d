@@ -7,6 +7,7 @@
 - [[#various-utility-functions][Various utility functions]]
 - [[#various-configurations][Various configurations]]
   - [[#emacs-ui--editing][emacs UI & editing]]
+  - [[#auth][auth]]
   - [[#server][server]]
   - [[#fast-recompile-minor-mode][fast recompile minor mode]]
   - [[#smartparens][Smartparens]]
@@ -108,7 +109,6 @@
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path (expand-file-name (concat user-emacs-directory "lisp")))
-(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "custom")))
 (add-to-list 'custom-theme-load-path
              (expand-file-name (concat user-emacs-directory "custom-themes/")))
 
@@ -126,13 +126,8 @@
                          path-separator
                          (getenv "PATH"))))
 
-(setq user-full-name "Alex Peitsinis"
-      user-mail-address "alexpeitsinis@gmail.com")
-
-(setq my/dropbox-dir (expand-file-name "~/Dropbox/emacs/"))
-
-(require 'auth-source)
-(add-to-list 'auth-sources (concat my/dropbox-dir "authinfo.gpg"))
+(defvar my/dropbox-dir (expand-file-name "~/Dropbox/emacs/")
+  "Private directory synced with dropbox")
 
 (defvar is-mac (eq system-type 'darwin)
   "Whether emacs is running in mac or not")
@@ -142,6 +137,9 @@
 
 (defvar is-term (not is-gui)
   "Whether emacs is running in a terminal or not")
+
+(setq user-full-name "Alex Peitsinis"
+      user-mail-address "alexpeitsinis@gmail.com")
 #+END_SRC
 
 * Package management
@@ -418,17 +416,12 @@ With a prefix argument, open using `find-file-other-window'."
 
 #+BEGIN_SRC emacs-lisp
 ;; remember last position
-(if (<= emacs-major-version 24)
-    (use-package saveplace
-      :ensure t
-      :config
-      (setq-default save-place t))
-  (save-place-mode 1))
+(use-package saveplace
+  :hook (after-init . save-place-mode))
 
 ;; undo tree
-;; NOTE: latest version with fixes not on MELPA yet
 (use-package undo-tree
-  ;; :ensure t
+  :ensure t
   :bind ("C-x u" . undo-tree-visualize)
   :diminish undo-tree-mode
   :hook (after-init . global-undo-tree-mode)
@@ -576,6 +569,14 @@ With a prefix argument, open using `find-file-other-window'."
 (use-package rainbow-delimiters
   :ensure t
   :commands (rainbow-delimiters-mode))
+#+END_SRC
+
+** auth
+
+#+BEGIN_SRC emacs-lisp
+(use-package auth-source
+  :config
+  (add-to-list 'auth-sources (concat my/dropbox-dir "authinfo.gpg")))
 #+END_SRC
 
 ** server
@@ -2548,7 +2549,6 @@ the current file."
   :init
   (setq prettier-js-args '("--trailing-comma" "es5"
                            "--bracket-spacing" "true"))
-  :config
   (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
   (my/define-major-mode-key 'typescript-mode "s" 'my/prettier-and-save)
   (my/define-major-mode-key 'web-mode "s" 'my/prettier-and-save))
@@ -3878,18 +3878,19 @@ the minibuffer."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-(setq-default mode-line-format
-              '("%e"
-                mode-line-front-space
-                ;; evil-mode-line-tag
-                mode-line-mule-info
-                mode-line-client mode-line-modified mode-line-remote
-                mode-line-frame-identification mode-line-buffer-identification " "
-                mode-line-position
-                (vc-mode vc-mode)
-                (:eval (my/mode-line-flycheck))
-                (:eval (my/mode-line-venv))
-                mode-line-modes mode-line-misc-info mode-line-end-spaces))
+(with-eval-after-load 'flycheck
+  (setq-default mode-line-format
+                '("%e"
+                  mode-line-front-space
+                  ;; evil-mode-line-tag
+                  mode-line-mule-info
+                  mode-line-client mode-line-modified mode-line-remote
+                  mode-line-frame-identification mode-line-buffer-identification " "
+                  mode-line-position
+                  (vc-mode vc-mode)
+                  (:eval (my/mode-line-flycheck))
+                  (:eval (my/mode-line-venv))
+                  mode-line-modes mode-line-misc-info mode-line-end-spaces)))
 
 (setq mode-line-misc-info
       (cons '(:eval (if (window-dedicated-p) "× " "")) mode-line-misc-info))
