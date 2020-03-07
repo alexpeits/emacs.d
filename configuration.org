@@ -2537,38 +2537,46 @@ the current file."
   :mode (("\\.js\\'" . rjsx-mode)
          ("\\.jsx\\'" . rjsx-mode))
   :config
+  (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
   (add-hook 'rjsx-mode-hook
             (lambda ()
               (setq evil-shift-width 2)
               (define-key js2-mode-map (kbd "C-c C-f") nil))))
 
-(setq ;; js2-mode
- js-indent-level 2
- ;; web-mode
- css-indent-offset 2
- web-mode-markup-indent-offset 2
- web-mode-css-indent-offset 2
- web-mode-code-indent-offset 2
- web-mode-attr-indent-offset 2)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
 (use-package typescript-mode
   :ensure t
   :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . web-mode)))
-#+END_SRC
+         ("\\.tsx\\'" . web-mode))
+  :config
+  (my/define-major-mode-key 'typescript-mode "s" 'my/prettier-and-save))
 
-#+BEGIN_SRC emacs-lisp
+(use-package web-mode
+  :mode (("\\.html\\'" . web-mode)
+         ("\\.tsx\\'" . web-mode))
+  :init
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2
+        web-mode-attr-indent-offset 2)
+  :config
+  (my/define-major-mode-key 'web-mode "s" 'my/prettier-and-save))
+
+(use-package js
+  :commands (js-mode)
+  :init
+  (setq js-indent-level 2))
+
+(use-package css-mode
+  :mode (("\\.css\\'" . css-mode))
+  :init
+  (setq css-indent-offset 2))
+
 (use-package prettier-js
   :ensure t
-  :commands (prettier-js prettier-js-mode)
+  :commands (prettier-js prettier-js-mode my/prettier-and-save)
   :init
   (setq prettier-js-args '("--trailing-comma" "es5"
-                           "--bracket-spacing" "true"))
-  (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
-  (my/define-major-mode-key 'typescript-mode "s" 'my/prettier-and-save)
-  (my/define-major-mode-key 'web-mode "s" 'my/prettier-and-save))
+                           "--bracket-spacing" "true")))
 
 (defun my/prettier-and-save ()
   (interactive)
