@@ -3920,14 +3920,11 @@ the minibuffer."
 (use-package powerline :ensure t)
 
 (defun my/split-mode-line-render (left right)
-  "Return a string of `window-width' length containing LEFT, and RIGHT aligned respectively."
   (let* ((available-width (- (window-total-width)
                              (+ (length (format-mode-line left))
                                 (length (format-mode-line right))))))
     (append left
-            (list
-             (format
-              (format "%%%ds" available-width) ""))
+            (list (format (format "%%%ds" available-width) ""))
             right)))
 
 (defun my/mode-line-hud ()
@@ -3950,7 +3947,7 @@ the minibuffer."
        mode-line-client mode-line-modified mode-line-remote "  "
        mode-line-buffer-identification " "
        mode-line-position
-       ;; (vc-mode vc-mode)
+       (vc-mode vc-mode)
        (:eval (my/mode-line-flycheck))
        (:eval (my/mode-line-venv))
        mode-line-modes
@@ -3960,7 +3957,6 @@ the minibuffer."
      (quote
       (
        (:eval (frame-parameter nil 'persp--modestring)) " "
-       ;; (:eval (pl/render (powerline-hud 'powerline-active0 'powerline-active2)))
        (:eval (my/mode-line-hud))
        "  "
        ))
