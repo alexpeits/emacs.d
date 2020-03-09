@@ -2572,18 +2572,22 @@ the current file."
   :init
   (setq js-indent-level 2))
 
-(use-package prettier-js
-  :ensure t
-  :commands (prettier-js prettier-js-mode my/prettier-and-save)
-  :init
-  (setq prettier-js-args '("--trailing-comma" "es5"
-                           "--tab-width" "2"
-                           "--semi" "false"
-                           "--single-quote" "false")))
+;; (use-package prettier-js
+;;   :ensure t
+;;   :commands (prettier-js prettier-js-mode my/prettier-and-save)
+;;   :init
+;;   (setq prettier-js-args '("--trailing-comma" "es5"
+;;                            "--tab-width" "2"
+;;                            "--semi" "false"
+;;                            "--single-quote" "false")))
 
 (defun my/prettier-and-save ()
   (interactive)
-  (prettier-js)
+  ;; (prettier-js)
+  (unless (executable-find "prettier")
+    (user-error "`prettier' executable not found"))
+  (let* ((fn (file-name-nondirectory buffer-file-name)))
+    (my/format-and-save "prettier" "--stdin" "--stdin-filepath" fn))
   (save-buffer))
 
 (use-package emmet-mode
