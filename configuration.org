@@ -25,7 +25,6 @@
   - [[#alignment][alignment]]
   - [[#highlight-keywords-in-some-modes][highlight keywords in some modes]]
   - [[#temp-project-roots][temp project roots]]
-  - [[#reformatter][reformatter]]
   - [[#edit-indirect][edit indirect]]
 - [[#term-eshell-and-comint-mode][Term, eshell and comint-mode]]
   - [[#terms][Terms]]
@@ -1050,14 +1049,6 @@ buffer, close it."
               (read-directory-name "Temp root dir: " reset-root)
             my/temp-project-root)))
     (setq my/temp-project-root root)))
-#+END_SRC
-
-** reformatter
-
-#+BEGIN_SRC emacs-lisp
-(use-package reformatter
-  :ensure t
-  :defer t)
 #+END_SRC
 
 ** edit indirect
