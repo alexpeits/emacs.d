@@ -2577,7 +2577,9 @@ the current file."
   :commands (prettier-js prettier-js-mode my/prettier-and-save)
   :init
   (setq prettier-js-args '("--trailing-comma" "es5"
-                           "--bracket-spacing" "true")))
+                           "--tab-width" "2"
+                           "--semi" "false"
+                           "--single-quote" "false")))
 
 (defun my/prettier-and-save ()
   (interactive)
