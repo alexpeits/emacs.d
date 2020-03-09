@@ -52,7 +52,7 @@
 - [[#haskell][Haskell]]
 - [[#purescript][Purescript]]
 - [[#python][Python]]
-- [[#javascripttypescript][Javascript/Typescript]]
+- [[#jstshtmlcss][js/ts/html/css]]
 - [[#lisps][Lisps]]
   - [[#all-lisps][all lisps]]
   - [[#emacs-lisp][emacs lisp]]
@@ -63,7 +63,6 @@
   - [[#coq][Coq]]
   - [[#rust][Rust]]
   - [[#cc][c/c++]]
-  - [[#html--css][html & css]]
   - [[#dhall][dhall]]
   - [[#bazel][bazel]]
   - [[#nginx][nginx]]
@@ -2529,7 +2528,7 @@ the current file."
 (defun eshell/deactivate () (pyvenv-deactivate))
 #+END_SRC
 
-* Javascript/Typescript
+* js/ts/html/css
 
 #+BEGIN_SRC emacs-lisp
 (use-package rjsx-mode
@@ -2545,31 +2544,33 @@ the current file."
 
 (use-package typescript-mode
   :ensure t
-  :mode (("\\.ts\\'" . typescript-mode)
-         ("\\.tsx\\'" . web-mode))
+  :mode (("\\.ts\\'" . typescript-mode))
   :config
   (my/define-major-mode-key 'typescript-mode "s" 'my/prettier-and-save))
 
 (use-package web-mode
-  :mode (("\\.html\\'" . web-mode)
-         ("\\.tsx\\'" . web-mode))
+  :mode (("\\.html\\'" . web-html-mode)
+         ("\\.tsx\\'" . web-tsx-mode))
   :init
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
         web-mode-code-indent-offset 2
         web-mode-attr-indent-offset 2)
+  (define-derived-mode web-tsx-mode web-mode "web-tsx")
+  (define-derived-mode web-html-mode web-mode "web-html")
   :config
-  (my/define-major-mode-key 'web-mode "s" 'my/prettier-and-save))
+  (my/define-major-mode-key 'web-tsx-mode "s" 'my/prettier-and-save))
+
+(use-package css-mode
+  :mode (("\\.css\\'" . css-mode))
+  :init
+  (setq css-indent-offset 2
+        css-fontify-colors nil))
 
 (use-package js
   :commands (js-mode)
   :init
   (setq js-indent-level 2))
-
-(use-package css-mode
-  :mode (("\\.css\\'" . css-mode))
-  :init
-  (setq css-indent-offset 2))
 
 (use-package prettier-js
   :ensure t
@@ -2582,6 +2583,12 @@ the current file."
   (interactive)
   (prettier-js)
   (save-buffer))
+
+(use-package emmet-mode
+  :ensure t
+  :commands (emmet-expand-line)
+  :bind (("<C-return>" . emmet-expand-line))
+  :hook ((web-html-mode html-mode css-mode) . emmet-mode))
 #+END_SRC
 
 * Lisps
@@ -2770,26 +2777,6 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (setq c-default-style "linux"
       c-basic-offset 4)
-#+END_SRC
-
-** html & css
-
-#+BEGIN_SRC emacs-lisp
-(use-package web-mode
-  :ensure t
-  :mode ("\\.html\\'" . web-mode))
-
-(use-package css-mode
-  :mode ("\\.css\\'" . css-mode)
-  :config
-  (setq css-fontify-colors nil))
-
-(use-package emmet-mode
-  :ensure t
-  :after web-mode
-  :commands (emmet-expand-line)
-  :bind (("<C-return>" . emmet-expand-line))
-  :hook ((web-mode html-mode css-mode) . emmet-mode))
 #+END_SRC
 
 ** dhall
