@@ -3558,25 +3558,7 @@ erc-modified-channels-alist. Should be executed on window change."
        ("n"
         (lambda (x) (ace-select-window) (counsel-git-grep-action x))
         "select window")
-       ("I"
-        (lambda (x)
-          (insert
-           (if (stringp x)
-               (replace-regexp-in-string "^[^:]+:[^:]+:[^:]+:" "" x)
-             (car x))))
-        "insert just content"))))
-
-  (defvar my/todo-search-string
-    "TODO|NOTE|FIXME|XXX|DONE|HACK")
-
-  (defun my/counsel-projectile-ag-todos ()
-    (interactive)
-    (let ((counsel-projectile-ag-initial-input my/todo-search-string))
-      (counsel-projectile-ag)))
-
-  (defun my/counsel-ag-todos-global ()
-    (interactive)
-    (my/try-exec-in-project 'my/counsel-projectile-ag-todos 'my/counsel-ag-todos))
+       )))
   )
 
 (use-package ivy
