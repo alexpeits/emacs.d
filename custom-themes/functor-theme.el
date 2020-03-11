@@ -188,6 +188,7 @@
  `(markdown-header-face ((t (:inherit font-lock-preprocessor-face :weight bold))))
 
  `(rst-literal    ((t (:inherit font-lock-doc-face))))
+ `(rst-directive  ((t (:foreground "#d7afd7"))))
  `(rst-transition ((t (:inherit font-lock-type-face))))
  `(rst-adornment  ((t (:inherit font-lock-preprocessor-face :weight bold))))
  `(rst-level-1    ((t (:inherit font-lock-preprocessor-face :weight bold))))

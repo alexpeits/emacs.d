@@ -201,6 +201,7 @@
  `(markdown-language-keyword-face ((t (:inherit font-lock-function-name-face))))
 
  `(rst-literal    ((t (:inherit font-lock-type-face))))
+ `(rst-directive  ((t (:inherit font-lock-preprocessor-face))))
  `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
  `(rst-adornment  ((t (:inherit font-lock-string-face :weight bold))))
  `(rst-level-1    ((t (:inherit font-lock-string-face :weight bold))))
