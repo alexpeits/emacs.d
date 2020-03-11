@@ -200,6 +200,16 @@
  `(markdown-header-face           ((t (:inherit font-lock-string-face :weight bold))))
  `(markdown-language-keyword-face ((t (:inherit font-lock-function-name-face))))
 
+ `(rst-literal    ((t (:inherit font-lock-type-face))))
+ `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
+ `(rst-adornment  ((t (:inherit font-lock-string-face :weight bold))))
+ `(rst-level-1    ((t (:inherit font-lock-string-face :weight bold))))
+ `(rst-level-2    ((t (:inherit rst-level-1))))
+ `(rst-level-3    ((t (:inherit rst-level-1))))
+ `(rst-level-4    ((t (:inherit rst-level-1))))
+ `(rst-level-5    ((t (:inherit rst-level-1))))
+ `(rst-level-6    ((t (:inherit rst-level-1))))
+
  `(markup-gen-face                 ((t (:inherit font-lock-type-face))))
  `(markup-strong-face              ((t (:inherit markup-gen-face :weight bold))))
  `(markup-italic-face              ((t (:inherit markup-gen-face :slant italic))))

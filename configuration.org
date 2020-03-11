@@ -71,6 +71,7 @@
   - [[#json][json]]
   - [[#yaml][yaml]]
   - [[#asciidoc][asciidoc]]
+  - [[#restructuredtext][reStructuredText]]
 - [[#other-major-modes][Other major modes]]
   - [[#deft][deft]]
   - [[#elfeed][elfeed]]
@@ -2895,6 +2896,22 @@ the current file."
 (use-package adoc-mode
   :ensure t
   :mode ("\\.adoc\\'" . adoc-mode))
+#+END_SRC
+
+** reStructuredText
+
+#+BEGIN_SRC emacs-lisp
+(use-package rst
+  :mode ("\\.rst\\'" . rst-mode)
+  :bind (:map rst-mode-map
+              ("M-a" . rst-backward-section)
+              ("M-e" . rst-forward-section))
+  :init
+  (setq rst-indent-width 2)
+  :config
+  (my/add-hooks
+   '(rst-mode-hook)
+   (setq evil-shift-width rst-indent-width)))
 #+END_SRC
 
 * Other major modes
