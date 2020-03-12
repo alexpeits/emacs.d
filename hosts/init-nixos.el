@@ -21,6 +21,7 @@
 (setq my/avail-themes
       `(
         monad
+        ,(assoc 'zenburn my/all-themes)
         monoid
         ))
 (setq my/current-theme 0)
