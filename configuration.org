@@ -1520,9 +1520,10 @@ CWD is not in a git repo (or the git command is not found)."
 * Font
 
 #+BEGIN_SRC emacs-lisp
-;; can set avail-fonts in ~/.emacs.d/hosts in the corresponding host file
 (defvar my/avail-fonts '(("Monospace" 12)))
 (defvar my/current-font 0)
+(defvar my/current-font-size nil)
+(defvar my/font-size-step 0.5)
 
 (defvar my/after-set-font-hook nil
   "Hook called after updating fonts")
@@ -1540,17 +1541,34 @@ CWD is not in a git repo (or the git command is not found)."
 (defun my/toggle-font ()
   (interactive)
   (let ((next-font (mod (1+ my/current-font) (length my/avail-fonts))))
+    (setq my/current-font-size nil)
     (my/set-font (elt my/avail-fonts next-font))
     (setq my/current-font next-font)))
 
 (defun my/refresh-font ()
   (interactive)
+  (setq my/current-font-size nil)
   (my/set-font (elt my/avail-fonts my/current-font)))
 
+;; NOTE: trying this out
+(defun my/change-font-size (&optional dec)
+  (let* ((spec (elt my/avail-fonts my/current-font))
+         (name (car spec))
+         (size (or my/current-font-size (cadr spec))))
+    (setq my/current-font-size
+          (if dec
+              (- size my/font-size-step)
+            (+ size my/font-size-step)))
+    (my/set-font (list name my/current-font-size))))
+
+(global-set-key (kbd "C-+") #'(lambda () (interactive) (my/change-font-size)))
+(global-set-key (kbd "C--") #'(lambda () (interactive) (my/change-font-size :dec)))
+(global-set-key (kbd "C-x C-0") #'my/refresh-font)
+
 ;; size & scaling
-(setq text-scale-mode-step 1.05)
-(define-key global-map (kbd "C-+") 'text-scale-increase)
-(define-key global-map (kbd "C--") 'text-scale-decrease)
+;; (setq text-scale-mode-step 1.05)
+;; (define-key global-map (kbd "C-+") 'text-scale-increase)
+;; (define-key global-map (kbd "C--") 'text-scale-decrease)
 #+END_SRC
 
 * VCS

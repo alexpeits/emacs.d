@@ -2,14 +2,7 @@
  my/avail-fonts
  '(
    ("Hack" 10.5)
-   ("Hack" 9)
-   ("Hack" 12)
-   ;; ("Ubuntu Mono" 12)
-   ;; ("Ubuntu Mono" 10.5)
-   ;; ("Ubuntu Mono" 13)
-   ;; ("Hack" 9)
-   ;; ("Fira Code" 10)
-   ;; ("Iosevka Term SS02" 12)
+   ("Source Code Pro" 12)
    ))
 
 (setq my/current-font 0)
