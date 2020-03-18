@@ -14,8 +14,8 @@
 (setq my/avail-themes
       `(
         monad
-        ,(assoc 'zenburn my/all-themes)
-        monoid
+        ;; ,(assoc 'zenburn my/all-themes)
+        foldable
         ))
 (setq my/current-theme 0)
 

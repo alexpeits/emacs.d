@@ -79,12 +79,12 @@
   - [[#erc][erc]]
   - [[#restclient][restclient]]
   - [[#ledger][ledger]]
-- [[#company][Company]]
-- [[#flycheck][Flycheck]]
-- [[#projectile][Projectile]]
 - [[#searching][Searching]]
   - [[#isearch][isearch]]
   - [[#rg][rg]]
+- [[#company][Company]]
+- [[#flycheck][Flycheck]]
+- [[#projectile][Projectile]]
 - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
 - [[#yasnippet][Yasnippet]]
 - [[#other-window-management][Other window management]]
@@ -3167,6 +3167,51 @@ erc-modified-channels-alist. Should be executed on window change."
         ledger-binary-path "hledger"))
 #+END_SRC
 
+* Searching
+** isearch
+
+#+BEGIN_SRC emacs-lisp
+(use-package isearch
+  :init
+  (setq search-whitespace-regexp ".*?"  ;; spaces match anything
+        isearch-lax-whitespace t  ;; the default
+        isearch-regex-lax-whitespace nil
+        isearch-lazy-count t  ;; show match count and current match index
+        lazy-count-prefix-format "(%s/%s) "
+        lazy-count-suffix-format nil)
+  :config
+  (define-key isearch-mode-map
+    (kbd "M-s M-s")
+    (lambda () (interactive) (isearch-exit) (swiper isearch-string))))
+#+END_SRC
+
+** rg
+
+#+BEGIN_SRC emacs-lisp
+(use-package rg
+  :ensure t
+  :commands (rg)
+  :init
+  (setq rg-group-result t
+        rg-ignore-case 'smart)
+  :config
+  (rg-define-toggle "--multiline --multiline-dotall" "u")
+  (define-key rg-mode-map "m" #'rg-menu)
+  (define-key rg-mode-map "N" #'my/rg-open-ace-window))
+
+(defun my/rg-open-ace-window (&optional event)
+  (interactive)
+  (flet ((pop-to-buffer (buf &rest args)
+                        (let ((pop-up-windows nil))
+                          (if (get-buffer-window buf)
+                              (while (not (equal buf (current-buffer)))
+                                (other-window 1))
+                            (progn
+                              (ace-window nil)
+                              (switch-to-buffer buf))))))
+        (compile-goto-error event)))
+#+END_SRC
+
 * Company
 
 #+BEGIN_SRC emacs-lisp
@@ -3344,56 +3389,12 @@ erc-modified-channels-alist. Should be executed on window change."
 ;;     (my/projectile-add-to-project-name-overrides proj name)))
 #+end_src
 
-* Searching
-** isearch
-
-#+BEGIN_SRC emacs-lisp
-(use-package isearch
-  :init
-  (setq search-whitespace-regexp ".*?"  ;; spaces match anything
-        isearch-lax-whitespace t  ;; the default
-        isearch-regex-lax-whitespace nil
-        isearch-lazy-count t  ;; show match count and current match index
-        lazy-count-prefix-format "(%s/%s) "
-        lazy-count-suffix-format nil)
-  :config
-  (define-key isearch-mode-map
-    (kbd "M-s M-s")
-    (lambda () (interactive) (isearch-exit) (swiper isearch-string))))
-#+END_SRC
-
-** rg
-
-#+BEGIN_SRC emacs-lisp
-(use-package rg
-  :ensure t
-  :commands (rg)
-  :init
-  (setq rg-group-result t
-        rg-ignore-case 'smart)
-  :config
-  (rg-define-toggle "--multiline --multiline-dotall" "u")
-  (define-key rg-mode-map "m" #'rg-menu)
-  (define-key rg-mode-map "N" #'my/rg-open-ace-window))
-
-(defun my/rg-open-ace-window (&optional event)
-  (interactive)
-  (flet ((pop-to-buffer (buf &rest args)
-                        (let ((pop-up-windows nil))
-                          (if (get-buffer-window buf)
-                              (while (not (equal buf (current-buffer)))
-                                (other-window 1))
-                            (progn
-                              (ace-window nil)
-                              (switch-to-buffer buf))))))
-        (compile-goto-error event)))
-#+END_SRC
-
 * Ivy/Counsel/Swiper
 
 #+BEGIN_SRC emacs-lisp
 (use-package counsel-projectile
   :ensure t
+  :after projectile
   :bind (:map projectile-command-map
               ("f" . counsel-projectile-find-file)
               ("s" . counsel-projectile-rg)
@@ -3433,7 +3434,13 @@ erc-modified-channels-alist. Should be executed on window change."
   :ensure t
   ;; :bind ("C-s" . my/swiper)
   :bind ("C-s" . my/swiper-isearch)
-  :commands (swiper swiper-isearch swiper-all swiper-multi))
+  :commands (swiper swiper-isearch swiper-all swiper-multi)
+  :config
+  ;; contrary to `swiper', `swiper-isearch' doesn't set the mark to the place
+  ;; where the search started from, this advice mitigates this issue
+  (defadvice swiper-isearch-action
+      (after advice-for-swiper-isearch-action activate)
+    (push-mark swiper--opoint t)))
 
 ;; better fuzzy matching
 (use-package flx

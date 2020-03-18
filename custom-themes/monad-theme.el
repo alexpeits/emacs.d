@@ -56,9 +56,7 @@
  '(link                ((t (:foreground "#56dbdb" :underline t))))
  '(warning             ((t (:foreground "orange2" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
- `(minibuffer-prompt   ((t (:weight bold :inherit ,(-monad-theme-alt
-                                                    'font-lock-function-name-face
-                                                    'font-lock-string-face)))))
+ '(fixed-pitch         ((t (:inherit default))))
 
  ;; emacs >= 27
  '(fill-column-indicator ((t (:foreground "#494b4b"))))
@@ -80,6 +78,10 @@
  `(powerline-inactive0 ((t (:inherit mode-line-inactive))))
  `(powerline-inactive1 ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2 ((t (:inherit powerline-inactive0))))
+
+ `(minibuffer-prompt ((t (:weight bold :inherit ,(-monad-theme-alt
+                                                  'font-lock-function-name-face
+                                                  'font-lock-string-face)))))
 
  '(persp-selected-face ((t (:underline t :weight bold))))
 
@@ -125,6 +127,7 @@
  '(proof-locked-face ((t (:background "#2b303a"))))
 
  '(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
+ '(sh-heredoc     ((t (:inherit font-lock-preprocessor-face))))
 
  `(diff-hl-insert ((t (:background "#183918" :foreground "#4c934c"))))
  `(diff-hl-change ((t (:background "#1a2d4c" :foreground "#298ed5"))))
@@ -183,9 +186,13 @@
  `(flyspell-incorrect ((t (:underline (:color "#dc322f" :style wave)))))
  `(flyspell-duplicate ((t (:underline (:color "#bd9108" :style wave)))))
 
+ '(anzu-mode-line          ((t (:inherit mode-line :foreground "magenta" :weight bold))))
+ '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
+
  '(org-block            ((t (:foreground "#bbccc5" :background "#191e1d"))))
  '(org-block-begin-line ((t (:foreground "#768e84" :background "#1e2623" :slant italic))))
  '(org-block-end-line   ((t (:inherit org-block-begin-line))))
+ '(org-hide             ((t (:inherit fill-column-indicator))))
 
  '(outline-1 ((t (:inherit font-lock-function-name-face))))
  '(outline-2 ((t (:inherit font-lock-type-face))))
@@ -199,6 +206,7 @@
  `(markdown-url-face              ((t (:inherit link))))
  `(markdown-header-face           ((t (:inherit font-lock-string-face :weight bold))))
  `(markdown-language-keyword-face ((t (:inherit font-lock-function-name-face))))
+ `(markdown-blockquote-face       ((t (:inherit font-lock-keyword-face :weight normal :slant italic))))
 
  `(rst-literal    ((t (:inherit font-lock-type-face))))
  `(rst-directive  ((t (:inherit font-lock-preprocessor-face))))

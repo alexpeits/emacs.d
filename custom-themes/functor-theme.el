@@ -38,21 +38,21 @@
 (custom-theme-set-faces
  'functor
 
- '(cursor                ((t (:background "#99d1ce"))))
- '(default               ((t (:foreground "#bed3d3" :background "#1d1e1e"))))
- '(minibuffer-prompt     ((t (:foreground "#12a89f" :weight bold))))
- '(escape-glyph          ((t (:foreground "orange2"))))
- '(highlight             ((t (:background "#3d494d"))))
- '(hl-line               ((t (:background "#252a2a"))))
- '(region                ((t (:background "#004870"))))
- '(fringe                ((t (:background "#232828"))))
- '(vertical-border       ((t (:foreground "#758a86"))))
- '(shadow                ((t (:foreground "#909494"))))
- '(secondary-selection   ((t (:inherit highlight))))
- '(show-paren-match      ((t (:background "#456665" :weight bold))))
- '(link                  ((t (:foreground "#56dbdb" :underline t))))
- '(warning               ((t (:foreground "orange2" :weight bold))))
- '(whitespace-trailing   ((t (:background "#602020"))))
+ '(cursor              ((t (:background "#99d1ce"))))
+ '(default             ((t (:foreground "#bed3d3" :background "#1d1e1e"))))
+ '(escape-glyph        ((t (:foreground "orange2"))))
+ '(highlight           ((t (:background "#3d494d"))))
+ '(hl-line             ((t (:background "#252a2a"))))
+ '(region              ((t (:background "#004870"))))
+ '(fringe              ((t (:background "#232828"))))
+ '(vertical-border     ((t (:foreground "#758a86"))))
+ '(shadow              ((t (:foreground "#909494"))))
+ '(secondary-selection ((t (:inherit highlight))))
+ '(show-paren-match    ((t (:background "#456665" :weight bold))))
+ '(link                ((t (:foreground "#56dbdb" :underline t))))
+ '(warning             ((t (:foreground "orange2" :weight bold))))
+ '(whitespace-trailing ((t (:background "#602020"))))
+ '(fixed-pitch         ((t (:inherit default))))
 
  ;; emacs >= 27
  '(fill-column-indicator ((t (:foreground "#494b4b"))))
@@ -74,6 +74,8 @@
  `(powerline-inactive0 ((t (:background "#1e2827" :foreground "#387a71"))))
  `(powerline-inactive1 ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2 ((t (:inherit powerline-inactive0))))
+
+ '(minibuffer-prompt ((t (:foreground "#12a89f" :weight bold))))
 
  '(persp-selected-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
@@ -114,6 +116,7 @@
  '(proof-locked-face ((t (:background "#2b303a"))))
 
  '(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
+ '(sh-heredoc     ((t (:foreground "#d7afd7"))))
 
  `(diff-hl-insert ((t (:background "#183918" :foreground "#4c934c"))))
  `(diff-hl-change ((t (:background "#1a2d4c" :foreground "#298ed5"))))
@@ -170,9 +173,13 @@
  `(flyspell-incorrect ((t (:underline (:color "#dc322f" :style wave)))))
  `(flyspell-duplicate ((t (:underline (:color "#bd9108" :style wave)))))
 
+ '(anzu-mode-line          ((t (:inherit mode-line :foreground "magenta" :weight bold))))
+ '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
+
  '(org-block            ((t (:foreground "#bbccc5" :background "#191e1d"))))
  '(org-block-begin-line ((t (:foreground "#768e84" :background "#1e2623" :slant italic))))
  '(org-block-end-line   ((t (:inherit org-block-begin-line))))
+ '(org-hide             ((t (:inherit fill-column-indicator))))
 
  '(outline-1 ((t (:inherit font-lock-function-name-face))))
  '(outline-2 ((t (:foreground "#87d7ff"))))
@@ -182,10 +189,12 @@
  '(outline-6 ((t (:inherit font-lock-preprocessor-face))))
 
  ;; `(markdown-code-face   ((t ,(-functor-theme-alt'(:inherit font-lock-keyword-face) '(:inherit font-lock-string-face)))))
- `(markdown-code-face   ((t (:inherit font-lock-doc-face))))
- `(markdown-pre-face    ((t (:inherit markdown-code-face))))
- `(markdown-url-face    ((t (:inherit link))))
- `(markdown-header-face ((t (:inherit font-lock-preprocessor-face :weight bold))))
+ `(markdown-code-face       ((t (:inherit font-lock-doc-face))))
+ `(markdown-pre-face        ((t (:inherit markdown-code-face))))
+ `(markdown-url-face        ((t (:inherit link))))
+ `(markdown-header-face     ((t (:inherit font-lock-preprocessor-face :weight bold))))
+ `(markdown-blockquote-face ((t (:foreground "#95c2c0" :weight normal :slant italic))))
+
 
  `(rst-literal    ((t (:inherit font-lock-doc-face))))
  `(rst-directive  ((t (:foreground "#d7afd7"))))
