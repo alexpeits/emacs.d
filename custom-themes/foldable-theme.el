@@ -16,21 +16,17 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;
-;; TODO
-;;
+;;;
 ;;; Code:
 
 (deftheme foldable
   "Default light emacs theme with a twist")
 
-(defvar foldable-theme-white-bg nil)
-
-(setq foldable-theme-hues
-      ;;            foreground   org-block   hl-line     org-block   fci
-      '((white . ("white"      "grey97"    "grey96"    "grey92"    "grey85"))
-        (tan .   ("#fbf4e8"    "#f3ede1"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
-        (cyan .  ("honeydew"   "#e9f7e9"   "#e7f6e7"   "#d9f1d9"   "#d0dfd0"))))
+(defvar foldable-theme-hues
+  ;;         foreground    org-block   hl-line     org-block   fci
+  '((white . ("white"      "grey97"    "grey96"    "grey92"    "grey85"))
+    (tan .   ("#fbf4e8"    "#f3ede1"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
+    (cyan .  ("honeydew"   "#e9f7e9"   "#e7f6e7"   "#d9f1d9"   "#d0dfd0"))))
 
 (defvar foldable-theme-variant 'white)
 
@@ -78,7 +74,17 @@
    '(powerline-inactive1 ((t (:background "grey90" :foreground "grey50" :weight normal))))
    '(powerline-inactive2 ((t (:background "grey90" :foreground "grey50" :weight normal))))
 
-   '(sh-heredoc     ((t (:inherit font-lock-type-face))))
+   '(sh-heredoc ((t (:inherit font-lock-type-face))))
+
+   `(rst-block     ((t (:inherit font-lock-doc-face))))
+   `(rst-literal   ((t (:inherit font-lock-constant-face))))
+   `(rst-adornment ((t (:inherit font-lock-keyword-face :weight bold))))
+   `(rst-level-1   ((t (:inherit font-lock-keyword-face :weight bold))))
+   `(rst-level-2   ((t (:inherit rst-level-1))))
+   `(rst-level-3   ((t (:inherit rst-level-1))))
+   `(rst-level-4   ((t (:inherit rst-level-1))))
+   `(rst-level-5   ((t (:inherit rst-level-1))))
+   `(rst-level-6   ((t (:inherit rst-level-1))))
 
    ))
 

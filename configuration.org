@@ -34,6 +34,7 @@
 - [[#theme][Theme]]
 - [[#font][Font]]
 - [[#vcs][VCS]]
+  - [[#vc][vc]]
   - [[#magit][Magit]]
   - [[#git-timemachine][git-timemachine]]
   - [[#diff-hl][Diff-hl]]
@@ -487,7 +488,7 @@ With a prefix argument, open using `find-file-other-window'."
 (setq sentence-end-double-space nil)
 
 ;; always trim whitespace before saving
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
@@ -898,11 +899,9 @@ buffer, close it."
 
 (use-package symbol-overlay
   :ensure t
-  :commands (global-symbol-overlay-mode)
+  :commands (symbol-overlay-mode)
   :diminish
   :config
-  (define-globalized-minor-mode global-symbol-overlay-mode
-    symbol-overlay-mode symbol-overlay-mode)
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd ",i") 'symbol-overlay-put)
     (define-key map (kbd ",d") 'symbol-overlay-remove-all)
@@ -1572,6 +1571,32 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * VCS
+** vc
+
+#+BEGIN_SRC emacs-lisp
+(use-package vc
+  :bind (("C-x v p" . my/vc-project)
+         ("C-x v d" . vc-diff))
+  :init
+  ;; prot
+  (defun my/vc-project ()
+    (interactive)
+    (vc-dir (vc-root-dir)))
+  :config
+  (define-key diff-mode-map (kbd "M-o") nil))
+
+(use-package vc-git
+  :init
+  (setq vc-git-print-log-follow t))
+
+(use-package vc-annotate
+  :bind (("C-x v a" . vc-annotate)
+         :map vc-annotate-mode-map
+         ("t" . vc-annotate-toggle-annotation-visibility))
+  :init
+  (setq vc-annotate-display-mode 'scale))
+#+END_SRC
+
 ** Magit
 
 #+BEGIN_SRC emacs-lisp
@@ -1675,6 +1700,8 @@ CWD is not in a git repo (or the git command is not found)."
                  (replace-regexp-in-string "\n\\'" "" (buffer-string))))
       (kill-buffer log-buf))
     (kill-buffer commit-buf)))
+
+(global-set-key (kbd "M-L") #'my/git-blame-current-line)
 #+END_SRC
 
 * Keybindings
@@ -1729,7 +1756,7 @@ CWD is not in a git repo (or the git command is not found)."
         ("tf" my/toggle-font)
         ("tg" global-diff-hl-mode)
         ("tl" my/line-numbers)
-        ("to" global-symbol-overlay-mode)
+        ("to" symbol-overlay-mode)
         ("ti" highlight-indent-guides-mode)
         ("th" hl-line-mode)
         ("ts" flycheck-mode)
@@ -2106,6 +2133,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
 (use-package nix-mode
   :ensure t
   :mode (("\\.nix\\'" . nix-mode))
+  :init
+  (setq nix-nixfmt-bin "nixpkgs-fmt")
   :config
   (my/add-hooks '(nix-mode-hook) (subword-mode 1))
   (my/define-major-mode-key 'nix-mode "s" 'my/nix-format-and-save)
@@ -3191,25 +3220,39 @@ erc-modified-channels-alist. Should be executed on window change."
 (use-package rg
   :ensure t
   :commands (rg)
+  :bind (:map rg-mode-map
+              ("m" . rg-menu)
+              ("s" . my/rg-save-search-as-name)
+              ("N" . my/rg-open-ace-window)
+              ("C-n" . next-line)
+              ("C-p" . previous-line)
+              ("M-n" . rg-next-file)
+              ("M-p" . rg-prev-file))
   :init
   (setq rg-group-result t
         rg-ignore-case 'smart)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
-  (define-key rg-mode-map "m" #'rg-menu)
-  (define-key rg-mode-map "N" #'my/rg-open-ace-window))
 
-(defun my/rg-open-ace-window (&optional event)
-  (interactive)
-  (flet ((pop-to-buffer (buf &rest args)
-                        (let ((pop-up-windows nil))
-                          (if (get-buffer-window buf)
-                              (while (not (equal buf (current-buffer)))
-                                (other-window 1))
-                            (progn
-                              (ace-window nil)
-                              (switch-to-buffer buf))))))
-        (compile-goto-error event)))
+  ;; https://protesilaos.com/dotemacs/#h:31622bf2-526b-4426-9fda-c0fc59ac8f4b
+  (defun my/rg-save-search-as-name ()
+    "Save `rg' buffer, naming it after the current search query."
+    (interactive)
+    (let ((pattern (rg-search-pattern rg-cur-search)))
+      (rg-save-search-as-name (concat "«" pattern "»"))))
+
+  (defun my/rg-open-ace-window (&optional event)
+    (interactive)
+    (flet ((pop-to-buffer (buf &rest args)
+                          (let ((pop-up-windows nil))
+                            (if (get-buffer-window buf)
+                                (while (not (equal buf (current-buffer)))
+                                  (other-window 1))
+                              (progn
+                                (ace-window nil)
+                                (switch-to-buffer buf))))))
+          (compile-goto-error event)))
+  )
 #+END_SRC
 
 * Company
@@ -3983,7 +4026,12 @@ the minibuffer."
   (powerline-default-theme)
   (diminish-undo 'flycheck-mode)
   (add-hook 'my/after-set-theme-hook 'powerline-reset)
-  (add-hook 'my/after-set-font-hook 'powerline-reset))
+  (add-hook 'my/after-set-font-hook 'powerline-reset)
+  ;; Try this to see if it fixes powerline hiccups
+  (defun powerline-selected-window-active ()
+    "Return whether the current window is active."
+    (my/current-window-active-p))
+  )
 
 ;; is window selected?
 (defvar my/-selected-window nil)
@@ -4002,11 +4050,6 @@ the minibuffer."
 (defun my/current-window-active-p ()
   (and my/-focused-in
        (eq my/-selected-window (selected-window))))
-
-;; Try this to see if it fixes powerline hiccups
-(defun powerline-selected-window-active ()
-  "Return whether the current window is active."
-  (my/current-window-active-p))
 #+END_SRC
 
 * Org-mode

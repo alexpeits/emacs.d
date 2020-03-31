@@ -46,7 +46,7 @@
  '(region              ((t (:background "#004870"))))
  '(fringe              ((t (:background "#232828"))))
  '(vertical-border     ((t (:foreground "#758a86"))))
- '(shadow              ((t (:foreground "#909494"))))
+ '(shadow              ((t (:foreground "#949898"))))
  '(secondary-selection ((t (:inherit highlight))))
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
  '(link                ((t (:foreground "#56dbdb" :underline t))))
@@ -95,7 +95,8 @@
 
  `(font-lock-builtin-face       ((t (:foreground ,(-functor-theme-alt "#87d7ff" "#b4dbd3")))))
  `(font-lock-doc-face           ((t ,(-functor-theme-alt '(:foreground "#cacaa7") '(:inherit font-lock-string-face)))))
- `(font-lock-keyword-face       ((t ,(-functor-theme-alt '(:foreground "#2da49b") '(:foreground "#86b8b5" :weight bold)))))
+ ;; #2da49b
+ `(font-lock-keyword-face       ((t ,(-functor-theme-alt '(:foreground "#30b0a6") '(:foreground "#86b8b5" :weight bold)))))
  `(font-lock-string-face        ((t (:foreground ,(-functor-theme-alt "#d7d7af" "#1da89f")))))
  `(font-lock-type-face          ((t (:foreground ,(-functor-theme-alt "#87d7d7" "#86b8b5")))))
  `(font-lock-variable-name-face ((t (:inherit font-lock-builtin-face))))
@@ -122,13 +123,41 @@
  `(diff-hl-change ((t (:background "#1a2d4c" :foreground "#298ed5"))))
  `(diff-hl-delete ((t (:background "#4c1515" :foreground "#bc4d4d"))))
 
- `(diff-added   ((t (:foreground "#859900"))))
- `(diff-changed ((t (:foreground "#298ed5"))))
- `(diff-removed ((t (:foreground "#dc322f"))))
-
  `(git-gutter+-added ((t (:foreground "#4c934c" :weight bold))))
  `(git-gutter+-modified ((t (:foreground "#298ed5" :weight bold))))
  `(git-gutter+-deleted ((t (:foreground "#bc4d4d" :weight bold))))
+
+ ;; `(diff-added   ((t (:foreground "#859900"))))
+ ;; `(diff-changed ((t (:foreground "#298ed5"))))
+ ;; `(diff-removed ((t (:foreground "#dc322f"))))
+ ;; diff- and magit-diff- stuff copied from modus-vivendi theme
+ `(diff-added             ((t (:foreground "#b4ddb4" :background "#244024"))))
+ `(diff-changed           ((t (:foreground "#d0daaf" :background "#4a3a10"))))
+ `(diff-removed           ((t (:foreground "#eebdba" :background "#542222"))))
+ `(diff-refine-added      ((t (:foreground "#e0ffe0" :background "#005a00"))))
+ `(diff-refine-changed    ((t (:foreground "#ffffcc" :background "#585800"))))
+ `(diff-refine-removed    ((t (:foreground "#ffc8bb" :background "#7d0000"))))
+ `(diff-indicator-added   ((t (:inherit diff-added))))
+ `(diff-indicator-changed ((t (:inherit diff-changed))))
+ `(diff-indicator-removed ((t (:inherit diff-removed))))
+ `(diff-header      ((t (:foreground "#819fc7"))))
+ `(diff-hunk-header ((t (:inherit region :weight bold))))
+ `(diff-file-header ((t (:foreground "#33beff" :weight bold))))
+ `(diff-function    ((t (:foreground "#99d1ce"))))
+ `(diff-context     ((t (:inherit shadow))))
+
+ `(magit-diff-added             ((t (:foreground "#94ba94" :background "#002600"))))
+ `(magit-diff-base              ((t (:foreground "#b0ba9f" :background "#2a2000"))))
+ `(magit-diff-removed           ((t (:foreground "#bbadaa" :background "#390a0a"))))
+ `(magit-diff-added-highlight   ((t (:inherit diff-added))))
+ `(magit-diff-base-highlight    ((t (:inherit diff-changed))))
+ `(magit-diff-removed-highlight ((t (:inherit diff-removed))))
+ `(magit-section-heading        ((t (:foreground "#b3ae86":weight bold))))
+
+ `(change-log-date           ((t (:foreground "#d7afd7"))))
+ `(change-log-name           ((t (:inherit font-lock-keyword-face))))
+ `(change-log-email          ((t (:inherit change-log-name))))
+ `(change-log-acknowledgment ((t (:foreground "#b3ae86"))))
 
  '(hi-green   ((t (:background "#6d997a" :foreground "black"))))
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
@@ -139,9 +168,9 @@
  '(hi-red-b   ((t (:background "#402f40" :foreground "#b386b3" :weight bold))))
  '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b3ae86" :weight bold))))
 
- '(match ((t (:foreground "#ced9e2" :background "#004267"))))
+ `(match ((t (:foreground "#abdedb" :background "#004c40"))))
 
- `(ivy-current-match           ((t (:foreground "#a1dcd9" :background "#004c40" :weight bold :underline t))))
+ `(ivy-current-match           ((t (:inherit match :weight bold :underline t))))
  `(ivy-minibuffer-match-face-1 ((t (:inherit highlight :weight bold))))
  `(ivy-minibuffer-match-face-2 ((t (:inherit hi-black-b))))
  `(ivy-minibuffer-match-face-3 ((t (:inherit hi-blue-b))))
@@ -194,7 +223,6 @@
  `(markdown-url-face        ((t (:inherit link))))
  `(markdown-header-face     ((t (:inherit font-lock-preprocessor-face :weight bold))))
  `(markdown-blockquote-face ((t (:foreground "#95c2c0" :weight normal :slant italic))))
-
 
  `(rst-literal    ((t (:inherit font-lock-doc-face))))
  `(rst-directive  ((t (:foreground "#d7afd7"))))
