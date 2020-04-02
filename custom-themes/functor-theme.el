@@ -162,12 +162,12 @@
 
  '(hi-green   ((t (:background "#6d997a" :foreground "black"))))
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
- '(hi-pink    ((t (:background "#bf88bf" :foreground "black"))))
+ '(hi-pink    ((t (:background "#c9717a" :foreground "black"))))
  '(hi-yellow  ((t (:background "#99986d" :foreground "black"))))
  '(hi-green-b ((t (:background "#34473a" :foreground "#8ec19d" :weight bold))))
  '(hi-blue-b  ((t (:background "#324347" :foreground "#87becb" :weight bold))))
- '(hi-red-b   ((t (:background "#402f40" :foreground "#b386b3" :weight bold))))
- '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b3ae86" :weight bold))))
+ '(hi-red-b   ((t (:background "#3d2d31" :foreground "#d17583" :weight bold))))
+ '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b5af82" :weight bold))))
 
  `(match ((t (:foreground "#abdedb" :background "#004c40"))))
 
@@ -182,6 +182,8 @@
 
  '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
  '(dired-symlink   ((t (:foreground "#2da49b" :weight bold))))
+ '(dired-marked    ((t (:inherit hi-black-b))))
+ '(dired-flagged   ((t (:inherit hi-red-b))))
 
  `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
 
@@ -210,6 +212,7 @@
  '(org-block-begin-line ((t (:foreground "#768e84" :background "#1e2623" :slant italic))))
  '(org-block-end-line   ((t (:inherit org-block-begin-line))))
  '(org-hide             ((t (:inherit fill-column-indicator))))
+ '(org-ellipsis         ((t (:foreground "#d7afd7" :underline t))))
 
  '(outline-1 ((t (:inherit font-lock-function-name-face))))
  '(outline-2 ((t (:foreground "#87d7ff"))))
@@ -309,6 +312,10 @@
 
 (custom-theme-set-variables
  'functor
+ '(ibuffer-deletion-face 'dired-flagged)
+ '(ibuffer-filter-group-name-face 'dired-mark)
+ '(ibuffer-marked-face 'dired-marked)
+ '(ibuffer-title-face 'dired-header)
  '(ansi-color-names-vector
    ["#808080" "#cb5a37" "#8ba004" "#d09f07" "#499ec4" "#d7afd7" "#47bcb3" "#bed3d3"]))
 

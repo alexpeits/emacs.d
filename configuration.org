@@ -4199,13 +4199,14 @@ the minibuffer."
  '(anzu-mode-line ((t (:inherit mode-line :foreground "magenta" :weight bold))))
  '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
  '(fixed-pitch ((t nil)))
+ '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+ '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+ '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+ '(flycheck-fringe-warning ((t (:foreground "orange1"))))
  '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
  '(flycheck-fringe-error ((t (:foreground "#FB4933"))))
- '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
- '(flycheck-fringe-warning ((t (:foreground "orange1"))))
- '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
- '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
- '(whitespace-trailing ((t (:background "#602020")))))
+ ;; '(whitespace-trailing ((t (:background "#602020"))))
+ )
 
 (dolist (val '((eval . (setq flycheck-disabled-checkers
                              (append flycheck-disabled-checkers

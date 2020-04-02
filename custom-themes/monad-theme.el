@@ -172,12 +172,12 @@
 
  '(hi-green   ((t (:background "#6d997a" :foreground "black"))))
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
- '(hi-pink    ((t (:background "#bf88bf" :foreground "black"))))
+ '(hi-pink    ((t (:background "#c9717a" :foreground "black"))))
  '(hi-yellow  ((t (:background "#99986d" :foreground "black"))))
  '(hi-green-b ((t (:background "#34473a" :foreground "#8ec19d" :weight bold))))
  '(hi-blue-b  ((t (:background "#324347" :foreground "#87becb" :weight bold))))
- '(hi-red-b   ((t (:background "#402f40" :foreground "#b386b3" :weight bold))))
- '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b3ae86" :weight bold))))
+ '(hi-red-b   ((t (:background "#3d2d31" :foreground "#d17583" :weight bold))))
+ '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b5af82" :weight bold))))
 
  `(match ((t (:foreground "#b4e0de" :background "#004d4d"))))
 
@@ -195,6 +195,8 @@
 
  '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
  '(dired-symlink   ((t (:foreground "#298D86" :weight bold))))
+ '(dired-marked    ((t (:inherit hi-black-b))))
+ '(dired-flagged   ((t (:inherit hi-red-b))))
 
  `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
 
@@ -224,10 +226,11 @@
  '(org-block-begin-line ((t (:foreground "#768e84" :background "#1e2623" :slant italic))))
  '(org-block-end-line   ((t (:inherit org-block-begin-line))))
  '(org-hide             ((t (:inherit fill-column-indicator))))
+ '(org-ellipsis         ((t (:inherit font-lock-preprocessor-face :underline t))))
 
  '(outline-1 ((t (:inherit font-lock-function-name-face))))
- '(outline-2 ((t (:inherit font-lock-type-face))))
- '(outline-3 ((t (:inherit font-lock-builtin-face))))
+ '(outline-2 ((t (:inherit font-lock-builtin-face))))
+ '(outline-3 ((t (:inherit font-lock-type-face))))
  '(outline-4 ((t (:inherit font-lock-keyword-face :weight normal))))
  '(outline-5 ((t (:inherit outline-4))))
  '(outline-6 ((t (:inherit outline-4))))
@@ -324,6 +327,10 @@
 
 (custom-theme-set-variables
  'monad
+ '(ibuffer-deletion-face 'dired-flagged)
+ '(ibuffer-filter-group-name-face 'dired-mark)
+ '(ibuffer-marked-face 'dired-marked)
+ '(ibuffer-title-face 'dired-header)
  '(ansi-color-names-vector
    ["#404040" "#c46485" "#79c779" "#b5a52b" "#499ec4" "#819fc7" "#00afaf" "#b1cbcb"]))
 

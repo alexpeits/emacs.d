@@ -41,7 +41,7 @@
    `(default             ((t (:background ,h1 :foreground "Black"))))
    `(fringe              ((t (:background ,h3))))
    `(hl-line             ((t (:background ,h3))))
-   '(whitespace-trailing ((t (:background "#602020"))))
+   '(whitespace-trailing ((t (:background "#ffcdcd"))))
    '(region              ((t (:background "#b1d8e6"))))
    '(fixed-pitch         ((t nil)))
 
@@ -54,6 +54,14 @@
    `(org-block-begin-line ((t (:background ,h4))))
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))
    '(org-hide             ((t (:inherit fill-column-indicator))))
+
+   '(hi-green-b ((t (:background "#a0f0cf" :foreground "#005040" :weight bold))))
+   '(hi-blue-b  ((t (:background "#bedef9" :foreground "#324f80" :weight bold))))
+   '(hi-red-b   ((t (:background "#ffccbb" :foreground "#840040" :weight bold))))
+   '(hi-black-b ((t (:background "#f5d88f" :foreground "#782900" :weight bold))))
+
+   '(dired-marked  ((t (:inherit hi-black-b))))
+   '(dired-flagged ((t (:inherit hi-red-b))))
 
    `(diff-hl-insert ((t (:background "#c0e7bb" :foreground "#235323"))))
    `(diff-hl-change ((t (:background "#bedef9" :foreground "#324f80"))))
@@ -88,6 +96,14 @@
    `(rst-level-6   ((t (:inherit rst-level-1))))
 
    ))
+
+(custom-theme-set-variables
+ 'foldable
+ '(ibuffer-deletion-face 'dired-flagged)
+ '(ibuffer-filter-group-name-face 'dired-mark)
+ '(ibuffer-marked-face 'dired-marked)
+ '(ibuffer-title-face 'dired-header)
+ )
 
 (provide-theme 'foldable)
 ;;; foldable-theme ends here
