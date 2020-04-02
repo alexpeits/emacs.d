@@ -153,6 +153,7 @@
  `(magit-diff-base-highlight    ((t (:inherit diff-changed))))
  `(magit-diff-removed-highlight ((t (:inherit diff-removed))))
  `(magit-section-heading        ((t (:foreground "#b3ae86":weight bold))))
+ `(magit-section-highlight      ((t (:inherit hl-line))))
 
  `(change-log-date           ((t (:foreground "#d7afd7"))))
  `(change-log-name           ((t (:inherit font-lock-keyword-face))))

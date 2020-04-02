@@ -45,7 +45,7 @@
  '(cursor              ((t (:background "#99d1ce"))))
  '(default             ((t (:foreground "#b1cbcb" :background "#181818"))))
  '(escape-glyph        ((t (:foreground "orange2"))))
- '(highlight           ((t (:background "#3d494d"))))
+ '(highlight           ((t (:background "#3c464a"))))
  '(hl-line             ((t (:background "#252a2a"))))
  '(region              ((t (:background "#004870"))))
  '(fringe              ((t (:background "#242424"))))
@@ -163,6 +163,7 @@
  `(magit-diff-base-highlight    ((t (:inherit diff-changed))))
  `(magit-diff-removed-highlight ((t (:inherit diff-removed))))
  `(magit-section-heading        ((t (:inherit font-lock-function-name-face :weight bold))))
+ `(magit-section-highlight      ((t (:inherit hl-line))))
 
  `(change-log-date           ((t (:foreground "#d7afd7"))))
  `(change-log-name           ((t (:inherit font-lock-function-name-face))))

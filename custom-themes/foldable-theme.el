@@ -24,9 +24,9 @@
 
 (defvar foldable-theme-hues
   ;;         foreground    org-block   hl-line     org-block   fci
-  '((white . ("white"      "grey97"    "grey96"    "grey92"    "grey85"))
-    (tan .   ("#fbf4e8"    "#f3ede1"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
-    (cyan .  ("honeydew"   "#e9f7e9"   "#e7f6e7"   "#d9f1d9"   "#d0dfd0"))))
+  '((white . ("white"      "grey99"    "grey96"    "grey92"    "grey85"))
+    (tan .   ("#fbf4e8"    "#f5efe3"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
+    (cyan .  ("honeydew"   "#ecfaec"   "#e7f6e7"   "#d9f1d9"   "#d0dfd0"))))
 
 (defvar foldable-theme-variant 'white)
 
@@ -38,32 +38,33 @@
        (h5 (elt hues 4)))
   (custom-theme-set-faces
    'foldable
-   `(default ((t (:background ,h1 :foreground "Black"))))
-   `(fringe ((t (:background ,h3))))
-   `(hl-line ((t (:background ,h3))))
+   `(default             ((t (:background ,h1 :foreground "Black"))))
+   `(fringe              ((t (:background ,h3))))
+   `(hl-line             ((t (:background ,h3))))
    '(whitespace-trailing ((t (:background "#602020"))))
-   '(region ((t (:background "#b1d8e6"))))
-   '(fixed-pitch ((t nil)))
+   '(region              ((t (:background "#b1d8e6"))))
+   '(fixed-pitch         ((t nil)))
 
    `(fill-column-indicator ((t (:foreground ,h5))))
-   '(line-number ((t (:inherit default :inherit shadow))))
+
+   '(line-number              ((t (:inherit default :inherit shadow))))
    `(line-number-current-line ((t (:inherit line-number :background ,h4))))
 
-   `(org-block ((t (:background ,h2))))
+   `(org-block            ((t (:background ,h2))))
    `(org-block-begin-line ((t (:background ,h4))))
-   '(org-block-end-line ((t (:inherit org-block-begin-line))))
-   '(org-hide ((t (:inherit fill-column-indicator))))
+   '(org-block-end-line   ((t (:inherit org-block-begin-line))))
+   '(org-hide             ((t (:inherit fill-column-indicator))))
 
    `(diff-hl-insert ((t (:background "#c0e7bb" :foreground "#235323"))))
    `(diff-hl-change ((t (:background "#bedef9" :foreground "#324f80"))))
    `(diff-hl-delete ((t (:background "#ffcdcd" :foreground "#632121"))))
 
-   '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+   '(flycheck-warning        ((t (:underline (:color "orange1" :style wave)))))
    '(flycheck-fringe-warning ((t (:foreground "orange1"))))
-   '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
-   '(flycheck-fringe-error ((t (:foreground "red1"))))
-   '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-   '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+   '(flycheck-error          ((t (:underline (:color "red1" :style wave)))))
+   '(flycheck-fringe-error   ((t (:foreground "red1"))))
+   '(flycheck-info           ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+   '(flycheck-fringe-info    ((t (:foreground "DeepSkyBlue2"))))
 
    '(persp-selected-face ((t :inherit font-lock-keyword-face :weight bold)))
 

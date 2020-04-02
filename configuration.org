@@ -21,7 +21,6 @@
   - [[#hi-lock--symbol-overlay][hi-lock & symbol overlay]]
   - [[#aliases][aliases]]
   - [[#clean-unused-buffers][clean unused buffers]]
-  - [[#indent-guides][indent guides]]
   - [[#alignment][alignment]]
   - [[#highlight-keywords-in-some-modes][highlight keywords in some modes]]
   - [[#temp-project-roots][temp project roots]]
@@ -112,15 +111,15 @@
 (add-to-list 'custom-theme-load-path
              (expand-file-name (concat user-emacs-directory "custom-themes/")))
 
-(setq my/path
-      '(
-        "/usr/local/bin"
-        "~/bin"
-        "~/.local/bin"
-        "~/.ghcup/bin"
-        ))
+(setq user-full-name "Alex Peitsinis"
+      user-mail-address "alexpeitsinis@gmail.com")
 
-(dolist (pth my/path)
+(dolist (pth '(
+               "/usr/local/bin"
+               "~/bin"
+               "~/.local/bin"
+               "~/.ghcup/bin"
+               ))
   (add-to-list 'exec-path (expand-file-name pth))
   (setenv "PATH" (concat (expand-file-name pth)
                          path-separator
@@ -137,9 +136,6 @@
 
 (defvar is-term (not is-gui)
   "Whether emacs is running in a terminal or not")
-
-(setq user-full-name "Alex Peitsinis"
-      user-mail-address "alexpeitsinis@gmail.com")
 #+END_SRC
 
 * Package management
@@ -442,12 +438,14 @@ With a prefix argument, open using `find-file-other-window'."
 
 (use-package eldoc :diminish eldoc-mode)
 
-;; store all backup and autosave files in
-;; one dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+(use-package files
+  :init
+  ;; store all backup and autosave files in
+  ;; one dir
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t))))
 
 ;; only with this set to nil can org-mode export & open too
 ;; ... but it also breaks some stuff so it's disabled
@@ -568,20 +566,10 @@ With a prefix argument, open using `find-file-other-window'."
 ** server
 
 #+BEGIN_SRC emacs-lisp
-;; don't kill buffers in server sessions
-(setq server-kill-new-buffers nil)
-
-;; disable interactive prompt about restoring the buffer when on a client
-;; session since it makes emacsclient hang
-(defadvice desktop-restore-file-buffer
-    (around my-desktop-restore-file-buffer-advice)
-  "Be non-interactive while starting a daemon."
-  (if (and (daemonp)
-           (not server-process))
-      (let ((noninteractive t))
-        ad-do-it)
-    ad-do-it))
-(ad-activate 'desktop-restore-file-buffer)
+(use-package server
+  :init
+  ;; don't kill buffers in server sessions
+  (setq server-kill-new-buffers nil))
 #+END_SRC
 
 ** fast recompile minor mode
@@ -917,11 +905,11 @@ buffer, close it."
 ** aliases
 
 #+begin_src emacs-lisp
-(defalias 'rb 'revert-buffer)
-(defalias 'rab 'my/revert-all-buffers)
-(defalias 'gb 'magit-blame-addition)
+(defalias 'rb   'revert-buffer)
+(defalias 'rab  'my/revert-all-buffers)
+(defalias 'gb   'magit-blame-addition)
 (defalias 'magb 'magit-blame-addition)
-(defalias 'gl 'magit-log-buffer-file)
+(defalias 'gl   'magit-log-buffer-file)
 (defalias 'magl 'magit-log-buffer-file)
 #+end_src
 
@@ -938,40 +926,31 @@ buffer, close it."
         clean-buffer-list-never-regexps '("\\`TAGS\\'")))
 #+end_src
 
-** indent guides
-
-#+begin_src emacs-lisp
-(use-package highlight-indent-guides
-  :ensure t
-  :commands (highlight-indent-guides-mode)
-  :init
-  (setq highlight-indent-guides-method 'character)
-  (setq highlight-indent-guides-responsive nil))
-#+end_src
-
 ** alignment
 
 #+begin_src emacs-lisp
-(add-hook 'align-load-hook
-          (lambda ()
-            (add-to-list 'align-rules-list
-                         '(haskell-types
-                           (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
-            (add-to-list 'align-rules-list
-                         '(haskell-assignment
-                           (regexp . "\\(\\s-+\\)=\\s-+")
-                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
-            (add-to-list 'align-rules-list
-                         '(haskell-arrows
-                           (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
-            (add-to-list 'align-rules-list
-                         '(haskell-left-arrows
-                           (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                           (modes quote (haskell-mode purescript-mode literate-haskell-mode))))))
-
-(global-set-key (kbd "C-c \\") 'align-regexp)
+(use-package align
+  :bind ("C-c \\" . align-regexp)
+  :config
+  (add-hook 'align-load-hook
+            (lambda ()
+              (add-to-list 'align-rules-list
+                           '(haskell-types
+                             (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
+                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
+              (add-to-list 'align-rules-list
+                           '(haskell-assignment
+                             (regexp . "\\(\\s-+\\)=\\s-+")
+                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
+              (add-to-list 'align-rules-list
+                           '(haskell-arrows
+                             (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
+                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
+              (add-to-list 'align-rules-list
+                           '(haskell-left-arrows
+                             (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
+                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))))
+  )
 #+end_src
 
 ** highlight keywords in some modes
@@ -1083,7 +1062,6 @@ buffer, close it."
   (when (boundp 'my/edit-indirect-dedented-amount)
     (save-excursion
       (indent-rigidly (point-min) (point-max) my/edit-indirect-dedented-amount))))
-
 #+END_SRC
 
 * Term, eshell and comint-mode
@@ -1666,7 +1644,10 @@ CWD is not in a git repo (or the git command is not found)."
   :ensure t
   :if is-gui
   :hook ((after-init . global-diff-hl-mode)
-         (dired-mode . diff-hl-dired-mode)))
+         (dired-mode . diff-hl-dired-mode))
+  :config
+  ;; https://github.com/dgutov/diff-hl#magit
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
 (use-package git-gutter+
   :ensure t
@@ -1739,6 +1720,7 @@ CWD is not in a git repo (or the git command is not found)."
         ;; project
         ("pa" counsel-projectile-ag)
         ("pr" counsel-projectile-rg)
+        ("ps" my/rg-project)
         ("pt" my/counsel-ag-todos-global)
 
         ;; show/display
@@ -1757,7 +1739,6 @@ CWD is not in a git repo (or the git command is not found)."
         ("tg" global-diff-hl-mode)
         ("tl" my/line-numbers)
         ("to" symbol-overlay-mode)
-        ("ti" highlight-indent-guides-mode)
         ("th" hl-line-mode)
         ("ts" flycheck-mode)
         ("tt" my/toggle-theme)
@@ -2557,8 +2538,7 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (use-package rjsx-mode
   :ensure t
-  :mode (("\\.js\\'" . rjsx-mode)
-         ("\\.jsx\\'" . rjsx-mode))
+  :mode (("\\.jsx?\\'" . rjsx-mode))
   :config
   (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
   (my/add-hooks
@@ -3004,7 +2984,9 @@ instead of the title as seen by deft."
             (not (string-prefix-p (expand-file-name deft-directory)
                                   (file-name-directory (buffer-file-name)))))
     (user-error "Not currently editing a deft file"))
-  (let* ((info (if by-filename (my/get-deft-file-by-filename) (my/get-deft-file-by-title)))
+  (let* ((info (if by-filename
+                   (my/get-deft-file-by-filename)
+                 (my/get-deft-file-by-title)))
          (title (car info))
          (path (cdr info))
          (prompt (format "Link text [%s]: " title))
@@ -3189,7 +3171,7 @@ erc-modified-channels-alist. Should be executed on window change."
 #+BEGIN_SRC emacs-lisp :tangle no
 (use-package ledger-mode
   :ensure t
-  :mode ("\\.hledger\\..*\\'" . ledger-mode)
+  :mode ("\\.h?ledger\\..*\\'" . ledger-mode)
   :init
   (setq ledger-mode-should-check-version nil
         ledger-report-links-in-register nil
@@ -3233,6 +3215,11 @@ erc-modified-channels-alist. Should be executed on window change."
         rg-ignore-case 'smart)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
+  (rg-define-search my/rg-project
+    :query ask
+    :format regexp
+    :files "all"
+    :dir (projectile-project-root))
 
   ;; https://protesilaos.com/dotemacs/#h:31622bf2-526b-4426-9fda-c0fc59ac8f4b
   (defun my/rg-save-search-as-name ()
@@ -3253,6 +3240,7 @@ erc-modified-channels-alist. Should be executed on window change."
                                 (switch-to-buffer buf))))))
           (compile-goto-error event)))
   )
+
 #+END_SRC
 
 * Company
@@ -3814,11 +3802,9 @@ the minibuffer."
               ("h" . backward-char)
               ("l" . forward-char)
               ("C-c n" . my/dired-find-file-ace)
-              ("N" . my/dired-find-file-ace)
-              ("M-n" . my/dired-find-file-ace)
               ("M-j" . my/dired-file-jump-from-here)
               ("M-u" . dired-up-directory)
-              ("C-c q" . my/dired-kill-all-buffers))
+              ("C-c C-q" . my/dired-kill-all-buffers))
   :init
   ;; hide files being edited + flycheck files from dired
   (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
