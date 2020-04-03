@@ -67,6 +67,8 @@
    `(diff-hl-change ((t (:background "#bedef9" :foreground "#324f80"))))
    `(diff-hl-delete ((t (:background "#ffcdcd" :foreground "#632121"))))
 
+   '(coq-cheat-face  ((t (:inherit hi-red-b))))
+
    '(flycheck-warning        ((t (:underline (:color "orange1" :style wave)))))
    '(flycheck-fringe-warning ((t (:foreground "orange1"))))
    '(flycheck-error          ((t (:underline (:color "red1" :style wave)))))
@@ -76,7 +78,7 @@
 
    '(persp-selected-face ((t :inherit font-lock-keyword-face :weight bold)))
 
-   '(powerline-active0   ((t (:background "grey62" :foreground "black"))))
+   '(powerline-active0   ((t (:background "grey64" :foreground "black"))))
    '(powerline-active1   ((t (:background "grey72" :foreground "black"))))
    '(powerline-active2   ((t (:background "grey85" :foreground "black"))))
    '(powerline-inactive0 ((t (:background "grey90" :foreground "grey50" :weight normal))))

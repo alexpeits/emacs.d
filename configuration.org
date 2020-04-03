@@ -59,7 +59,7 @@
 - [[#other-prog-modes][Other prog modes]]
   - [[#idris][Idris]]
   - [[#agda][Agda]]
-  - [[#coq][Coq]]
+  - [[#coq-proof-general][Coq (proof-general)]]
   - [[#rust][Rust]]
   - [[#cc][c/c++]]
   - [[#dhall][dhall]]
@@ -2733,11 +2733,13 @@ the current file."
   (setq agda2-program-name my/agda-path))
 #+END_SRC
 
-** Coq
+** Coq (proof-general)
 
 #+BEGIN_SRC emacs-lisp
 (use-package proof-general
   :ensure t
+  :bind (:map coq-mode-map
+              ("C-c ." . proof-electric-terminator-toggle))
   :init
   (setq proof-splash-enable nil
         proof-script-fly-past-comments t
@@ -3265,6 +3267,7 @@ erc-modified-channels-alist. Should be executed on window change."
         company-idle-delay 0.4)
   :config
   (setq company-backends (delete 'company-dabbrev company-backends))
+  (setq company-backends (delete 'company-capf company-backends))
   (add-to-list 'company-backends 'company-anaconda)
   (add-to-list 'company-backends 'company-files))
 

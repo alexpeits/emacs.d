@@ -85,6 +85,10 @@
 
  '(persp-selected-face ((t (:underline t :weight bold))))
 
+ '(isearch-fail   ((t (:foreground "#3f4758" :background "salmon"))))
+ '(isearch        ((t (:inverse-video nil :foreground "black" :background "#c46485"))))
+ '(lazy-highlight ((t (:foreground "#a0a8b0" :background "#3d464f"))))
+
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37"))))
  '(font-lock-regexp-grouping-backslash ((t (:foreground "#f66500"))))
  '(font-lock-regexp-grouping-construct ((t (:foreground "red"))))
@@ -94,37 +98,40 @@
  `(font-lock-comment-face           ((t (:foreground "#768080" :slant italic))))
  `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
  `(font-lock-function-name-face     ((t (:foreground ,(-monad-theme-alt "#00afaf" "#c46485")))))
- `(font-lock-builtin-face           ((t (:foreground "#7dccf0"))))
  `(font-lock-constant-face          ((t (:inherit font-lock-builtin-face))))
+ `(font-lock-builtin-face           ((t (:foreground "#7dccf0"))))
  `(font-lock-keyword-face           ((t (:foreground "#a0bebe" :weight bold))))
  `(font-lock-string-face            ((t (:foreground ,(-monad-theme-alt "#c46485" "#00afaf")))))
  `(font-lock-doc-face               ((t (:inherit font-lock-string-face))))
  `(font-lock-type-face              ((t (:foreground "#819fc7"))))
  `(font-lock-variable-name-face     ((t (:inherit font-lock-builtin-face))))
 
- `(haskell-constructor-face    ((t (:inherit
-                                    ,(if monad-theme-distinct-haskell-constructor
-                                         font-lock-builtin-face
-                                       font-lock-type-face)))))
- `(haskell-operator-face       ((t (:inherit
-                                    ,(if monad-theme-distinct-haskell-constructor
-                                         font-lock-type-face
-                                       font-lock-builtin-face)))))
+ `(haskell-constructor-face ((t (:inherit
+                                 ,(if monad-theme-distinct-haskell-constructor
+                                      font-lock-builtin-face
+                                    font-lock-type-face)))))
+ `(haskell-operator-face    ((t (:inherit
+                                 ,(if monad-theme-distinct-haskell-constructor
+                                      font-lock-type-face
+                                    font-lock-builtin-face)))))
+
  `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
  `(purescript-pragma-face      ((t (:inherit haskell-pragma-face))))
 
  '(tuareg-font-lock-governing-face ((t (:inherit font-lock-keyword-face))))
  '(tuareg-font-lock-operator-face  ((t (:inherit font-lock-builtin-face))))
 
- '(isearch-fail   ((t (:foreground "#3f4758" :background "salmon"))))
- '(isearch        ((t (:inverse-video nil :foreground "black" :background "#c46485"))))
- '(lazy-highlight ((t (:foreground "#a0a8b0" :background "#3d464f"))))
+ '(coq-solve-tactics-face  ((t (:foreground "#d15681"))))
+ '(coq-cheat-face          ((t (:inherit hi-red-b))))
+ '(proof-tactics-name-face ((t (:foreground "#c17bc9"))))
+ '(proof-error-face        ((t (:inherit hi-red-b))))
+ '(proof-locked-face       ((t (:background "#1f2923"))))
+ '(proof-queue-face        ((t (:background "#36262c"))))
+ '(proof-warning-face      ((t (:background "#524a37"))))
 
  `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
  `(nix-constant-face  ((t (:inherit font-lock-type-face))))
  `(nix-builtin-face   ((t (:inherit font-lock-preprocessor-face))))
-
- '(proof-locked-face ((t (:background "#2b303a"))))
 
  '(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
  '(sh-heredoc     ((t (:inherit font-lock-preprocessor-face))))
@@ -137,9 +144,6 @@
  `(git-gutter+-modified ((t (:foreground "#298ed5" :weight bold))))
  `(git-gutter+-deleted  ((t (:foreground "#bc4d4d" :weight bold))))
 
- ;; `(diff-added   ((t (:foreground "#859900"))))
- ;; `(diff-changed ((t (:foreground "#298ed5"))))
- ;; `(diff-removed ((t (:foreground "#dc322f"))))
  ;; diff- and magit-diff- stuff copied from modus-vivendi theme
  `(diff-added             ((t (:foreground "#b4ddb4" :background "#244024"))))
  `(diff-changed           ((t (:foreground "#d0daaf" :background "#4a3a10"))))
@@ -150,11 +154,11 @@
  `(diff-indicator-added   ((t (:inherit diff-added))))
  `(diff-indicator-changed ((t (:inherit diff-changed))))
  `(diff-indicator-removed ((t (:inherit diff-removed))))
- `(diff-header      ((t (:inherit font-lock-type-face))))
- `(diff-hunk-header ((t (:inherit region :weight bold))))
- `(diff-file-header ((t (:foreground "#33beff" :weight bold))))
- `(diff-function    ((t (:foreground "#99d1ce"))))
- `(diff-context     ((t (:inherit shadow))))
+ `(diff-header            ((t (:inherit font-lock-type-face))))
+ `(diff-hunk-header       ((t (:inherit region :weight bold))))
+ `(diff-file-header       ((t (:foreground "#33beff" :weight bold))))
+ `(diff-function          ((t (:foreground "#99d1ce"))))
+ `(diff-context           ((t (:inherit shadow))))
 
  `(magit-diff-added             ((t (:foreground "#94ba94" :background "#002600"))))
  `(magit-diff-base              ((t (:foreground "#b0ba9f" :background "#2a2000"))))
@@ -174,10 +178,10 @@
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
  '(hi-pink    ((t (:background "#c9717a" :foreground "black"))))
  '(hi-yellow  ((t (:background "#99986d" :foreground "black"))))
- '(hi-green-b ((t (:background "#34473a" :foreground "#8ec19d" :weight bold))))
- '(hi-blue-b  ((t (:background "#324347" :foreground "#87becb" :weight bold))))
- '(hi-red-b   ((t (:background "#3d2d31" :foreground "#d17583" :weight bold))))
- '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b5af82" :weight bold))))
+ '(hi-green-b ((t (:background "#324538" :foreground "#8ec19d" :weight bold))))
+ '(hi-blue-b  ((t (:background "#374b4f" :foreground "#8bc8d6" :weight bold))))
+ '(hi-red-b   ((t (:background "#453237" :foreground "#cf7e8a" :weight bold))))
+ '(hi-black-b ((t (:background "#3c3d2d" :foreground "#b5af82" :weight bold))))
 
  `(match ((t (:foreground "#b4e0de" :background "#004d4d"))))
 
@@ -191,7 +195,7 @@
 
  `(rg-line-number-face ((t (:inherit font-lock-type-face))))
 
- `(ag-hit-face          ((t (:inherit font-lock-type-face :weight bold))))
+ `(ag-hit-face ((t (:inherit font-lock-type-face :weight bold))))
 
  '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
  '(dired-symlink   ((t (:foreground "#298D86" :weight bold))))

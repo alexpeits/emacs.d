@@ -39,10 +39,10 @@
  'functor
 
  '(cursor              ((t (:background "#99d1ce"))))
- '(default             ((t (:foreground "#bed3d3" :background "#1d1e1e"))))
+ '(default             ((t (:foreground "#bed3d3" :background "#1a1b1b"))))
  '(escape-glyph        ((t (:foreground "orange2"))))
  '(highlight           ((t (:background "#3d494d"))))
- '(hl-line             ((t (:background "#252a2a"))))
+ '(hl-line             ((t (:background "#232828"))))
  '(region              ((t (:background "#004870"))))
  '(fringe              ((t (:background "#232828"))))
  '(vertical-border     ((t (:foreground "#758a86"))))
@@ -79,31 +79,26 @@
 
  '(persp-selected-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
+ '(isearch-fail   ((t (:foreground "#3f4758" :background "salmon"))))
+ '(isearch        ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
+ '(lazy-highlight ((t (:foreground "#a0a8b0" :background "#3d464f"))))
+
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37"))))
  '(font-lock-regexp-grouping-backslash ((t (:foreground "#f66500"))))
  '(font-lock-regexp-grouping-construct ((t (:foreground "red"))))
  '(font-lock-warning-face              ((t (:foreground "#cb5a37"))))
 
- ;; '(font-lock-preprocessor-face         ((t (:foreground "#d7afd7"))))
- '(font-lock-preprocessor-face         ((t (:foreground "#8ba004"))))
- `(font-lock-comment-face              ((((type tty)) (:foreground "#707070"))
-                                        (t (:foreground "#828787" :slant italic))))
- `(font-lock-comment-delimiter-face    ((t (:inherit font-lock-comment-face))))
-
- `(font-lock-function-name-face ((t (:foreground "#afd787"))))
- `(font-lock-constant-face      ((t (:foreground "#87d7af"))))
-
- `(font-lock-builtin-face       ((t (:foreground ,(-functor-theme-alt "#87d7ff" "#b4dbd3")))))
- `(font-lock-doc-face           ((t ,(-functor-theme-alt '(:foreground "#cacaa7") '(:inherit font-lock-string-face)))))
- ;; #2da49b
- `(font-lock-keyword-face       ((t ,(-functor-theme-alt '(:foreground "#30b0a6") '(:foreground "#86b8b5" :weight bold)))))
- `(font-lock-string-face        ((t (:foreground ,(-functor-theme-alt "#d7d7af" "#1da89f")))))
- `(font-lock-type-face          ((t (:foreground ,(-functor-theme-alt "#87d7d7" "#86b8b5")))))
- `(font-lock-variable-name-face ((t (:inherit font-lock-builtin-face))))
-
- '(isearch-fail        ((t (:foreground "#3f4758" :background "salmon"))))
- '(isearch             ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
- '(lazy-highlight      ((t (:foreground "#a0a8b0" :background "#3d464f"))))
+ '(font-lock-preprocessor-face      ((t (:foreground "#8ba004"))))
+ `(font-lock-comment-face           ((t (:foreground "#828787" :slant italic))))
+ `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+ `(font-lock-function-name-face     ((t (:foreground "#afd787"))))
+ `(font-lock-constant-face          ((t (:foreground "#87d7af"))))
+ `(font-lock-builtin-face           ((t (:foreground ,(-functor-theme-alt "#87d7ff" "#b4dbd3")))))
+ `(font-lock-keyword-face           ((t ,(-functor-theme-alt '(:foreground "#30b0a6") '(:foreground "#86b8b5" :weight bold)))))
+ `(font-lock-string-face            ((t (:foreground ,(-functor-theme-alt "#d7d7af" "#1da89f")))))
+ `(font-lock-doc-face               ((t ,(-functor-theme-alt '(:foreground "#cacaa7") '(:inherit font-lock-string-face)))))
+ `(font-lock-type-face              ((t (:foreground ,(-functor-theme-alt "#87d7d7" "#86b8b5")))))
+ `(font-lock-variable-name-face     ((t (:inherit font-lock-builtin-face))))
 
  `(haskell-pragma-face         ((t (:foreground "#d7afd7"))))
  `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
@@ -112,9 +107,16 @@
  '(tuareg-font-lock-governing-face ((t (:foreground "#d7afd7"))))
  '(tuareg-font-lock-operator-face  ((t (:inherit font-lock-variable-name-face))))
 
- `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
+ ;; '(coq-solve-tactics-face  ((t (:foreground "red2"))))
+ '(coq-solve-tactics-face  ((t (:foreground "#d15681"))))
+ '(coq-cheat-face          ((t (:inherit hi-red-b))))
+ '(proof-tactics-name-face ((t (:foreground "#bf8ade"))))
+ '(proof-error-face        ((t (:inherit hi-red-b))))
+ '(proof-locked-face       ((t (:background "#1f2923"))))
+ '(proof-queue-face        ((t (:background "#36262c"))))
+ '(proof-warning-face      ((t (:background "#524a37"))))
 
- '(proof-locked-face ((t (:background "#2b303a"))))
+ `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
 
  '(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
  '(sh-heredoc     ((t (:foreground "#d7afd7"))))
@@ -123,13 +125,10 @@
  `(diff-hl-change ((t (:background "#1a2d4c" :foreground "#298ed5"))))
  `(diff-hl-delete ((t (:background "#4c1515" :foreground "#bc4d4d"))))
 
- `(git-gutter+-added ((t (:foreground "#4c934c" :weight bold))))
+ `(git-gutter+-added    ((t (:foreground "#4c934c" :weight bold))))
  `(git-gutter+-modified ((t (:foreground "#298ed5" :weight bold))))
- `(git-gutter+-deleted ((t (:foreground "#bc4d4d" :weight bold))))
+ `(git-gutter+-deleted  ((t (:foreground "#bc4d4d" :weight bold))))
 
- ;; `(diff-added   ((t (:foreground "#859900"))))
- ;; `(diff-changed ((t (:foreground "#298ed5"))))
- ;; `(diff-removed ((t (:foreground "#dc322f"))))
  ;; diff- and magit-diff- stuff copied from modus-vivendi theme
  `(diff-added             ((t (:foreground "#b4ddb4" :background "#244024"))))
  `(diff-changed           ((t (:foreground "#d0daaf" :background "#4a3a10"))))
@@ -140,11 +139,11 @@
  `(diff-indicator-added   ((t (:inherit diff-added))))
  `(diff-indicator-changed ((t (:inherit diff-changed))))
  `(diff-indicator-removed ((t (:inherit diff-removed))))
- `(diff-header      ((t (:foreground "#819fc7"))))
- `(diff-hunk-header ((t (:inherit region :weight bold))))
- `(diff-file-header ((t (:foreground "#33beff" :weight bold))))
- `(diff-function    ((t (:foreground "#99d1ce"))))
- `(diff-context     ((t (:inherit shadow))))
+ `(diff-header            ((t (:foreground "#819fc7"))))
+ `(diff-hunk-header       ((t (:inherit region :weight bold))))
+ `(diff-file-header       ((t (:foreground "#33beff" :weight bold))))
+ `(diff-function          ((t (:foreground "#99d1ce"))))
+ `(diff-context           ((t (:inherit shadow))))
 
  `(magit-diff-added             ((t (:foreground "#94ba94" :background "#002600"))))
  `(magit-diff-base              ((t (:foreground "#b0ba9f" :background "#2a2000"))))
@@ -164,10 +163,10 @@
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
  '(hi-pink    ((t (:background "#c9717a" :foreground "black"))))
  '(hi-yellow  ((t (:background "#99986d" :foreground "black"))))
- '(hi-green-b ((t (:background "#34473a" :foreground "#8ec19d" :weight bold))))
- '(hi-blue-b  ((t (:background "#324347" :foreground "#87becb" :weight bold))))
- '(hi-red-b   ((t (:background "#3d2d31" :foreground "#d17583" :weight bold))))
- '(hi-black-b ((t (:background "#3a3b2b" :foreground "#b5af82" :weight bold))))
+ '(hi-green-b ((t (:background "#324538" :foreground "#8ec19d" :weight bold))))
+ '(hi-blue-b  ((t (:background "#374b4f" :foreground "#8bc8d6" :weight bold))))
+ '(hi-red-b   ((t (:background "#453237" :foreground "#cf7e8a" :weight bold))))
+ '(hi-black-b ((t (:background "#3c3d2d" :foreground "#b5af82" :weight bold))))
 
  `(match ((t (:foreground "#abdedb" :background "#004c40"))))
 
@@ -178,7 +177,7 @@
  `(ivy-minibuffer-match-face-4 ((t (:inherit hi-red-b))))
  `(ivy-grep-info               ((t (:foreground "#afd787" :weight bold))))
 
- `(ag-hit-face       ((t (:foreground "#afd787" :weight bold))))
+ `(ag-hit-face ((t (:foreground "#afd787" :weight bold))))
 
  '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
  '(dired-symlink   ((t (:foreground "#2da49b" :weight bold))))
