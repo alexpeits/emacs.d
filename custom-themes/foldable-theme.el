@@ -44,6 +44,7 @@
    '(whitespace-trailing ((t (:background "#ffcdcd"))))
    '(region              ((t (:background "#b1d8e6"))))
    '(fixed-pitch         ((t nil)))
+   '(secondary-selection ((t (:background "lemon chiffon"))))
 
    `(fill-column-indicator ((t (:foreground ,h5))))
 

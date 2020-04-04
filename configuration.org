@@ -19,8 +19,6 @@
   - [[#math-input][math input]]
   - [[#recentf][recentf]]
   - [[#hi-lock--symbol-overlay][hi-lock & symbol overlay]]
-  - [[#aliases][aliases]]
-  - [[#clean-unused-buffers][clean unused buffers]]
   - [[#alignment][alignment]]
   - [[#highlight-keywords-in-some-modes][highlight keywords in some modes]]
   - [[#temp-project-roots][temp project roots]]
@@ -55,11 +53,11 @@
 - [[#lisps][Lisps]]
   - [[#all-lisps][all lisps]]
   - [[#emacs-lisp][emacs lisp]]
+- [[#coq-proof-general][Coq (proof-general)]]
 - [[#markdown][Markdown]]
 - [[#other-prog-modes][Other prog modes]]
   - [[#idris][Idris]]
   - [[#agda][Agda]]
-  - [[#coq-proof-general][Coq (proof-general)]]
   - [[#rust][Rust]]
   - [[#cc][c/c++]]
   - [[#dhall][dhall]]
@@ -235,6 +233,9 @@ modeline)."
   (let ((msg-end (if also-git ", and their git state." ".")))
     (message
      (format "Finished reverting buffers containing unmodified files%s" msg-end))))
+
+(defalias 'rb  'revert-buffer)
+(defalias 'rab 'my/revert-all-buffers)
 
 ;; read file lines into a list
 (defun my/read-file-into-list (file-path)
@@ -504,6 +505,10 @@ With a prefix argument, open using `find-file-other-window'."
 (define-key 'help-command (kbd "C-v") 'find-variable)
 ;; proper count-words keybinding
 (global-set-key (kbd "M-=") 'count-words)
+
+;; commenting TODO: use newcomment
+(global-set-key (kbd "C-;") 'comment-indent)
+(global-set-key (kbd "C-:") 'comment-kill)
 
 ;; add env files to conf-mode alist
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
@@ -902,30 +907,6 @@ buffer, close it."
     (setq symbol-overlay-map map)))
 #+end_src
 
-** aliases
-
-#+begin_src emacs-lisp
-(defalias 'rb   'revert-buffer)
-(defalias 'rab  'my/revert-all-buffers)
-(defalias 'gb   'magit-blame-addition)
-(defalias 'magb 'magit-blame-addition)
-(defalias 'gl   'magit-log-buffer-file)
-(defalias 'magl 'magit-log-buffer-file)
-#+end_src
-
-** clean unused buffers
-
-#+begin_src emacs-lisp
-(use-package midnight
-  :commands (clean-buffer-list midnight-delay-set)
-  ;; :hook (after-init . midnight-mode)
-  :init
-  ;; (midnight-delay-set 'midnight-delay 0)
-  (setq clean-buffer-list-delay-general 3  ;; 3 days
-        clean-buffer-list-kill-regexps '("\\`\\*Customize .*\\*\\'")
-        clean-buffer-list-never-regexps '("\\`TAGS\\'")))
-#+end_src
-
 ** alignment
 
 #+begin_src emacs-lisp
@@ -962,7 +943,7 @@ buffer, close it."
   :group 'my/faces)
 
 (defface my/special-comment-keyword-face
-  '((t (:inherit font-lock-doc-face)))
+  '((t (:inherit font-lock-preprocessor-face)))
   "Face for highlighting special keywords in comments"
   :group 'my/faces)
 
@@ -976,7 +957,7 @@ buffer, close it."
        `((,str . ,`(quote ,fc)))))))
 
 (defvar my/comment-keywords
-  '("TODO" "TO DO" "NOTE" "FIXME" "FIX ME" "WARNING" "HACK" "XXX" "DONE"))
+  '("TODO" "NOTE" "FIXME" "WARNING" "HACK" "XXX" "DONE"))
 
 (defun my/highlight-comment-keywords (mode &optional face)
   (dolist (kw my/comment-keywords)
@@ -994,6 +975,7 @@ buffer, close it."
             rust-mode
             c-mode
             emacs-lisp-mode
+            coq-mode
             markdown-mode
             ))
   (my/highlight-comment-keywords mode))
@@ -1596,6 +1578,9 @@ CWD is not in a git repo (or the git command is not found)."
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch-popup))
   :config
+  (defalias 'magb 'magit-blame-addition)
+  (defalias 'gl   'magit-log-buffer-file)
+  (defalias 'magl 'magit-log-buffer-file)
   (add-hook 'magit-blame-mode-hook
             (lambda ()
               (if (or (not (boundp 'magit-blame-mode))
@@ -1720,7 +1705,7 @@ CWD is not in a git repo (or the git command is not found)."
         ;; project
         ("pa" counsel-projectile-ag)
         ("pr" counsel-projectile-rg)
-        ("ps" my/rg-project)
+        ("ps" my/rg-project-or-ask)
         ("pt" my/counsel-ag-todos-global)
 
         ;; show/display
@@ -2639,6 +2624,32 @@ the current file."
   (my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save))
 #+END_SRC
 
+* Coq (proof-general)
+
+#+BEGIN_SRC emacs-lisp
+(use-package proof-general
+  :ensure t
+  :init
+  (setq proof-splash-enable nil
+        proof-script-fly-past-comments t))
+
+(use-package coq-mode
+  :ensure proof-general
+  :mode (("\\.v\\'" . coq-mode))
+  :bind (:map coq-mode-map
+              ("C-c ." . proof-electric-terminator-toggle))
+  :init
+  (setq coq-one-command-per-line nil
+        coq-compile-before-require t)
+  :config
+  (my/add-hooks
+   '(coq-mode-hook)
+   (setq evil-shift-width 2)
+   (undo-tree-mode 1)
+   (whitespace-mode 1)))
+
+#+END_SRC
+
 * Markdown
 
 #+BEGIN_SRC emacs-lisp
@@ -2731,26 +2742,6 @@ the current file."
   :mode ("\\.l?agda\\'" . agda2-mode)
   :init
   (setq agda2-program-name my/agda-path))
-#+END_SRC
-
-** Coq (proof-general)
-
-#+BEGIN_SRC emacs-lisp
-(use-package proof-general
-  :ensure t
-  :bind (:map coq-mode-map
-              ("C-c ." . proof-electric-terminator-toggle))
-  :init
-  (setq proof-splash-enable nil
-        proof-script-fly-past-comments t
-        coq-one-command-per-line nil
-        coq-compile-before-require t)
-  :config
-  (my/add-hooks
-   '(coq-mode-hook)
-   (setq evil-shift-width 2)
-   (undo-tree-mode 1)
-   (whitespace-mode 1)))
 #+END_SRC
 
 ** Rust
@@ -3217,11 +3208,13 @@ erc-modified-channels-alist. Should be executed on window change."
         rg-ignore-case 'smart)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
-  (rg-define-search my/rg-project
+  (rg-define-search my/rg-project-or-ask
     :query ask
     :format regexp
     :files "all"
-    :dir (projectile-project-root))
+    :dir (my/project-root-or-ask)
+    :confirm prefix)
+  (defalias 'rgp 'my/rg-project-or-ask)
 
   ;; https://protesilaos.com/dotemacs/#h:31622bf2-526b-4426-9fda-c0fc59ac8f4b
   (defun my/rg-save-search-as-name ()
@@ -3244,6 +3237,9 @@ erc-modified-channels-alist. Should be executed on window change."
   )
 
 #+END_SRC
+
+#+RESULTS:
+: rg-prev-file
 
 * Company
 
@@ -3369,6 +3365,10 @@ erc-modified-channels-alist. Should be executed on window change."
    projectile-mode-line-function
    '(lambda () (format " P[%s]" (or (projectile-project-name) "-"))))
   :config
+  (defun my/project-root-or-ask ()
+    (or (projectile-project-root)
+        (read-directory-name "rg in: ")))
+
   (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
     (if (projectile-project-p)
         (apply in-proj-f args)
@@ -3505,11 +3505,12 @@ erc-modified-channels-alist. Should be executed on window change."
   :ensure t
   :bind (("M-x" . counsel-M-x)
          ("M-i" . counsel-imenu)
-         ("M-I" . counsel-outline)
          ("C-x C-f" . counsel-find-file)
          ("C-x f" . counsel-file-jump)
          ("C-x r b" . counsel-bookmark)
-         ("C-x C-a" . counsel-recentf))
+         ("C-x C-a" . counsel-recentf)
+         :map org-mode-map
+         ("M-i" . counsel-outline))
   :after ivy
   :init
   (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s"
