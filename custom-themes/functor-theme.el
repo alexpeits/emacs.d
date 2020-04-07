@@ -108,13 +108,14 @@
  '(tuareg-font-lock-operator-face  ((t (:inherit font-lock-variable-name-face))))
 
  ;; '(coq-solve-tactics-face  ((t (:foreground "red2"))))
- '(coq-solve-tactics-face  ((t (:foreground "#d15681"))))
- '(coq-cheat-face          ((t (:inherit hi-red-b))))
- '(proof-tactics-name-face ((t (:foreground "#bf8ade"))))
- '(proof-error-face        ((t (:inherit hi-red-b))))
- '(proof-locked-face       ((t (:background "#1f2923"))))
- '(proof-queue-face        ((t (:background "#36262c"))))
- '(proof-warning-face      ((t (:background "#524a37"))))
+ '(coq-solve-tactics-face      ((t (:foreground "#d15681"))))
+ '(coq-cheat-face              ((t (:inherit hi-red-b))))
+ '(proof-tactics-name-face     ((t (:foreground "#bf8ade"))))
+ '(proof-error-face            ((t (:inherit hi-red-b))))
+ '(proof-locked-face           ((t (:background "#1f2923"))))
+ '(proof-queue-face            ((t (:background "#36262c"))))
+ '(proof-warning-face          ((t (:background "#524a37"))))
+ '(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
  `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
 

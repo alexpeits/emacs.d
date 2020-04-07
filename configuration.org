@@ -655,8 +655,9 @@ With a prefix argument, open using `find-file-other-window'."
   :diminish smartparens-mode
   :init
   (setq sp-show-pair-delay 0.2
-        ;; fix paren highlighting in normal mode
-        sp-show-pair-from-inside t
+        ;; avoid slowness when editing inside a comment for modes with
+        ;; parenthesized comments (e.g. coq)
+        sp-show-pair-from-inside nil
         sp-cancel-autoskip-on-backward-movement nil
         sp-highlight-pair-overlay nil
         sp-highlight-wrap-overlay nil
@@ -2645,9 +2646,9 @@ the current file."
   (my/add-hooks
    '(coq-mode-hook)
    (setq evil-shift-width 2)
+   (push '(?# . ("(* " . " *)")) evil-surround-pairs-alist)
    (undo-tree-mode 1)
    (whitespace-mode 1)))
-
 #+END_SRC
 
 * Markdown
