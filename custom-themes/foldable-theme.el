@@ -106,6 +106,7 @@
  '(ibuffer-filter-group-name-face 'dired-mark)
  '(ibuffer-marked-face 'dired-marked)
  '(ibuffer-title-face 'dired-header)
+ '(coq-highlighted-hyps-bg "grey")
  )
 
 (provide-theme 'foldable)

@@ -48,7 +48,7 @@
  '(highlight           ((t (:background "#3c464a"))))
  '(hl-line             ((t (:background "#252a2a"))))
  '(region              ((t (:background "#004870"))))
- '(fringe              ((t (:background "#242424"))))
+ '(fringe              ((t (:foreground "#91abab" :background "#242424"))))
  '(vertical-border     ((t (:foreground "#6e6e6e"))))
  '(shadow              ((t (:foreground "#949898"))))
  '(secondary-selection ((t (:inherit highlight))))
@@ -86,7 +86,7 @@
  '(persp-selected-face ((t (:underline t :weight bold))))
 
  '(isearch-fail   ((t (:foreground "#3f4758" :background "salmon"))))
- '(isearch        ((t (:inverse-video nil :foreground "black" :background "#c46485"))))
+ '(isearch        ((t (:foreground "black" :background "#c46485"))))
  '(lazy-highlight ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37"))))
@@ -95,7 +95,7 @@
  '(font-lock-warning-face              ((t (:foreground "#cb5a37"))))
 
  '(font-lock-preprocessor-face      ((t (:foreground "#79c779"))))
- `(font-lock-comment-face           ((t (:foreground "#768080" :slant italic))))
+ `(font-lock-comment-face           ((t (:foreground "#698080" :slant italic))))
  `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
  `(font-lock-function-name-face     ((t (:foreground ,(-monad-theme-alt "#00afaf" "#c46485")))))
  `(font-lock-constant-face          ((t (:inherit font-lock-builtin-face))))
@@ -121,11 +121,14 @@
  '(tuareg-font-lock-governing-face ((t (:inherit font-lock-keyword-face))))
  '(tuareg-font-lock-operator-face  ((t (:inherit font-lock-builtin-face))))
 
- '(coq-solve-tactics-face      ((t (:foreground "#d15681"))))
- '(coq-cheat-face              ((t (:inherit hi-red-b))))
+ '(coq-solve-tactics-face  ((t (:foreground "#d15681"))))
+ '(coq-cheat-face          ((t (:inherit hi-red-b))))
+ '(coq-button-face         ((t (:inherit hi-green-b))))
+ '(coq-button-face-pressed ((t (:inherit hi-green-b :background "grey43"))))
+
  '(proof-tactics-name-face     ((t (:foreground "#c17bc9"))))
  '(proof-error-face            ((t (:inherit hi-red-b))))
- '(proof-locked-face           ((t (:background "#1f2923"))))
+ '(proof-locked-face           ((t (:background "#222f27"))))
  '(proof-queue-face            ((t (:background "#36262c"))))
  '(proof-warning-face          ((t (:background "#524a37"))))
  '(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
@@ -336,6 +339,7 @@
  '(ibuffer-filter-group-name-face 'dired-mark)
  '(ibuffer-marked-face 'dired-marked)
  '(ibuffer-title-face 'dired-header)
+ '(coq-highlighted-hyps-bg "#374b4f")
  '(ansi-color-names-vector
    ["#404040" "#c46485" "#79c779" "#b5a52b" "#499ec4" "#819fc7" "#00afaf" "#b1cbcb"]))
 

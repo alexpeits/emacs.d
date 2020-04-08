@@ -44,7 +44,7 @@
  '(highlight           ((t (:background "#3d494d"))))
  '(hl-line             ((t (:background "#232828"))))
  '(region              ((t (:background "#004870"))))
- '(fringe              ((t (:background "#232828"))))
+ '(fringe              ((t (:foreground "#9eb3b3" :background "#232828"))))
  '(vertical-border     ((t (:foreground "#758a86"))))
  '(shadow              ((t (:foreground "#949898"))))
  '(secondary-selection ((t (:inherit highlight))))
@@ -71,7 +71,7 @@
  `(powerline-active0   ((t (:background "#006553" :foreground "#c1eae2"))))
  `(powerline-active1   ((t (:background "#004c40" :foreground "#c1eae2"))))
  `(powerline-active2   ((t (:background "#003535" :foreground "#c1eae2"))))
- `(powerline-inactive0 ((t (:background "#1e2827" :foreground "#387a71"))))
+ `(powerline-inactive0 ((t (:background "#242e2d" :foreground "#387a71"))))
  `(powerline-inactive1 ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2 ((t (:inherit powerline-inactive0))))
 
@@ -80,7 +80,7 @@
  '(persp-selected-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
  '(isearch-fail   ((t (:foreground "#3f4758" :background "salmon"))))
- '(isearch        ((t (:inverse-video nil :foreground "black" :background "#db7e4c"))))
+ '(isearch        ((t (:foreground "black" :background "#c46485"))))
  '(lazy-highlight ((t (:foreground "#a0a8b0" :background "#3d464f"))))
 
  '(font-lock-negation-char-face        ((t (:foreground "#cb5a37"))))
@@ -89,7 +89,7 @@
  '(font-lock-warning-face              ((t (:foreground "#cb5a37"))))
 
  '(font-lock-preprocessor-face      ((t (:foreground "#8ba004"))))
- `(font-lock-comment-face           ((t (:foreground "#828787" :slant italic))))
+ `(font-lock-comment-face           ((t (:foreground "#6c8686" :slant italic))))
  `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
  `(font-lock-function-name-face     ((t (:foreground "#afd787"))))
  `(font-lock-constant-face          ((t (:foreground "#87d7af"))))
@@ -107,12 +107,14 @@
  '(tuareg-font-lock-governing-face ((t (:foreground "#d7afd7"))))
  '(tuareg-font-lock-operator-face  ((t (:inherit font-lock-variable-name-face))))
 
- ;; '(coq-solve-tactics-face  ((t (:foreground "red2"))))
- '(coq-solve-tactics-face      ((t (:foreground "#d15681"))))
- '(coq-cheat-face              ((t (:inherit hi-red-b))))
+ '(coq-solve-tactics-face  ((t (:foreground "#d15681"))))
+ '(coq-cheat-face          ((t (:inherit hi-red-b))))
+ '(coq-button-face         ((t (:inherit hi-green-b))))
+ '(coq-button-face-pressed ((t (:inherit hi-green-b :background "grey43"))))
+
  '(proof-tactics-name-face     ((t (:foreground "#bf8ade"))))
  '(proof-error-face            ((t (:inherit hi-red-b))))
- '(proof-locked-face           ((t (:background "#1f2923"))))
+ '(proof-locked-face           ((t (:background "#222f27"))))
  '(proof-queue-face            ((t (:background "#36262c"))))
  '(proof-warning-face          ((t (:background "#524a37"))))
  '(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
@@ -316,6 +318,7 @@
  '(ibuffer-filter-group-name-face 'dired-mark)
  '(ibuffer-marked-face 'dired-marked)
  '(ibuffer-title-face 'dired-header)
+ '(coq-highlighted-hyps-bg "#374b4f")
  '(ansi-color-names-vector
    ["#808080" "#cb5a37" "#8ba004" "#d09f07" "#499ec4" "#d7afd7" "#47bcb3" "#bed3d3"]))
 

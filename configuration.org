@@ -488,6 +488,7 @@ With a prefix argument, open using `find-file-other-window'."
 
 ;; always trim whitespace before saving
 ;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(defalias 'dw 'delete-trailing-whitespace)
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
@@ -1578,10 +1579,11 @@ CWD is not in a git repo (or the git command is not found)."
              magit-log-buffer-file)
   :bind (("C-x g" . magit-status)
          ("C-x M-g" . magit-dispatch-popup))
-  :config
+  :init
   (defalias 'magb 'magit-blame-addition)
   (defalias 'gl   'magit-log-buffer-file)
   (defalias 'magl 'magit-log-buffer-file)
+  :config
   (add-hook 'magit-blame-mode-hook
             (lambda ()
               (if (or (not (boundp 'magit-blame-mode))
@@ -1847,15 +1849,6 @@ CWD is not in a git repo (or the git command is not found)."
     "Make `mode' use emacs keybindings."
     (delete mode evil-insert-state-modes)
     (add-to-list 'evil-emacs-state-modes mode))
-
-  (defun my/vim-navigation (mode-map &optional extended)
-    (define-key mode-map (kbd "h") #'backward-char)
-    (define-key mode-map (kbd "j") #'next-line)
-    (define-key mode-map (kbd "k") #'previous-line)
-    (define-key mode-map (kbd "l") #'forward-char)
-    (when extended
-      (define-key mode-map (kbd "w") #'forward-word)
-      (define-key mode-map (kbd "b") #'backward-word)))
 
   ;; don't need C-n, C-p
   (define-key evil-insert-state-map (kbd "C-n") nil)
@@ -2643,6 +2636,7 @@ the current file."
   (setq coq-one-command-per-line nil
         coq-compile-before-require t)
   :config
+  (add-hook 'my/after-set-theme-hook 'coq-highlight-selected-hyps)
   (my/add-hooks
    '(coq-mode-hook)
    (setq evil-shift-width 2)
@@ -3001,6 +2995,18 @@ instead of the title as seen by deft."
 (use-package elfeed
   :ensure t
   :commands (elfeed)
+  :bind (:map elfeed-search-mode-map
+              ("h" . backward-char)
+              ("j" . next-line)
+              ("k" . previous-line)
+              ("l" . forward-char)
+              :map elfeed-show-mode-map
+              ("h" . backward-char)
+              ("j" . next-line)
+              ("k" . previous-line)
+              ("l" . forward-char)
+              ("w" . forward-word)
+              ("b" . backward-word))
   :init
   (setq elfeed-db-directory (concat my/dropbox-dir "elfeed"))
   :config
@@ -3011,7 +3017,6 @@ instead of the title as seen by deft."
 
   (define-key elfeed-search-mode-map (kbd "U") #'elfeed-update)
   (define-key elfeed-show-mode-map (kbd "i") #'my/elfeed-hide-images)
-  (my/vim-navigation elfeed-show-mode-map t)
   (add-hook 'elfeed-show-mode-hook #'(lambda () (setq-local shr-width 100)))
 
   (setq elfeed-search-filter "@10-days-ago +unread"
@@ -3195,7 +3200,7 @@ erc-modified-channels-alist. Should be executed on window change."
 #+BEGIN_SRC emacs-lisp
 (use-package rg
   :ensure t
-  :commands (rg)
+  :commands (rg my/rg-project-or-ask)
   :bind (:map rg-mode-map
               ("m" . rg-menu)
               ("s" . my/rg-save-search-as-name)
@@ -3207,15 +3212,16 @@ erc-modified-channels-alist. Should be executed on window change."
   :init
   (setq rg-group-result t
         rg-ignore-case 'smart)
+  (defalias 'rgp 'my/rg-project-or-ask)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
   (rg-define-search my/rg-project-or-ask
     :query ask
     :format regexp
     :files "all"
-    :dir (my/project-root-or-ask)
+    :dir (or (projectile-project-root)
+             (read-directory-name "rg in: "))
     :confirm prefix)
-  (defalias 'rgp 'my/rg-project-or-ask)
 
   ;; https://protesilaos.com/dotemacs/#h:31622bf2-526b-4426-9fda-c0fc59ac8f4b
   (defun my/rg-save-search-as-name ()
@@ -3365,15 +3371,7 @@ erc-modified-channels-alist. Should be executed on window change."
   (setq
    projectile-mode-line-function
    '(lambda () (format " P[%s]" (or (projectile-project-name) "-"))))
-  :config
-  (defun my/project-root-or-ask ()
-    (or (projectile-project-root)
-        (read-directory-name "rg in: ")))
-
-  (defun my/try-exec-in-project (in-proj-f out-proj-f &rest args)
-    (if (projectile-project-p)
-        (apply in-proj-f args)
-      (apply out-proj-f args))))
+  )
 
 (use-package perspective
   :ensure t
