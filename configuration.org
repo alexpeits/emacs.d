@@ -1850,6 +1850,8 @@ CWD is not in a git repo (or the git command is not found)."
     (delete mode evil-insert-state-modes)
     (add-to-list 'evil-emacs-state-modes mode))
 
+  (global-set-key (kbd "<f5>") 'evil-local-mode)
+
   ;; don't need C-n, C-p
   (define-key evil-insert-state-map (kbd "C-n") nil)
   (define-key evil-insert-state-map (kbd "C-p") nil)
@@ -2700,16 +2702,6 @@ the current file."
              markdown-toc-generate-or-refresh-toc)
   :init
   (defalias 'mtoc 'markdown-toc-generate-or-refresh-toc))
-
-(use-package grip-mode
-  :ensure t
-  :defer t
-  :if (executable-find "grip")
-  :after markdown-mode
-  :commands (grip-mode)
-  :init
-  (my/define-major-mode-key 'markdown-mode "p" #'grip-mode)
-  (define-key markdown-mode-command-map (kbd "g") #'grip-mode))
 #+END_SRC
 
 * Other prog modes
@@ -3469,6 +3461,8 @@ erc-modified-channels-alist. Should be executed on window change."
   :bind ("C-s" . my/swiper-isearch)
   :commands (swiper swiper-isearch swiper-all swiper-multi)
   :config
+  ;; use regular isearch when in minibuffer
+  (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward)
   ;; contrary to `swiper', `swiper-isearch' doesn't set the mark to the place
   ;; where the search started from, this advice mitigates this issue
   (defadvice swiper-isearch-action
