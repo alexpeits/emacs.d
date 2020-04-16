@@ -70,6 +70,16 @@
  '(mode-line           ((t (:foreground "#c1eae2" :background "#005555"))))
  '(mode-line-inactive  ((t (:foreground "#387a71" :background "#272b2a"))))
 
+ ;; `(powerline-active0               ((t (:background "#009672" :foreground "#f0f0f0"))))
+ ;; `(powerline-active1               ((t (:background "#006f4d" :foreground "#f0f0f0"))))
+ ;; `(powerline-active2               ((t (:background "#004444" :foreground "#f0f0f0"))))
+ ;; `(powerline-inactive0             ((t (:background "#2a3634" :foreground "#3d857b"))))
+ ;; '(powerline-active0-evil-insert   ((t (:inherit powerline-active0 :background "#69a800"))))
+ ;; '(powerline-active0-evil-visual   ((t (:inherit powerline-active0 :background "#cc6d00"))))
+ ;; '(powerline-active0-evil-replace  ((t (:inherit powerline-active0 :background "#870000"))))
+ ;; '(powerline-active2-edited        ((t (:inherit powerline-active2 :background "#5c2020"))))
+ ;; '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#965656"))))
+
  `(powerline-active0               ((t (:background "#006553" :foreground "#c1eae2"))))
  `(powerline-active1               ((t (:background "#004c40" :foreground "#c1eae2"))))
  `(powerline-active2               ((t (:background "#003535" :foreground "#c1eae2"))))
@@ -77,11 +87,14 @@
  `(powerline-inactive1             ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2             ((t (:inherit powerline-inactive0))))
  '(powerline-active0-evil-insert   ((t (:inherit powerline-active0 :background "#587300"))))
- '(powerline-active0-evil-visual   ((t (:inherit powerline-active0 :background "#0067a1"))))
+ '(powerline-active0-evil-visual   ((t (:inherit powerline-active0 :background "#005b8f"))))
  '(powerline-active0-evil-replace  ((t (:inherit powerline-active0 :background "#730000"))))
  '(powerline-active0-evil-emacs    ((t (:inherit powerline-active0 :background "#805b00"))))
  '(powerline-active0-evil-operator ((t (:inherit powerline-active0 :background "#805b00"))))
  '(powerline-active2-edited        ((t (:inherit powerline-active2 :background "#4f0000"))))
+ '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#915656"))))
+ '(powerline-inactive1-edited      ((t (:inherit powerline-inactive0-edited))))
+ '(powerline-inactive2-edited      ((t (:inherit powerline-inactive0-edited))))
 
  '(minibuffer-prompt ((t (:foreground "#12a89f" :weight bold))))
 

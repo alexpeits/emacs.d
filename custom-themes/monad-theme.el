@@ -79,7 +79,9 @@
  '(powerline-active0-evil-emacs    ((t (:inherit powerline-active0 :foreground "#bcbf0b"))))
  '(powerline-active0-evil-operator ((t (:inherit powerline-active0 :foreground "#bcbf0b"))))
  '(powerline-active2-edited        ((t (:inherit powerline-active2 :foreground "#bd3e54"))))
- ;; '(powerline-active0-edited        ((t (:inherit powerline-active0 :foreground "#ed4563"))))
+ '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#915656"))))
+ '(powerline-inactive1-edited      ((t (:inherit powerline-inactive0-edited))))
+ '(powerline-inactive2-edited      ((t (:inherit powerline-inactive0-edited))))
 
  `(minibuffer-prompt ((t (:weight bold :inherit font-lock-function-name-face))))
 
@@ -129,6 +131,7 @@
  '(proof-tactics-name-face     ((t (:foreground "#c17bc9"))))
  '(proof-error-face            ((t (:inherit hi-red-b))))
  '(proof-locked-face           ((t (:background "#222f27"))))
+
  '(proof-queue-face            ((t (:background "#36262c"))))
  '(proof-warning-face          ((t (:background "#524a37"))))
  '(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))

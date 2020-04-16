@@ -43,6 +43,21 @@
   "Powerline active face 2 edited."
   :group 'powerline)
 
+(defface powerline-inactive0-edited
+  '((t (:inherit powerline-inactive0)))
+  "Powerline inactive face 0 edited."
+  :group 'powerline)
+
+(defface powerline-inactive1-edited
+  '((t (:inherit powerline-inactive1)))
+  "Powerline inactive face 1 edited."
+  :group 'powerline)
+
+(defface powerline-inactive2-edited
+  '((t (:inherit powerline-inactive2)))
+  "Powerline inactive face 2 edited."
+  :group 'powerline)
+
 (defface powerline-active0-evil-insert
   '((t (:inherit powerline-active0)))
   "Powerline active face 0 evil insert."
@@ -85,20 +100,24 @@
    '("%e"
      (:eval
       (let* ((active (powerline-selected-window-active))
-             (mode-line-buffer-id (if active 'mode-line-buffer-id 'mode-line-buffer-id-inactive))
-             (mode-line (if active 'mode-line 'mode-line-inactive))
+             (mode-line-buffer-id
+              (if active 'mode-line-buffer-id 'mode-line-buffer-id-inactive))
+             (mode-line
+              (if active 'mode-line 'mode-line-inactive))
 
-             (face0-left (if active
-                             (or (cdr (assoc evil-state powerline-default-evil-theme-state-faces))
-                                 (if (buffer-modified-p) 'powerline-active0-edited 'powerline-active0))
-                           'powerline-inactive0))
-             (face0 (if active 'powerline-active0 'powerline-inactive0))
-             (face1 (if active
-                        (if (buffer-modified-p) 'powerline-active1-edited 'powerline-active1)
-                      'powerline-inactive1))
-             (face2 (if active
-                        (if (buffer-modified-p) 'powerline-active2-edited 'powerline-active2)
-                      'powerline-inactive2))
+             (face0
+              (if active
+                  (or (cdr (assoc evil-state powerline-default-evil-theme-state-faces))
+                      (if (buffer-modified-p) 'powerline-active0-edited 'powerline-active0))
+                (if (buffer-modified-p) 'powerline-inactive0-edited 'powerline-inactive0)))
+             (face1
+              (if active
+                  (if (buffer-modified-p) 'powerline-active1-edited 'powerline-active1)
+                (if (buffer-modified-p) 'powerline-inactive1-edited 'powerline-inactive1)))
+             (face2
+              (if active
+                  (if (buffer-modified-p) 'powerline-active2-edited 'powerline-active2)
+                (if (buffer-modified-p) 'powerline-inactive2-edited 'powerline-inactive2)))
              (face2-hud (if active 'powerline-active2 'powerline-inactive2))
 
              (separator-left (intern (format "powerline-%s-%s"
@@ -107,16 +126,16 @@
              (separator-right (intern (format "powerline-%s-%s"
                                               (powerline-current-separator)
                                               (cdr powerline-default-separator-dir))))
-             (lhs (list (powerline-raw "%*" face0-left 'l)
+             (lhs (list (powerline-raw "%*" face0 'l)
                         (when powerline-display-buffer-size
-                          (powerline-buffer-size face0-left 'l))
+                          (powerline-buffer-size face0 'l))
                         (when powerline-display-mule-info
-                          (powerline-raw mode-line-mule-info face0-left 'l))
-                        (powerline-buffer-id `(mode-line-buffer-id ,face0-left) 'l)
+                          (powerline-raw mode-line-mule-info face0 'l))
+                        (powerline-buffer-id `(mode-line-buffer-id ,face0) 'l)
                         (when (and (boundp 'which-func-mode) which-func-mode)
-                          (powerline-raw which-func-format face0-left 'l))
-                        (powerline-raw " " face0-left)
-                        (funcall separator-left face0-left face1)
+                          (powerline-raw which-func-format face0 'l))
+                        (powerline-raw " " face0)
+                        (funcall separator-left face0 face1)
                         (when (and (boundp 'erc-track-minor-mode) erc-track-minor-mode)
                           (powerline-raw erc-modified-channels-object face1 'l))
                         (powerline-major-mode face1 'l)
