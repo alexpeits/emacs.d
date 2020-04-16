@@ -3993,6 +3993,14 @@ the minibuffer."
 ** Powerline
 
 #+BEGIN_SRC emacs-lisp
+;; local for now
+(use-package powerline-default-evil-theme
+  :commands (powerline-default-evil-theme)
+  :config
+  (add-to-list
+   'powerline-default-evil-theme-state-faces
+   '(hybrid . powerline-active0-evil-insert)))
+
 (use-package powerline
   :ensure t
   :after flycheck
@@ -4006,7 +4014,8 @@ the minibuffer."
   (setq global-mode-string
         (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string))
   :config
-  (powerline-default-theme)
+  (powerline-default-evil-theme)
+  ;; (powerline-default-theme)
   (diminish-undo 'flycheck-mode)
   (add-hook 'my/after-set-theme-hook 'powerline-reset)
   (add-hook 'my/after-set-font-hook 'powerline-reset)
