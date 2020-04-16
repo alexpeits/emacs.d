@@ -169,10 +169,10 @@
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
  '(hi-pink    ((t (:background "#c9717a" :foreground "black"))))
  '(hi-yellow  ((t (:background "#99986d" :foreground "black"))))
- '(hi-green-b ((t (:background "#324538" :foreground "#8ec19d" :weight bold))))
+ '(hi-green-b ((t (:background "#354a3c" :foreground "#8ec19d" :weight bold))))
  '(hi-blue-b  ((t (:background "#374b4f" :foreground "#8bc8d6" :weight bold))))
  '(hi-red-b   ((t (:background "#453237" :foreground "#cf7e8a" :weight bold))))
- '(hi-black-b ((t (:background "#3c3d2d" :foreground "#b5af82" :weight bold))))
+ '(hi-black-b ((t (:background "#444532" :foreground "#b5af82" :weight bold))))
 
  `(match ((t (:foreground "#abdedb" :background "#004c40"))))
 
@@ -181,9 +181,9 @@
  `(ivy-minibuffer-match-face-2 ((t (:inherit hi-black-b))))
  `(ivy-minibuffer-match-face-3 ((t (:inherit hi-blue-b))))
  `(ivy-minibuffer-match-face-4 ((t (:inherit hi-red-b))))
- `(ivy-grep-info               ((t (:foreground "#afd787" :weight bold))))
+ `(ivy-grep-info               ((t (:inherit font-lock-function-name-face :weight bold))))
 
- `(ag-hit-face ((t (:foreground "#afd787" :weight bold))))
+ `(ag-hit-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
  '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
  '(dired-symlink   ((t (:foreground "#2da49b" :weight bold))))
@@ -227,11 +227,12 @@
  '(outline-6 ((t (:inherit font-lock-preprocessor-face))))
 
  ;; `(markdown-code-face   ((t ,(-functor-theme-alt'(:inherit font-lock-keyword-face) '(:inherit font-lock-string-face)))))
- `(markdown-code-face       ((t (:inherit font-lock-doc-face))))
- `(markdown-pre-face        ((t (:inherit markdown-code-face))))
- `(markdown-url-face        ((t (:inherit link))))
- `(markdown-header-face     ((t (:inherit font-lock-preprocessor-face :weight bold))))
- `(markdown-blockquote-face ((t (:foreground "#95c2c0" :weight normal :slant italic))))
+ `(markdown-code-face        ((t (:inherit font-lock-doc-face))))
+ `(markdown-inline-code-face ((t (:foreground "#d7afd7"))))
+ `(markdown-pre-face         ((t (:inherit markdown-code-face))))
+ `(markdown-url-face         ((t (:inherit link))))
+ `(markdown-header-face      ((t (:inherit font-lock-preprocessor-face :weight bold))))
+ `(markdown-blockquote-face  ((t (:foreground "#95c2c0" :weight normal :slant italic))))
 
  `(rst-literal    ((t (:inherit font-lock-doc-face))))
  `(rst-directive  ((t (:foreground "#d7afd7"))))
@@ -287,23 +288,23 @@
  '(message-header-to      ((t (:inherit font-lock-function-name-face))))
  '(message-header-other   ((t (:foreground "#d09f07"))))
 
- '(shr-link ((t (:foreground "#47bcb3" :underline t))))
+ '(shr-link ((t (:foreground "#30b0a6" :underline t))))
 
  '(highlight-indent-guides-character-face ((t (:foreground "#606060"))))
 
  '(company-preview                      ((t (:inherit default :background "#304540"))))
  '(company-preview-common               ((t (:inherit company-preview :slant italic))))
  '(company-tooltip                      ((t (:foreground "#bed3d3" :background "#252525"))))
- '(company-tooltip-annotation           ((t (:foreground "#2da49b"))))
- '(company-tooltip-annotation-selection ((t (:foreground "#2da49b"))))
+ '(company-tooltip-annotation           ((t (:foreground "#30b0a6"))))
+ '(company-tooltip-annotation-selection ((t (:foreground "#30b0a6"))))
  '(company-tooltip-common               ((t (:foreground "#bed3d3"))))
  '(company-tooltip-common-selection     ((t (:weight bold))))
- '(company-tooltip-mouse                ((t (:background "#2da49b" :foreground "#304540"))))
+ '(company-tooltip-mouse                ((t (:background "#30b0a6" :foreground "#304540"))))
  '(company-tooltip-search               ((t (:foreground "#d7afd7"))))
  '(company-tooltip-search-selection     ((t (:foreground "#d7afd7" :weight bold))))
  '(company-tooltip-selection            ((t (:background "#353535" :weight bold))))
- '(company-scrollbar-bg                 ((t (:background "#252525" :foreground "#2da49b"))))
- '(company-scrollbar-fg                 ((t (:foreground "#1b1b1b" :background "#2da49b"))))
+ '(company-scrollbar-bg                 ((t (:background "#252525" :foreground "#30b0a6"))))
+ '(company-scrollbar-fg                 ((t (:foreground "#1b1b1b" :background "#30b0a6"))))
 
  '(term-color-black   ((t (:foreground "#808080"))))
  '(term-color-red     ((t (:foreground "#cb5a37"))))
@@ -323,7 +324,7 @@
  '(ibuffer-title-face 'dired-header)
  '(coq-highlighted-hyps-bg "#374b4f")
  '(ansi-color-names-vector
-   ["#808080" "#cb5a37" "#8ba004" "#d09f07" "#499ec4" "#d7afd7" "#47bcb3" "#bed3d3"]))
+   ["#808080" "#cb5a37" "#8ba004" "#d09f07" "#499ec4" "#d7afd7" "#2da49b" "#bed3d3"]))
 
 ;;;###autoload
 (when load-file-name

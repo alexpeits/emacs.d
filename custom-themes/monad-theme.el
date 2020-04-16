@@ -33,11 +33,6 @@
   "A dark theme")
 
 (defvar monad-theme-distinct-haskell-constructor nil)
-(defvar monad-theme-alt nil)
-
-(defun -monad-theme-alt (reg alt)
-  "Return REG if `monad-theme-alt' is nil, else ALT."
-  (if monad-theme-alt alt reg))
 
 (custom-theme-set-faces
  'monad
@@ -79,9 +74,7 @@
  `(powerline-inactive1 ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2 ((t (:inherit powerline-inactive0))))
 
- `(minibuffer-prompt ((t (:weight bold :inherit ,(-monad-theme-alt
-                                                  'font-lock-function-name-face
-                                                  'font-lock-string-face)))))
+ `(minibuffer-prompt ((t (:weight bold :inherit font-lock-function-name-face))))
 
  '(persp-selected-face ((t (:underline t :weight bold))))
 
@@ -97,11 +90,11 @@
  '(font-lock-preprocessor-face      ((t (:foreground "#79c779"))))
  `(font-lock-comment-face           ((t (:foreground "#698080" :slant italic))))
  `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
- `(font-lock-function-name-face     ((t (:foreground ,(-monad-theme-alt "#00afaf" "#c46485")))))
+ `(font-lock-function-name-face     ((t (:foreground "#00afaf"))))
  `(font-lock-constant-face          ((t (:inherit font-lock-builtin-face))))
  `(font-lock-builtin-face           ((t (:foreground "#7dccf0"))))
  `(font-lock-keyword-face           ((t (:foreground "#a0bebe" :weight bold))))
- `(font-lock-string-face            ((t (:foreground ,(-monad-theme-alt "#c46485" "#00afaf")))))
+ `(font-lock-string-face            ((t (:foreground "#c46485"))))
  `(font-lock-doc-face               ((t (:inherit font-lock-string-face))))
  `(font-lock-type-face              ((t (:foreground "#819fc7"))))
  `(font-lock-variable-name-face     ((t (:inherit font-lock-builtin-face))))
@@ -185,10 +178,10 @@
  '(hi-blue    ((t (:background "#659fad" :foreground "black"))))
  '(hi-pink    ((t (:background "#c9717a" :foreground "black"))))
  '(hi-yellow  ((t (:background "#99986d" :foreground "black"))))
- '(hi-green-b ((t (:background "#324538" :foreground "#8ec19d" :weight bold))))
+ '(hi-green-b ((t (:background "#354a3c" :foreground "#8ec19d" :weight bold))))
  '(hi-blue-b  ((t (:background "#374b4f" :foreground "#8bc8d6" :weight bold))))
  '(hi-red-b   ((t (:background "#453237" :foreground "#cf7e8a" :weight bold))))
- '(hi-black-b ((t (:background "#3c3d2d" :foreground "#b5af82" :weight bold))))
+ '(hi-black-b ((t (:background "#444532" :foreground "#b5af82" :weight bold))))
 
  `(match ((t (:foreground "#b4e0de" :background "#004d4d"))))
 
@@ -247,6 +240,7 @@
  '(outline-6 ((t (:inherit outline-4))))
 
  `(markdown-code-face             ((t (:inherit font-lock-type-face))))
+ `(markdown-inline-code-face      ((t (:inherit font-lock-builtin-face))))
  `(markdown-pre-face              ((t (:inherit markdown-code-face))))
  `(markdown-url-face              ((t (:inherit link))))
  `(markdown-header-face           ((t (:inherit font-lock-string-face :weight bold))))
@@ -326,7 +320,7 @@
  '(company-scrollbar-bg                 ((t (:background "#252525" :foreground "#00afaf"))))
  '(company-scrollbar-fg                 ((t (:foreground "#1b1b1b" :background "#00afaf"))))
 
- '(term-color-black   ((t (:foreground "#404040"))))
+ '(term-color-black   ((t (:foreground "#808080"))))
  '(term-color-red     ((t (:foreground "#c46485"))))
  '(term-color-green   ((t (:foreground "#79c779"))))
  '(term-color-yellow  ((t (:foreground "#b5a52b"))))
@@ -344,7 +338,7 @@
  '(ibuffer-title-face 'dired-header)
  '(coq-highlighted-hyps-bg "#374b4f")
  '(ansi-color-names-vector
-   ["#404040" "#c46485" "#79c779" "#b5a52b" "#499ec4" "#819fc7" "#00afaf" "#b1cbcb"]))
+   ["#808080" "#c46485" "#79c779" "#b5a52b" "#499ec4" "#819fc7" "#00afaf" "#b1cbcb"]))
 
 ;;;###autoload
 (when load-file-name

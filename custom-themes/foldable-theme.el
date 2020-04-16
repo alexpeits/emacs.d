@@ -98,6 +98,19 @@
    `(rst-level-5   ((t (:inherit rst-level-1))))
    `(rst-level-6   ((t (:inherit rst-level-1))))
 
+   `(markup-gen-face        ((t (:inherit font-lock-string-face))))
+   `(markup-typewriter-face ((t (:inherit font-lock-constant-face))))
+   `(markup-verbatim-face   ((t (:inherit font-lock-constant-face))))
+   `(markup-meta-face       ((t (:inherit markup-gen-face))))
+   `(markup-list-face       ((t (:inherit font-lock-function-name-face))))
+   `(markup-meta-hide-face  ((t (:inherit markup-meta-face))))
+   `(markup-title-0-face    ((t (:inherit font-lock-preprocessor-face :weight bold))))
+   `(markup-title-1-face    ((t (:inherit markup-title-0-face))))
+   `(markup-title-2-face    ((t (:inherit markup-title-0-face))))
+   `(markup-title-3-face    ((t (:inherit markup-title-0-face))))
+   `(markup-title-4-face    ((t (:inherit markup-title-0-face))))
+   `(markup-title-5-face    ((t (:inherit markup-title-0-face))))
+
    ))
 
 (custom-theme-set-variables
