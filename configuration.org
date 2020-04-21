@@ -18,6 +18,7 @@
   - [[#anzu][anzu]]
   - [[#math-input][math input]]
   - [[#recentf][recentf]]
+  - [[#info-mode][info mode]]
   - [[#hi-lock--symbol-overlay][hi-lock & symbol overlay]]
   - [[#alignment][alignment]]
   - [[#highlight-keywords-in-some-modes][highlight keywords in some modes]]
@@ -858,6 +859,16 @@ buffer, close it."
   (setq recentf-max-saved-items 100))
 #+END_SRC
 
+** info mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package info
+  :bind (:map Info-mode-map
+              ("h" . backward-char)
+              ("j" . next-line)
+              ))
+#+END_SRC
+
 ** hi-lock & symbol overlay
 
 #+begin_src emacs-lisp
@@ -1369,7 +1380,7 @@ CWD is not in a git repo (or the git command is not found)."
             '(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
             '(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
             '(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
-            '(fill-column-indicator ((t (:foreground "#505050"))))
+            '(fill-column-indicator ((t (:foreground "#5a5a5a"))))
             )
            (my/hl-line-set-bg) (my/org-set-src-faces)
            (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
@@ -2540,6 +2551,7 @@ the current file."
    (setq evil-shift-width 2)))
 
 (use-package web-mode
+  :ensure t
   :mode (("\\.html\\'" . web-html-mode)
          ("\\.tsx\\'" . web-tsx-mode))
   :init
@@ -2784,16 +2796,15 @@ the current file."
   :ensure t
   :mode ("\\.dhall\\'" . dhall-mode)
   :init
-  (setq dhall-format-at-save nil)
+  (setq dhall-format-at-save nil
+        dhall-format-arguments '("--ascii"))
   :config
   (add-hook 'dhall-mode-hook (lambda () (setq indent-tabs-mode nil)))
   (my/define-major-mode-key 'dhall-mode "s" #'my/dhall-format-and-save))
 
 (defun my/dhall-format-and-save ()
   (interactive)
-  (if (executable-find "dhall")
-      (dhall-format-buffer)
-    (user-error "`dhall' executable not found"))
+  (dhall-format-buffer)
   (save-buffer))
 #+END_SRC
 
@@ -2920,33 +2931,49 @@ the current file."
 #+begin_src emacs-lisp
 (use-package deft
   :ensure t
-  :bind ("<f8>" . deft)
-  :commands (deft deft-cache-initialize deft-parse-title)
+  :bind (("<f8>" . deft)
+         ("C-x <f8>" . deft-find-file))
+  :commands (deft deft-cache-initialize
+              deft-parse-title deft-sort-files-by-mtime)
   :init
-  (setq deft-extensions '("md" "org" "txt")
+  (setq deft-directory (concat my/dropbox-dir "deft")
+        deft-recursive t
+        deft-extensions '("md" "org" "txt")
+        deft-ignore-file-regexp "_sidebar\.md\\|index\.md"
         deft-markdown-mode-title-level 1
         deft-use-filter-string-for-filename t
-        deft-directory (concat my/dropbox-dir "deft")
-        deft-recursive t
         deft-file-naming-rules '((noslash . "_")
                                  (nospace . "_")
                                  (case-fn . downcase)))
   (with-eval-after-load 'markdown-mode
-    (define-key markdown-mode-map (kbd "C-c <f8>") 'my/generate-deft-link)))
+    (define-key markdown-mode-map (kbd "C-c <f8>") 'my/generate-deft-link))
+
+  (defun my/deft-search ()
+    (interactive)
+    (counsel-rg ""
+                deft-directory
+                "-g !_sidebar.md -g !index.md -g !index.html -g !static/"))
+  (defalias 'ds 'my/deft-search)
+
+  :config
+  (advice-add 'deft-cache-update-all :after 'my/deft-docsify-write-sidebar))
 
 (defun my/get-deft-file-by-title ()
   (if (or (not (boundp 'deft-hash-mtimes)) (null deft-hash-mtimes))
       (deft-cache-initialize)
     (deft-cache-update-all))
-  (let* ((files (deft-find-all-files))
+  (let* ((files (deft-sort-files-by-mtime (deft-find-all-files)))
          (titles (mapcar 'deft-file-title files))
          (cands (-zip titles files))
          (title (completing-read "Deft file: " titles)))
     (assoc title cands)))
 
 (defun my/get-deft-file-by-filename ()
-  (let* ((name (completing-read "Deft file: " (deft-find-all-files-no-prefix)))
-         (dir (expand-file-name deft-directory))
+  (let* ((name
+          (string-trim-left
+           (completing-read "Deft file: " (deft-find-all-files-no-prefix))
+           "/"))
+         (dir (string-trim-right (expand-file-name deft-directory) "/"))
          (path (concat dir "/" name))
          (contents (with-temp-buffer
                      (insert-file-contents path)
@@ -2974,6 +3001,37 @@ instead of the title as seen by deft."
          (curdir (file-name-directory (buffer-file-name)))
          (link-path (file-relative-name path curdir)))
     (insert (format "[%s](%s)" link-text link-path))))
+
+(defun my/deft-docsify-sidebar-content ()
+  (let* ((files (deft-sort-files-by-mtime (deft-find-all-files)))
+         (titles (mapcar 'deft-file-title files))
+         (dd (expand-file-name deft-directory))
+         (paths (mapcar '(lambda (p) (file-relative-name p dd)) files))
+         (pairs (-zip titles paths)))
+    (setq foo pairs)
+    (-reduce-from
+     #'(lambda (acc pair)
+         (let* ((fname (car pair))
+                (path (cdr pair))
+                (link (format "[%s](%s)" fname path)))
+           (concat acc "- " link "\n")))
+     "- [Index](index.md)\n"
+     pairs)))
+
+(defun my/deft-docsify-write-sidebar ()
+  (let* ((dir (string-trim-right (expand-file-name deft-directory) "/"))
+         (fname "_sidebar.md")
+         (path (concat dir "/" fname)))
+    (with-temp-file path
+      (erase-buffer)
+      (insert (my/deft-docsify-sidebar-content)))))
+
+(defun my/wiki-refresh ()
+  (interactive)
+  (when (or (not (boundp 'deft-hash-mtimes)) (null deft-hash-mtimes))
+    (deft-cache-initialize))
+  (deft-cache-update-all)
+  (my/deft-docsify-write-sidebar))
 #+end_src
 
 ** elfeed
@@ -3199,14 +3257,19 @@ erc-modified-channels-alist. Should be executed on window change."
               ("N" . my/rg-open-ace-window)
               ("C-n" . next-line)
               ("C-p" . previous-line)
+              ("j" . next-line)
+              ("k" . previous-line)
               ("M-n" . rg-next-file)
               ("M-p" . rg-prev-file))
   :init
   (setq rg-group-result t
         rg-ignore-case 'smart)
+  (setq rg-custom-type-aliases
+        '(("coq" . "*.v")))
   (defalias 'rgp 'my/rg-project-or-ask)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
+  (rg-define-toggle "--word-regexp" "w")
   (rg-define-search my/rg-project-or-ask
     :query ask
     :format regexp
@@ -3462,12 +3525,7 @@ erc-modified-channels-alist. Should be executed on window change."
   :commands (swiper swiper-isearch swiper-all swiper-multi)
   :config
   ;; use regular isearch when in minibuffer
-  (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward)
-  ;; contrary to `swiper', `swiper-isearch' doesn't set the mark to the place
-  ;; where the search started from, this advice mitigates this issue
-  (defadvice swiper-isearch-action
-      (after advice-for-swiper-isearch-action activate)
-    (push-mark swiper--opoint t)))
+  (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward))
 
 ;; better fuzzy matching
 (use-package flx

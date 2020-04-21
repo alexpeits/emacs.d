@@ -50,9 +50,11 @@
  '(secondary-selection ((t (:inherit highlight))))
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
  '(link                ((t (:foreground "#56dbdb" :underline t))))
+ `(link-visited        ((t (:inherit link :foreground "#d7afd7"))))
  '(warning             ((t (:foreground "orange2" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
- '(fixed-pitch         ((t (:inherit default))))
+ '(fixed-pitch         ((t nil)))
+ '(fixed-pitch-serif   ((t nil)))
 
  ;; emacs >= 27
  '(fill-column-indicator ((t (:foreground "#494b4b"))))
@@ -65,25 +67,24 @@
  '(linum ((t (:foreground "#626868" :background "#202121"))))
 
  '(mode-line-buffer-id ((t (:weight bold))))
- ;; '(mode-line           ((t (:foreground "#c1eae2" :background "#005555" :box (:line-width 1 :color "#003535")))))
- ;; '(mode-line-inactive  ((t (:foreground "#387a71" :background "#272b2a" :box (:line-width 1 :color "#003535")))))
- '(mode-line           ((t (:foreground "#c1eae2" :background "#005555"))))
- '(mode-line-inactive  ((t (:foreground "#387a71" :background "#272b2a"))))
+ '(mode-line           ((t (:foreground "#c1eae2" :background "#005757" :box (:line-width 1 :color "#003a3a")))))
+ '(mode-line-inactive  ((t (:foreground "#498279" :background "#2c3233" :box (:line-width 1 :color "#003a3a")))))
 
  ;; `(powerline-active0               ((t (:background "#009672" :foreground "#f0f0f0"))))
  ;; `(powerline-active1               ((t (:background "#006f4d" :foreground "#f0f0f0"))))
  ;; `(powerline-active2               ((t (:background "#004444" :foreground "#f0f0f0"))))
  ;; `(powerline-inactive0             ((t (:background "#2a3634" :foreground "#3d857b"))))
- ;; '(powerline-active0-evil-insert   ((t (:inherit powerline-active0 :background "#69a800"))))
+ ;; '(powerline-active0-evil-insert   ((t (:inherit powerline-active0 :background "#64a100"))))
  ;; '(powerline-active0-evil-visual   ((t (:inherit powerline-active0 :background "#cc6d00"))))
  ;; '(powerline-active0-evil-replace  ((t (:inherit powerline-active0 :background "#870000"))))
- ;; '(powerline-active2-edited        ((t (:inherit powerline-active2 :background "#5c2020"))))
+ ;; '(powerline-active0-evil-operator ((t (:inherit powerline-active0 :background "#008dcf"))))
+ ;; '(powerline-active2-edited        ((t (:inherit powerline-active2 :background "#5c2020" :box (:line-width 1 :color "#470010")))))
  ;; '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#965656"))))
 
  `(powerline-active0               ((t (:background "#006553" :foreground "#c1eae2"))))
  `(powerline-active1               ((t (:background "#004c40" :foreground "#c1eae2"))))
  `(powerline-active2               ((t (:background "#003535" :foreground "#c1eae2"))))
- `(powerline-inactive0             ((t (:background "#242e2d" :foreground "#387a71"))))
+ `(powerline-inactive0             ((t (:background "#283231" :foreground "#3c7e75"))))
  `(powerline-inactive1             ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2             ((t (:inherit powerline-inactive0))))
  '(powerline-active0-evil-insert   ((t (:inherit powerline-active0 :background "#587300"))))
@@ -91,10 +92,8 @@
  '(powerline-active0-evil-replace  ((t (:inherit powerline-active0 :background "#730000"))))
  '(powerline-active0-evil-emacs    ((t (:inherit powerline-active0 :background "#805b00"))))
  '(powerline-active0-evil-operator ((t (:inherit powerline-active0 :background "#805b00"))))
- '(powerline-active2-edited        ((t (:inherit powerline-active2 :background "#4f0000"))))
- '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#915656"))))
- '(powerline-inactive1-edited      ((t (:inherit powerline-inactive0-edited))))
- '(powerline-inactive2-edited      ((t (:inherit powerline-inactive0-edited))))
+ '(powerline-active2-edited        ((t (:inherit powerline-active2 :background "#4f0000" :box (:line-width 1 :color "#3a000d")))))
+ ;; '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#915656"))))
 
  '(minibuffer-prompt ((t (:foreground "#12a89f" :weight bold))))
 
@@ -114,16 +113,16 @@
  `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
  `(font-lock-function-name-face     ((t (:foreground "#afd787"))))
  `(font-lock-constant-face          ((t (:foreground "#87d7af"))))
- `(font-lock-builtin-face           ((t (:foreground ,(-functor-theme-alt "#87d7ff" "#b4dbd3")))))
+ `(font-lock-builtin-face           ((t (:foreground ,(-functor-theme-alt "#87d7ff" "#86b8b5")))))
  `(font-lock-keyword-face           ((t ,(-functor-theme-alt '(:foreground "#30b0a6") '(:foreground "#86b8b5" :weight bold)))))
  `(font-lock-string-face            ((t (:foreground ,(-functor-theme-alt "#d7d7af" "#1da89f")))))
  `(font-lock-doc-face               ((t ,(-functor-theme-alt '(:foreground "#cacaa7") '(:inherit font-lock-string-face)))))
  `(font-lock-type-face              ((t (:foreground ,(-functor-theme-alt "#87d7d7" "#86b8b5")))))
  `(font-lock-variable-name-face     ((t (:inherit font-lock-builtin-face))))
 
- `(haskell-pragma-face         ((t (:foreground "#d7afd7"))))
+ `(haskell-pragma-face ((t (:foreground "#d7afd7"))))
+
  `(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
- `(purescript-pragma-face      ((t (:inherit haskell-pragma-face))))
 
  '(tuareg-font-lock-governing-face ((t (:foreground "#d7afd7"))))
  '(tuareg-font-lock-operator-face  ((t (:inherit font-lock-variable-name-face))))
@@ -212,6 +211,8 @@
  '(dired-flagged   ((t (:inherit hi-red-b))))
 
  `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
+
+ `(Info-quoted ((t (:inherit font-lock-type-face))))
 
  `(eww-valid-certificate   ((t (:foreground "#8bd067" :weight bold))))
  `(eww-invalid-certificate ((t (:foreground "#fb4933" :weight bold))))

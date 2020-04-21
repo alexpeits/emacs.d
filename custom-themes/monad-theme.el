@@ -49,9 +49,11 @@
  '(secondary-selection ((t (:inherit highlight))))
  '(show-paren-match    ((t (:background "#456665" :weight bold))))
  '(link                ((t (:foreground "#56dbdb" :underline t))))
+ `(link-visited        ((t (:inherit link :foreground "#d7afd7"))))
  '(warning             ((t (:foreground "orange2" :weight bold))))
  '(whitespace-trailing ((t (:background "#602020"))))
- '(fixed-pitch         ((t (:inherit default))))
+ '(fixed-pitch         ((t nil)))
+ '(fixed-pitch-serif   ((t nil)))
 
  ;; emacs >= 27
  '(fill-column-indicator ((t (:foreground "#494b4b"))))
@@ -65,7 +67,7 @@
 
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line           ((t (:foreground "#6abd17" :background "#2e342e"))))
- '(mode-line-inactive  ((t (:foreground "#676d61" :background "#262c26"))))
+ '(mode-line-inactive  ((t (:foreground "#676d61" :background "#292f29"))))
 
  `(powerline-active0               ((t (:inherit mode-line :background "#3c473c"))))
  `(powerline-active1               ((t (:inherit mode-line))))
@@ -74,14 +76,13 @@
  `(powerline-inactive1             ((t (:inherit powerline-inactive0))))
  `(powerline-inactive2             ((t (:inherit powerline-inactive0))))
  '(powerline-active0-evil-insert   ((t (:inherit powerline-active0 :foreground "#0dd1b8"))))
- '(powerline-active0-evil-visual   ((t (:inherit powerline-active0 :foreground "#2faef5"))))
+ '(powerline-active0-evil-visual   ((t (:inherit powerline-active0 :foreground "#bcbf0b"))))
  '(powerline-active0-evil-replace  ((t (:inherit powerline-active0 :foreground "#ed4563"))))
  '(powerline-active0-evil-emacs    ((t (:inherit powerline-active0 :foreground "#bcbf0b"))))
  '(powerline-active0-evil-operator ((t (:inherit powerline-active0 :foreground "#bcbf0b"))))
- '(powerline-active2-edited        ((t (:inherit powerline-active2 :foreground "#bd3e54"))))
- '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#915656"))))
- '(powerline-inactive1-edited      ((t (:inherit powerline-inactive0-edited))))
- '(powerline-inactive2-edited      ((t (:inherit powerline-inactive0-edited))))
+ '(powerline-active0-edited        ((t (:inherit powerline-active0 :foreground "#2faef5"))))
+ ;; '(powerline-active2-edited        ((t (:inherit powerline-active2 :foreground "#ba5466"))))
+ ;; '(powerline-inactive0-edited      ((t (:inherit powerline-inactive0 :foreground "#915656"))))
 
  `(minibuffer-prompt ((t (:weight bold :inherit font-lock-function-name-face))))
 
@@ -213,6 +214,8 @@
  '(dired-flagged   ((t (:inherit hi-red-b))))
 
  `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
+
+ `(Info-quoted ((t (:inherit font-lock-type-face))))
 
  `(eww-valid-certificate   ((t (:inherit font-lock-preprocessor-face :weight bold))))
  `(eww-invalid-certificate ((t (:foreground "#fb4933" :weight bold))))

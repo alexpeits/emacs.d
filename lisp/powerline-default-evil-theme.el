@@ -92,6 +92,10 @@
     (operator . powerline-active0-evil-operator)
     ))
 
+(defun powerline-default-evil-theme-buffer-modified-p ()
+  (and (not (string-prefix-p "*" (buffer-name)))
+       (buffer-modified-p)))
+
 (defun powerline-default-evil-theme ()
   "Powerline default evil theme."
   (interactive)
@@ -108,16 +112,20 @@
              (face0
               (if active
                   (or (cdr (assoc evil-state powerline-default-evil-theme-state-faces))
-                      (if (buffer-modified-p) 'powerline-active0-edited 'powerline-active0))
-                (if (buffer-modified-p) 'powerline-inactive0-edited 'powerline-inactive0)))
+                      (if (powerline-default-evil-theme-buffer-modified-p)
+                          'powerline-active0-edited
+                        'powerline-active0))
+                (if (powerline-default-evil-theme-buffer-modified-p)
+                    'powerline-inactive0-edited
+                  'powerline-inactive0)))
              (face1
-              (if active
-                  (if (buffer-modified-p) 'powerline-active1-edited 'powerline-active1)
-                (if (buffer-modified-p) 'powerline-inactive1-edited 'powerline-inactive1)))
+              (if (powerline-default-evil-theme-buffer-modified-p)
+                  (if active 'powerline-active1-edited 'powerline-inactive1-edited)
+                (if active 'powerline-active1 'powerline-inactive1)))
              (face2
-              (if active
-                  (if (buffer-modified-p) 'powerline-active2-edited 'powerline-active2)
-                (if (buffer-modified-p) 'powerline-inactive2-edited 'powerline-inactive2)))
+              (if (powerline-default-evil-theme-buffer-modified-p)
+                  (if active 'powerline-active2-edited 'powerline-inactive2-edited)
+                (if active 'powerline-active2 'powerline-inactive2)))
              (face2-hud (if active 'powerline-active2 'powerline-inactive2))
 
              (separator-left (intern (format "powerline-%s-%s"
@@ -156,7 +164,7 @@
                         (powerline-raw "%3c" face1 'r)
                         (funcall separator-right face1 face0)
                         (powerline-raw " " face0)
-                        (powerline-raw "%6p" face0 'r)
+                        (powerline-raw "%p" face0 'r)
                         (when powerline-display-hud
                           (powerline-hud face0 face2-hud))
                         (powerline-fill face0 0)

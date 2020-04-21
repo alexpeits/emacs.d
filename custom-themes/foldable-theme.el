@@ -44,6 +44,7 @@
    '(whitespace-trailing ((t (:background "#ffcdcd"))))
    '(region              ((t (:background "#b1d8e6"))))
    '(fixed-pitch         ((t nil)))
+   '(fixed-pitch-serif   ((t nil)))
    '(secondary-selection ((t (:background "lemon chiffon"))))
 
    `(fill-column-indicator ((t (:foreground ,h5))))
@@ -87,6 +88,8 @@
    '(powerline-inactive2 ((t (:background "grey90" :foreground "grey50" :weight normal))))
 
    '(sh-heredoc ((t (:inherit font-lock-type-face))))
+
+   `(Info-quoted ((t (:inherit font-lock-type-face))))
 
    `(rst-block     ((t (:inherit font-lock-doc-face))))
    `(rst-literal   ((t (:inherit font-lock-constant-face))))
