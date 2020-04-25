@@ -2798,14 +2798,36 @@ the current file."
   :init
   (setq dhall-format-at-save nil
         dhall-format-arguments '("--ascii"))
+
+  (with-eval-after-load 'smartparens
+    (with-eval-after-load 'dhall-mode
+      (sp-local-pair 'dhall-mode "\\(" ")")))
+
   :config
-  (add-hook 'dhall-mode-hook (lambda () (setq indent-tabs-mode nil)))
-  (my/define-major-mode-key 'dhall-mode "s" #'my/dhall-format-and-save))
+  (my/add-hooks
+   '(dhall-mode-hook)
+   (setq indent-tabs-mode nil)
+   (setq evil-shift-width 2))
+  (my/define-major-mode-key 'dhall-mode "d" #'my/dhall-browse-docs)
+  (my/define-major-mode-key 'dhall-mode "s" #'my/dhall-format-and-save)
+  (my/define-major-mode-key 'dhall-mode "t" #'my/dhall-show-type))
 
 (defun my/dhall-format-and-save ()
   (interactive)
   (dhall-format-buffer)
   (save-buffer))
+
+(defun my/dhall-show-type ()
+  (interactive)
+  (let ((tp (dhall-buffer-type))
+        (errbuf (get-buffer "*dhall-buffer-type-errors*")))
+    (if (null tp)
+        (display-buffer-below-selected errbuf '(nil (inhibit-same-window .t)))
+      (message tp))))
+
+(defun my/dhall-browse-docs ()
+  (interactive)
+  (browse-url "https://docs.dhall-lang.org/references/Built-in-types.html"))
 #+END_SRC
 
 ** bazel
@@ -2889,10 +2911,8 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (use-package yaml-mode
   :ensure t
-  :mode (("\\.yaml\\'" . yaml-mode)
-         ("\\.yml\\'" . yaml-mode)
-         ("\\.yaml.template\\'" . yaml-mode)
-         ("\\.yml.template\\'" . yaml-mode)))
+  :mode (("\\.ya?ml\\'" . yaml-mode)
+         ("\\.ya?ml.template\\'" . yaml-mode)))
 
 (use-package flycheck-yamllint
   :ensure t
