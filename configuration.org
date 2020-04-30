@@ -2531,6 +2531,8 @@ the current file."
 (use-package rjsx-mode
   :ensure t
   :mode (("\\.jsx?\\'" . rjsx-mode))
+  :init
+  (setq js2-mode-show-strict-warnings nil)
   :config
   (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
   (my/add-hooks
@@ -3346,6 +3348,7 @@ erc-modified-channels-alist. Should be executed on window change."
   :config
   (setq company-backends (delete 'company-dabbrev company-backends))
   (setq company-backends (delete 'company-capf company-backends))
+  (add-to-list 'company-backends 'company-elisp)
   (add-to-list 'company-backends 'company-anaconda)
   (add-to-list 'company-backends 'company-files))
 

@@ -2,6 +2,7 @@
 ;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
 (setq gc-cons-threshold 100000000
       gc-cons-percentage 0.6
+      inhibit-compacting-font-caches t
       tmp--file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
 
@@ -9,6 +10,7 @@
           (lambda ()
             (setq gc-cons-threshold 800000
                   gc-cons-percentage 0.1
+                  inhibit-compacting-font-caches nil
                   file-name-handler-alist tmp--file-name-handler-alist)
             (makunbound 'tmp--file-name-handler-alist)
             (message "Emacs started in %s with %d garbage collections."
