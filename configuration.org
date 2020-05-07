@@ -1652,6 +1652,7 @@ CWD is not in a git repo (or the git command is not found)."
 (use-package git-gutter+
   :ensure t
   :unless is-gui
+  :diminish
   :hook (after-init . global-git-gutter+-mode))
 #+END_SRC
 
@@ -3553,6 +3554,8 @@ erc-modified-channels-alist. Should be executed on window change."
   ;; :bind ("C-s" . my/swiper)
   :bind ("C-s" . my/swiper-isearch)
   :commands (swiper swiper-isearch swiper-all swiper-multi)
+  :init
+  (defalias 'swi 'my/swiper-isearch)
   :config
   ;; use regular isearch when in minibuffer
   (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward))
@@ -4091,6 +4094,7 @@ the minibuffer."
                   (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2))))
             (st (pcase (vc-state fname)
                   ('up-to-date (propertize "✔" 'face 'compilation-info))
+                  ('added (propertize "+" 'face '(:inherit compilation-info :weight bold)))
                   ('edited (propertize "•" 'face 'compilation-warning))
                   (_ "?"))))
         (format "%s %s" br st)))))

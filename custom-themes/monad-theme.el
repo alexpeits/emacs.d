@@ -67,7 +67,7 @@
 
  '(mode-line-buffer-id ((t (:weight bold))))
  '(mode-line           ((t (:foreground "#6abd17" :background "#2e342e"))))
- '(mode-line-inactive  ((t (:foreground "#676d61" :background "#292f29"))))
+ '(mode-line-inactive  ((t (:foreground "#676d61" :background "#292f2a"))))
 
  `(powerline-active0               ((t (:inherit mode-line :background "#3c473c"))))
  `(powerline-active1               ((t (:inherit mode-line))))
