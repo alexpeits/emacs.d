@@ -18,7 +18,6 @@
   - [[#anzu][anzu]]
   - [[#math-input][math input]]
   - [[#recentf][recentf]]
-  - [[#info-mode][info mode]]
   - [[#hi-lock--symbol-overlay][hi-lock & symbol overlay]]
   - [[#alignment][alignment]]
   - [[#highlight-keywords-in-some-modes][highlight keywords in some modes]]
@@ -45,6 +44,13 @@
   - [[#evil-packages-that-can-be-used-without-evil-mode][evil packages that can be used without evil-mode]]
 - [[#hybrid-input-mode][Hybrid input mode]]
 - [[#spell-checking][Spell checking]]
+- [[#buffer--window-management][Buffer & window management]]
+  - [[#ibuffer][ibuffer]]
+  - [[#avy][avy]]
+  - [[#ace-window][ace-window]]
+  - [[#buffer-move][buffer-move]]
+  - [[#zoom][zoom]]
+- [[#dired][Dired]]
 - [[#nix][nix]]
 - [[#direnv][direnv]]
 - [[#haskell][Haskell]]
@@ -58,8 +64,6 @@
 - [[#markdown][Markdown]]
 - [[#other-prog-modes][Other prog modes]]
   - [[#idris][Idris]]
-  - [[#agda][Agda]]
-  - [[#rust][Rust]]
   - [[#cc][c/c++]]
   - [[#dhall][dhall]]
   - [[#bazel][bazel]]
@@ -69,8 +73,8 @@
   - [[#elasticsearch][elasticsearch]]
   - [[#json][json]]
   - [[#yaml][yaml]]
-  - [[#asciidoc][asciidoc]]
   - [[#restructuredtext][reStructuredText]]
+  - [[#asciidoc][asciidoc]]
 - [[#other-major-modes][Other major modes]]
   - [[#deft][deft]]
   - [[#elfeed][elfeed]]
@@ -86,16 +90,9 @@
 - [[#projectile][Projectile]]
 - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
 - [[#yasnippet][Yasnippet]]
-- [[#dired][Dired]]
-- [[#other-window-management][Other window management]]
-  - [[#ibuffer][ibuffer]]
-  - [[#avy][Avy]]
-  - [[#ace-window][Ace-window]]
-  - [[#buffer-move][buffer-move]]
-  - [[#zoom][zoom]]
 - [[#modeline][Modeline]]
-  - [[#regular-modeline][Regular modeline]]
   - [[#selected-window--focused-frame][Selected window & focused frame]]
+  - [[#regular-modeline][Regular modeline]]
   - [[#experimental-new-modeline][Experimental new modeline]]
   - [[#powerline][Powerline]]
 - [[#org-mode][Org-mode]]
@@ -103,6 +100,7 @@
   - [[#per-workstation-setup][Per-workstation setup]]
   - [[#performance][Performance]]
   - [[#global-setup][Global setup]]
+  - [[#custom][custom]]
 
 * Variables and PATH
 
@@ -178,10 +176,6 @@
 * Various utility functions
 
 #+BEGIN_SRC emacs-lisp
-(defmacro comment (&rest body)
-  "Comment out one or more s-expressions."
-  nil)
-
 (defmacro my/add-hooks (hooks &rest body)
   `(dolist (hook ,hooks)
      (add-hook hook (lambda () ,@body))))
@@ -198,13 +192,6 @@
      (let ((split-height-threshold ,height)
            (split-width-threshold ,width))
        (apply (quote ,f) args))))
-
-(defmacro my/case-prefix-arg (without-arg with-arg)
-  `(lambda (arg)
-     (interactive "P")
-     (if arg
-         (call-interactively (quote ,with-arg))
-       (call-interactively (quote ,without-arg)))))
 
 ;; what it says
 (defun my/revert-all-buffers (also-git)
@@ -238,13 +225,6 @@ modeline)."
 
 (defalias 'rb  'revert-buffer)
 (defalias 'rab 'my/revert-all-buffers)
-
-;; read file lines into a list
-(defun my/read-file-into-list (file-path)
-  "Return a list of lines of a file at `file-path'."
-  (with-temp-buffer
-    (insert-file-contents file-path)
-    (split-string (buffer-string) "\n" t)))
 
 (defun my/indent-region-or-buffer ()
   "Indent a region if selected, otherwise the whole buffer."
@@ -389,13 +369,13 @@ With a prefix argument, open using `find-file-other-window'."
         (funcall find-file-func (concat (file-name-as-directory dir) file))
       (message "No matching file found"))))
 
-(defun my/line-numbers (arg)
+(defun my/line-numbers (relative)
   (interactive "P")
   (if (< emacs-major-version 26)
       (call-interactively 'linum-mode)
     (if display-line-numbers
         (setq display-line-numbers nil)
-      (if arg
+      (if relative
           (setq display-line-numbers 'relative)
         (setq display-line-numbers t)))))
 
@@ -860,16 +840,6 @@ buffer, close it."
   (setq recentf-max-saved-items 100))
 #+END_SRC
 
-** info mode
-
-#+BEGIN_SRC emacs-lisp
-(use-package info
-  :bind (:map Info-mode-map
-              ("h" . backward-char)
-              ("j" . next-line)
-              ))
-#+END_SRC
-
 ** hi-lock & symbol overlay
 
 #+begin_src emacs-lisp
@@ -1111,25 +1081,16 @@ buffer, close it."
   (defun my/eshell-clear ()
     (interactive)
     "Clear the eshell buffer."
-    (let ((eshell-buffer-maximum-lines (if my/eshell-prompt-multiline 1 0)))
+    (let ((eshell-buffer-maximum-lines 0))
       (eshell-truncate-buffer)))
-
-  ;; toggle between single line/multiline prompt
-  (defun eshell/sp ()
-    "Clear the eshell buffer."
-    (setq my/eshell-prompt-multiline (not my/eshell-prompt-multiline))
-    nil)
 
   (setq eshell-destroy-buffer-when-process-dies t
         eshell-history-size 1024
         eshell-prompt-regexp "^[^#$]* [#$] ")
 
-  (defvar my/eshell-prompt-multiline nil)
-
   (setq eshell-prompt-function
         (lambda ()
           (concat
-           (propertize (if my/eshell-prompt-multiline "┌─╼ " "") 'face 'font-lock-type-face)
            (propertize
             ((lambda (p-lst)
                (if (> (length p-lst) 3)
@@ -1149,15 +1110,16 @@ buffer, close it."
             'face
             'font-lock-type-face)
            (or (curr-dir-git-branch-string (eshell/pwd)))
-           (propertize (if my/eshell-prompt-multiline "\n└╼ " " ") 'face 'font-lock-type-face)
+           " "
            (propertize "$" 'face 'font-lock-function-name-face)
            (propertize " " 'face 'default))))
   :config
+  ; Don't ask, just save
   (if (boundp 'eshell-save-history-on-exit)
-      (setq eshell-save-history-on-exit t)) ; Don't ask, just save
+      (setq eshell-save-history-on-exit t))
+  ; For older(?) version
   (if (boundp 'eshell-ask-to-save-history)
-      (setq eshell-ask-to-save-history 'always)) ; For older(?) version
-  )
+      (setq eshell-ask-to-save-history 'always)))
 
 (use-package em-smart
   :after eshell
@@ -2102,6 +2064,205 @@ If COUNT is given, move COUNT - 1 lines downward first."
             (lambda () (add-hook 'hack-local-variables-hook 'flyspell-buffer))))
 #+END_SRC
 
+* Buffer & window management
+** ibuffer
+
+#+begin_src emacs-lisp
+(use-package ibuffer
+  :init
+  ;; `/ R` to toggle showing these groups
+  ;; `/ \` to disable
+  (setq-default ibuffer-saved-filter-groups
+                `(("Default"
+                   ("rg" (name . "\*rg.*\*"))
+                   ("Dired" (mode . dired-mode))
+                   ("Scratch" (name . "\*scratch.*"))
+                   ("Temporary" (name . "\*.*\*"))
+                   )))
+  (setq ibuffer-show-empty-filter-groups nil)
+  :config
+  (define-key ibuffer-mode-map (kbd "M-o") nil)
+  (global-set-key (kbd "C-x C-b") 'ibuffer)
+  (add-hook 'ibuffer-mode-hook #'(lambda () (ibuffer-auto-mode 1))))
+#+end_src
+
+** avy
+
+#+BEGIN_SRC emacs-lisp
+(use-package avy
+  :ensure t
+  :bind ("C-c i" . avy-goto-line))
+#+END_SRC
+
+** ace-window
+
+#+BEGIN_SRC emacs-lisp
+(use-package ace-window
+  :ensure t
+  :bind ("C-c o" . ace-window)
+  :init
+  (setq aw-dispatch-always nil
+        aw-keys (string-to-list "asdfghjkl;"))
+  :config
+  (custom-set-faces
+   '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.8))))))
+#+END_SRC
+
+** buffer-move
+
+#+BEGIN_SRC emacs-lisp
+(use-package buffer-move
+  :ensure t
+  :bind (("<C-S-up>" . buf-move-up)
+         ("<C-S-down>" . buf-move-down)
+         ("<C-S-left>" . buf-move-left)
+         ("<C-S-right>" . buf-move-right)))
+#+END_SRC
+
+** zoom
+
+#+begin_src emacs-lisp
+(use-package zoom
+  :ensure t
+  :bind ("M-+" . zoom)
+  :init
+  (setq zoom-size '(190 . 92)))
+#+end_src
+
+* Dired
+
+#+BEGIN_SRC emacs-lisp
+(use-package dired
+  :bind (:map dired-mode-map
+              ("j" . dired-next-line)
+              ("J" . dired-next-dirline)
+              ("k" . dired-previous-line)
+              ("K" . dired-prev-dirline)
+              ("h" . backward-char)
+              ("l" . forward-char)
+              ("C-c n" . my/dired-find-file-ace)
+              ("M-j" . my/dired-file-jump-from-here)
+              ("M-u" . dired-up-directory)
+              ("C-c C-q" . my/dired-kill-all-buffers))
+  :init
+  ;; hide files being edited & flycheck files from dired
+  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
+        dired-omit-verbose nil)
+  :config
+  (add-hook 'dired-mode-hook #'auto-revert-mode)
+  (add-hook 'dired-mode-hook #'dired-omit-mode)
+
+  (define-key dired-mode-map
+    (kbd "C-c v")
+    (my/control-function-window-split
+     dired-find-file-other-window
+     nil 0))
+  (define-key dired-mode-map
+    (kbd "C-c s")
+    (my/control-function-window-split
+     dired-find-file-other-window
+     0 nil)))
+
+(use-package dired-sidebar
+  :ensure t
+  :commands (dired-sidebar-hide-sidebar
+             dired-sidebar-showing-sidebar-p
+             dired-sidebar-jump-to-sidebar
+             dired-sidebar-toggle-sidebar
+             dired-sidebar-toggle-with-current-directory)
+  :bind (("C-\\" . my/dired-sidebar-smart-toggle)
+         :map dired-sidebar-mode-map
+         ("M-u" . dired-sidebar-up-directory))
+  :init
+  (setq dired-sidebar-theme 'none))
+
+(defun my/dired-sidebar-smart-toggle (curdir)
+  (interactive "P")
+  (if (eq major-mode 'dired-sidebar-mode)
+      (dired-sidebar-hide-sidebar)
+    (if (dired-sidebar-showing-sidebar-p)
+        (dired-sidebar-jump-to-sidebar)
+      (if curdir
+          (dired-sidebar-toggle-with-current-directory)
+        (dired-sidebar-toggle-sidebar)))))
+
+(use-package dired-subtree
+  :ensure t
+  :after dired
+  :bind (:map dired-mode-map
+              ("<tab>" . dired-subtree-toggle)
+              ("TAB" . dired-subtree-toggle)))
+
+(use-package dired-filter
+  :ensure t
+  :after dired)
+
+(use-package dired-git-info
+  :ensure t
+  :after dired
+  :bind (:map dired-mode-map (")" . dired-git-info-mode))
+  :commands (dired-git-info-mode))
+
+(defun my/dired-find-file-ace ()
+  (interactive)
+  (let ((find-file-run-dired t)
+        (fname (dired-get-file-for-visit)))
+    (if (ace-select-window)
+        (find-file fname))))
+
+(defun my/dired-file-jump-from-here ()
+  (interactive)
+  (let ((find-file-run-dired t)
+        (fname (dired-get-file-for-visit)))
+    (my/counsel-file-jump-from-here fname)))
+
+(defun my/dired-kill-all-buffers ()
+  (interactive)
+  (mapc (lambda (buf)
+          (when (eq 'dired-mode
+                    (buffer-local-value 'major-mode buf))
+            (kill-buffer buf)))
+        (buffer-list)))
+
+(use-package dired-x
+  :after dired
+  :init
+  (if is-mac (setq dired-use-ls-dired nil)))
+#+END_SRC
+
+#+begin_src emacs-lisp
+;; https://gist.github.com/surajacharya/4127526
+(defun my/git-grep-dired (repo wildcards regexp)
+  "Find Git-controlled files in DIR with a name like WILDCARDS containing a regexp REGEXP and start Dired on output."
+  (interactive "DGit-grep (directory): \nsGit-grep (filename wildcard(s), e.g. *.xml): \nsGit-grep (grep regexp): ")
+  (setq repo (file-name-as-directory (expand-file-name repo)))
+  (switch-to-buffer (concat "*Git Grep " repo "*"))
+  (fundamental-mode)
+  (setq buffer-read-only nil)
+  (erase-buffer)
+  (setq default-directory repo)
+  (let ((cmd (format "git --git-dir %s/.git ls-files -z%s | xargs -0 grep -lZ -- %s | xargs -0 ls -l"
+                     repo
+                     (apply 'concat (mapcar (lambda (s) (concat " " (shell-quote-argument s))) (split-string wildcards)))
+                     (shell-quote-argument regexp))))
+    (insert " " cmd "\n " repo ":\n")
+    (call-process-shell-command (concat cmd " | sed -e 's/^/ /g'") nil t))
+  (dired-mode)
+
+  ;; (dired-build-subdir-alist)
+  ;; From find-dired:
+  ;; Set subdir-alist so that Tree Dired will work:
+  (if (fboundp 'dired-simple-subdir-alist)
+      ;; will work even with nested dired format (dired-nstd.el,v 1.15
+      ;; and later)
+      (dired-simple-subdir-alist)
+    ;; else we have an ancient tree dired (or classic dired, where
+    ;; this does no harm)
+    (set (make-local-variable 'dired-subdir-alist)
+         (list (cons default-directory (point-min-marker)))))
+  (goto-line 2))
+#+end_src
+
 * nix
 
 #+BEGIN_SRC emacs-lisp
@@ -2735,63 +2896,6 @@ the current file."
   :mode ("\\.idr\\'" . idris-mode))
 #+END_SRC
 
-** Agda
-
-#+BEGIN_SRC emacs-lisp
-(defvar my/agda-mode-path
-  (expand-file-name
-   (concat user-emacs-directory "lisp/agda-mode")))
-
-(defvar my/agda-path "agda")
-
-(use-package agda2-mode
-  :if (and (file-directory-p my/agda-mode-path)
-           (executable-find my/agda-path))
-  :load-path my/agda-mode-path
-  :mode ("\\.l?agda\\'" . agda2-mode)
-  :init
-  (setq agda2-program-name my/agda-path))
-#+END_SRC
-
-** Rust
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package rust-mode
-  :ensure t
-  :mode ("\\.rs\\'" . rust-mode)
-  :init
-  (defvar my/rust-sysroot  "~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu")
-  (defvar my/rust-src-path (concat my/rust-sysroot "/lib/rustlib/src/rust/src"))
-  (setq racer-cmd "~/.cargo/bin/racer")
-  (setq racer-rust-src-path my/rust-src-path)
-  (setenv "RUST_SRC_PATH" my/rust-src-path)
-  (setq cargo-process--custom-path-to-bin "~/.cargo/bin")
-  :config
-  (add-hook 'rust-mode-hook 'eldoc-mode)
-  (my/define-major-mode-key 'rust-mode "f" 'rust-format-buffer)
-  (my/define-major-mode-key 'rust-mode "s" 'my/rust-format-and-save))
-
-(defun my/rust-format-and-save ()
-  (interactive)
-  (call-interactively 'rust-format-buffer)
-  (save-buffer))
-
-(use-package racer
-  :ensure t
-  :after rust-mode
-  :hook (rust-mode . racer-mode))
-
-(use-package cargo
-  :ensure t
-  :after rust-mode
-  :hook (rust-mode . cargo-minor-mode))
-
-(use-package flycheck-rust
-  :ensure t
-  :after (flycheck rust-mode)
-  :hook (flycheck-mode . flycheck-rust-setup))
-#+END_SRC
-
 ** c/c++
 
 #+BEGIN_SRC emacs-lisp
@@ -2931,14 +3035,6 @@ the current file."
   :hook (yaml-mode . flycheck-yamllint-setup))
 #+END_SRC
 
-** asciidoc
-
-#+BEGIN_SRC emacs-lisp
-(use-package adoc-mode
-  :ensure t
-  :mode ("\\.adoc\\'" . adoc-mode))
-#+END_SRC
-
 ** reStructuredText
 
 #+BEGIN_SRC emacs-lisp
@@ -2953,6 +3049,14 @@ the current file."
   (my/add-hooks
    '(rst-mode-hook)
    (setq evil-shift-width rst-indent-width)))
+#+END_SRC
+
+** asciidoc
+
+#+BEGIN_SRC emacs-lisp
+(use-package adoc-mode
+  :ensure t
+  :mode ("\\.adoc\\'" . adoc-mode))
 #+END_SRC
 
 * Other major modes
@@ -3828,212 +3932,29 @@ the minibuffer."
   (add-hook 'prog-mode-hook #'yas-minor-mode))
 #+END_SRC
 
-* Dired
-
-#+BEGIN_SRC emacs-lisp
-(use-package dired
-  :bind (:map dired-mode-map
-              ("j" . dired-next-line)
-              ("J" . dired-next-dirline)
-              ("k" . dired-previous-line)
-              ("K" . dired-prev-dirline)
-              ("h" . backward-char)
-              ("l" . forward-char)
-              ("C-c n" . my/dired-find-file-ace)
-              ("M-j" . my/dired-file-jump-from-here)
-              ("M-u" . dired-up-directory)
-              ("C-c C-q" . my/dired-kill-all-buffers))
-  :init
-  ;; hide files being edited + flycheck files from dired
-  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
-        dired-omit-verbose nil)
-  :config
-  (add-hook 'dired-mode-hook #'auto-revert-mode)
-  (add-hook 'dired-mode-hook #'dired-omit-mode)
-
-  (define-key dired-mode-map
-    (kbd "C-c v")
-    (my/control-function-window-split
-     dired-find-file-other-window
-     nil 0))
-  (define-key dired-mode-map
-    (kbd "C-c s")
-    (my/control-function-window-split
-     dired-find-file-other-window
-     0 nil)))
-
-(use-package dired-sidebar
-  :ensure t
-  :commands (dired-sidebar-hide-sidebar
-             dired-sidebar-showing-sidebar-p
-             dired-sidebar-jump-to-sidebar
-             dired-sidebar-toggle-sidebar
-             dired-sidebar-toggle-with-current-directory)
-  :bind (("C-\\" . my/dired-sidebar-smart-toggle)
-         :map dired-sidebar-mode-map
-         ("M-u" . dired-sidebar-up-directory))
-  :init
-  (setq dired-sidebar-theme 'none))
-
-(defun my/dired-sidebar-smart-toggle (curdir)
-  (interactive "P")
-  (if (eq major-mode 'dired-sidebar-mode)
-      (dired-sidebar-hide-sidebar)
-    (if (dired-sidebar-showing-sidebar-p)
-        (dired-sidebar-jump-to-sidebar)
-      (if curdir
-          (dired-sidebar-toggle-with-current-directory)
-        (dired-sidebar-toggle-sidebar)))))
-
-(use-package dired-subtree
-  :ensure t
-  :after dired
-  :bind (:map dired-mode-map
-              ("<tab>" . dired-subtree-toggle)
-              ("TAB" . dired-subtree-toggle)))
-
-(use-package dired-filter
-  :ensure t
-  :after dired)
-
-(use-package dired-git-info
-  :ensure t
-  :after dired
-  :bind (:map dired-mode-map (")" . dired-git-info-mode))
-  :commands (dired-git-info-mode))
-
-(defun my/dired-find-file-ace ()
-  (interactive)
-  (let ((find-file-run-dired t)
-        (fname (dired-get-file-for-visit)))
-    (if (ace-select-window)
-        (find-file fname))))
-
-(defun my/dired-file-jump-from-here ()
-  (interactive)
-  (let ((find-file-run-dired t)
-        (fname (dired-get-file-for-visit)))
-    (my/counsel-file-jump-from-here fname)))
-
-(defun my/dired-persistent-buffer ()
-  (interactive)
-  (call-interactively 'dired)
-  (use-local-map (copy-keymap dired-mode-map))
-  (local-set-key (kbd "RET") #'my/dired-find-file-ace))
-
-(defun my/dired-kill-all-buffers ()
-  (interactive)
-  (mapc (lambda (buf)
-          (when (eq 'dired-mode
-                    (buffer-local-value 'major-mode buf))
-            (kill-buffer buf)))
-        (buffer-list)))
-
-(use-package dired-x
-  :after dired
-  :init
-  (if is-mac (setq dired-use-ls-dired nil)))
-#+END_SRC
-
-#+begin_src emacs-lisp
-;; https://gist.github.com/surajacharya/4127526
-(defun my/git-grep-dired (repo wildcards regexp)
-  "Find Git-controlled files in DIR with a name like WILDCARDS containing a regexp REGEXP and start Dired on output."
-  (interactive "DGit-grep (directory): \nsGit-grep (filename wildcard(s), e.g. *.xml): \nsGit-grep (grep regexp): ")
-  (setq repo (file-name-as-directory (expand-file-name repo)))
-  (switch-to-buffer (concat "*Git Grep " repo "*"))
-  (fundamental-mode)
-  (setq buffer-read-only nil)
-  (erase-buffer)
-  (setq default-directory repo)
-  (let ((cmd (format "git --git-dir %s/.git ls-files -z%s | xargs -0 grep -lZ -- %s | xargs -0 ls -l"
-                     repo
-                     (apply 'concat (mapcar (lambda (s) (concat " " (shell-quote-argument s))) (split-string wildcards)))
-                     (shell-quote-argument regexp))))
-    (insert " " cmd "\n " repo ":\n")
-    (call-process-shell-command (concat cmd " | sed -e 's/^/ /g'") nil t))
-  (dired-mode)
-
-  ;; (dired-build-subdir-alist)
-  ;; From find-dired:
-  ;; Set subdir-alist so that Tree Dired will work:
-  (if (fboundp 'dired-simple-subdir-alist)
-      ;; will work even with nested dired format (dired-nstd.el,v 1.15
-      ;; and later)
-      (dired-simple-subdir-alist)
-    ;; else we have an ancient tree dired (or classic dired, where
-    ;; this does no harm)
-    (set (make-local-variable 'dired-subdir-alist)
-         (list (cons default-directory (point-min-marker)))))
-  (goto-line 2))
-#+end_src
-
-* Other window management
-** ibuffer
-
-#+begin_src emacs-lisp
-(use-package ibuffer
-  :init
-  ;; `/ R` to toggle showing these groups
-  ;; `/ \` to disable
-  (setq-default ibuffer-saved-filter-groups
-                `(("Default"
-                   ("rg" (name . "\*rg.*\*"))
-                   ("Dired" (mode . dired-mode))
-                   ("Scratch" (name . "\*scratch.*"))
-                   ("Temporary" (name . "\*.*\*"))
-                   )))
-  (setq ibuffer-show-empty-filter-groups nil)
-  :config
-  (define-key ibuffer-mode-map (kbd "M-o") nil)
-  (global-set-key (kbd "C-x C-b") 'ibuffer)
-  (add-hook 'ibuffer-mode-hook #'(lambda () (ibuffer-auto-mode 1))))
-#+end_src
-
-** Avy
-
-#+BEGIN_SRC emacs-lisp
-(use-package avy
-  :ensure t
-  :bind ("C-c i" . avy-goto-line))
-#+END_SRC
-
-** Ace-window
-
-#+BEGIN_SRC emacs-lisp
-(use-package ace-window
-  :ensure t
-  :bind ("C-c o" . ace-window)
-  :init
-  (setq aw-dispatch-always nil
-        aw-keys (string-to-list "asdfghjkl;"))
-  :config
-  (custom-set-faces
-   '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.8))))))
-#+END_SRC
-
-** buffer-move
-
-#+BEGIN_SRC emacs-lisp
-(use-package buffer-move
-  :ensure t
-  :bind (("<C-S-up>" . buf-move-up)
-         ("<C-S-down>" . buf-move-down)
-         ("<C-S-left>" . buf-move-left)
-         ("<C-S-right>" . buf-move-right)))
-#+END_SRC
-
-** zoom
-
-#+begin_src emacs-lisp
-(use-package zoom
-  :ensure t
-  :bind ("M-+" . zoom)
-  :init
-  (setq zoom-size '(190 . 92)))
-#+end_src
-
 * Modeline
+** Selected window & focused frame
+
+#+BEGIN_SRC emacs-lisp
+;; is window selected?
+(defvar my/-selected-window nil)
+;; (add-hook 'post-command-hook '(lambda () (setq my/-selected-window (selected-window))))
+(add-hook 'post-command-hook
+          '(lambda ()
+             (when (not (minibuffer-window-active-p (selected-window)))
+               (setq my/-selected-window (selected-window)))))
+(add-hook 'buffer-list-update-hook '(lambda () (force-mode-line-update t)))
+
+;; is emacs focused?
+(defvar my/-focused-in t)
+(add-hook 'focus-in-hook '(lambda () (setq my/-focused-in t)))
+(add-hook 'focus-out-hook '(lambda () (setq my/-focused-in nil)))
+
+(defun my/current-window-active-p ()
+  (and my/-focused-in
+       (eq my/-selected-window (selected-window))))
+#+END_SRC
+
 ** Regular modeline
 
 #+BEGIN_SRC emacs-lisp
@@ -4055,28 +3976,6 @@ the minibuffer."
 
 (setq mode-line-misc-info
       (cons '(:eval (my/mode-line-window-dedicated)) mode-line-misc-info))
-#+END_SRC
-
-** Selected window & focused frame
-
-#+BEGIN_SRC emacs-lisp
-;; is window selected?
-(defvar my/-selected-window nil)
-;; (add-hook 'post-command-hook '(lambda () (setq my/-selected-window (selected-window))))
-(add-hook 'post-command-hook
-          '(lambda ()
-             (when (not (minibuffer-window-active-p (selected-window)))
-               (setq my/-selected-window (selected-window)))))
-(add-hook 'buffer-list-update-hook '(lambda () (force-mode-line-update t)))
-
-;; is emacs focused?
-(defvar my/-focused-in t)
-(add-hook 'focus-in-hook '(lambda () (setq my/-focused-in t)))
-(add-hook 'focus-out-hook '(lambda () (setq my/-focused-in nil)))
-
-(defun my/current-window-active-p ()
-  (and my/-focused-in
-       (eq my/-selected-window (selected-window))))
 #+END_SRC
 
 ** Experimental new modeline
@@ -4119,7 +4018,7 @@ the minibuffer."
                   ('added (propertize "+" 'face '(:inherit compilation-info :weight bold)))
                   ('edited (propertize "•" 'face 'compilation-warning))
                   (_ "?"))))
-        (format "%s %s" br st)))))
+        (format "%s %s " br st)))))
 
 (defun my/mode-line-region-info ()
   (when mark-active
@@ -4135,6 +4034,21 @@ the minibuffer."
            )
       (propertize (format "[%s:%s %s:%s %s:%s]" l lines w words c chars)))))
 
+(defun my/mode-line-position ()
+  (let* ((ln "%l")
+         (cur-col (current-column))
+         (col (if (>= cur-col fill-column)
+                  (propertize "%c" 'face 'compilation-warning)
+                "%c")))
+    (format "(%s,%s) " ln col)))
+
+(defun my/mode-line-unicode-char ()
+  (let ((ch (following-char)))
+    (when (and ch (>= ch 127))
+      (format "%s  " (propertize
+                      (get-char-code-property (following-char) 'name)
+                      'face
+                      'compilation-error)))))
 
 (setq global-mode-string (delete '(:eval (persp-mode-line)) global-mode-string))
 (setcar mode-line-position "")
@@ -4150,21 +4064,23 @@ the minibuffer."
        mode-line-buffer-identification " "
        (:eval (string-remove-suffix "-mode" (format "%s" major-mode))) " "
        (:eval (my/mode-line-window-dedicated))
-       (:eval (my/mode-line-flycheck))
+       (:eval (my/mode-line-flycheck)) " "
        (:eval (my/mode-line-region-info))
        ))
      ;; right
      (quote
-      ((:eval (my/mode-line-vc)) " "
+      (
+       (:eval (my/mode-line-unicode-char))
+       (:eval (my/mode-line-vc))
        (:eval minor-mode-alist) " "
        (:eval (frame-parameter nil 'persp--modestring)) "  "
-       mode-line-position
+       (:eval (my/mode-line-position))
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if too narrow
      (quote
       ((:eval (frame-parameter nil 'persp--modestring)) "  "
-       mode-line-position
+       (:eval (my/mode-line-position))
        (:eval (my/mode-line-hud)) "  "
        ))
      ))))
@@ -4340,8 +4256,8 @@ the minibuffer."
 ;; (add-to-list 'my/start-up-projects "/path/to/some/project")
 #+END_SRC
 
-# thanks Nicolas Petton
 #+BEGIN_SRC emacs-lisp
+;; https://nicolas.petton.fr/blog/per-computer-emacs-settings.html
 (defvar my/hosts-dir (expand-file-name (concat user-emacs-directory "hosts/")))
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
 (let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
@@ -4371,8 +4287,25 @@ the minibuffer."
 (setq custom-file (concat user-emacs-directory "custom.el"))
 ;; (load custom-file 'noerror)
 
+;; make underlines show under mode-line (cleaner)
 (setq x-underline-at-descent-line t)
 
+(my/set-theme)
+(my/set-font)
+
+(setq linum-format 'dynamic)
+
+(setq default-input-method "TeX")
+
+(hybrid-mode)
+(winner-mode)
+
+(run-hooks 'my/after-init-hook)
+#+END_SRC
+
+** custom
+
+#+BEGIN_SRC emacs-lisp
 (custom-set-faces
  '(anzu-mode-line ((t (:inherit mode-line :foreground "magenta" :weight bold))))
  '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
@@ -4401,18 +4334,6 @@ the minibuffer."
                (my/purescript-align-stuff . nil)
                ))
   (add-to-list 'safe-local-variable-values val))
-
-(my/set-theme)
-(my/set-font)
-
-(setq linum-format 'dynamic)
-
-(setq default-input-method "TeX")
-
-(hybrid-mode)
-(winner-mode)
-
-(run-hooks 'my/after-init-hook)
 #+END_SRC
 
 # end of configuration.org
