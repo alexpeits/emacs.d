@@ -3986,20 +3986,26 @@ the minibuffer."
   :ensure t
   :commands (pl/render powerline-hud))
 
-(defun my/split-mode-line-render (left right right-narrow)
-  (let* ((available-width (- (window-total-width)
-                             (+ (length (format-mode-line left))
-                                (length (format-mode-line right)))))
-         (actual-right right))
-    (when (if (< available-width 0) t nil)  ;; narrow
-      (setq actual-right right-narrow)
+;; TODO: make it better
+(defun my/split-mode-line-render (left right-wide right-narrow right-super-narrow)
+  (let* ((fmt-left (format-mode-line left))
+         (available-width (- (window-total-width)
+                             (+ (length fmt-left)
+                                (length (format-mode-line right-wide)))))
+         (right right-wide))
+    (when (< available-width 0)  ;; narrow
+      (setq right right-narrow)
       (setq available-width (- (window-total-width)
-                               (+ (length (format-mode-line left))
+                               (+ (length fmt-left)
                                   (length (format-mode-line right-narrow))))))
-    (setq foo (list available-width (length (format-mode-line actual-right)) (length (format-mode-line left))))
+    (when (< available-width 0)  ;; super narrow
+      (setq right right-super-narrow)
+      (setq available-width (- (window-total-width)
+                               (+ (length fmt-left)
+                                  (length (format-mode-line right-super-narrow))))))
     (append left
             (list (format (format "%%%ds" available-width) ""))
-            actual-right)))
+            right)))
 
 (defun my/mode-line-hud ()
   (let* ((active (eq my/-selected-window (selected-window)))
@@ -4014,9 +4020,11 @@ the minibuffer."
       (let ((br (let ((backend (vc-backend fname)))
                   (substring vc-mode (+ (if (eq backend 'Hg) 2 3) 2))))
             (st (pcase (vc-state fname)
-                  ('up-to-date (propertize "✔" 'face 'compilation-info))
-                  ('added (propertize "+" 'face '(:inherit compilation-info :weight bold)))
+                  ('up-to-date (propertize "✓" 'face '(:inherit compilation-info :weight bold)))
                   ('edited (propertize "•" 'face 'compilation-warning))
+                  ('added (propertize "+" 'face '(:inherit compilation-info :weight bold)))
+                  ('removed (propertize "✗" 'face '(:inherit compilation-error :weight bold)))
+                  ('missing (propertize "?" 'face '(:inherit compilation-error :weight bold)))
                   (_ "?"))))
         (format "%s %s " br st)))))
 
@@ -4030,9 +4038,8 @@ the minibuffer."
            (chars (abs (- beg end)))
            (l (propertize "l" 'face 'compilation-info))
            (w (propertize "w" 'face 'compilation-warning))
-           (c (propertize "c" 'face 'compilation-error))
-           )
-      (propertize (format "[%s:%s %s:%s %s:%s]" l lines w words c chars)))))
+           (c (propertize "c" 'face 'compilation-error)))
+      (propertize (format "%s:%s %s:%s %s:%s" l lines w words c chars)))))
 
 (defun my/mode-line-position ()
   (let* ((ln "%l")
@@ -4078,6 +4085,13 @@ the minibuffer."
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if too narrow
+     (quote
+      ((:eval (my/mode-line-vc))
+       (:eval (frame-parameter nil 'persp--modestring)) "  "
+       (:eval (my/mode-line-position))
+       (:eval (my/mode-line-hud)) "  "
+       ))
+     ;; right if super narrow
      (quote
       ((:eval (frame-parameter nil 'persp--modestring)) "  "
        (:eval (my/mode-line-position))
