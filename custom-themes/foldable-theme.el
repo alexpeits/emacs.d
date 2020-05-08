@@ -46,6 +46,9 @@
    '(fixed-pitch         ((t nil)))
    '(fixed-pitch-serif   ((t nil)))
    '(secondary-selection ((t (:background "lemon chiffon"))))
+   '(success             ((t (:foreground "ForestGreen"))))
+   '(warning             ((t (:foreground "DarkOrange3"))))
+   '(error               ((t (:foreground "Red1"))))
 
    `(fill-column-indicator ((t (:foreground ,h5))))
 
