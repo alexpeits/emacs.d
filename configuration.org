@@ -86,8 +86,8 @@
 - [[#projectile][Projectile]]
 - [[#ivycounselswiper][Ivy/Counsel/Swiper]]
 - [[#yasnippet][Yasnippet]]
+- [[#dired][Dired]]
 - [[#other-window-management][Other window management]]
-  - [[#dired][Dired]]
   - [[#ibuffer][ibuffer]]
   - [[#avy][Avy]]
   - [[#ace-window][Ace-window]]
@@ -3828,10 +3828,63 @@ the minibuffer."
   (add-hook 'prog-mode-hook #'yas-minor-mode))
 #+END_SRC
 
-* Other window management
-** Dired
+* Dired
 
 #+BEGIN_SRC emacs-lisp
+(use-package dired
+  :bind (:map dired-mode-map
+              ("j" . dired-next-line)
+              ("J" . dired-next-dirline)
+              ("k" . dired-previous-line)
+              ("K" . dired-prev-dirline)
+              ("h" . backward-char)
+              ("l" . forward-char)
+              ("C-c n" . my/dired-find-file-ace)
+              ("M-j" . my/dired-file-jump-from-here)
+              ("M-u" . dired-up-directory)
+              ("C-c C-q" . my/dired-kill-all-buffers))
+  :init
+  ;; hide files being edited + flycheck files from dired
+  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
+        dired-omit-verbose nil)
+  :config
+  (add-hook 'dired-mode-hook #'auto-revert-mode)
+  (add-hook 'dired-mode-hook #'dired-omit-mode)
+
+  (define-key dired-mode-map
+    (kbd "C-c v")
+    (my/control-function-window-split
+     dired-find-file-other-window
+     nil 0))
+  (define-key dired-mode-map
+    (kbd "C-c s")
+    (my/control-function-window-split
+     dired-find-file-other-window
+     0 nil)))
+
+(use-package dired-sidebar
+  :ensure t
+  :commands (dired-sidebar-hide-sidebar
+             dired-sidebar-showing-sidebar-p
+             dired-sidebar-jump-to-sidebar
+             dired-sidebar-toggle-sidebar
+             dired-sidebar-toggle-with-current-directory)
+  :bind (("C-\\" . my/dired-sidebar-smart-toggle)
+         :map dired-sidebar-mode-map
+         ("M-u" . dired-sidebar-up-directory))
+  :init
+  (setq dired-sidebar-theme 'none))
+
+(defun my/dired-sidebar-smart-toggle (curdir)
+  (interactive "P")
+  (if (eq major-mode 'dired-sidebar-mode)
+      (dired-sidebar-hide-sidebar)
+    (if (dired-sidebar-showing-sidebar-p)
+        (dired-sidebar-jump-to-sidebar)
+      (if curdir
+          (dired-sidebar-toggle-with-current-directory)
+        (dired-sidebar-toggle-sidebar)))))
+
 (use-package dired-subtree
   :ensure t
   :after dired
@@ -3880,38 +3933,6 @@ the minibuffer."
   :after dired
   :init
   (if is-mac (setq dired-use-ls-dired nil)))
-
-(use-package dired
-  :bind (:map dired-mode-map
-              ("j" . dired-next-line)
-              ("J" . dired-next-dirline)
-              ("k" . dired-previous-line)
-              ("K" . dired-prev-dirline)
-              ("h" . backward-char)
-              ("l" . forward-char)
-              ("C-c n" . my/dired-find-file-ace)
-              ("M-j" . my/dired-file-jump-from-here)
-              ("M-u" . dired-up-directory)
-              ("C-c C-q" . my/dired-kill-all-buffers))
-  :init
-  ;; hide files being edited + flycheck files from dired
-  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
-        dired-omit-verbose nil)
-  :config
-  (add-hook 'dired-mode-hook #'auto-revert-mode)
-  (add-hook 'dired-mode-hook #'dired-omit-mode)
-
-  (define-key dired-mode-map
-    (kbd "C-c v")
-    (my/control-function-window-split
-     dired-find-file-other-window
-     nil 0))
-  (define-key dired-mode-map
-    (kbd "C-c s")
-    (my/control-function-window-split
-     dired-find-file-other-window
-     0 nil))
-  )
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -3947,6 +3968,7 @@ the minibuffer."
   (goto-line 2))
 #+end_src
 
+* Other window management
 ** ibuffer
 
 #+begin_src emacs-lisp

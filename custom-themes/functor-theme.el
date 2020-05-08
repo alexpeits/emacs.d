@@ -86,7 +86,7 @@
    'functor
 
    '(cursor              ((t (:background "#99d1ce"))))
-   '(default             ((t (:foreground "#bed3d3" :background "#1a1b1b"))))
+   '(default             ((t (:foreground "#c6d3d3" :background "#1a1b1b"))))
    '(escape-glyph        ((t (:foreground "orange2"))))
    '(highlight           ((t (:background "#3d494d"))))
    '(hl-line             ((t (:background "#232828"))))
