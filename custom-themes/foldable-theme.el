@@ -55,6 +55,9 @@
    '(line-number              ((t (:inherit default :inherit shadow))))
    `(line-number-current-line ((t (:inherit line-number :background ,h4))))
 
+   '(mode-line          ((t (:foreground "black" :background "grey75" :box (:line-width -1 :style released-button)))))
+   '(mode-line-inactive ((t (:foreground "grey48" :background "grey90" :box (:line-width -1 :color "grey75")))))
+
    `(org-block            ((t (:background ,h2))))
    `(org-block-begin-line ((t (:background ,h4))))
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))

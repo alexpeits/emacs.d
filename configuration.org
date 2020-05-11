@@ -794,6 +794,9 @@ buffer, close it."
   (defengine pursuit
     "https://pursuit.purescript.org/search?q=%s"
     :keybinding "p")
+
+  (defengine coq-tactics
+    "https://coq.inria.fr/refman/proof-engine/tactics.html#coq:tacn.%s")
   )
 #+END_SRC
 
@@ -2822,6 +2825,7 @@ the current file."
         coq-compile-before-require t)
   :config
   (add-hook 'my/after-set-theme-hook 'coq-highlight-selected-hyps)
+  (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
   (my/add-hooks
    '(coq-mode-hook)
    (setq evil-shift-width 2)
@@ -4043,10 +4047,11 @@ the minibuffer."
 
 (defun my/mode-line-position ()
   (let* ((ln "%l")
+         (col-tmpl "%2c")
          (cur-col (current-column))
          (col (if (>= cur-col fill-column)
-                  (propertize "%c" 'face 'compilation-warning)
-                "%c")))
+                  (propertize col-tmpl 'face 'compilation-warning)
+                col-tmpl)))
     (format "(%s,%s) " ln col)))
 
 (defun my/mode-line-unicode-char ()
