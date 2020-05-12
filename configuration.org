@@ -62,6 +62,7 @@
   - [[#emacs-lisp][emacs lisp]]
 - [[#coq-proof-general][Coq (proof-general)]]
 - [[#markdown][Markdown]]
+- [[#latex][LaTeX]]
 - [[#other-prog-modes][Other prog modes]]
   - [[#idris][Idris]]
   - [[#cc][c/c++]]
@@ -2889,6 +2890,20 @@ the current file."
              markdown-toc-generate-or-refresh-toc)
   :init
   (defalias 'mtoc 'markdown-toc-generate-or-refresh-toc))
+#+END_SRC
+
+* LaTeX
+
+#+BEGIN_SRC emacs-lisp
+(use-package tex-mode
+  :ensure auctex
+  :mode (("\\.tex\\'" . latex-mode)))
+
+(use-package latex-preview-pane
+  :ensure t
+  :after tex-mode
+  :commands (latex-preview-pane-mode
+             latex-preview-pane-enable))
 #+END_SRC
 
 * Other prog modes

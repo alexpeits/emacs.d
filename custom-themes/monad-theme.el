@@ -43,7 +43,7 @@
  '(highlight           ((t (:background "#3c464a"))))
  '(hl-line             ((t (:background "#252a2a"))))
  '(region              ((t (:background "#004870"))))
- '(fringe              ((t (:foreground "#91abab" :background "#242424"))))
+ '(fringe              ((t (:foreground "#91abab" :background "#272727"))))
  '(vertical-border     ((t (:foreground "#6e6e6e"))))
  '(shadow              ((t (:foreground "#888b8b"))))
  '(secondary-selection ((t (:inherit highlight))))
