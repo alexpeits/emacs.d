@@ -9,7 +9,7 @@
   - [[#emacs-ui--editing][emacs UI & editing]]
   - [[#auth][auth]]
   - [[#server][server]]
-  - [[#fast-recompile-minor-mode][fast recompile minor mode]]
+  - [[#compilation][compilation]]
   - [[#smartparens][Smartparens]]
   - [[#documentation--help][Documentation & help]]
   - [[#jumping-etc][Jumping etc]]
@@ -96,7 +96,8 @@
   - [[#regular-modeline][Regular modeline]]
   - [[#experimental-new-modeline][Experimental new modeline]]
   - [[#powerline][Powerline]]
-- [[#org-mode][Org-mode]]
+- [[#org-mode][org-mode]]
+- [[#org-roam][org-roam]]
 - [[#setup][Setup]]
   - [[#per-workstation-setup][Per-workstation setup]]
   - [[#performance][Performance]]
@@ -561,7 +562,7 @@ With a prefix argument, open using `find-file-other-window'."
   (setq server-kill-new-buffers nil))
 #+END_SRC
 
-** fast recompile minor mode
+** compilation
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/fast-recompile-mode-map (make-sparse-keymap))
@@ -578,6 +579,11 @@ With a prefix argument, open using `find-file-other-window'."
     (setq compilation-ask-about-save (get 'my/-old-compilation-ask-about-save 'state))))
 
 (define-key my/fast-recompile-mode-map (kbd "C-c C-c") #'recompile)
+
+(defun my/compile-in-dir ()
+  (interactive)
+  (let ((default-directory (read-directory-name "Run command in: ")))
+    (call-interactively 'compile)))
 #+END_SRC
 
 ** Smartparens
@@ -3990,11 +3996,17 @@ the minibuffer."
                 (:eval (my/mode-line-venv))
                 mode-line-modes mode-line-misc-info mode-line-end-spaces))
 
-(defun my/mode-line-window-dedicated ()
-  (if (window-dedicated-p) "× " ""))
+(defun my/mode-line-window-info ()
+  (let* ((dedicated (window-dedicated-p))
+         (fixed window-size-fixed)
+         (suff (if (or dedicated fixed) " " "")))
+    (format "%s%s%s"
+            (if dedicated "×" "")
+            (if fixed "+" "")
+            suff)))
 
 (setq mode-line-misc-info
-      (cons '(:eval (my/mode-line-window-dedicated)) mode-line-misc-info))
+      (cons '(:eval (my/mode-line-window-info)) mode-line-misc-info))
 #+END_SRC
 
 ** Experimental new modeline
@@ -4045,7 +4057,9 @@ the minibuffer."
                   ('removed (propertize "✗" 'face '(:inherit compilation-error :weight bold)))
                   ('missing (propertize "?" 'face '(:inherit compilation-error :weight bold)))
                   (_ "?"))))
-        (format "%s %s " br st)))))
+        (format "%s %s "
+                (truncate-string-to-width br 21 nil nil "…")
+                st)))))
 
 (defun my/mode-line-region-info ()
   (when mark-active
@@ -4090,7 +4104,7 @@ the minibuffer."
        mode-line-modified "  "
        mode-line-buffer-identification " "
        (:eval (string-remove-suffix "-mode" (format "%s" major-mode))) " "
-       (:eval (my/mode-line-window-dedicated))
+       (:eval (my/mode-line-window-info))
        (:eval (my/mode-line-flycheck)) " "
        (:eval (my/mode-line-region-info))
        ))
@@ -4166,7 +4180,7 @@ the minibuffer."
   )
 #+END_SRC
 
-* Org-mode
+* org-mode
 
 #+BEGIN_SRC emacs-lisp
 ;; this is the same as doing org-babel-load-languages
@@ -4218,6 +4232,7 @@ the minibuffer."
       (insert-file-contents path)))
 
   :config
+  (require 'org-tempo nil :noerror)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (my/add-hooks
    '(org-mode-hook)
@@ -4264,6 +4279,26 @@ the minibuffer."
   :defer t
   :init
   (setq org-html-htmlize-output-type 'css))
+#+END_SRC
+
+* org-roam
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package org-roam
+  :ensure t
+  :diminish "roam"
+  :bind (:map org-roam-mode-map
+              (("C-c n l" . org-roam)
+               ("C-c n f" . org-roam-find-file)
+               ("C-c n j" . org-roam-jump-to-index)
+               ("C-c n b" . org-roam-switch-to-buffer)
+               ("C-c n g" . org-roam-graph))
+              :map org-mode-map
+              (("C-c n i" . org-roam-insert)))
+  :init
+  (setq org-roam-directory "~/Dropbox/org-roam/"
+        org-roam-index-file "index.org"
+        org-roam-link-title-format "R:%s"))
 #+END_SRC
 
 * Setup
