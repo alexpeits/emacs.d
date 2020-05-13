@@ -247,6 +247,10 @@
    '(dired-marked    ((t (:inherit hi-black-b))))
    '(dired-flagged   ((t (:inherit hi-red-b))))
 
+   '(eshell-ls-directory  ((t (:inherit dired-directory))))
+   '(eshell-ls-symlink    ((t (:inherit dired-symlink))))
+   '(eshell-ls-executable ((t (:foreground "#859900" :weight bold))))
+
    `(header-line ((t (:foreground "#a0b5b5" :background "#304545"))))
 
    `(Info-quoted ((t (:inherit font-lock-type-face))))

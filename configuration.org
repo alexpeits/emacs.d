@@ -1087,12 +1087,14 @@ buffer, close it."
   :bind (:map eshell-mode-map
               ("C-l" . my/eshell-clear))
   :init
-  ;; eshell/clear doesn't work anymore because eshell has its own clear function
+  ;; eshell/clear doesn't work anymore because eshell has its ow n clear function
   (defun my/eshell-clear ()
     (interactive)
     "Clear the eshell buffer."
     (let ((eshell-buffer-maximum-lines 0))
       (eshell-truncate-buffer)))
+
+  (defalias 'eshell/x 'eshell/exit)
 
   (setq eshell-destroy-buffer-when-process-dies t
         eshell-history-size 1024
@@ -1116,18 +1118,19 @@ buffer, close it."
                  (mapconcat (lambda (elm) elm)
                             p-lst
                             "/")))
-             (split-string (pwd-repl-home (eshell/pwd)) "/"))
+             (split-string (my/eshell-prompt-dir (eshell/pwd)) "/"))
             'face
             'font-lock-type-face)
-           (or (curr-dir-git-branch-string (eshell/pwd)))
+           (or (my/eshell-prompt-git (eshell/pwd)))
            " "
            (propertize "$" 'face 'font-lock-function-name-face)
            (propertize " " 'face 'default))))
   :config
-  ; Don't ask, just save
+  (add-hook 'eshell-exit-hook 'delete-window)
+  ;; Don't ask, just save
   (if (boundp 'eshell-save-history-on-exit)
       (setq eshell-save-history-on-exit t))
-  ; For older(?) version
+  ;; For older(?) version
   (if (boundp 'eshell-ask-to-save-history)
       (setq eshell-ask-to-save-history 'always)))
 
@@ -1138,7 +1141,34 @@ buffer, close it."
         eshell-review-quick-commands nil
         eshell-smart-space-goes-to-end t))
 
-(defun pwd-repl-home (pwd)
+(defun my/eshell-maybe-here (prompt)
+  "Opens up a new shell in the directory associated with the
+current buffer's file. The eshell is renamed to match that
+directory to make multiple eshell windows easier."
+  (interactive "P")
+  (let* ((parent (if prompt
+                     (read-directory-name "Open eshell in: ")
+                   (if (buffer-file-name)
+                       (file-name-directory (buffer-file-name))
+                     default-directory)))
+         (height (/ (window-total-height) 3))
+         (name   (car (last (split-string parent "/" t)))))
+    (split-window-vertically (- height))
+    (other-window 1)
+    (let ((eshell-banner-message
+           (format "eshell in %s\n\n"
+                   (propertize (abbreviate-file-name parent)
+                               'face
+                               'font-lock-keyword-face))))
+      (eshell :new))
+    (rename-buffer (concat "*eshell: " name "*"))
+    ;; (insert "ls")
+    ;; (eshell-send-input)
+    ))
+
+(global-set-key (kbd "C-!") 'my/eshell-maybe-here)
+
+(defun my/eshell-prompt-dir (pwd)
   (interactive)
   (let* ((home (expand-file-name (getenv "HOME")))
          (home-len (length home)))
@@ -1148,15 +1178,7 @@ buffer, close it."
         (concat "~" (substring pwd home-len))
       pwd)))
 
-(defun my/eshell-in-dir (dir-or-file)
-  (interactive "DOpen eshell in: ")
-  (let* ((dir (if (file-directory-p dir-or-file)
-                  dir-or-file
-                (file-name-directory dir-or-file)))
-         (default-directory dir))
-    (eshell t)))
-
-(defun curr-dir-git-branch-string (cwd)
+(defun my/eshell-prompt-git (cwd)
   "Returns current git branch as a string, or the empty string if
 CWD is not in a git repo (or the git command is not found)."
   (interactive)
