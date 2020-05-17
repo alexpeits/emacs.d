@@ -240,6 +240,10 @@
    `(ivy-minibuffer-match-face-4 ((t (:inherit hi-red-b))))
    `(ivy-grep-info               ((t (:inherit font-lock-function-name-face :weight bold))))
 
+   '(helm-source-header    ((t (:inherit hi-black-b :height 1.3))))
+   '(helm-selection        ((t (:inherit ivy-current-match :underline nil))))
+   '(helm-candidate-number ((t (:inherit hi-blue-b))))
+
    `(ag-hit-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
    '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
@@ -281,6 +285,7 @@
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))
    '(org-hide             ((t (:inherit fill-column-indicator))))
    '(org-ellipsis         ((t (:foreground "#d7afd7" :underline t))))
+   '(org-list-dt          ((t (:inherit font-lock-type-face))))
 
    '(outline-1 ((t (:inherit font-lock-function-name-face))))
    '(outline-2 ((t (:foreground "#2da49b"))))
