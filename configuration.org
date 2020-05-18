@@ -99,7 +99,7 @@
 - [[#org-roam][org-roam]]
 - [[#org-download][org-download]]
 - [[#org-journal][org-journal]]
-- [[#org-ref--bibtex][org-ref & bibtex]]
+- [[#org-ref-org-noter--bibtex][org-ref, org-noter & bibtex]]
 - [[#deft][deft]]
 - [[#modeline][Modeline]]
   - [[#selected-window--focused-frame][Selected window & focused frame]]
@@ -4076,7 +4076,8 @@ the minibuffer."
   :after org
   :hook (org-mode . org-bullets-mode)
   :init
-  (setq org-hide-leading-stars t))
+  (setq org-bullets-bullet-list (append '("◉") (make-list 7 "○"))
+        org-hide-leading-stars t))
 
 ;; auto-generated if a heading has a :TOC: tag
 (use-package toc-org
@@ -4122,6 +4123,18 @@ the minibuffer."
 
 (use-package org-roam-protocol
   :after org-roam)
+
+(use-package company-org-roam
+  :ensure t
+  :after company org-roam
+  :config
+  (push 'company-org-roam company-backends))
+
+(use-package org-roam-server
+  :ensure t
+  :commands (org-roam-server-mode)
+  :init
+  (setq httpd-port 25002))
 
 (defun my/org-roam-filename-from-title (title)
   (let* ((tmpl (concat org-roam-capture--file-name-default "-${slug}"))
@@ -4213,7 +4226,7 @@ the minibuffer."
   (global-set-key (kbd "C-c C-j") nil))
 #+end_src
 
-* org-ref & bibtex
+* org-ref, org-noter & bibtex
 
 #+begin_src emacs-lisp
 (defvar my/dropbox-papers-dir (concat my/dropbox-dir "papers/")
@@ -4221,6 +4234,25 @@ the minibuffer."
 
 (defvar my/dropbox-papers-bibtex (concat my/dropbox-papers-dir "papers.bib")
   "Dropbox bibtex bibliography file")
+
+(use-package bibtex
+  :mode (("\\.bib\\'" . bibtex-mode))
+  :bind (:map bibtex-mode-map
+              ("C-c C-c" . my/bibtex-format-and-clean-entry))
+  :init
+  (setq bibtex-autokey-year-length 4
+        bibtex-autokey-name-year-separator "-"
+        bibtex-autokey-year-title-separator "-"
+        bibtex-autokey-titleword-separator "-"
+        bibtex-autokey-titlewords 2
+        bibtex-autokey-titlewords-stretch 1
+        bibtex-autokey-titleword-length 5)
+  :config
+  (defun my/bibtex-format-and-clean-entry ()
+    (interactive)
+    (call-interactively 'bibtex-fill-entry)
+    (call-interactively 'bibtex-clean-entry)
+    (call-interactively 'org-ref-clean-bibtex-entry)))
 
 (use-package bibtex-completion
   :ensure t
@@ -4231,7 +4263,7 @@ the minibuffer."
         bibtex-completion-bibliography (list my/dropbox-papers-bibtex)
         bibtex-completion-notes-path (concat my/org-directory "papers/")
         bibtex-completion-notes-template-multiple-files (string-join '("#+TITLE: [Paper] ${author-or-editor} (${year}): ${title}"
-                                                                       "#+ROAM_KEY: cite:${=key=}\n"
+                                                                       "#+ROAM_KEY: cite:${=key=}\n\n"
                                                                        )
                                                                      "\n")))
 
@@ -4249,6 +4281,41 @@ the minibuffer."
         org-ref-pdf-directory my/dropbox-papers-dir
         org-ref-notes-function 'org-ref-notes-function-many-files
         org-ref-cite-completion-function 'org-ref-ivy-cite))
+
+(use-package org-noter
+  :ensure t
+  :commands (org-noter)
+  :after org
+  :init
+  (setq org-noter-always-create-frame nil)
+  (setq my/org-roam-noter-heading-name "Interleaved notes")
+  (defun my/org-roam-noter ()
+    "Start org-noter for current notes file, creating the headline if not found."
+    (interactive)
+    (let ((pos (save-excursion
+                 (goto-char 0)
+                 (re-search-forward
+                  (format "^* %s" my/org-roam-noter-heading-name)
+                  nil
+                  t))))
+      (if pos
+          (progn
+            (goto-char pos)
+            (beginning-of-line 1)
+            (org-noter))
+        (let* ((ref (cdr (org-roam--extract-ref)))
+               (pdf-name (format "%s.pdf" ref))
+               (pdf-path (concat my/dropbox-papers-dir pdf-name))
+               (pdf-path-rel (file-relative-name pdf-path))
+               (props
+                (string-join `(":PROPERTIES:"
+                               ,(format ":NOTER_DOCUMENT: %s" pdf-path-rel)
+                               ":END:") "\n")))
+          (insert (format "* %s" my/org-roam-noter-heading-name))
+          (org-set-tags '("org_noter"))
+          (org-return)
+          (insert props)
+          (org-noter))))))
 #+end_src
 
 * deft

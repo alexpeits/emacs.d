@@ -204,7 +204,7 @@
  `(ivy-grep-info               ((t (:inherit font-lock-type-face :weight bold))))
  `(ivy-grep-line-number        ((t (:inherit font-lock-string-face))))
 
- '(helm-source-header    ((t (:inherit hi-black-b :height 1.3))))
+ '(helm-source-header    ((t (:inherit hi-blue-b :height 1.3))))
  '(helm-selection        ((t (:inherit ivy-current-match :underline nil))))
  '(helm-candidate-number ((t (:inherit hi-blue-b))))
 
