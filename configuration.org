@@ -243,17 +243,23 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (defvar my/useful-files
   '(
+    ;; nix
+    "default.nix"
+    "shell.nix"
     ;; haskell
     "package.yaml"
     "stack.yaml"
-    "shell.nix"
     ".hlint.yaml"
+    ;; python
+    "requirements.txt"
     ;; docker
     "docker-compose.yml"
     "Dockerfile"
     ;; bazel
     "BUILD.bazel"
-    ;; git
+    ;; generic
+    "Makefile"
+    ;; github repo
     "README.md"
     ;; emacs
     ".dir-locals.el"))
@@ -3115,12 +3121,36 @@ the current file."
               ("k" . pdf-view-previous-line-or-previous-page)
               ("h" . image-backward-hscroll)
               ("l" . image-forward-hscroll)
-              ("C-s" . isearch-forward))
+              ("C-s" . isearch-forward)
+              ("ss" . my/pdf-view-remove-margins-mode)
+              ("cc" . pdf-cache-clear-data)
+              )
   :init
   (setq pdf-view-display-size 'fit-page
-        pdf-view-midnight-colors '("#b3dfdd" . "#0a3749"))
+        pdf-view-midnight-colors '("#b3dfdd" . "#0a3749")
+        ;; cache stuff, testing
+        pdf-cache-image-limit 15
+        pdf-cache-prefetch-delay 2
+        )
+  ;; remove cached images after x seconds
+  (setq image-cache-eviction-delay 15)
   :config
-  (pdf-tools-install :no-query))
+  (pdf-tools-install :no-query)
+
+  (define-minor-mode my/pdf-view-remove-margins-mode
+    "Minor mode for removing margins from every pdf page."
+    :lighter " pdf-margins"
+    (if (not (eq major-mode 'pdf-view-mode))
+        (user-error "Not in a pdf-view-mode buffer")
+      (if my/pdf-view-remove-margins-mode
+          (progn
+            (pdf-view-set-slice-from-bounding-box)
+            (add-hook 'pdf-view-after-change-page-hook #'pdf-view-set-slice-from-bounding-box))
+        (progn
+          (pdf-view-reset-slice)
+          (remove-hook 'pdf-view-after-change-page-hook #'pdf-view-set-slice-from-bounding-box)))))
+
+  )
 
 (use-package pdf-outline
   :defer t
