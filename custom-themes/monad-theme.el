@@ -228,7 +228,8 @@
  `(eww-valid-certificate   ((t (:inherit font-lock-preprocessor-face :weight bold))))
  `(eww-invalid-certificate ((t (:foreground "#fb4933" :weight bold))))
 
- `(compilation-info           ((t (:foreground "#9bd164"))))
+ ;; `(compilation-info           ((t (:foreground "#9bd164"))))
+ `(compilation-info           ((t (:foreground "#00afaf"))))
  `(compilation-warning        ((t (:foreground "#d09f07"))))
  `(compilation-error          ((t (:foreground "salmon"))))
  `(compilation-mode-line-exit ((t (:inherit compilation-info :weight bold))))

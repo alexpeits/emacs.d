@@ -498,6 +498,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (interactive)
   (let ((default-directory (read-directory-name "Run command in: ")))
     (call-interactively 'compile)))
+
+(setq compilation-scroll-output 'first-error)
 #+END_SRC
 
 ** Smartparens
@@ -1804,6 +1806,7 @@ CWD is not in a git repo (or the git command is not found)."
   :init
   (setq evil-want-C-i-jump nil
         evil-intercept-esc t
+        evil-respect-visual-line-mode t
         evil-mode-line-format '(before . mode-line-front-space))
   ;; (setq evil-move-cursor-back nil)  ;; works better with lisp navigation
   :config
