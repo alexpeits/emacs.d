@@ -258,20 +258,29 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     ;; emacs
     ".dir-locals.el"))
 
-(defun my/try-open-dominating-file (file)
-  "Search up the file path of current file a file named FILE, and open it if it
-exists.
+(defun my/try-open-dominating-file (other-window)
+  (interactive "P")
+  (let* ((cur-file (or (buffer-file-name) (user-error "Not a file")))
+         (paths (seq-filter
+                 #'(lambda (pair) (not (null (cdr pair))))
+                 (mapcar #'(lambda (fn)
+                             (cons fn (locate-dominating-file cur-file fn)))
+                         my/useful-files)))
+         (file (completing-read "File name: "
+                                paths
+                                nil nil nil nil nil))
+         (dir (cdr (assoc file paths)))
+         (find-file-func (if other-window 'find-file-other-window 'find-file)))
+    (funcall find-file-func (expand-file-name file (file-name-as-directory dir)))))
 
-If FILE is not provided, prompt for the filename.
-With a prefix argument, open using `find-file-other-window'."
-  (interactive (list (completing-read "File name: "
-                                      my/useful-files
-                                      nil nil nil nil nil)))
-  (let ((dir (locate-dominating-file (buffer-file-name) file))
-        (find-file-func (if current-prefix-arg 'find-file-other-window 'find-file)))
-    (if dir
-        (funcall find-file-func (expand-file-name file (file-name-as-directory dir)))
-      (message "No matching file found"))))
+(with-eval-after-load 'ivy
+  (defun my/try-open-dominating-file-display-transformer (fn)
+    (let ((dir (locate-dominating-file (buffer-file-name) fn)))
+      (format "%s (in %s)"
+              fn
+              (propertize dir 'face 'font-lock-type-face))))
+  (ivy-configure 'my/try-open-dominating-file
+    :display-transformer-fn #'my/try-open-dominating-file-display-transformer))
 
 (defun my/line-numbers (relative)
   (interactive "P")
