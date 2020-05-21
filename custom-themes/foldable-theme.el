@@ -62,6 +62,10 @@
    `(org-block-begin-line ((t (:background ,h4))))
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))
    '(org-hide             ((t (:inherit fill-column-indicator))))
+   '(org-date             ((t (:inherit font-lock-type-face :underline t))))
+
+   '(org-roam-link         ((t (:inherit font-lock-keyword-face :underline t))))
+   '(org-roam-link-invalid ((t (:inherit font-lock-warning-face :underline t))))
 
    '(hi-green-b ((t (:background "#a0f0cf" :foreground "#005040" :weight bold))))
    '(hi-blue-b  ((t (:background "#bedef9" :foreground "#324f80" :weight bold))))

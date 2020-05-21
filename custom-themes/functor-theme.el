@@ -97,7 +97,6 @@
    '(secondary-selection ((t (:inherit highlight))))
    '(show-paren-match    ((t (:background "#456665" :weight bold))))
    '(link                ((t (:foreground "#56dbdb" :underline t))))
-   `(link-visited        ((t (:inherit link :foreground "#d7afd7"))))
    '(warning             ((t (:foreground "orange2" :weight bold))))
    '(whitespace-trailing ((t (:background "#602020"))))
    '(fixed-pitch         ((t nil)))
@@ -286,6 +285,9 @@
    '(org-hide             ((t (:inherit fill-column-indicator))))
    '(org-ellipsis         ((t (:foreground "#d7afd7" :underline t))))
    '(org-list-dt          ((t (:inherit font-lock-type-face))))
+
+   '(org-roam-link         ((t (:inherit link :foreground "#d7afd7"))))
+   '(org-roam-link-invalid ((t (:inherit font-lock-warning-face :underline t))))
 
    '(outline-1 ((t (:inherit font-lock-function-name-face))))
    '(outline-2 ((t (:foreground "#2da49b"))))

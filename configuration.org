@@ -1,123 +1,9 @@
-#+EXCLUDE_TAGS: TOC
-#+HTML_HEAD: <link href="/htmlize.css" rel="stylesheet">
-#+HTML_HEAD: <link href="/readtheorg.css" rel="stylesheet">
-* Table of contents                                                     :TOC:
-- [[#variables-and-path][Variables and PATH]]
-- [[#package-management][Package management]]
-- [[#various-utility-functions][Various utility functions]]
-- [[#various-configurations][Various configurations]]
-  - [[#basic-editing][basic editing]]
-  - [[#auth][auth]]
-  - [[#server][server]]
-  - [[#advise-raise-frame-with-wmctrl][advise raise-frame with wmctrl]]
-  - [[#compilation][compilation]]
-  - [[#smartparens][Smartparens]]
-  - [[#documentation--help][Documentation & help]]
-  - [[#mark][mark]]
-  - [[#imenu-list][imenu-list]]
-  - [[#abbrev-etc][abbrev etc]]
-  - [[#engine-mode][engine-mode]]
-  - [[#browser][browser]]
-  - [[#anzu][anzu]]
-  - [[#math-input][math input]]
-  - [[#prettify-symbols][prettify symbols]]
-  - [[#recentf][recentf]]
-  - [[#hi-lock--symbol-overlay][hi-lock & symbol overlay]]
-  - [[#highlight-keywords-in-some-modes][highlight keywords in some modes]]
-  - [[#alignment][alignment]]
-  - [[#temp-project-roots][temp project roots]]
-  - [[#edit-indirect][edit-indirect]]
-- [[#term-eshell-and-comint-mode][Term, eshell and comint-mode]]
-  - [[#terms][terms]]
-  - [[#eshell][eshell]]
-- [[#ui][UI]]
-  - [[#highlight-trailing-whitespace][highlight trailing whitespace]]
-- [[#theme][Theme]]
-- [[#font][Font]]
-- [[#vcs][VCS]]
-  - [[#vc][vc]]
-  - [[#magit][magit]]
-  - [[#git-timemachine][git-timemachine]]
-  - [[#diff-hl--git-gutter][diff-hl & git-gutter+]]
-  - [[#helpers][Helpers]]
-- [[#keybindings][keybindings]]
-  - [[#keybind-to-command-mapping][keybind to command mapping]]
-  - [[#setup-keybindings][setup keybindings]]
-- [[#evil-mode][evil-mode]]
-  - [[#evil-mode-setup][evil-mode setup]]
-  - [[#evil-packages-that-can-be-used-without-evil-mode][evil packages that can be used without evil-mode]]
-- [[#hybrid-input-mode][Hybrid input mode]]
-- [[#spell-checking][Spell checking]]
-- [[#buffer--window-management][Buffer & window management]]
-  - [[#ibuffer][ibuffer]]
-  - [[#avy][avy]]
-  - [[#ace-window][ace-window]]
-  - [[#buffer-move][buffer-move]]
-  - [[#zoom][zoom]]
-- [[#dired][dired]]
-- [[#nix][nix]]
-- [[#direnv][direnv]]
-- [[#haskell][Haskell]]
-- [[#purescript][Purescript]]
-- [[#python][Python]]
-- [[#jstshtmlcss][js/ts/html/css]]
-- [[#lisps][Lisps]]
-  - [[#all-lisps][all lisps]]
-  - [[#emacs-lisp][emacs lisp]]
-- [[#coq-proof-general][Coq (proof-general)]]
-- [[#markdown][Markdown]]
-- [[#latex][LaTeX]]
-- [[#other-prog-modes][Other prog modes]]
-  - [[#idris][idris]]
-  - [[#cc][c/c++]]
-  - [[#dhall][dhall]]
-  - [[#bazel][bazel]]
-  - [[#nginx][nginx]]
-  - [[#terraform][terraform]]
-  - [[#docker][docker]]
-  - [[#elasticsearch][elasticsearch]]
-  - [[#json][json]]
-  - [[#yaml][yaml]]
-  - [[#conf][conf]]
-  - [[#restructuredtext][reStructuredText]]
-  - [[#asciidoc][asciidoc]]
-- [[#other-major-modes][Other major modes]]
-  - [[#elfeed][elfeed]]
-  - [[#pdf-tools][pdf tools]]
-  - [[#erc][erc]]
-  - [[#lilypond][lilypond]]
-- [[#searching][Searching]]
-  - [[#isearch][isearch]]
-  - [[#rg][rg]]
-- [[#company][Company]]
-- [[#flycheck][Flycheck]]
-- [[#projectile][Projectile]]
-- [[#ivycounselswiper][Ivy/Counsel/Swiper]]
-- [[#yasnippet][Yasnippet]]
-- [[#helm][helm]]
-- [[#org-mode][org-mode]]
-- [[#org-roam][org-roam]]
-- [[#org-download][org-download]]
-- [[#org-journal][org-journal]]
-- [[#org-ref-org-noter--bibtex][org-ref, org-noter & bibtex]]
-- [[#deft][deft]]
-- [[#modeline][Modeline]]
-  - [[#selected-window--focused-frame][Selected window & focused frame]]
-  - [[#regular-modeline][Regular modeline]]
-  - [[#experimental-new-modeline][Experimental new modeline]]
-  - [[#powerline][Powerline]]
-- [[#setup][Setup]]
-  - [[#per-workstation-setup][Per-workstation setup]]
-  - [[#performance][Performance]]
-  - [[#global-setup][Global setup]]
-  - [[#custom][custom]]
-
 * Variables and PATH
 
 #+BEGIN_SRC emacs-lisp
-(add-to-list 'load-path (expand-file-name (concat user-emacs-directory "lisp")))
+(add-to-list 'load-path (expand-file-name (expand-file-name "lisp" user-emacs-directory)))
 (add-to-list 'custom-theme-load-path
-             (expand-file-name (concat user-emacs-directory "custom-themes/")))
+             (expand-file-name (expand-file-name "custom-themes/" user-emacs-directory)))
 
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com")
@@ -136,10 +22,10 @@
 (defvar my/dropbox-dir (expand-file-name "~/Dropbox/")
   "Private directory synced with dropbox")
 
-(defvar my/dropbox-emacs-dir (concat my/dropbox-dir "emacs/")
+(defvar my/dropbox-emacs-dir (expand-file-name "emacs/" my/dropbox-dir)
   "Private directory synced with dropbox")
 
-(defvar my/org-directory (concat my/dropbox-emacs-dir "org/")
+(defvar my/org-directory (expand-file-name "org/" my/dropbox-emacs-dir)
   "Org directory")
 
 (defvar is-mac (eq system-type 'darwin)
@@ -384,7 +270,7 @@ With a prefix argument, open using `find-file-other-window'."
   (let ((dir (locate-dominating-file (buffer-file-name) file))
         (find-file-func (if current-prefix-arg 'find-file-other-window 'find-file)))
     (if dir
-        (funcall find-file-func (concat (file-name-as-directory dir) file))
+        (funcall find-file-func (expand-file-name file (file-name-as-directory dir)))
       (message "No matching file found"))))
 
 (defun my/line-numbers (relative)
@@ -525,9 +411,10 @@ With a prefix argument, open using `find-file-other-window'."
   :diminish subword-mode
   :commands (subword-mode)
   :init
-  (defadvice subword-mode
-      (after advice-for-subword-mode activate)
-    (setq evil-symbol-word-search subword-mode)))
+  (advice-add 'subword-mode
+              :after
+              #'(lambda (&optional arg)
+                  (setq evil-symbol-word-search subword-mode))))
 
 (use-package outline
   :ensure t
@@ -553,7 +440,7 @@ With a prefix argument, open using `find-file-other-window'."
 #+BEGIN_SRC emacs-lisp
 (use-package auth-source
   :config
-  (add-to-list 'auth-sources (concat my/dropbox-dir "authinfo.gpg")))
+  (add-to-list 'auth-sources (expand-file-name "authinfo.gpg" my/dropbox-dir)))
 #+END_SRC
 
 ** server
@@ -1079,7 +966,7 @@ buffer, close it."
       (indent-rigidly (point-min) (point-max) my/edit-indirect-dedented-amount))))
 #+END_SRC
 
-* Term, eshell and comint-mode
+* term, eshell and comint-mode
 ** terms
 
 #+BEGIN_SRC emacs-lisp
@@ -1596,7 +1483,7 @@ CWD is not in a git repo (or the git command is not found)."
 ;; (define-key global-map (kbd "C--") 'text-scale-decrease)
 #+END_SRC
 
-* VCS
+* git
 ** vc
 
 #+BEGIN_SRC emacs-lisp
@@ -2404,7 +2291,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (defun file-attribute-size (attrs) (elt attrs 7))))
 #+end_src
 
-* Haskell
+* haskell
 
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
@@ -2586,7 +2473,7 @@ the current file."
 
 (defun my/visit-ghc-tags-table ()
   (interactive)
-  (let ((tags (concat my/ghc-source-path "TAGS")))
+  (let ((tags (expand-file-name "TAGS" my/ghc-source-path)))
     (if (file-exists-p tags)
         (visit-tags-table tags)
       (error "No TAGS file found in ghc source directory"))))
@@ -2627,7 +2514,7 @@ the current file."
                          '(warning . haskell-hlint)))))
 #+END_SRC
 
-* Purescript
+* purescript
 
 #+BEGIN_SRC emacs-lisp
 (use-package purescript-mode
@@ -2692,7 +2579,7 @@ the current file."
 ;; (setq-local font-lock-multiline t)
 #+END_SRC
 
-* Python
+* python
 
 #+BEGIN_SRC emacs-lisp
 (use-package python
@@ -2825,7 +2712,11 @@ the current file."
 (use-package emmet-mode
   :ensure t
   :commands (emmet-expand-line)
-  :bind (:map web-mode-map
+  :bind (:map web-html-mode-map
+              ("<C-return>" . emmet-expand-line)
+              :map html-mode-map
+              ("<C-return>" . emmet-expand-line)
+              :map css-mode-map
               ("<C-return>" . emmet-expand-line))
   :hook ((web-html-mode html-mode css-mode) . emmet-mode))
 #+END_SRC
@@ -2860,7 +2751,7 @@ the current file."
   (my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save))
 #+END_SRC
 
-* Coq (proof-general)
+* coq (proof-general)
 
 #+BEGIN_SRC emacs-lisp
 (use-package proof-general
@@ -2894,7 +2785,7 @@ the current file."
    (whitespace-mode 1)))
 #+END_SRC
 
-* Markdown
+* markdown
 
 #+BEGIN_SRC emacs-lisp
 (use-package markdown-mode
@@ -2915,8 +2806,7 @@ the current file."
   (setq markdown-asymmetric-header t
         markdown-gfm-use-electric-backquote nil
         markdown-css-paths
-        (list (expand-file-name (concat user-emacs-directory "static/github.css")))
-        )
+        (list (expand-file-name (expand-file-name "static/github.css" user-emacs-directory))))
   :config
   (my/add-hooks
    '(markdown-mode-hook)
@@ -3172,7 +3062,7 @@ the current file."
               ("w" . forward-word)
               ("b" . backward-word))
   :init
-  (setq elfeed-db-directory (concat my/dropbox-emacs-dir "elfeed")
+  (setq elfeed-db-directory (expand-file-name "elfeed" my/dropbox-emacs-dir)
         elfeed-search-filter "@10-days-ago +unread")
   :config
   (defun my/elfeed-hide-images (tog)
@@ -3197,7 +3087,7 @@ the current file."
   (push '(important my/elfeed-important) elfeed-search-face-alist)
 
   ;; get feeds from personal dir
-  (load-file (concat my/dropbox-emacs-dir "lisp/elfeed-feeds.el")))
+  (load-file (expand-file-name "lisp/elfeed-feeds.el" my/dropbox-emacs-dir)))
 #+END_SRC
 
 ** pdf tools
@@ -3402,7 +3292,7 @@ erc-modified-channels-alist. Should be executed on window change."
 #+RESULTS:
 : rg-prev-file
 
-* Company
+* company
 
 #+BEGIN_SRC emacs-lisp
 (use-package company
@@ -3438,7 +3328,7 @@ erc-modified-channels-alist. Should be executed on window change."
   :after (company anaconda-mode))
 #+END_SRC
 
-* Flycheck
+* flycheck
 
 #+BEGIN_SRC emacs-lisp
 (defun my/mode-line-flycheck ())
@@ -3513,7 +3403,7 @@ erc-modified-channels-alist. Should be executed on window change."
       (if (null ml-status) "" (concat " " ml-status " ")))))
 #+END_SRC
 
-* Projectile
+* projectile
 
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
@@ -3522,10 +3412,9 @@ erc-modified-channels-alist. Should be executed on window change."
   :bind-keymap ("C-c p" . projectile-command-map)
   :diminish projectile-mode
   :init
-  (setq projectile-completion-system 'ivy)
-  (setq
-   projectile-mode-line-function
-   '(lambda () (format " P[%s]" (or (projectile-project-name) "-")))))
+  (setq projectile-completion-system 'ivy
+        projectile-mode-line-function
+        '(lambda () (format " P[%s]" (or (projectile-project-name) "-")))))
 
 (use-package perspective
   :ensure t
@@ -3534,10 +3423,11 @@ erc-modified-channels-alist. Should be executed on window change."
          ("M-P" . persp-prev)
          ("M-J" . persp-switch))
   :config
+  (advice-add 'persp-switch
+              :after
+              #'(lambda (n &optional r)
+                  (message (persp-name (persp-curr)))))
   ;; emacs window title
-  (defadvice persp-switch
-      (after advice-for-persp-switch activate)
-    (message (persp-name (persp-curr))))
   (setq frame-title-format
         '("" invocation-name "@" system-name
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
@@ -3576,7 +3466,7 @@ erc-modified-channels-alist. Should be executed on window change."
 ;;     (my/projectile-add-to-project-name-overrides proj name)))
 #+end_src
 
-* Ivy/Counsel/Swiper
+* ivy/counsel/swiper
 
 #+BEGIN_SRC emacs-lisp
 (use-package counsel-projectile
@@ -3649,6 +3539,33 @@ erc-modified-channels-alist. Should be executed on window change."
           (counsel-rg           . ivy--regex-ignore-order)
           (t                    . ivy--regex-fuzzy))))
 
+(defun my/counsel-rg-in ()
+  (interactive)
+  (counsel-rg nil (read-directory-name "rg in: ") ""))
+
+(defun my/counsel-file-jump-temp-root (reset)
+  (interactive "P")
+  (my/get-or-set-temp-root reset)
+  (let ((current-prefix-arg nil))
+    (counsel-file-jump nil my/temp-project-root)))
+
+(defun my/counsel-rg-temp-root (reset)
+  (interactive "P")
+  (my/get-or-set-temp-root reset)
+  (let ((current-prefix-arg nil))
+    (counsel-rg "" my/temp-project-root)))
+
+(defun my/set-temp-root-and-jump (dir)
+  (setq my/temp-project-root dir)
+  (my/counsel-file-jump-temp-root nil))
+
+(defun my/counsel-file-jump-from-here (path)
+  (interactive)
+  (let ((dir (if (file-directory-p path)
+                 path
+               (file-name-directory path))))
+    (counsel-file-jump "" dir)))
+
 (use-package counsel
   :ensure t
   :bind (("M-x" . counsel-M-x)
@@ -3657,12 +3574,15 @@ erc-modified-channels-alist. Should be executed on window change."
          ("C-x f" . counsel-file-jump)
          ("C-x r b" . counsel-bookmark)
          ("C-x C-a" . counsel-recentf)
+         ("C-c s" . my/counsel-rg-in)
+         ("C-S-p" . my/counsel-file-jump-temp-root)
+         ("C-S-s" . my/counsel-rg-temp-root)
          :map org-mode-map
          ("M-i" . counsel-outline))
   :after ivy
   :init
-  (setq counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s"
-        counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s")
+  (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s"
+        counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
   :config
   (my/ivy-reset-builders)
   (setq ivy-initial-inputs-alist nil) ;; no ^ initially
@@ -3670,39 +3590,6 @@ erc-modified-channels-alist. Should be executed on window change."
   ;; S-SPC doesn't work properly in counsel-ag anyway
   ;; NOTE: this also applies to rg
   (define-key counsel-ag-map (kbd "S-SPC") nil)
-  ;; counsel-rg
-  ;; NOTE: testing this (added `-S' for smart case in ivy-occur buffers)
-  (global-set-key (kbd "C-c s")
-                  (lambda ()
-                    (interactive)
-                    (counsel-rg nil (read-directory-name "rg in: ") "")))
-
-  (defun my/counsel-file-jump-temp-root (reset)
-    (interactive "P")
-    (my/get-or-set-temp-root reset)
-    (let ((current-prefix-arg nil))
-      (counsel-file-jump nil my/temp-project-root)))
-
-  (global-set-key (kbd "C-S-p") #'my/counsel-file-jump-temp-root)
-
-  (defun my/counsel-rg-temp-root (reset)
-    (interactive "P")
-    (my/get-or-set-temp-root reset)
-    (let ((current-prefix-arg nil))
-      (counsel-rg "" my/temp-project-root)))
-
-  (global-set-key (kbd "C-S-s") #'my/counsel-rg-temp-root)
-
-  (defun my/counsel-file-jump-from-here (path)
-    (interactive)
-    (let ((dir (if (file-directory-p path)
-                   path
-                 (file-name-directory path))))
-      (counsel-file-jump "" dir)))
-
-  (defun my/set-temp-root-and-jump (dir)
-    (setq my/temp-project-root dir)
-    (my/counsel-file-jump-temp-root nil))
 
   (dolist (action '(counsel-find-file counsel-file-jump counsel-recentf))
     (ivy-set-actions
@@ -3778,6 +3665,19 @@ erc-modified-channels-alist. Should be executed on window change."
         "select window")
        ))))
 
+(defun my/ivy-yank-current-region-or-word (&optional qual)
+  "Insert current region, if it's active, otherwise the current word,into
+the minibuffer."
+  (interactive "P")
+  (let (text)
+    (with-ivy-window
+      (unwind-protect
+          (setq text
+                (if (region-active-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                  (current-word t (not qual))))))
+    (when text (insert text))))
+
 (use-package ivy
   :ensure t
   :diminish ivy-mode
@@ -3785,48 +3685,20 @@ erc-modified-channels-alist. Should be executed on window change."
   :bind (("C-c r" . ivy-resume)
          ("C-x b" . ivy-switch-buffer)
          :map ivy-minibuffer-map
-         ("C-l" . ivy-call-and-recenter))
+         ("M-j" . my/ivy-yank-current-region-or-word)
+         ("M-r" . ivy-rotate-preferred-builders)
+         ("C-l" . ivy-call-and-recenter)
+         ("C-o" . ivy-minibuffer-grow)
+         ("C-S-o" . ivy-minibuffer-shrink))
   :init
   (setq ivy-use-virtual-buffers nil
         ivy-count-format "(%d/%d) "
-        ivy-magic-tilde nil)
+        ivy-magic-tilde nil
+        ivy-initial-inputs-alist nil)
   :config
   (my/ivy-reset-builders)
-  (setq ivy-initial-inputs-alist nil) ;; no ^ initially
-  (define-key ivy-minibuffer-map (kbd "C-l") 'ivy-call-and-recenter)
-
-  (defun my/ivy-yank-current-region-or-word (&optional qual)
-    "Insert current region, if it's active, otherwise the current word,into
-the minibuffer."
-    (interactive "P")
-    (let (text)
-      (with-ivy-window
-        (unwind-protect
-            (setq text
-                  (if (region-active-p)
-                      (buffer-substring-no-properties (region-beginning) (region-end))
-                    (current-word t (not qual))))))
-      (when text (insert text))))
-  (define-key ivy-minibuffer-map (kbd "M-j") 'my/ivy-yank-current-region-or-word)
-  ;; TODO: something's up with rotation
-  (define-key ivy-minibuffer-map (kbd "M-r") 'ivy-rotate-preferred-builders)
-
-  (defun my/ivy-minibuffer-grow ()
-    (interactive)
-    (let* ((prefix (prefix-numeric-value current-prefix-arg))
-           (nlines (cond
-                    ((= prefix 1) 1)
-                    ((= prefix 4) (/ (frame-height) 2))
-                    (t (- (frame-height) 5))))
-           (current-prefix-arg nil))
-      (while (> nlines 0)
-        (ivy-minibuffer-grow)
-        (setq nlines (1- nlines)))))
-
-  (define-key ivy-minibuffer-map (kbd "C-o") #'my/ivy-minibuffer-grow)
 
   ;; minibuffer actions for specific commands
-
   (ivy-set-actions
    'ivy-switch-buffer
    `(("s"
@@ -3860,11 +3732,12 @@ the minibuffer."
       "Remove project(s)"))))
 
 (use-package ivy-xref  ;; currently in lisp/ because of patches
-  :config (setq xref-show-xrefs-function 'ivy-xref-show-xrefs)
+  :commands (ivy-xref-show-xrefs)
+  :init (setq xref-show-xrefs-function 'ivy-xref-show-xrefs)
   :after ivy)
 #+END_SRC
 
-* Yasnippet
+* yasnippet
 
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet-snippets
@@ -3991,7 +3864,7 @@ the minibuffer."
          ("C-c l" . org-store-link))
   :init
   (setq org-directory my/org-directory
-        org-default-notes-file (concat org-directory "notes.org")
+        org-default-notes-file (expand-file-name "notes.org" org-directory)
         org-log-done 'time
         org-confirm-babel-evaluate nil
         org-clock-into-drawer nil
@@ -4007,18 +3880,14 @@ the minibuffer."
         org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
         org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold))))
 
+  ;; export
+  (setq org-export-with-toc nil
+        org-export-with-section-numbers 1)
+
   ;; format string used when creating CLOCKSUM lines and when generating a
   ;; time duration (avoid showing days)
   (setq org-time-clocksum-format
         '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
-
-  (defun my/org-insert-template ()
-    (interactive)
-    (let* ((templ-dir (expand-file-name (concat user-emacs-directory "org-templates/")))
-           (ls (directory-files templ-dir nil "^[^.]"))
-           (file (completing-read "Template: " ls))
-           (path (concat templ-dir file)))
-      (insert-file-contents path)))
 
   :config
   (require 'org-tempo nil :noerror)
@@ -4046,6 +3915,20 @@ the minibuffer."
   (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
   (font-lock-fontify-buffer :interactively))
 
+(defun my/org-export-conf ()
+  (interactive)
+  (let ((org-export-with-toc t)
+        (org-export-with-section-numbers 1)
+        (org-html-htmlize-output-type 'css)
+        (org-html-head-extra
+         (string-join
+          '("<link href=\"/htmlize.css\" rel=\"stylesheet\">"
+            "<link href=\"/readtheorg.css\" rel=\"stylesheet\">"
+            ) "\n")))
+    (with-temp-buffer
+      (insert-file (expand-file-name "configuration.org" user-emacs-directory))
+      (org-export-to-file 'html (expand-file-name "docs/index.html" user-emacs-directory)))))
+
 (defun my/org-set-src-faces (&optional light-bg th)
   (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
          (rfunc (if light-bg 'color-lighten-name 'color-darken-name))
@@ -4066,7 +3949,8 @@ the minibuffer."
 (use-package org-cliplink
   :ensure t
   :after org
-  :commands (org-cliplink)
+  :bind (:map org-mode-map
+              ("C-c C-S-l" . org-cliplink))
   :init
   (setq org-cliplink-max-length 80))
 
@@ -4079,17 +3963,11 @@ the minibuffer."
   (setq org-bullets-bullet-list (append '("◉") (make-list 7 "○"))
         org-hide-leading-stars t))
 
-;; auto-generated if a heading has a :TOC: tag
-(use-package toc-org
-  :ensure t
-  :after org
-  :hook (org-mode . toc-org-mode))
-
 (use-package htmlize
   :ensure t
   :defer t
   :init
-  (setq org-html-htmlize-output-type 'css))
+  (setq org-html-htmlize-output-type 'inline-css))
 #+END_SRC
 
 * org-roam
@@ -4106,12 +3984,14 @@ the minibuffer."
                ("C-c n f" . org-roam-find-file)
                ("C-c n g" . org-roam-graph)
                ("C-c n l" . org-roam)
+               ("C-c n s" . my/org-roam-rg)
                ("C-c n x" . org-roam-jump-to-index))
               :map org-mode-map
               (("C-c n i" . org-roam-insert)
-               ("C-c n I" . my/org-roam-insert-link-to-heading)))
+               ("C-c n I" . my/org-roam-insert-no-capture)))
   :init
   (setq org-roam-directory my/org-directory
+        org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
         org-roam-index-file "index.org"
         org-roam-link-title-format "%s")
   (setq org-roam-graph-viewer
@@ -4136,6 +4016,10 @@ the minibuffer."
   :init
   (setq httpd-port 25002))
 
+(defun my/org-roam-rg ()
+  (interactive)
+  (counsel-rg "" org-roam-directory "-g '*.org'"))
+
 (defun my/org-roam-filename-from-title (title)
   (let* ((tmpl (concat org-roam-capture--file-name-default "-${slug}"))
          (slug (org-roam--title-to-slug title)))
@@ -4147,47 +4031,19 @@ the minibuffer."
          (filename (cdr (assoc title completions))))
     (if (null filename)
         (let* ((create-fn (concat (my/org-roam-filename-from-title title) ".org"))
-               (key (format "#+TITLE: %s\n" title)))
-          (setq filename (expand-file-name (concat org-roam-directory create-fn)))
+               (key (format "#+TITLE: %s\n\n" title)))
+          (setq filename (expand-file-name create-fn org-roam-directory))
           (write-region key nil filename)
           (org-roam-db-build-cache :force)))
     filename))
 
-(defun my/org-mode-select-heading (&optional filename)
-  (if (null filename)
-      (my/-org-mode-select-heading)
-    (with-temp-buffer
-      (insert-file-contents filename)
-      (org-mode)
-      (my/-org-mode-select-heading))))
-
-(defun my/-org-mode-select-heading ()
-  (let* ((settings (cdr (assq 'org-mode counsel-outline-settings)))
-         (res (substring-no-properties
-               (ivy-read "Heading: " (counsel-outline-candidates settings)
-                         :history (or (plist-get settings :history)
-                                      'counsel-outline-history)
-                         :preselect (max (1- counsel-outline--preselect) 0)
-                         :caller (or (plist-get settings :caller)
-                                     'counsel-outline)))))
-    (car (last (split-string res "/")))))
-
-(defun my/org-roam-insert-link-to-heading ()
+(defun my/org-roam-insert-no-capture ()
   (interactive)
-  (advice-add 'org-link-make-string :filter-args 'my/org-link-make-string-with-heading)
-  (funcall-interactively 'org-roam-insert)
-  (advice-remove 'org-link-make-string 'my/org-link-make-string-with-heading))
-
-(defun my/org-link-make-string-with-heading (params)
-  (let* ((link (car params))
-         (description (cadr params))
-         (fname (string-trim-left link "file:"))
-         (heading (my/org-mode-select-heading fname))
-         (newlink (format "%s::%s" link heading))
-         (newdescription (if (null description)
-                             nil
-                           (format "%s::%s" description heading))))
-    (list newlink newdescription)))
+  (let ((org-roam-capture-templates
+         (mapcar
+          #'(lambda (tmpl) (append tmpl '(:immediate-finish t)))
+          org-roam-capture-templates)))
+    (funcall-interactively 'org-roam-insert)))
 #+END_SRC
 
 * org-download
@@ -4214,10 +4070,10 @@ the minibuffer."
   :after org-roam
   :bind ("C-c n j" . org-journal-new-entry)
   :custom
-  (org-journal-dir (concat org-roam-directory "journal/"))
+  (org-journal-dir (expand-file-name "journal/" org-roam-directory))
   (org-journal-date-prefix "#+TITLE: ")
   (org-journal-file-format "%Y-%m-%d.org")
-  (org-journal-date-format "[Journal] %A, %d %B %Y")
+  (org-journal-date-format "[Journal] %A, %d %B %Y\n")
   ;; (org-journal-time-format "%T")
   (org-journal-file-type 'daily)
   (org-journal-enable-agenda-integration t)
@@ -4229,10 +4085,10 @@ the minibuffer."
 * org-ref, org-noter & bibtex
 
 #+begin_src emacs-lisp
-(defvar my/dropbox-papers-dir (concat my/dropbox-dir "papers/")
+(defvar my/dropbox-papers-dir (expand-file-name "papers/" my/dropbox-dir)
   "Dropbox papers directory")
 
-(defvar my/dropbox-papers-bibtex (concat my/dropbox-papers-dir "papers.bib")
+(defvar my/dropbox-papers-bibtex (expand-file-name "papers.bib" my/dropbox-papers-dir)
   "Dropbox bibtex bibliography file")
 
 (use-package bibtex
@@ -4261,7 +4117,7 @@ the minibuffer."
   (setq bibtex-completion-library-path (list my/dropbox-papers-dir)
         bibtex-completion-pdf-field "file"
         bibtex-completion-bibliography (list my/dropbox-papers-bibtex)
-        bibtex-completion-notes-path (concat my/org-directory "papers/")
+        bibtex-completion-notes-path (expand-file-name "papers/" my/org-directory)
         bibtex-completion-notes-template-multiple-files (string-join '("#+TITLE: [Paper] ${author-or-editor} (${year}): ${title}"
                                                                        "#+ROAM_KEY: cite:${=key=}\n\n"
                                                                        )
@@ -4305,7 +4161,7 @@ the minibuffer."
             (org-noter))
         (let* ((ref (cdr (org-roam--extract-ref)))
                (pdf-name (format "%s.pdf" ref))
-               (pdf-path (concat my/dropbox-papers-dir pdf-name))
+               (pdf-path (expand-file-name pdf-name my/dropbox-papers-dir))
                (pdf-path-rel (file-relative-name pdf-path))
                (props
                 (string-join `(":PROPERTIES:"
@@ -4326,112 +4182,20 @@ the minibuffer."
   :after org-roam
   :bind (("<f8>" . deft)
          ("C-x <f8>" . deft-find-file))
-  :commands (deft deft-cache-initialize
-              deft-parse-title deft-sort-files-by-mtime)
   :init
-  (setq ;; deft-directory (concat my/dropbox-emacs-dir "deft")
-        deft-directory org-roam-directory
+  (setq deft-directory my/org-directory
         deft-recursive t
-        ;; deft-extensions '("md" "org" "txt")
-        deft-extensions '("org" "md" "txt")
-        deft-ignore-file-regexp "_sidebar\.md\\|index\.md"
-        deft-markdown-mode-title-level 1
+        deft-extensions '("org")
         deft-use-filter-string-for-filename t
         deft-file-naming-rules '((noslash . "_")
                                  (nospace . "_")
                                  (case-fn . downcase)))
-  (with-eval-after-load 'markdown-mode
-    (define-key markdown-mode-map (kbd "C-c <f8>") 'my/generate-deft-link))
-
-  (defun my/deft-search ()
-    (interactive)
-    (counsel-rg ""
-                deft-directory
-                "-g !_sidebar.md -g !index.md -g !index.html -g !static/"))
-  (defalias 'ds 'my/deft-search)
-
   :config
-  (advice-add 'deft-cache-update-all :after 'my/deft-docsify-write-sidebar)
   (advice-add 'deft-new-file-named :filter-args '(lambda (n) (mapcar 'my/org-roam-filename-from-title n)))
-  (advice-add 'deft-cache-update-all :after '(lambda () (org-roam-db-build-cache :force)))
-  )
-
-(defun my/get-deft-file-by-title ()
-  (if (or (not (boundp 'deft-hash-mtimes)) (null deft-hash-mtimes))
-      (deft-cache-initialize)
-    (deft-cache-update-all))
-  (let* ((files (deft-sort-files-by-mtime (deft-find-all-files)))
-         (titles (mapcar 'deft-file-title files))
-         (cands (-zip titles files))
-         (title (completing-read "Deft file: " titles)))
-    (assoc title cands)))
-
-(defun my/get-deft-file-by-filename ()
-  (let* ((name
-          (string-trim-left
-           (completing-read "Deft file: " (deft-find-all-files-no-prefix))
-           "/"))
-         (dir (string-trim-right (expand-file-name deft-directory) "/"))
-         (path (concat dir "/" name))
-         (contents (with-temp-buffer
-                     (insert-file-contents path)
-                     (buffer-string)))
-         (title (deft-parse-title path contents)))
-    `(,title . ,path)))
-
-(defun my/generate-deft-link (by-filename)
-  "Interactively generate a relative markdown link to a deft file.
-
-With prefix arg or non-nil BY-FILENAME the completion shows the filenames
-instead of the title as seen by deft."
-  (interactive "P")
-  (when (or (null (buffer-file-name))
-            (not (string-prefix-p (expand-file-name deft-directory)
-                                  (file-name-directory (buffer-file-name)))))
-    (user-error "Not currently editing a deft file"))
-  (let* ((info (if by-filename
-                   (my/get-deft-file-by-filename)
-                 (my/get-deft-file-by-title)))
-         (title (car info))
-         (path (cdr info))
-         (prompt (format "Link text [%s]: " title))
-         (link-text (read-string prompt nil nil title))
-         (curdir (file-name-directory (buffer-file-name)))
-         (link-path (file-relative-name path curdir)))
-    (insert (format "[%s](%s)" link-text link-path))))
-
-(defun my/deft-docsify-sidebar-content ()
-  (let* ((files (deft-sort-files-by-mtime (deft-find-all-files)))
-         (titles (mapcar 'deft-file-title files))
-         (dd (expand-file-name deft-directory))
-         (paths (mapcar #'(lambda (p) (file-relative-name p dd)) files))
-         (pairs (-zip titles paths)))
-    (-reduce-from
-     #'(lambda (acc pair)
-         (let* ((fname (car pair))
-                (path (cdr pair))
-                (link (format "[%s](%s)" fname path)))
-           (concat acc "- " link "\n")))
-     "- [Index](index.md)\n"
-     pairs)))
-
-(defun my/deft-docsify-write-sidebar ()
-  (let* ((dir (string-trim-right (expand-file-name deft-directory) "/"))
-         (fname "_sidebar.md")
-         (path (concat dir "/" fname)))
-    (with-temp-file path
-      (erase-buffer)
-      (insert (my/deft-docsify-sidebar-content)))))
-
-(defun my/wiki-refresh ()
-  (interactive)
-  (when (or (not (boundp 'deft-hash-mtimes)) (null deft-hash-mtimes))
-    (deft-cache-initialize))
-  (deft-cache-update-all)
-  (my/deft-docsify-write-sidebar))
+  (advice-add 'deft-cache-update-all :after '(lambda () (org-roam-db-build-cache :force))))
 #+end_src
 
-* Modeline
+* modeline
 ** Selected window & focused frame
 
 #+BEGIN_SRC emacs-lisp
@@ -4562,14 +4326,6 @@ instead of the title as seen by deft."
   (when server-mode
     (propertize " srv " 'face 'compilation-info)))
 
-(defun my/mode-line-unicode-char ()
-  (let ((ch (following-char)))
-    (when (and ch (>= ch 127))
-      (format "%s  " (propertize
-                      (get-char-code-property (following-char) 'name)
-                      'face
-                      'compilation-error)))))
-
 (setq global-mode-string (delete '(:eval (persp-mode-line)) global-mode-string))
 (setcar mode-line-position "")
 
@@ -4583,7 +4339,7 @@ instead of the title as seen by deft."
        mode-line-modified "  "
        mode-line-buffer-identification " "
        (:eval (string-remove-suffix "-mode" (format "%s" major-mode)))
-       (:eval mode-line-process)
+       (:eval mode-line-process) " "
        (:eval (my/mode-line-window-info))
        (:eval (my/mode-line-flycheck)) " "
        (:eval (my/mode-line-region-info))
@@ -4591,7 +4347,6 @@ instead of the title as seen by deft."
      ;; right
      (quote
       (
-       (:eval (my/mode-line-unicode-char))
        (:eval (my/mode-line-vc))
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
@@ -4687,7 +4442,7 @@ instead of the title as seen by deft."
 
 #+BEGIN_SRC emacs-lisp
 ;; https://nicolas.petton.fr/blog/per-computer-emacs-settings.html
-(defvar my/hosts-dir (expand-file-name (concat user-emacs-directory "hosts/")))
+(defvar my/hosts-dir (expand-file-name (expand-file-name "hosts/" user-emacs-directory)))
 (defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
 (let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
   (load-file host-file))
@@ -4713,7 +4468,7 @@ instead of the title as seen by deft."
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (concat user-emacs-directory "custom.el"))
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 ;; (load custom-file 'noerror)
 
 ;; make underlines show under mode-line (cleaner)

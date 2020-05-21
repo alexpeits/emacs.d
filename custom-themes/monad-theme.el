@@ -254,6 +254,9 @@
  '(org-ellipsis         ((t (:inherit font-lock-preprocessor-face :underline t))))
  '(org-list-dt          ((t (:inherit font-lock-type-face))))
 
+ '(org-roam-link         ((t (:inherit font-lock-preprocessor-face :underline t))))
+ '(org-roam-link-invalid ((t (:inherit font-lock-warning-face :underline t))))
+
  '(outline-1 ((t (:inherit font-lock-function-name-face))))
  '(outline-2 ((t (:inherit font-lock-string-face))))
  '(outline-3 ((t (:inherit font-lock-preprocessor-face))))

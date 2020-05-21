@@ -14,5 +14,6 @@ smex-items
 transient/
 anaconda-mode/
 url/
+org-roam.db
 org-journal.cache
 result
