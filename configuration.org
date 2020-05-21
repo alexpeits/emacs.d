@@ -275,8 +275,9 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (with-eval-after-load 'ivy
   (defun my/try-open-dominating-file-display-transformer (fn)
-    (let ((dir (locate-dominating-file (buffer-file-name) fn)))
-      (format "%s (in %s)"
+    (let ((dir (locate-dominating-file (buffer-file-name) fn))
+          (max-length (apply 'max (mapcar 'length my/useful-files))))
+      (format (format "%%-%ds (in %%s)" max-length)
               fn
               (propertize dir 'face 'font-lock-type-face))))
   (ivy-configure 'my/try-open-dominating-file
