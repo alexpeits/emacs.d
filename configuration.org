@@ -3921,7 +3921,8 @@ the minibuffer."
         org-startup-with-inline-images t
         org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
         org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
-        org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold))))
+        org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold)))
+        org-link-frame-setup '((file . find-file)))
 
   ;; export
   (setq org-export-with-toc nil
