@@ -3327,7 +3327,7 @@ erc-modified-channels-alist. Should be executed on window change."
                               (progn
                                 (ace-window nil)
                                 (switch-to-buffer buf))))))
-          (compile-goto-error event)))
+      (compile-goto-error event)))
   )
 
 #+END_SRC
@@ -3793,7 +3793,7 @@ the minibuffer."
   :ensure t
   :bind (("C-c y" . yas-expand)
          ("<C-return>" . yas-expand))
-  :diminish yas-global-mode
+  :diminish (yas-global-mode yas-minor-mode)
   :config
   ;; NOTE: the reason for not putting it in `after-init-hook' is to defer
   ;; loading until it `yas-expand' has been run the first time
@@ -3911,6 +3911,7 @@ the minibuffer."
         org-log-done 'time
         org-confirm-babel-evaluate nil
         org-clock-into-drawer nil
+        org-keep-stored-link-after-insertion t
         org-src-fontify-natively t
         org-src-preserve-indentation t
         org-src-tab-acts-natively t
@@ -3928,6 +3929,10 @@ the minibuffer."
   (setq org-export-with-toc nil
         org-export-with-section-numbers 1)
 
+  ;; refile
+  (setq org-refile-targets '((nil . (:maxlevel . 1)))
+        org-refile-use-outline-path nil
+        org-outline-path-complete-in-steps nil)
   ;; format string used when creating CLOCKSUM lines and when generating a
   ;; time duration (avoid showing days)
   (setq org-time-clocksum-format
@@ -4022,17 +4027,16 @@ the minibuffer."
   :hook (after-init . org-roam-mode)
   :diminish
   :bind (:map org-roam-mode-map
-              (("C-c n b" . org-roam-switch-to-buffer)
-               ("C-c n c" . org-roam-capture)
-               ("C-c n d" . deft)
-               ("C-c n f" . org-roam-find-file)
-               ("C-c n g" . org-roam-graph)
-               ("C-c n l" . org-roam)
-               ("C-c n s" . my/org-roam-rg)
-               ("C-c n x" . org-roam-jump-to-index))
+              ("C-c n b" . org-roam-switch-to-buffer)
+              ("C-c n c" . org-roam-capture)
+              ("C-c n f" . org-roam-find-file)
+              ("C-c n g" . org-roam-graph)
+              ("C-c n l" . org-roam)
+              ("C-c n s" . my/org-roam-rg)
+              ("C-c n x" . org-roam-jump-to-index)
               :map org-mode-map
-              (("C-c n i" . org-roam-insert)
-               ("C-c n I" . my/org-roam-insert-no-capture)))
+              ("C-c n i" . org-roam-insert)
+              ("C-c n I" . my/org-roam-insert-no-capture))
   :init
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
@@ -4043,6 +4047,7 @@ the minibuffer."
             (executable-find "google-chrome")
             (executable-find "firefox")))
   :config
+  (add-to-list 'org-refile-targets '(org-roam--list-all-files . (:maxlevel . 1)))
   (add-hook 'org-roam-backlinks-mode-hook 'org-indent-mode))
 
 (use-package org-roam-protocol
@@ -4089,6 +4094,41 @@ the minibuffer."
           org-roam-capture-templates)))
     (funcall-interactively 'org-roam-insert)))
 #+END_SRC
+
+#+begin_src emacs-lisp
+(defvar my/org-roam-link-mode-map (make-sparse-keymap))
+
+(define-minor-mode my/org-roam-link-mode
+  "Insert an org-roam link by inserting double square or curly brackets."
+  :lighter ""
+  :keymap my/org-roam-link-mode-map
+  (unless (eq major-mode 'org-mode)
+    (user-error "Not in an org-mode buffer")))
+
+(defun my/org-roam-link-mode-insert-command (char command)
+  (if (char-equal (preceding-char) char)
+      (progn
+        (delete-char -1)
+        (let ((inhibit-quit t))
+          (unless (with-local-quit
+                    (funcall command)
+                    t)
+            (insert char char))))
+    (insert char)))
+
+(defun my/org-roam-link-mode-insert ()
+  (interactive)
+  (my/org-roam-link-mode-insert-command ?\{ 'org-roam-insert))
+
+(defun my/org-roam-link-mode-insert-no-capture ()
+  (interactive)
+  (my/org-roam-link-mode-insert-command ?\[ 'my/org-roam-insert-no-capture))
+
+(define-key my/org-roam-link-mode-map (kbd "{") #'my/org-roam-link-mode-insert)
+(define-key my/org-roam-link-mode-map (kbd "[") #'my/org-roam-link-mode-insert-no-capture)
+
+(add-hook 'org-mode-hook #'my/org-roam-link-mode)
+#+end_src
 
 * org-download
 
@@ -4224,7 +4264,8 @@ the minibuffer."
 (use-package deft
   :ensure t
   :after org-roam
-  :bind (("<f8>" . deft)
+  :bind (("C-c n d" . deft)
+         ("<f8>" . deft)
          ("C-x <f8>" . deft-find-file))
   :init
   (setq deft-directory my/org-directory
