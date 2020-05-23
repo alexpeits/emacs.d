@@ -283,6 +283,7 @@
    '(org-block-begin-line ((t (:foreground "#768e84" :background "#232b28" :slant italic))))
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))
    '(org-hide             ((t (:inherit fill-column-indicator))))
+   '(org-indent           ((t (:inherit default :foreground "#1a1b1b"))))
    '(org-ellipsis         ((t (:foreground "#d7afd7" :underline t))))
    '(org-list-dt          ((t (:inherit font-lock-type-face))))
 

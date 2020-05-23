@@ -62,6 +62,7 @@
    `(org-block-begin-line ((t (:background ,h4))))
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))
    '(org-hide             ((t (:inherit fill-column-indicator))))
+   '(org-indent           ((t (:inherit default :foreground "white"))))
    '(org-date             ((t (:inherit font-lock-type-face :underline t))))
 
    '(org-roam-link         ((t (:inherit font-lock-keyword-face :underline t))))

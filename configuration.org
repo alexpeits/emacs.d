@@ -2145,6 +2145,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   ;; hide files being edited & flycheck files from dired
   (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
         dired-omit-verbose nil)
+  (setq dired-hide-details-hide-symlink-targets nil)
   :config
   (add-hook 'dired-mode-hook #'auto-revert-mode)
   (add-hook 'dired-mode-hook #'dired-omit-mode)
@@ -3883,28 +3884,42 @@ the minibuffer."
            (file my/org-roam-find-filename)
            "* %U %:description\n%i"
            :immediate-finish t)
-          ("it"
-           "Immediate todo"
-           entry
-           (file+headline "todo.org" "Immediate")
-           "* TODO %U %:description"
-           :immediate-finish t)
           ("l"
            "Link to file"
            entry
-           (file+headline "todo.org" "Links to files")
+           (file my/org-roam-find-filename)
            "* TODO %?\n%a\n\n%i")
           ("c"
            "Code comment"
            entry
-           (file+headline "todo.org" "Code comments")
+           (file my/org-roam-find-filename)
            "* TODO %?\n%a\n\n#+begin_src %^{Language}\n%i#+end_src\n\n"))))
+
+(use-package org-indent
+  :after org
+  :commands (org-indent-mode)
+  :diminish)
+
+(use-package org-agenda
+  :after org
+  :bind (("C-c a" . org-agenda))
+  :init
+  (setq org-agenda-custom-commands
+        '(("c" "Simple agenda view"
+           ((tags "PRIORITY=\"A\""
+                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                   (org-agenda-overriding-header "High-priority unfinished tasks:")))
+            (agenda "")
+            (alltodo "")))))
+  (setq org-agenda-files (list my/org-directory
+                               (expand-file-name "papers" my/org-directory)
+                               (expand-file-name "orgzly" my/org-directory))))
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c a" . org-agenda)
-         ("C-c b" . org-iswitchb)
-         ("C-c l" . org-store-link))
+  :bind (("C-c b" . org-iswitchb)
+         ("C-c l" . org-store-link)
+         ("C-c &" . org-mark-ring-goto))
   :init
   (setq org-directory my/org-directory
         org-default-notes-file (expand-file-name "notes.org" org-directory)
@@ -3913,9 +3928,9 @@ the minibuffer."
         org-clock-into-drawer nil
         org-keep-stored-link-after-insertion t
         org-src-fontify-natively t
-        org-src-preserve-indentation t
         org-src-tab-acts-natively t
         org-src-window-setup 'other-window
+        org-src-preserve-indentation t
         org-adapt-indentation nil
         org-ellipsis "…"
         org-tags-column -80
@@ -3931,7 +3946,7 @@ the minibuffer."
 
   ;; refile
   (setq org-refile-targets '((nil . (:maxlevel . 1)))
-        org-refile-use-outline-path nil
+        org-refile-use-outline-path 'file
         org-outline-path-complete-in-steps nil)
   ;; format string used when creating CLOCKSUM lines and when generating a
   ;; time duration (avoid showing days)
@@ -3946,7 +3961,6 @@ the minibuffer."
   (my/define-major-mode-key 'org-mode "tl" 'org-toggle-link-display)
   (my/define-major-mode-key 'org-mode "tm" 'my/org-toggle-markup)
 
-  (add-to-list 'org-agenda-files org-directory)
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
   (my/add-hooks
    '(org-mode-hook)
@@ -4035,8 +4049,8 @@ the minibuffer."
               ("C-c n s" . my/org-roam-rg)
               ("C-c n x" . org-roam-jump-to-index)
               :map org-mode-map
-              ("C-c n i" . org-roam-insert)
-              ("C-c n I" . my/org-roam-insert-no-capture))
+              ("C-c n I" . org-roam-insert)
+              ("C-c n i" . my/org-roam-insert-no-capture))
   :init
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
@@ -4048,6 +4062,7 @@ the minibuffer."
             (executable-find "firefox")))
   :config
   (add-to-list 'org-refile-targets '(org-roam--list-all-files . (:maxlevel . 1)))
+  (add-hook 'org-export-before-processing-hook 'my/org-export--add-roam-backlinks)
   (add-hook 'org-roam-backlinks-mode-hook 'org-indent-mode))
 
 (use-package org-roam-protocol
@@ -4065,9 +4080,25 @@ the minibuffer."
   :init
   (setq httpd-port 25002))
 
+(defun my/org-roam-rg-transformer (str)
+  (if (string-match "\\`\\([^:]+\\):\\([^:]+\\):" str)
+      (let* ((parts (split-string str ":"))
+             (path (elt parts 0))
+             (line (elt parts 1))
+             (match (string-join (cddr parts) ":"))
+             (abspath (concat org-roam-directory path))
+             (roam-title (org-roam--get-title-or-slug abspath)))
+        (format "%s:%s:%s"
+                (propertize roam-title 'face 'ivy-grep-info)
+                (propertize line 'face 'ivy-grep-line-number)
+                match))
+    str))
+
 (defun my/org-roam-rg ()
   (interactive)
-  (counsel-rg "" org-roam-directory "-g '*.org'"))
+  ;; TODO: find a better way
+  (let ((ivy--display-transformers-list '(counsel-rg my/org-roam-rg-transformer)))
+    (counsel-rg "" org-roam-directory "-g '*.org'")))
 
 (defun my/org-roam-filename-from-title (title)
   (let* ((tmpl (concat org-roam-capture--file-name-default "-${slug}"))
@@ -4093,42 +4124,35 @@ the minibuffer."
           #'(lambda (tmpl) (append tmpl '(:immediate-finish t)))
           org-roam-capture-templates)))
     (funcall-interactively 'org-roam-insert)))
+
+(defun my/org-roam-backlinks-list-with-content (file)
+  (with-temp-buffer
+    (if-let* ((backlinks (org-roam--get-backlinks file))
+              (grouped-backlinks (--group-by (nth 0 it) backlinks)))
+        (progn
+          (insert (format "\n* %d Backlinks\n"
+                          (length backlinks)))
+          (dolist (group grouped-backlinks)
+            (let ((file-from (car group))
+                  (bls (cdr group)))
+              (insert (format "** [[file:%s][%s]]\n"
+                              file-from
+                              (org-roam--get-title-or-slug file-from)))
+              (dolist (backlink bls)
+                (pcase-let ((`(,file-from _ ,props) backlink))
+                  (insert (s-trim (s-replace "\n" " " (plist-get props :content))))
+                  (insert "\n\n")))))))
+    (buffer-string)))
+
+(defun my/org-export--add-roam-backlinks (backend)
+  (let ((fn (buffer-file-name)))
+    (when (file-in-directory-p fn org-roam-directory)
+      (let ((links (my/org-roam-backlinks-list-with-content fn)))
+        (unless (string= links "")
+          (save-excursion
+            (goto-char (point-max))
+            (insert (concat "\n* Backlinks\n") links)))))))
 #+END_SRC
-
-#+begin_src emacs-lisp
-(defvar my/org-roam-link-mode-map (make-sparse-keymap))
-
-(define-minor-mode my/org-roam-link-mode
-  "Insert an org-roam link by inserting double square or curly brackets."
-  :lighter ""
-  :keymap my/org-roam-link-mode-map
-  (unless (eq major-mode 'org-mode)
-    (user-error "Not in an org-mode buffer")))
-
-(defun my/org-roam-link-mode-insert-command (char command)
-  (if (char-equal (preceding-char) char)
-      (progn
-        (delete-char -1)
-        (let ((inhibit-quit t))
-          (unless (with-local-quit
-                    (funcall command)
-                    t)
-            (insert char char))))
-    (insert char)))
-
-(defun my/org-roam-link-mode-insert ()
-  (interactive)
-  (my/org-roam-link-mode-insert-command ?\{ 'org-roam-insert))
-
-(defun my/org-roam-link-mode-insert-no-capture ()
-  (interactive)
-  (my/org-roam-link-mode-insert-command ?\[ 'my/org-roam-insert-no-capture))
-
-(define-key my/org-roam-link-mode-map (kbd "{") #'my/org-roam-link-mode-insert)
-(define-key my/org-roam-link-mode-map (kbd "[") #'my/org-roam-link-mode-insert-no-capture)
-
-(add-hook 'org-mode-hook #'my/org-roam-link-mode)
-#+end_src
 
 * org-download
 
