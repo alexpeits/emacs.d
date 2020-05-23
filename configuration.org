@@ -1238,15 +1238,7 @@ CWD is not in a git repo (or the git command is not found)."
   ;; :hook (prog-mode . hl-line-mode)
   :commands (hl-line-mode global-hl-line-mode)
   :init
-  (setq hl-line-sticky-flag nil)
-  (defvar my/hl-line-contrast 5)
-  (defun my/hl-line-set-bg (&optional light-bg th)
-    (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
-           (bg (face-attribute 'default :background))
-           (theme (if th th my/theme)))
-      (custom-theme-set-faces
-       theme
-       `(hl-line ((t (:background ,(funcall func bg my/hl-line-contrast)))))))))
+  (setq hl-line-sticky-flag nil))
 
 (use-package display-fill-column-indicator
   :if (>= emacs-major-version 27)
@@ -1270,168 +1262,19 @@ CWD is not in a git repo (or the git command is not found)."
 * Theme
 
 #+BEGIN_SRC emacs-lisp
-(defun my/after-set-theme (&optional light-bg)
-  (setq my/theme-light-bg (if light-bg t nil))
-  (my/diff-hl-set-fringe-faces light-bg)
-  (my/hl-line-set-bg light-bg)
-  (my/org-set-src-faces light-bg))
-
 (when (>= emacs-major-version 27)
   (setq custom--inhibit-theme-enable nil))
 
-;; I am trying a lot of themes dammit
-(setq my/all-themes
-      '(
-        (wombat
-         (progn
-           (custom-theme-set-faces
-            'wombat
-            '(default ((t (:foreground "#c7c7c7" :background "#1a1a1a"))))
-            '(font-lock-comment-face ((t (:foreground "#828987"))))
-            '(font-lock-string-face ((t (:foreground "#4096c9"))))
-            '(font-lock-doc-face ((t (:foreground "#348dc1"))))
-            '(region ((t (:background "#515151"))))
-            '(highlight ((t (:background "#3a3a3a"))))
-            '(cursor ((t (:background "#d8d8d8"))))
-            '(fringe ((t (:background "#2e2e2e"))))
-            '(isearch ((t (:foreground "#242424" :background "#e5786d"))))
-            '(vertical-border ((t (:foreground "#b0b0b0"))))
-            '(show-paren-match ((t (:background "steelblue4" :weight bold))))
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(persp-selected-face ((t (:inherit font-lock-string-face :weight bold))))
-            '(mode-line
-              ((t (:background "#454545" :foreground "#d1d1d1" :box (:line-width 1 :color "#4a4a4a")))))
-            '(mode-line-inactive
-              ((t (:inherit mode-line :background "#282828" :foreground "#858585"))))
-            ;; '(-operator-face ((t (:foreground "#e5786d"))))
-            '(haskell-constructor-face ((t (:inherit haskell-type-face :weight normal))))
-            '(ivy-grep-info ((t (:foreground "#a4bd64" :weight bold))))
-            '(ag-hit-face   ((t (:foreground "#a4bd64" :weight bold))))
-            '(sh-quoted-exec ((t (:foreground "#72c8db"))))
-            )
-           (my/after-set-theme)
-           ))
-        (zenburn
-         (progn
-           (custom-theme-set-faces
-            'zenburn
-            '(default ((t (:foreground "#dcdccc" :background "#3f3f3f"))))
-            '(region ((t (:background "#5a5a5a"))))
-            '(vertical-border ((t (:foreground "#a5a5a5"))))
-            '(fringe ((t (:background "#454545"))))
-            '(mode-line ((t
-                          (:box
-                           (:line-width -1 :color nil :style released-button)
-                           :foreground "#a2c6a2" :background "#454545"))))
-            '(mode-line-inactive ((t
-                                   (:box
-                                    (:line-width -1 :color nil :style released-button)
-                                    :foreground "#5F7F5F" :background "#353535"))))
-            '(powerline-active0 ((t (:background "#5F5F5F" :inherit mode-line))))
-            '(powerline-active1 ((t (:inherit mode-line))))
-            '(powerline-active2 ((t (:background "#383838" :inherit mode-line))))
-            '(powerline-inactive0 ((t (:inherit mode-line-inactive))))
-            '(powerline-inactive1 ((t (:inherit mode-line-inactive))))
-            '(powerline-inactive2 ((t (:inherit mode-line-inactive))))
-            '(mode-line-buffer-id ((t (:weight bold))))
-            '(persp-selected-face ((t (:foreground "#d0bf8f" :weight bold))))
-            '(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
-            '(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
-            '(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
-            '(fill-column-indicator ((t (:foreground "#5a5a5a"))))
-            )
-           (my/hl-line-set-bg) (my/org-set-src-faces)
-           (setq pdf-view-midnight-colors '("#dcdccc" . "#383838"))
-           ))
-        (darktooth
-         (progn
-           (custom-theme-set-faces
-            'darktooth
-            '(default ((t (:foreground "#ddd7b4" :background "#222222"))))
-            '(fringe ((t (:background "#2d2d2d"))))
-            '(persp-selected-face ((t (:foreground "#8ec07c" :weight bold))))
-            ;; '(font-lock-function-name-face ((t (:foreground "#74b8bc"))))
-            '(font-lock-function-name-face ((t (:foreground "#afa08b"))))
-            '(font-lock-preprocessor-face ((t (:foreground "#d787af"))))
-            '(purescript-constructor-face ((t (:inherit haskell-constructor-face))))
-            '(mode-line ((t (:box nil :foreground "#e5dfbc" :background "#4d4845"))))
-            '(mode-line-inactive ((t (:box nil :foreground "#968a79" :background "#33302d"))))
-            '(vertical-border ((t (:foreground "#a89984"))))
-            '(markdown-pre-face ((t (:foreground "#8ec07c"))))
-            '(anzu-mode-line ((t (:foreground "magenta" :weight bold))))
-            '(anzu-mode-line-no-match ((t (:foreground "red" :weight bold))))
-            '(powerline-active0 ((t (:background "#696461" :foreground "#e5dfbc"))))
-            '(powerline-active1 ((t (:background "#55504d" :foreground "#e5dfbc"))))
-            '(powerline-active2 ((t (:background "#433f3e" :foreground "#e5dfbc"))))
-            '(powerline-inactive0 ((t (:inherit mode-line-inactive))))
-            '(powerline-inactive1 ((t (:inherit powerline-inactive0))))
-            '(powerline-inactive2 ((t (:inherit powerline-inactive0))))
-            '(fill-column-indicator ((t (:foreground "#464646"))))
-            )
-           (my/after-set-theme)
-           (setq pdf-view-midnight-colors '("#ddd7b4" . "#3d3d3d"))
-           ))
-        (nord
-         (progn
-           (custom-theme-set-faces
-            'nord
-            '(default ((t (:background "#1c222b" :foreground "#b6c1d3"))))
-            '(mode-line ((t (:background "#3f4758" :foreground "#9ac9d7"))))
-            '(mode-line-inactive ((t (:background "#2f343f" :foreground "#5e7591"))))
-            '(powerline-inactive0 ((t (:inherit mode-line-inactive))))
-            '(powerline-inactive1 ((t (:inherit mode-line-inactive))))
-            '(powerline-inactive2 ((t (:inherit mode-line-inactive))))
-            '(font-lock-doc-face ((t (:foreground "#97aa86"))))
-            '(font-lock-preprocessor-face ((t (:foreground "#D08770"))))
-            '(font-lock-variable-name-face ((t (:inherit default))))
-            '(font-lock-comment-face ((t (:foreground "#707c95"))))
-            '(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-            '(highlight-numbers-number ((t (:foreground "#B48EAD"))))
-            '(haskell-pragma-face ((t (:foreground "#B48EAD"))))
-            '(persp-selected-face ((t (:foreground "#A3BE8C" :weight bold))))
-            '(fringe ((t (:background "#202830"))))
-            '(region ((t (:background "#3b4353"))))
-            '(shadow ((t (:foreground "#545d72"))))
-            '(show-paren-match ((t (:background "#465d75" :weight bold))))
-            '(lazy-highlight ((t (:background "#496665"))))
-            '(fill-column-indicator ((t (:foreground "#434c5e"))))
-            '(markdown-code-face ((t (:inherit font-lock-string-face))))
-            '(rg-match-face ((t (:background "#35535b"))))
-            '(hi-green ((t (:foreground "black" :background "#859c73"))))
-            '(hi-blue ((t (:foreground "black" :background "#7da9b5"))))
-            '(hi-pink ((t (:foreground "black" :background "#a37f9d"))))
-            '(hi-green-b ((t (:foreground "#9cb586" :background "#3b4732" :weight bold))))
-            '(hi-blue-b ((t (:foreground "#97c4c3" :background "#394b4f" :weight bold))))
-            '(hi-red-b ((t (:foreground "#bf95b7" :background "#453341" :weight bold))))
-            )
-           (my/after-set-theme)
-           ))
-        ))
-
 (defvar my/avail-themes '(wombat))
 (defvar my/current-theme 0)
-(defvar my/theme 'wombat)
-(defvar my/theme-light-bg nil)
 
 (defvar my/after-set-theme-hook nil
   "Hook called after setting a theme")
 
-(defun my/set-theme (&optional theme-config light-bg)
-  (let* ((theme-config (if (null theme-config)
-                           (elt my/avail-themes my/current-theme)
-                         theme-config))
-         (theme (if (listp theme-config)
-                    (car theme-config)
-                  theme-config))
-         (config (if (listp theme-config) (cadr theme-config) nil))
-         (light-bg (if (listp theme-config)
-                       (caddr theme-config)
-                     light-bg)))
+(defun my/set-theme (&optional theme)
+  (let ((theme (or theme (elt my/avail-themes my/current-theme)) ))
     (mapc 'disable-theme custom-enabled-themes)
     (load-theme theme t)
-    (setq my/theme theme)
-    (setq my/theme-light-bg light-bg)
-    (eval config)
     (run-hooks 'my/after-set-theme-hook)))
 
 (defun my/toggle-theme ()
@@ -1443,8 +1286,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 (defun my/refresh-theme ()
   (interactive)
-  (my/set-theme)
-  (setq linum-format 'dynamic))
+  (my/set-theme))
 #+END_SRC
 
 * Font
@@ -1501,7 +1343,7 @@ CWD is not in a git repo (or the git command is not found)."
 ;; (define-key global-map (kbd "C--") 'text-scale-decrease)
 #+END_SRC
 
-* git
+* VCS
 ** vc
 
 #+BEGIN_SRC emacs-lisp
@@ -1531,15 +1373,6 @@ CWD is not in a git repo (or the git command is not found)."
 ** magit
 
 #+BEGIN_SRC emacs-lisp
-(defun my/magit-set-diff-faces ()
-  (custom-theme-set-faces
-   my/theme
-   '(magit-diff-added-highlight ((t (:background "#3f5f3f" :foreground "#afd8af"))))
-   '(magit-diff-removed-highlight ((t (:background "#7c4343" :foreground "#ecb3b3"))))
-   '(magit-diff-added ((t (:background "#2f4f2f" :foreground "#9fc59f"))))
-   '(magit-diff-removed ((t (:background "#6c3333" :foreground "#dca3a3"))))
-   ))
-
 (use-package magit
   :ensure t
   :commands (magit-status
@@ -1582,21 +1415,6 @@ CWD is not in a git repo (or the git command is not found)."
 ** diff-hl & git-gutter+
 
 #+BEGIN_SRC emacs-lisp
-(defun my/diff-hl-set-fringe-faces (&optional light-bg th)
-  (let* ((dark (not light-bg))
-         (ins-bg (if dark "#143514" "#b9e0b3"))
-         (ins-fg (if dark "#2b872b" "#194219"))
-         (ch-bg (if dark "#122544" "#b5d8f4"))
-         (ch-fg (if dark "#4171c1" "#2b4775"))
-         (del-bg (if dark "#491111" "#f4b5b5"))
-         (del-fg (if dark "#bc4d4d" "#561a1a"))
-         (theme (if th th my/theme)))
-    (custom-theme-set-faces
-     theme
-     `(diff-hl-insert ((t (:background ,ins-bg :foreground ,ins-fg))))
-     `(diff-hl-change ((t (:background ,ch-bg :foreground ,ch-fg))))
-     `(diff-hl-delete ((t (:background ,del-bg :foreground ,del-fg)))))))
-
 (use-package diff-hl
   :ensure t
   :if is-gui
@@ -1966,7 +1784,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
         ;; buffers
         (evil-emacs-state))))
 
-;;;###autoload
   (define-minor-mode hybrid-mode
     "Global minor mode to replace insert state by hybrid state."
     :global t
@@ -2821,30 +2638,18 @@ the current file."
          ("\\.markdown\\'" . markdown-mode)
          ("\\.page\\'" . gfm-mode))
   :init
-  (if (executable-find "marked")
-      (setq markdown-command "marked"))
   (setq markdown-asymmetric-header t
         markdown-gfm-use-electric-backquote nil
         markdown-css-paths
         (list (expand-file-name (expand-file-name "static/github.css" user-emacs-directory))))
   :config
+  (if (executable-find "marked")
+      (setq markdown-command "marked"))
   (my/add-hooks
    '(markdown-mode-hook)
    (auto-fill-mode 1)
    (whitespace-mode +1)
-   ;; (orgtbl-mode +1)
    (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))
-
-  (defun markdown-org-table-align-advice ()
-    "Replace \"+\" sign with \"|\" in tables."
-    (when (member major-mode '(markdown-mode gfm-mode))
-      (save-excursion
-        (save-restriction
-          (narrow-to-region (org-table-begin) (org-table-end))
-          (goto-char (point-min))
-          (while (search-forward "-+-" nil t)
-            (replace-match "-|-"))))))
-  (advice-add 'org-table-align :after 'markdown-org-table-align-advice)
 
   (defun my/markdown-toggle-heading ()
     (interactive)
@@ -2906,30 +2711,16 @@ the current file."
       (sp-local-pair 'dhall-mode "\\(" ")")))
 
   :config
+  (defun my/dhall-format-and-save ()
+    (interactive)
+    (dhall-format-buffer)
+    (save-buffer))
+
   (my/add-hooks
    '(dhall-mode-hook)
-   (setq indent-tabs-mode nil)
-   (setq evil-shift-width 2))
-  (my/define-major-mode-key 'dhall-mode "d" #'my/dhall-browse-docs)
-  (my/define-major-mode-key 'dhall-mode "s" #'my/dhall-format-and-save)
-  (my/define-major-mode-key 'dhall-mode "t" #'my/dhall-show-type))
-
-(defun my/dhall-format-and-save ()
-  (interactive)
-  (dhall-format-buffer)
-  (save-buffer))
-
-(defun my/dhall-show-type ()
-  (interactive)
-  (let ((tp (dhall-buffer-type))
-        (errbuf (get-buffer "*dhall-buffer-type-errors*")))
-    (if (null tp)
-        (display-buffer-below-selected errbuf '(nil (inhibit-same-window .t)))
-      (message tp))))
-
-(defun my/dhall-browse-docs ()
-  (interactive)
-  (browse-url "https://docs.dhall-lang.org/references/Built-in-types.html"))
+   (setq indent-tabs-mode nil
+         evil-shift-width 2))
+  (my/define-major-mode-key 'dhall-mode "s" #'my/dhall-format-and-save))
 #+END_SRC
 
 ** bazel
@@ -2951,7 +2742,6 @@ the current file."
       (my/format-and-save "buildifier" "--type" tp))
     (save-buffer))
   (my/define-major-mode-key 'bazel-mode "s" #'my/bazel-format-and-save))
-
 #+end_src
 
 ** nginx
@@ -2975,7 +2765,6 @@ the current file."
     (terraform-format-buffer)
     (save-buffer))
   (my/define-major-mode-key 'terraform-mode "s" #'my/terraform-format-and-save))
-
 #+end_src
 
 ** docker
@@ -3005,7 +2794,6 @@ the current file."
     (json-mode-beautify)
     (save-buffer))
   (my/define-major-mode-key 'json-mode "s" #'my/json-format-and-save))
-
 #+END_SRC
 
 ** yaml
@@ -3150,7 +2938,6 @@ the current file."
         (progn
           (pdf-view-reset-slice)
           (remove-hook 'pdf-view-after-change-page-hook #'pdf-view-set-slice-from-bounding-box)))))
-
   )
 
 (use-package pdf-outline
@@ -3189,57 +2976,13 @@ the current file."
 
   (defun my/erc-preprocess (string)
     "Avoids channel flooding."
-    (setq str
-          (string-trim
-           (replace-regexp-in-string "\n+" " " str))))
+    (string-trim (replace-regexp-in-string "\n+" " " str)))
 
   (defun my/erc-switch-to-buffer ()
     (interactive)
     (let ((read-buffer-function nil))
       (call-interactively 'erc-switch-to-buffer)))
   (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer))
-
-;; put a bar after the last read message in erc
-;; https://www.emacswiki.org/emacs/ErcBar
-(use-package erc-track
-  :after erc
-  :config
-  (defun erc-bar-move-back (n)
-    "Moves back n message lines. Ignores wrapping, and server messages."
-    (interactive "nHow many lines ? ")
-    (re-search-backward "^.*<.*>" nil t n))
-
-  (defun erc-bar-update-overlay ()
-    "Update the overlay for current buffer, based on the content of
-erc-modified-channels-alist. Should be executed on window change."
-    (interactive)
-    (let* ((info (assq (current-buffer) erc-modified-channels-alist))
-	   (count (cadr info)))
-      (if (and info (> count erc-bar-threshold))
-	  (save-excursion
-	    (end-of-buffer)
-	    (when (erc-bar-move-back count)
-	      (let ((inhibit-field-text-motion t))
-		(move-overlay erc-bar-overlay
-			      (line-beginning-position)
-			      (line-end-position)
-			      (current-buffer)))))
-	(delete-overlay erc-bar-overlay))))
-
-  (defvar erc-bar-threshold 0
-    "Display bar when there are more than erc-bar-threshold unread messages.")
-  (defvar erc-bar-overlay nil
-    "Overlay used to set bar")
-  (setq erc-bar-overlay (make-overlay 0 0))
-  (overlay-put erc-bar-overlay 'face '(:overline "grey40"))
-  ;;put the hook before erc-modified-channels-update
-  (defadvice erc-track-mode (after erc-bar-setup-hook
-				   (&rest args) activate)
-    ;;remove and add, so we know it's in the first place
-    (remove-hook 'window-configuration-change-hook 'erc-bar-update-overlay)
-    (add-hook 'window-configuration-change-hook 'erc-bar-update-overlay))
-  (add-hook 'erc-send-completed-hook (lambda (str)
-				       (erc-bar-update-overlay))))
 
 ;; https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/
 (use-package erc-hl-nicks
@@ -3253,7 +2996,7 @@ erc-modified-channels-alist. Should be executed on window change."
 
 #+begin_src emacs-lisp
 ;; on NixOS this is available when lilypond is installed
-;; TODO: make it usable outside NixOs
+;; TODO: make it work outside NixOs
 (use-package lilypond-mode
   :mode ("\\.ly\\'" . LilyPond-mode)
   :init
@@ -3801,21 +3544,6 @@ the minibuffer."
   (yas-global-mode +1))
 #+END_SRC
 
-* helm
-
-#+begin_src emacs-lisp
-(use-package helm
-  :ensure t
-  :defer t
-  :init
-  (setq helm-display-function #'display-buffer)
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*helm"
-                 (display-buffer-in-side-window)
-                 (inhibit-same-window . t)
-                 (window-height . 0.4))))
-#+end_src
-
 * org-mode
 
 #+BEGIN_SRC emacs-lisp
@@ -3877,8 +3605,7 @@ the minibuffer."
            entry
            (file my/org-roam-find-filename)
            "* %^{Title|%:description}\n%U\nSource: %a \n\n%i")
-          ("i" "Immediate")
-          ("in"
+          ("i"
            "Immediate note"
            entry
            (file my/org-roam-find-filename)
@@ -3991,23 +3718,6 @@ the minibuffer."
     (with-temp-buffer
       (insert-file (expand-file-name "configuration.org" user-emacs-directory))
       (org-export-to-file 'html (expand-file-name "docs/index.html" user-emacs-directory)))))
-
-(defun my/org-set-src-faces (&optional light-bg th)
-  (let* ((func (if light-bg 'color-darken-name 'color-lighten-name))
-         (rfunc (if light-bg 'color-lighten-name 'color-darken-name))
-         (bg (face-attribute 'default :background))
-         (bg+ (funcall func bg 1))
-         (bg++ (funcall func bg 4.5))
-         (fg (face-attribute 'default :foreground))
-         (theme (if th th my/theme))
-         (cur-line-fg (face-attribute 'org-block-begin-line :foreground nil t))
-         (cur-block-fg (funcall rfunc (face-attribute 'default :foreground nil t) 11))
-         )
-    (custom-theme-set-faces
-     theme
-     `(org-block ((t (:background ,bg+ :foreground ,cur-block-fg))))
-     `(org-block-begin-line ((t (:background ,bg++ :foreground ,cur-line-fg))))
-     `(org-block-end-line ((t (:background ,bg++ :foreground ,cur-line-fg)))))))
 
 (use-package org-cliplink
   :ensure t
@@ -4230,6 +3940,17 @@ the minibuffer."
                                                                        "#+ROAM_KEY: cite:${=key=}\n\n"
                                                                        )
                                                                      "\n")))
+
+(use-package helm
+  :ensure t
+  :defer t
+  :init
+  (setq helm-display-function #'display-buffer)
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*helm"
+                 (display-buffer-in-side-window)
+                 (inhibit-same-window . t)
+                 (window-height . 0.4))))
 
 (use-package helm-bibtex
   :ensure t
