@@ -98,6 +98,18 @@
    '(powerline-inactive1 ((t (:background "grey90" :foreground "grey50" :weight normal))))
    '(powerline-inactive2 ((t (:background "grey90" :foreground "grey50" :weight normal))))
 
+   ;; '(rainbow-delimiters-depth-1-face    ((t (:inherit font-lock-preprocessor-face))))
+   ;; '(rainbow-delimiters-depth-2-face    ((t (:inherit font-lock-constant-face))))
+   ;; '(rainbow-delimiters-depth-3-face    ((t (:inherit font-lock-preprocessor-face))))
+   ;; '(rainbow-delimiters-depth-4-face    ((t (:inherit font-lock-keyword-face))))
+   ;; '(rainbow-delimiters-depth-5-face    ((t (:inherit font-lock-type-face))))
+   ;; '(rainbow-delimiters-depth-6-face    ((t (:inherit rainbow-delimiters-depth-1-face))))
+   ;; '(rainbow-delimiters-depth-7-face    ((t (:inherit rainbow-delimiters-depth-2-face))))
+   ;; '(rainbow-delimiters-depth-8-face    ((t (:inherit rainbow-delimiters-depth-3-face))))
+   ;; '(rainbow-delimiters-depth-9-face    ((t (:inherit rainbow-delimiters-depth-4-face))))
+   ;; '(rainbow-delimiters-unmatched-face  ((t (:inherit font-lock-warning-face))))
+   ;; '(rainbow-delimiters-mismatched-face ((t (:inherit font-lock-warning-face))))
+
    '(sh-heredoc ((t (:inherit font-lock-type-face))))
 
    `(Info-quoted ((t (:inherit font-lock-type-face))))

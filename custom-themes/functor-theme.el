@@ -93,7 +93,7 @@
    '(region              ((t (:background "#004870"))))
    '(fringe              ((t (:foreground "#9eb3b3" :background "#232828"))))
    '(vertical-border     ((t (:foreground "#758a86"))))
-   '(shadow              ((t (:foreground "#888b8b"))))
+   '(shadow              ((t (:foreground "#8d9090"))))
    '(secondary-selection ((t (:inherit highlight))))
    '(show-paren-match    ((t (:background "#456665" :weight bold))))
    '(link                ((t (:foreground "#56dbdb" :underline t))))
@@ -278,6 +278,18 @@
 
    '(anzu-mode-line          ((t (:inherit mode-line :foreground "magenta" :weight bold))))
    '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
+
+   '(rainbow-delimiters-depth-1-face    ((t (:foreground "#d7d7af"))))
+   '(rainbow-delimiters-depth-2-face    ((t (:foreground "#87d7d7"))))
+   '(rainbow-delimiters-depth-3-face    ((t (:foreground "#d7afd7"))))
+   '(rainbow-delimiters-depth-4-face    ((t (:foreground "#87d7af"))))
+   '(rainbow-delimiters-depth-5-face    ((t (:inherit rainbow-delimiters-depth-1-face))))
+   '(rainbow-delimiters-depth-6-face    ((t (:inherit rainbow-delimiters-depth-2-face))))
+   '(rainbow-delimiters-depth-7-face    ((t (:inherit rainbow-delimiters-depth-3-face))))
+   '(rainbow-delimiters-depth-8-face    ((t (:inherit rainbow-delimiters-depth-4-face))))
+   '(rainbow-delimiters-depth-9-face    ((t (:inherit rainbow-delimiters-depth-1-face))))
+   '(rainbow-delimiters-unmatched-face  ((t (:inherit font-lock-warning-face))))
+   '(rainbow-delimiters-mismatched-face ((t (:inherit font-lock-warning-face))))
 
    '(org-block            ((t (:foreground "#bbccc5" :background "#1c2120"))))
    '(org-block-begin-line ((t (:foreground "#768e84" :background "#232b28" :slant italic))))

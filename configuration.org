@@ -439,6 +439,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
               ("<tab>" . outline-toggle-children))
   :diminish outline-minor-mode)
 
+;; elisp: ;; -*- eval: (outshine-mode) -*-
 (use-package outshine
   :ensure t
   :after outline
@@ -449,6 +450,12 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 (use-package rainbow-mode
   :ensure t
   :commands (rainbow-mode))
+
+(use-package rainbow-delimiters
+  :ensure t
+  :hook ((lisp-mode emacs-lisp-mode) . rainbow-delimiters-mode)
+  :commands (rainbow-delimiters-mode)
+  :diminish)
 #+END_SRC
 
 ** auth
@@ -1274,7 +1281,9 @@ CWD is not in a git repo (or the git command is not found)."
 (defun my/set-theme (&optional theme)
   (let ((theme (or theme (elt my/avail-themes my/current-theme)) ))
     (mapc 'disable-theme custom-enabled-themes)
-    (load-theme theme t)
+    (if (functionp theme)
+        (funcall theme)
+      (load-theme theme t))
     (run-hooks 'my/after-set-theme-hook)))
 
 (defun my/toggle-theme ()
@@ -1905,7 +1914,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
-  :bind ("C-c i" . avy-goto-line))
+  :bind (("C-c i" . avy-goto-line)
+         ("M-[" . avy-goto-word-1)))
 #+END_SRC
 
 ** ace-window
@@ -3054,6 +3064,13 @@ the current file."
              (read-directory-name "rg in: "))
     :confirm prefix)
 
+  (rg-define-search my/rg-org-directory
+    :query ask
+    :format regexp
+    :files "org"
+    :dir my/org-directory
+    :confirm prefix)
+
   ;; https://protesilaos.com/dotemacs/#h:31622bf2-526b-4426-9fda-c0fc59ac8f4b
   (defun my/rg-save-search-as-name ()
     "Save `rg' buffer, naming it after the current search query."
@@ -3604,7 +3621,7 @@ the minibuffer."
            "Web link (roam)"
            entry
            (file my/org-roam-find-filename)
-           "* %^{Title|%:description}\n%U\nSource: %a \n\n%i")
+           "* %^{Title|%:description} %U\nSource: %a \n\n%i")
           ("i"
            "Immediate note"
            entry
@@ -3624,6 +3641,7 @@ the minibuffer."
 
 (use-package org-indent
   :after org
+  :hook (org-mode . org-indent-mode)
   :commands (org-indent-mode)
   :diminish)
 
@@ -3661,6 +3679,7 @@ the minibuffer."
         org-adapt-indentation nil
         org-ellipsis "…"
         org-tags-column -80
+        org-image-actual-width nil
         org-startup-with-inline-images t
         org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
         org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
@@ -3752,28 +3771,42 @@ the minibuffer."
   :diminish
   :bind (:map org-roam-mode-map
               ("C-c n b" . org-roam-switch-to-buffer)
-              ("C-c n c" . org-roam-capture)
               ("C-c n f" . org-roam-find-file)
               ("C-c n g" . org-roam-graph)
+              ("C-c n j" . org-roam-dailies-today)
+              ("C-c n J" . org-roam-dailies-date)
               ("C-c n l" . org-roam)
               ("C-c n s" . my/org-roam-rg)
+              ("C-c n S" . my/rg-org-directory)
               ("C-c n x" . org-roam-jump-to-index)
+              ("C-c n !" . my/org-roam-refresh)
               :map org-mode-map
               ("C-c n I" . org-roam-insert)
-              ("C-c n i" . my/org-roam-insert-no-capture))
+              ("C-c n i" . my/org-roam-insert-no-capture)
+              ("C-c n h" . my/org-roam-insert-link-to-heading))
   :init
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
-        org-roam-index-file "index.org"
+        org-roam-index-file "home.org"
         org-roam-link-title-format "%s")
   (setq org-roam-graph-viewer
         (or (executable-find "google-chrome-stable")
             (executable-find "google-chrome")
-            (executable-find "firefox")))
+            (executable-find "firefox"))
+        org-roam-graph-exclude-matcher '("index.org" "theindex.org" "home.org"))
+  (setq org-roam-dailies-capture-templates
+        '(("d" "daily" plain (function org-roam-capture--get-point)
+           ""
+           :immediate-finish t
+           :file-name "daily-%<%Y-%m-%d>"
+           :head "#+TITLE: [daily] %<%A, %d %b %Y>")
+          ))
   :config
   (add-to-list 'org-refile-targets '(org-roam--list-all-files . (:maxlevel . 1)))
-  (add-hook 'org-export-before-processing-hook 'my/org-export--add-roam-backlinks)
-  (add-hook 'org-roam-backlinks-mode-hook 'org-indent-mode))
+  (add-hook 'org-roam-backlinks-mode-hook 'org-indent-mode)
+  (with-eval-after-load 'evil
+    (evil-define-key 'visual org-mode-map (kbd "[[") 'my/org-roam-insert-no-capture))
+  )
 
 (use-package org-roam-protocol
   :after org-roam)
@@ -3788,7 +3821,19 @@ the minibuffer."
   :ensure t
   :commands (org-roam-server-mode)
   :init
-  (setq httpd-port 25002))
+  (setq org-roam-server-port 25002))
+
+;; this is in lisp/ for now
+(use-package my-org-roam-publish
+  :after org-roam
+  :commands (my/org-roam-publish)
+  :bind (:map org-roam-mode-map
+              ("C-c n p" . my/org-roam-publish)))
+
+(defun my/org-roam-refresh ()
+  (interactive)
+  (org-roam-db-build-cache :force)
+  (org-roam-buffer--update-maybe :redisplay))
 
 (defun my/org-roam-rg-transformer (str)
   (if (string-match "\\`\\([^:]+\\):\\([^:]+\\):" str)
@@ -3818,7 +3863,7 @@ the minibuffer."
 (defun my/org-roam-find-filename ()
   (let* ((completions (org-roam--get-title-path-completions))
          (title (org-roam-completion--completing-read "File: " completions))
-         (filename (cdr (assoc title completions))))
+         (filename (plist-get (cdr (assoc title completions)) :path)))
     (if (null filename)
         (let* ((create-fn (concat (my/org-roam-filename-from-title title) ".org"))
                (key (format "#+TITLE: %s\n\n" title)))
@@ -3834,35 +3879,46 @@ the minibuffer."
           #'(lambda (tmpl) (append tmpl '(:immediate-finish t)))
           org-roam-capture-templates)))
     (funcall-interactively 'org-roam-insert)))
-
-(defun my/org-roam-backlinks-list-with-content (file)
-  (with-temp-buffer
-    (if-let* ((backlinks (org-roam--get-backlinks file))
-              (grouped-backlinks (--group-by (nth 0 it) backlinks)))
-        (progn
-          (insert (format "\n* %d Backlinks\n"
-                          (length backlinks)))
-          (dolist (group grouped-backlinks)
-            (let ((file-from (car group))
-                  (bls (cdr group)))
-              (insert (format "** [[file:%s][%s]]\n"
-                              file-from
-                              (org-roam--get-title-or-slug file-from)))
-              (dolist (backlink bls)
-                (pcase-let ((`(,file-from _ ,props) backlink))
-                  (insert (s-trim (s-replace "\n" " " (plist-get props :content))))
-                  (insert "\n\n")))))))
-    (buffer-string)))
-
-(defun my/org-export--add-roam-backlinks (backend)
-  (let ((fn (buffer-file-name)))
-    (when (file-in-directory-p fn org-roam-directory)
-      (let ((links (my/org-roam-backlinks-list-with-content fn)))
-        (unless (string= links "")
-          (save-excursion
-            (goto-char (point-max))
-            (insert (concat "\n* Backlinks\n") links)))))))
 #+END_SRC
+
+#+begin_src emacs-lisp
+;; Insert link to heading
+(defun my/org-mode-select-heading (&optional filename)
+  (if (null filename)
+      (my/-org-mode-select-heading)
+    (with-temp-buffer
+      (insert-file-contents filename)
+      (org-mode)
+      (my/-org-mode-select-heading))))
+
+(defun my/-org-mode-select-heading ()
+  (let* ((settings (cdr (assq 'org-mode counsel-outline-settings)))
+         (res (substring-no-properties
+               (ivy-read "Heading: " (counsel-outline-candidates settings)
+                         :history (or (plist-get settings :history)
+                                      'counsel-outline-history)
+                         :preselect (max (1- counsel-outline--preselect) 0)
+                         :caller (or (plist-get settings :caller)
+                                     'counsel-outline)))))
+    (car (last (split-string res "/")))))
+
+(defun my/org-link-make-string-with-heading (params)
+  (let* ((link (car params))
+         (description (cadr params))
+         (fname (string-trim-left link "file:"))
+         (heading (my/org-mode-select-heading fname))
+         (newlink (format "%s::%s" link heading))
+         (newdescription (if (null description)
+                             nil
+                           (format "%s::%s" description heading))))
+    (list newlink newdescription)))
+
+(defun my/org-roam-insert-link-to-heading ()
+  (interactive)
+  (advice-add 'org-link-make-string :filter-args 'my/org-link-make-string-with-heading)
+  (funcall-interactively 'org-roam-insert)
+  (advice-remove 'org-link-make-string 'my/org-link-make-string-with-heading))
+#+end_src
 
 * org-download
 
@@ -3878,26 +3934,6 @@ the minibuffer."
         org-download-heading-lvl nil)
   :config
   (defalias 'scrot 'org-download-screenshot))
-#+end_src
-
-* org-journal
-
-#+begin_src emacs-lisp
-(use-package org-journal
-  :ensure t
-  :after org-roam
-  :bind ("C-c n j" . org-journal-new-entry)
-  :custom
-  (org-journal-dir (expand-file-name "journal/" org-roam-directory))
-  (org-journal-date-prefix "#+TITLE: ")
-  (org-journal-file-format "%Y-%m-%d.org")
-  (org-journal-date-format "[Journal] %A, %d %B %Y\n")
-  ;; (org-journal-time-format "%T")
-  (org-journal-file-type 'daily)
-  (org-journal-enable-agenda-integration t)
-  :config
-  (add-to-list 'org-agenda-files org-journal-dir)
-  (global-set-key (kbd "C-c C-j") nil))
 #+end_src
 
 * org-ref, org-noter & bibtex
@@ -3940,6 +3976,22 @@ the minibuffer."
                                                                        "#+ROAM_KEY: cite:${=key=}\n\n"
                                                                        )
                                                                      "\n")))
+
+(use-package biblio-core
+  :ensure t
+  :defer t
+  :bind (:map biblio-selection-mode-map
+              ("a" . my/biblio-append-bibtex-to-papers))
+  :config
+  (defun my/-biblio-append-bibtex-to-papers (bibtex entry)
+    (find-file-other-window my/dropbox-papers-bibtex)
+    (goto-char (point-max))
+    (newline)
+    (newline)
+    (insert bibtex))
+  (defun my/biblio-append-bibtex-to-papers ()
+    (interactive)
+    (biblio--selection-forward-bibtex #'my/-biblio-append-bibtex-to-papers)))
 
 (use-package helm
   :ensure t
@@ -4011,18 +4063,27 @@ the minibuffer."
   :after org-roam
   :bind (("C-c n d" . deft)
          ("<f8>" . deft)
-         ("C-x <f8>" . deft-find-file))
+         ("C-x <f8>" . deft-find-file)
+         :map deft-mode-map
+         ("C-c C-g" . my/deft-refresh))
   :init
   (setq deft-directory my/org-directory
         deft-recursive t
+        deft-file-limit 100
         deft-extensions '("org")
+        deft-ignore-file-regexp "index.org\\|theindex.org"
         deft-use-filter-string-for-filename t
         deft-file-naming-rules '((noslash . "_")
                                  (nospace . "_")
                                  (case-fn . downcase)))
+  (defun my/deft-refresh ()
+    (interactive)
+    (my/org-roam-refresh)
+    (deft-refresh))
+
   :config
-  (advice-add 'deft-new-file-named :filter-args '(lambda (n) (mapcar 'my/org-roam-filename-from-title n)))
-  (advice-add 'deft-cache-update-all :after '(lambda () (org-roam-db-build-cache :force))))
+  (advice-add 'deft-new-file-named :filter-args '(lambda (n) (mapcar 'my/org-roam-filename-from-title n))))
+
 #+end_src
 
 * modeline
@@ -4346,7 +4407,7 @@ the minibuffer."
                (my/haskell-align-stuff . nil)
                (my/haskell-use-ormolu . t)
                (my/purescript-align-stuff . nil)
-               (org-download-image-dir . "~/Dropbox/emacs/org-roam/images")
+               (org-download-image-dir . "~/Dropbox/emacs/org-roam/static/images")
                ))
   (add-to-list 'safe-local-variable-values val))
 #+END_SRC
