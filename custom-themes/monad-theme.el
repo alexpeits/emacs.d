@@ -267,6 +267,7 @@
  '(org-indent           ((t (:inherit default :foreground "#181818"))))
  '(org-ellipsis         ((t (:inherit font-lock-preprocessor-face :underline t))))
  '(org-list-dt          ((t (:inherit font-lock-type-face))))
+ '(org-level-1          ((t (:inherit outline-1 :height 1.2))))
 
  '(org-roam-link         ((t (:inherit font-lock-preprocessor-face :underline t))))
  '(org-roam-link-invalid ((t (:inherit font-lock-warning-face :underline t))))

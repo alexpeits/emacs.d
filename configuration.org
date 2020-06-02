@@ -1995,7 +1995,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
              dired-sidebar-jump-to-sidebar
              dired-sidebar-toggle-sidebar
              dired-sidebar-toggle-with-current-directory)
-  :bind (("C-\\" . my/dired-sidebar-smart-toggle)
+  :bind (("C-\"" . my/dired-sidebar-smart-toggle)
          :map dired-sidebar-mode-map
          ("M-u" . dired-sidebar-up-directory))
   :init
@@ -2936,6 +2936,12 @@ the current file."
   :config
   (pdf-tools-install :no-query)
 
+  (defun my/mode-line-extra-pdf-view-mode ()
+    (let ((cur (number-to-string (pdf-view-current-page)))
+          (tot (or (ignore-errors (number-to-string (pdf-cache-number-of-pages)))
+                   "???")))
+      (format "(%s/%s)" cur tot)))
+
   (define-minor-mode my/pdf-view-remove-margins-mode
     "Minor mode for removing margins from every pdf page."
     :lighter " pdf-margins"
@@ -3708,12 +3714,14 @@ the minibuffer."
   (my/define-major-mode-key 'org-mode "tm" 'my/org-toggle-markup)
 
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
+  (my/set-mode-fill-width 'org-mode-hook 100)
   (my/add-hooks
    '(org-mode-hook)
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key org-mode-map (kbd "<tab>") 'org-cycle)
-   (define-key evil-normal-state-map (kbd "TAB") 'org-cycle)
-   (my/set-mode-fill-width 'org-mode-hook 100)))
+   (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)
+   (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)))
 
 (defun my/org-insert-date-today (active)
   (interactive "P")
@@ -4217,6 +4225,23 @@ the minibuffer."
   (when server-mode
     (propertize " srv " 'face 'compilation-info)))
 
+(defvar my/input-method-color-mappings
+  '(("greek" . (:foreground "black" :background "DeepSkyBlue3"))
+    ("TeX" . (:foreground "black" :background "SpringGreen3"))))
+
+(defun my/mode-line-input-method ()
+  (let ((input-method current-input-method))
+    (unless (null input-method)
+      (let ((face (or (cdr (assoc input-method my/input-method-color-mappings))
+                      '(:foreground "black" :background "red3"))))
+        (concat " "
+                (propertize input-method 'face face))))))
+
+(defun my/mode-line-major-mode-extra ()
+  (let ((func (intern (format "my/mode-line-extra-%s" major-mode))))
+    (when (fboundp func)
+      (funcall func))))
+
 (setq global-mode-string (delete '(:eval (persp-mode-line)) global-mode-string))
 (setcar mode-line-position "")
 
@@ -4227,10 +4252,13 @@ the minibuffer."
      ;; left
      (quote
       ("%e" " "
+       ;; mode-line-mule-info
        mode-line-modified "  "
        mode-line-buffer-identification " "
        (:eval (string-remove-suffix "-mode" (format "%s" major-mode)))
+       (:eval (my/mode-line-input-method))
        (:eval mode-line-process) " "
+       (:eval (my/mode-line-major-mode-extra))
        (:eval (my/mode-line-window-info))
        (:eval (my/mode-line-flycheck)) " "
        (:eval (my/mode-line-region-info))
@@ -4370,7 +4398,7 @@ the minibuffer."
 
 (setq linum-format 'dynamic)
 
-(setq default-input-method "TeX")
+(setq default-input-method "greek")
 
 (hybrid-mode)
 (winner-mode)

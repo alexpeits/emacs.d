@@ -32,56 +32,25 @@
 (defvar functor-theme-less-colors nil)
 (defvar functor-theme-lighter-powerline nil)
 
-(let* ((builtin       (if functor-theme-less-colors
-                          '(:foreground "#86b8b5")
-                        '(:foreground "#87d7ff")))
-       (keyword       (if functor-theme-less-colors
-                          '(:inherit font-lock-builtin-face :weight bold)
-                        '(:foreground "#2da49b")))
-       (string        (if functor-theme-less-colors
-                          '(:foreground "#1da89f")
-                        '(:foreground "#d7d7af")))
-       (doc           (if functor-theme-less-colors
-                          '(:inherit font-lock-string-face)
-                        '(:foreground "#cacaa7")))
-       (type          (if functor-theme-less-colors
-                          '(:inherit font-lock-builtin-face)
-                        '(:foreground "#87d7d7")))
+(let* ((builtin (if functor-theme-less-colors
+                    '(:foreground "#86b8b5")
+                  '(:foreground "#87d7ff")))
+       (keyword (if functor-theme-less-colors
+                    '(:inherit font-lock-builtin-face :weight bold)
+                  '(:foreground "#2da49b")))
+       (string (if functor-theme-less-colors
+                   '(:foreground "#1da89f")
+                 '(:foreground "#d7d7af")))
+       (doc (if functor-theme-less-colors
+                '(:inherit font-lock-string-face)
+              '(:foreground "#cacaa7")))
+       (type (if functor-theme-less-colors
+                 '(:inherit font-lock-builtin-face)
+               '(:foreground "#87d7d7")))
        (markdown-code (if functor-theme-less-colors
                           '(:inherit font-lock-string-face)
                         '(:inherit font-lock-keyword-face)))
-
-       (powerline-active0               (if functor-theme-lighter-powerline
-                                            '(:background "#009672" :foreground "#f0f0f0")
-                                          '(:background "#006553" :foreground "#c1eae2")))
-       (powerline-active1               (if functor-theme-lighter-powerline
-                                            '(:background "#006f4d" :foreground "#f0f0f0")
-                                          '(:background "#004c40" :foreground "#c1eae2")))
-       (powerline-active2               (if functor-theme-lighter-powerline
-                                            '(:background "#004444" :foreground "#f0f0f0")
-                                          '(:background "#003535" :foreground "#c1eae2")))
-       (powerline-inactive0             (if functor-theme-lighter-powerline
-                                            '(:background "#2a3634" :foreground "#3d857b")
-                                          '(:background "#283231" :foreground "#3c7e75")))
-       (powerline-active0-evil-insert   (if functor-theme-lighter-powerline
-                                            '(:inherit powerline-active0 :background "#64a100")
-                                          '(:inherit powerline-active0 :background "#587300")))
-       (powerline-active0-evil-visual   (if functor-theme-lighter-powerline
-                                            '(:inherit powerline-active0 :background "#cc6d00")
-                                          '(:inherit powerline-active0 :background "#005b8f")))
-       (powerline-active0-evil-replace  (if functor-theme-lighter-powerline
-                                            '(:inherit powerline-active0 :background "#870000")
-                                          '(:inherit powerline-active0 :background "#730000")))
-       (powerline-active0-evil-operator (if functor-theme-lighter-powerline
-                                            '(:inherit powerline-active0 :background "#008dcf")
-                                          '(:inherit powerline-active0 :background "#805b00")))
-       (powerline-active2-edited        (if functor-theme-lighter-powerline
-                                            '(:inherit powerline-active2
-                                                       :background "#5c2020"
-                                                       :box (:line-width 1 :color "#470010"))
-                                          '(:inherit powerline-active2
-                                                     :background "#4f0000"
-                                                     :box (:line-width 1 :color "#3a000d")))))
+       )
   (custom-theme-set-faces
    'functor
 
@@ -298,6 +267,7 @@
    '(org-indent           ((t (:inherit default :foreground "#1a1b1b"))))
    '(org-ellipsis         ((t (:foreground "#d7afd7" :underline t))))
    '(org-list-dt          ((t (:inherit font-lock-type-face))))
+   '(org-level-1          ((t (:inherit outline-1 :height 1.2))))
 
    '(org-roam-link         ((t (:inherit link :foreground "#d7afd7"))))
    '(org-roam-link-invalid ((t (:inherit font-lock-warning-face :underline t))))

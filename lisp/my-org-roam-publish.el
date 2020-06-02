@@ -41,6 +41,13 @@
    )
  )
 
+(defun my/notify (urgency title desc)
+  (if (executable-find "dunstify")
+      (shell-command
+       (format "dunstify -a 'history-ignore' -t 4000 -u %s '%s' '%s'" urgency title desc))
+    (when (executable-find "notify-send")
+      (format "notify-send --urgency=%s '%s' '%s'" urgency title desc))))
+
 (defun my/org-roam-publish (force)
   (interactive "P")
   (condition-case ex
@@ -62,14 +69,13 @@
                                          (copy-file path
                                                     (expand-file-name "graph.html" my/org-roam-publish-directory)
                                                     :overwrite)))
-              (when (executable-find "notify-send")
-                (shell-command "notify-send --urgency=low emacs 'org-roam-publish finished'")))
+              (my/notify 'low "emacs" "org-roam-publish finished"))
           (progn
             (dolist (hook hooks)
               (remove-hook 'org-export-before-processing-hook hook))
             (org-link-set-parameters "file" :export old-file-link-export-param)
             (org-link-set-parameters "cite" :export old-cite-link-export-param))))
-    ('error (shell-command (format "notify-send --urgency=critical 'org-roam-publish failed' '%s'" ex)))))
+    ('error (my/notify 'critical "org-roam-publish-failed" ex))))
 
 (defun my/org-roam-file-link-export (path desc backend)
   (if (org-roam--org-roam-file-p path)

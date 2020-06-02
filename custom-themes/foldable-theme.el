@@ -64,6 +64,7 @@
    '(org-hide             ((t (:inherit fill-column-indicator))))
    '(org-indent           ((t (:inherit default :foreground "white"))))
    '(org-date             ((t (:inherit font-lock-type-face :underline t))))
+   '(org-level-1          ((t (:inherit outline-1 :height 1.2))))
 
    '(org-roam-link         ((t (:inherit font-lock-keyword-face :underline t))))
    '(org-roam-link-invalid ((t (:inherit font-lock-warning-face :underline t))))
