@@ -1036,6 +1036,7 @@ buffer, close it."
 (use-package eshell
   :commands (eshell)
   :bind (("C-!" . my/eshell-maybe-here)
+         ("<f2>" . my/eshell-maybe-here)
          :map eshell-mode-map
          ("C-l" . my/eshell-clear)
          ("C-c o" . my/eshell-put-last-output-to-buffer)
