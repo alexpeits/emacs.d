@@ -43,13 +43,14 @@
 
 (defun my/notify (urgency title desc)
   (if (executable-find "dunstify")
-      (shell-command
-       (format "dunstify -a 'history-ignore' -t 4000 -u %s '%s' '%s'" urgency title desc))
+      (let ((ignore (if (not (eq urgency 'critical)) "-a 'history-ignore'" ""))
+            (time (if (eq urgency 'critical) 0 4000)))
+        (shell-command
+         (format "dunstify %s -t %d -u %s '%s' '%s'" ignore time urgency title desc)))
     (when (executable-find "notify-send")
       (format "notify-send --urgency=%s '%s' '%s'" urgency title desc))))
 
-(defun my/org-roam-publish (force)
-  (interactive "P")
+(defun my/-org-roam-publish (run force &optional notify)
   (condition-case ex
       (let ((org-html-htmlize-output-type 'css)
             (hooks '(my/org-roam-export-add-backlinks
@@ -62,20 +63,37 @@
                 (add-hook 'org-export-before-processing-hook hook))
               (org-link-set-parameters "file" :export #'my/org-roam-file-link-export)
               (org-link-set-parameters "cite" :export #'my/org-roam-cite-link-export)
-              (when force (org-publish-remove-all-timestamps))
-              (org-publish "roam-all" force)
+              (funcall run)
               (org-roam-graph--build nil
                                      #'(lambda (path)
                                          (copy-file path
                                                     (expand-file-name "graph.html" my/org-roam-publish-directory)
                                                     :overwrite)))
-              (my/notify 'low "emacs" "org-roam-publish finished"))
+              (when notify (my/notify 'low "emacs" "org-roam-publish finished")))
           (progn
             (dolist (hook hooks)
               (remove-hook 'org-export-before-processing-hook hook))
             (org-link-set-parameters "file" :export old-file-link-export-param)
             (org-link-set-parameters "cite" :export old-cite-link-export-param))))
-    ('error (my/notify 'critical "org-roam-publish-failed" ex))))
+    ('error (when notify (my/notify 'critical "org-roam-publish-failed" ex)))))
+
+(defun my/org-roam-publish (force)
+  (interactive "P")
+  (my/-org-roam-publish
+   '(lambda ()
+      (when force (org-publish-remove-all-timestamps))
+      (org-publish "roam-all" force)
+      )
+   force
+   :notify))
+
+(defun my/org-roam-publish-current-file (force)
+  (interactive "P")
+  (my/-org-roam-publish
+   '(lambda ()
+      (org-publish-current-file force)
+      )
+   force))
 
 (defun my/org-roam-file-link-export (path desc backend)
   (if (org-roam--org-roam-file-p path)

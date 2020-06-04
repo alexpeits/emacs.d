@@ -212,6 +212,8 @@
 
  `(ag-hit-face ((t (:inherit font-lock-type-face :weight bold))))
 
+ '(aw-leading-char-face ((t (:inherit font-lock-preprocessor-face :weight bold :height 2.5))))
+
  '(dired-directory ((t (:foreground "#499ec4" :weight bold))))
  '(dired-symlink   ((t (:foreground "#298D86" :weight bold))))
  '(dired-marked    ((t (:inherit hi-black-b))))

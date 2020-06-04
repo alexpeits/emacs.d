@@ -99,6 +99,8 @@
    '(powerline-inactive1 ((t (:background "grey90" :foreground "grey50" :weight normal))))
    '(powerline-inactive2 ((t (:background "grey90" :foreground "grey50" :weight normal))))
 
+   `(aw-leading-char-face ((t (:inherit font-lock-preprocessor-face :weight bold :height 2.5))))
+
    ;; '(rainbow-delimiters-depth-1-face    ((t (:inherit font-lock-preprocessor-face))))
    ;; '(rainbow-delimiters-depth-2-face    ((t (:inherit font-lock-constant-face))))
    ;; '(rainbow-delimiters-depth-3-face    ((t (:inherit font-lock-preprocessor-face))))

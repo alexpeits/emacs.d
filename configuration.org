@@ -604,71 +604,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   :diminish which-key-mode)
 #+END_SRC
 
-** mark
-
-#+BEGIN_SRC emacs-lisp
-(defun my/goto-line-show ()
-  "Show line numbers temporarily, while prompting for the line number input."
-  (interactive)
-  (let ((cur display-line-numbers))
-    (unwind-protect
-        (progn
-          (setq display-line-numbers t)
-          (call-interactively #'goto-line))
-      (setq display-line-numbers cur))))
-
-(global-set-key (kbd "M-g M-g") 'my/goto-line-show)
-
-(define-key prog-mode-map (kbd "M-a") 'beginning-of-defun)
-(define-key prog-mode-map (kbd "M-e") 'end-of-defun)
-
-(defun my/push-mark-no-activate ()
-  "Pushes `point' to `mark-ring' and does not activate the region
-   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-  (interactive)
-  (push-mark (point) t nil)
-  (message "Pushed mark to ring"))
-
-(global-set-key (kbd "C-`") 'my/push-mark-no-activate)
-
-(defun my/jump-to-mark ()
-  "Jumps to the local mark, respecting the `mark-ring' order.
-  This is the same as using \\[set-mark-command] with the prefix argument."
-  (interactive)
-  (set-mark-command 1))
-
-(global-set-key (kbd "M-`") 'my/jump-to-mark)
-#+END_SRC
-
-** imenu-list
-
-#+BEGIN_SRC emacs-lisp
-(use-package imenu-list
-  :ensure t
-  :bind ("C-|" . my/imenu-list-smart-toggle)
-  :config
-
-  (defun my/imenu-list-jump-to-window ()
-    "Jump to imenu-list window if visible, otherwise create it and jump."
-    (interactive)
-    (if (get-buffer-window imenu-list-buffer-name)
-        (select-window (get-buffer-window imenu-list-buffer-name))
-      (progn
-        (imenu-list-minor-mode)
-        (select-window (get-buffer-window imenu-list-buffer-name)))))
-
-  (defun my/imenu-list-smart-toggle ()
-    "If imenu-list window doesn't exist, create it and jump. If if does but
-it is not the current buffer, jump there. If it exists and it's the current
-buffer, close it."
-    (interactive)
-    (if (eq (current-buffer) (get-buffer imenu-list-buffer-name))
-        (imenu-list-quit-window)
-      (my/imenu-list-jump-to-window)))
-
-  (setq imenu-list-size 40))
-#+END_SRC
-
 ** abbrev etc
 
 #+begin_src emacs-lisp
@@ -680,6 +615,23 @@ buffer, close it."
   (my/add-hooks
    '(prog-mode-hook)
    (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|\\sw\\s.")))
+
+;; Testing it out
+(use-package hippie-exp
+  :bind (("M-/" . hippie-expand))
+  :init
+  (setq hippie-expand-verbose nil)
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          try-expand-all-abbrevs
+          try-expand-list
+          try-expand-line
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol)))
 #+end_src
 
 ** engine-mode
@@ -750,21 +702,6 @@ buffer, close it."
          ((executable-find "firefox") 'browse-url-firefox)
          (t 'browse-url-default-browser))))
 #+end_src
-
-** anzu
-
-#+BEGIN_SRC emacs-lisp
-(use-package anzu
-  :ensure t
-  :hook (after-init . global-anzu-mode)
-  :diminish
-  :init
-  (setq anzu-mode-lighter ""))
-
-(use-package evil-anzu
-  :ensure t
-  :after (evil anzu))
-#+END_SRC
 
 ** math input
 
@@ -838,18 +775,7 @@ buffer, close it."
 (use-package symbol-overlay
   :ensure t
   :commands (symbol-overlay-mode)
-  :diminish
-  :config
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd ",i") 'symbol-overlay-put)
-    (define-key map (kbd ",d") 'symbol-overlay-remove-all)
-    (define-key map (kbd "n") 'symbol-overlay-jump-next)
-    (define-key map (kbd "p") 'symbol-overlay-jump-prev)
-    (define-key map (kbd ",q") 'symbol-overlay-query-replace)
-    (define-key map (kbd ",r") 'symbol-overlay-rename)
-    (define-key map (kbd ",w") 'symbol-overlay-save-symbol)
-    (define-key map (kbd ",s") 'symbol-overlay-isearch-literally)
-    (setq symbol-overlay-map map)))
+  :diminish)
 #+end_src
 
 ** highlight keywords in some modes
@@ -1915,8 +1841,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
-  :bind (("C-c i" . avy-goto-line)
-         ("M-[" . avy-goto-word-1)))
+  :bind (("C-c i" . avy-goto-char-timer)))
 #+END_SRC
 
 ** ace-window
@@ -1927,10 +1852,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :bind ("C-c o" . ace-window)
   :init
   (setq aw-dispatch-always nil
-        aw-keys (string-to-list "asdfghjkl;"))
-  :config
-  (custom-set-faces
-   '(aw-leading-char-face ((t (:foreground "magenta" :background "gray16" :weight bold :height 1.8))))))
+        aw-keys (string-to-list "asdfghjkl;")))
 #+END_SRC
 
 ** buffer-move
@@ -3020,7 +2942,7 @@ the current file."
   (defalias 'lilypond-mode 'LilyPond-mode))
 #+end_src
 
-* Searching
+* Searching & jumping
 ** isearch
 
 #+BEGIN_SRC emacs-lisp
@@ -3100,8 +3022,85 @@ the current file."
 
 #+END_SRC
 
-#+RESULTS:
-: rg-prev-file
+** imenu-list
+
+#+BEGIN_SRC emacs-lisp
+(use-package imenu-list
+  :ensure t
+  :bind ("C-|" . my/imenu-list-smart-toggle)
+  :config
+
+  (defun my/imenu-list-jump-to-window ()
+    "Jump to imenu-list window if visible, otherwise create it and jump."
+    (interactive)
+    (if (get-buffer-window imenu-list-buffer-name)
+        (select-window (get-buffer-window imenu-list-buffer-name))
+      (progn
+        (imenu-list-minor-mode)
+        (select-window (get-buffer-window imenu-list-buffer-name)))))
+
+  (defun my/imenu-list-smart-toggle ()
+    "If imenu-list window doesn't exist, create it and jump. If if does but
+it is not the current buffer, jump there. If it exists and it's the current
+buffer, close it."
+    (interactive)
+    (if (eq (current-buffer) (get-buffer imenu-list-buffer-name))
+        (imenu-list-quit-window)
+      (my/imenu-list-jump-to-window)))
+
+  (setq imenu-list-size 40))
+#+END_SRC
+
+** mark
+
+#+BEGIN_SRC emacs-lisp
+(defun my/goto-line-show ()
+  "Show line numbers temporarily, while prompting for the line number input."
+  (interactive)
+  (let ((cur display-line-numbers))
+    (unwind-protect
+        (progn
+          (setq display-line-numbers t)
+          (call-interactively #'goto-line))
+      (setq display-line-numbers cur))))
+
+(global-set-key (kbd "M-g M-g") 'my/goto-line-show)
+
+(define-key prog-mode-map (kbd "M-a") 'beginning-of-defun)
+(define-key prog-mode-map (kbd "M-e") 'end-of-defun)
+
+(defun my/push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region
+   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
+
+(global-set-key (kbd "C-`") 'my/push-mark-no-activate)
+
+(defun my/jump-to-mark ()
+  "Jumps to the local mark, respecting the `mark-ring' order.
+  This is the same as using \\[set-mark-command] with the prefix argument."
+  (interactive)
+  (set-mark-command 1))
+
+(global-set-key (kbd "M-`") 'my/jump-to-mark)
+#+END_SRC
+
+** anzu
+
+#+BEGIN_SRC emacs-lisp
+(use-package anzu
+  :ensure t
+  :hook (after-init . global-anzu-mode)
+  :diminish
+  :init
+  (setq anzu-mode-lighter ""))
+
+(use-package evil-anzu
+  :ensure t
+  :after (evil anzu))
+#+END_SRC
 
 * company
 
@@ -3837,7 +3836,8 @@ the minibuffer."
   :after org-roam
   :commands (my/org-roam-publish)
   :bind (:map org-roam-mode-map
-              ("C-c n p" . my/org-roam-publish)))
+              ("C-c n p" . my/org-roam-publish)
+              ("C-c n P" . my/org-roam-publish-current-file)))
 
 (defun my/org-roam-refresh ()
   (interactive)
