@@ -3745,7 +3745,11 @@ the minibuffer."
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key org-mode-map (kbd "<tab>") 'org-cycle)
    (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)
-   (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)))
+   (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle))
+
+  (advice-add 'save-buffers-kill-terminal
+              :before
+              #'my/org-kill-fontification-buffers))
 
 (defun my/org-insert-date-today (active)
   (interactive "P")
@@ -3769,6 +3773,14 @@ the minibuffer."
     (with-temp-buffer
       (insert-file (expand-file-name "configuration.org" user-emacs-directory))
       (org-export-to-file 'html (expand-file-name "docs/index.html" user-emacs-directory)))))
+
+(defun my/org-kill-fontification-buffers (&optional silent)
+  (mapc
+   #'kill-buffer
+   (seq-filter
+    (lambda (buf)
+      (string-match "^\\ \\*org-src-fontification:.*\\*$" (buffer-name buf)))
+    (buffer-list))))
 
 (use-package org-cliplink
   :ensure t
