@@ -6,12 +6,17 @@
       tmp--file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
 
+(unless debug-on-error
+  (setq inhibit-redisplay t))
+
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold 800000
                   gc-cons-percentage 0.1
                   inhibit-compacting-font-caches nil
-                  file-name-handler-alist tmp--file-name-handler-alist)
+                  file-name-handler-alist tmp--file-name-handler-alist
+                  inhibit-redisplay nil)
+            (redisplay :force)
             (makunbound 'tmp--file-name-handler-alist)
             (message "Emacs started in %s with %d garbage collections."
                      (format "%.2f seconds"

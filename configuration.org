@@ -977,6 +977,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
   (defalias 'eshell/x 'eshell/exit)
   (defalias 'eshell/e 'find-file)
+  (defalias 'eshell/ff 'find-file)
 
   (setq eshell-destroy-buffer-when-process-dies t
         eshell-history-size 1024
@@ -1852,7 +1853,10 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :bind ("C-c o" . ace-window)
   :init
   (setq aw-dispatch-always nil
-        aw-keys (string-to-list "asdfghjkl;")))
+        aw-keys (string-to-list "asdfghjkl;"))
+  (my/add-hooks
+   '(term-mode-hook)
+   (define-key term-raw-map (kbd "C-c o") #'ace-window)))
 #+END_SRC
 
 ** buffer-move
@@ -2335,8 +2339,8 @@ the current file."
   (save-buffer))
 
 ;; This needs to exist in the `load-path'
-(use-package custom-purescript-font-lock
-  :after purescript-mode)
+;; (use-package custom-purescript-font-lock
+;;   :after purescript-mode)
 
 ;; copy these into the purescript-mode definition
 ;; (setq-local font-lock-defaults
@@ -2985,6 +2989,7 @@ the current file."
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
   (rg-define-toggle "--word-regexp" "w")
+  (rg-define-toggle "--files-with-matches" "L")
   (rg-define-search my/rg-project-or-ask
     :query ask
     :format regexp
@@ -3696,6 +3701,25 @@ the minibuffer."
   (setq org-export-with-toc nil
         org-export-with-section-numbers 1)
 
+  ;; templates
+  (setq org-structure-template-alist
+        '(("s" . "src")
+          ("e" . "example")
+          ("q" . "quote")
+          ("v" . "verse")
+          ("ht" . "export html")
+          ("la" . "export latex")
+          ("b" . "src bash")
+          ("el" . "src emacs-lisp")
+          ("h" . "src haskell")
+          ("p" . "src python")))
+
+  (setq org-tempo-keywords-alist
+        '(("I" . "INDEX")
+          ("L" . "LATEX")
+          ("T" . "TITLE")
+          ("H" . "HTML")))
+
   ;; refile
   (setq org-refile-targets '((nil . (:maxlevel . 1)))
         org-refile-use-outline-path 'file
@@ -3807,14 +3831,20 @@ the minibuffer."
            ""
            :immediate-finish t
            :file-name "daily-%<%Y-%m-%d>"
-           :head "#+TITLE: [daily] %<%A, %d %b %Y>")
+           :head "#+TITLE: %<%A, %d %b %Y>\n\n- tags :: [[file:daily.org][daily notes]]\n")
           ))
   :config
   (add-to-list 'org-refile-targets '(org-roam--list-all-files . (:maxlevel . 1)))
   (add-hook 'org-roam-backlinks-mode-hook 'org-indent-mode)
+  (my/add-hooks
+   '(org-mode-hook)
+   (when (and (buffer-file-name)
+              (org-roam--org-roam-file-p (buffer-file-name)))
+     (add-hook 'before-save-hook #'my/org-roam-add-roam-tags-property nil t)))
   (with-eval-after-load 'evil
     (evil-define-key 'visual org-mode-map (kbd "[[") 'my/org-roam-insert-no-capture))
-  )
+  (add-to-list 'org-tempo-keywords-alist '("ra" . "ROAM_ALIAS"))
+  (add-to-list 'org-tempo-keywords-alist '("rt" . "ROAM_TAGS")))
 
 (use-package org-roam-protocol
   :after org-roam)
@@ -3888,6 +3918,47 @@ the minibuffer."
           #'(lambda (tmpl) (append tmpl '(:immediate-finish t)))
           org-roam-capture-templates)))
     (funcall-interactively 'org-roam-insert)))
+
+(defun my/org-roam-extract-tags ()
+  (let ((tags nil))
+    (org-element-map (org-element-parse-buffer) 'plain-list
+      (lambda (lst)
+        (when (eq (org-element-property :type lst) 'descriptive)
+          (org-element-map lst 'item
+            (lambda (item)
+              (let* ((maybe-tag (elt (org-element-property :tag item) 0))
+                     (tag (and (stringp maybe-tag)
+                               (substring-no-properties (elt (org-element-property :tag item) 0)))))
+                (when (and tag
+                           (string-equal tag "tags"))
+                  (org-element-map item 'paragraph
+                    (lambda (par)
+                      (org-element-map par 'link
+                        (lambda (link)
+                          (add-to-list 'tags (substring-no-properties (elt link 2)))))))))))))
+      nil :first-only)
+    (reverse tags)))
+
+(defun my/org-roam-add-roam-tags-property ()
+  (let* ((tags (my/org-roam-extract-tags))
+         (tags-str ""))
+    (dolist (tag tags)
+      (setq tags-str
+            (concat tags-str
+                    (format " \"%s\"" tag))))
+    (save-excursion
+      (goto-char (point-min))
+      (if (re-search-forward "^#\\+ROAM_TAGS" nil t)
+          (progn
+            (beginning-of-line 1)
+            (kill-line))
+        (goto-char (point-min))
+        (re-search-forward "^$")
+        (newline)
+        (previous-line))
+      (if tags
+          (insert (format "#+ROAM_TAGS:%s" tags-str))
+        (kill-line)))))
 #+END_SRC
 
 #+begin_src emacs-lisp

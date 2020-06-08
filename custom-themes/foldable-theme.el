@@ -74,6 +74,8 @@
    '(hi-red-b   ((t (:background "#ffccbb" :foreground "#840040" :weight bold))))
    '(hi-black-b ((t (:background "#f5d88f" :foreground "#782900" :weight bold))))
 
+   '(match ((t (:inherit hi-black-b :weight normal))))
+
    '(dired-marked  ((t (:inherit hi-black-b))))
    '(dired-flagged ((t (:inherit hi-red-b))))
 
