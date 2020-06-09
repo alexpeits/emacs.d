@@ -1251,6 +1251,7 @@ CWD is not in a git repo (or the git command is not found)."
     (load-theme 'modus-vivendi t)
     (custom-theme-set-faces
      'modus-vivendi
+     '(default ((t (:background "#0a0a0a" :foreground "#eaeaea"))))
      '(hl-line ((t (:background "#252833"))))
      `(region ((t (:background ,(face-attribute 'modus-theme-subtle-cyan :background)))))
      '(secondary-selection ((t (:inherit modus-theme-refine-green))))
@@ -1289,8 +1290,10 @@ CWD is not in a git repo (or the git command is not found)."
       (custom-theme-set-faces
        'modus-vivendi
        '(haskell-type-face ((t (:inherit font-lock-variable-name-face))))
+       ;; '(haskell-constructor-face ((t (:inherit font-lock-doc-face))))
        '(haskell-constructor-face ((t (:inherit haskell-type-face))))
-       '(haskell-operator-face ((t (:inherit font-lock-type-face))))))))
+       '(haskell-operator-face ((t (:inherit font-lock-type-face))))
+       ))))
 
 (use-package modus-operandi-theme
   :ensure t
