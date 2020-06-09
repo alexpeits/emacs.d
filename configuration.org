@@ -14,7 +14,8 @@
                "~/.local/bin"
                "~/.ghcup/bin"
                ))
-  (add-to-list 'exec-path (expand-file-name pth))
+
+(add-to-list 'exec-path (expand-file-name pth))
   (setenv "PATH" (concat (expand-file-name pth)
                          path-separator
                          (getenv "PATH"))))
@@ -1195,6 +1196,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 * Theme
+** theme loading
 
 #+BEGIN_SRC emacs-lisp
 (when (>= emacs-major-version 27)
@@ -1207,7 +1209,7 @@ CWD is not in a git repo (or the git command is not found)."
   "Hook called after setting a theme")
 
 (defun my/set-theme (&optional theme)
-  (let ((theme (or theme (elt my/avail-themes my/current-theme)) ))
+  (let ((theme (or theme (elt my/avail-themes my/current-theme))))
     (mapc 'disable-theme custom-enabled-themes)
     (if (functionp theme)
         (funcall theme)
@@ -1225,6 +1227,121 @@ CWD is not in a git repo (or the git command is not found)."
   (interactive)
   (my/set-theme))
 #+END_SRC
+
+** modus themes
+
+#+begin_src emacs-lisp
+(use-package modus-vivendi-theme
+  :ensure t
+  :defer t
+  :init
+  (setq modus-vivendi-theme-visible-fringes t
+        modus-vivendi-theme-distinct-org-blocks t
+        modus-vivendi-theme-rainbow-headings t
+        modus-vivendi-theme-scale-headings t
+        modus-vivendi-theme-scale-5 1.3
+        modus-vivendi-theme-scale-4 1.2
+        modus-vivendi-theme-scale-3 1.0
+        modus-vivendi-theme-scale-2 1.0
+        modus-vivendi-theme-scale-1 1.0)
+
+  (defvar my/modus-vivendi-theme-alt-haskell-colors nil)
+
+  (defun my/modus-vivendi-theme ()
+    (load-theme 'modus-vivendi t)
+    (custom-theme-set-faces
+     'modus-vivendi
+     '(hl-line ((t (:background "#252833"))))
+     `(region ((t (:background ,(face-attribute 'modus-theme-subtle-cyan :background)))))
+     '(secondary-selection ((t (:inherit modus-theme-refine-green))))
+     '(fill-column-indicator ((t (:foreground "grey40"))))
+     '(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
+     '(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
+     '(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
+     '(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+     '(org-block ((t (:foreground "#bbccc5" :background "#0e1a1d"))))
+     '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
+     '(org-block-end-line ((t (:inherit org-block-begin-line))))
+     '(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground "#b9dfed" :underline t))))
+     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
+     '(flycheck-fringe-error ((t (:foreground "#fb4933"))))
+     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+     '(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+     '(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
+     `(rst-block ((t (:inherit font-lock-doc-face))))
+     `(rst-definition ((t (:inherit font-lock-function-name-face))))
+     `(rst-directive ((t (:inherit font-lock-function-name-face))))
+     `(rst-external ((t (:inherit font-lock-type-face))))
+     `(rst-literal ((t (:inherit font-lock-doc-face))))
+     `(rst-reference ((t (:inherit font-lock-variable-name-face))))
+     `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
+     `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
+     `(rst-level-1 ((t (:inherit rst-adornment))))
+     `(rst-level-2 ((t (:inherit rst-level-1))))
+     `(rst-level-3 ((t (:inherit rst-level-1))))
+     `(rst-level-4 ((t (:inherit rst-level-1))))
+     `(rst-level-5 ((t (:inherit rst-level-1))))
+     `(rst-level-6 ((t (:inherit rst-level-1))))
+     )
+    (when my/modus-vivendi-theme-alt-haskell-colors
+      (custom-theme-set-faces
+       'modus-vivendi
+       '(haskell-type-face ((t (:inherit font-lock-variable-name-face))))
+       '(haskell-constructor-face ((t (:inherit haskell-type-face))))
+       '(haskell-operator-face ((t (:inherit font-lock-type-face))))))))
+
+(use-package modus-operandi-theme
+  :ensure t
+  :defer t
+  :init
+  (setq modus-operandi-theme-visible-fringes t
+        modus-operandi-theme-distinct-org-blocks t
+        modus-operandi-theme-rainbow-headings t
+        modus-operandi-theme-scale-headings t
+        modus-operandi-theme-scale-5 1.3
+        modus-operandi-theme-scale-4 1.2
+        modus-operandi-theme-scale-3 1.0
+        modus-operandi-theme-scale-2 1.0
+        modus-operandi-theme-scale-1 1.0)
+
+  (defun my/modus-operandi-theme ()
+    (load-theme 'modus-operandi t)
+    (custom-theme-set-faces
+     'modus-operandi
+     `(region ((t (:background ,(face-attribute 'modus-theme-special-mild :background)))))
+     '(secondary-selection ((t (:inherit modus-theme-special-mild))))
+     '(fill-column-indicator ((t (:foreground "grey85"))))
+     '(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
+     '(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
+     '(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
+     '(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+     `(org-roam-link ((t (:background ,(color-lighten-name (face-attribute 'modus-theme-subtle-cyan :background) 5) :foreground "#393980" :underline t))))
+     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
+     '(flycheck-fringe-error ((t (:foreground "#fb4933"))))
+     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+     '(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+     '(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
+     '(markdown-pre-face ((t (:inherit font-lock-variable-name-face))))
+     `(rst-block ((t (:inherit font-lock-doc-face))))
+     `(rst-definition ((t (:inherit font-lock-function-name-face))))
+     `(rst-directive ((t (:inherit font-lock-builtin-face))))
+     `(rst-external ((t (:inherit font-lock-type-face))))
+     `(rst-literal ((t (:inherit font-lock-variable-name-face))))
+     `(rst-reference ((t (:inherit font-lock-keyword-face))))
+     `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
+     `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
+     `(rst-level-1 ((t (:inherit rst-adornment))))
+     `(rst-level-2 ((t (:inherit rst-level-1))))
+     `(rst-level-3 ((t (:inherit rst-level-1))))
+     `(rst-level-4 ((t (:inherit rst-level-1))))
+     `(rst-level-5 ((t (:inherit rst-level-1))))
+     `(rst-level-6 ((t (:inherit rst-level-1))))
+     )))
+#+end_src
 
 * Font
 
@@ -1878,6 +1995,20 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :bind ("M-+" . zoom)
   :init
   (setq zoom-size '(190 . 92)))
+#+end_src
+
+* eww
+
+#+begin_src emacs-lisp
+(use-package eww
+  :commands (eww)
+  :bind (:map eww-mode-map
+              ("q" . my/eww-quit))
+  :config
+  (defun my/eww-quit ()
+    (interactive)
+    (quit-window :kill)
+    (unless (one-window-p) (delete-window))))
 #+end_src
 
 * dired
@@ -2794,12 +2925,18 @@ the current file."
   :ensure t
   :commands (elfeed)
   :bind (:map elfeed-search-mode-map
+              ("U" . elfeed-update)
+              ("o" . my/elfeed-search-other-window)
+              ("q" . my/elfeed-kill-buffer-close-window-dwim)
+              ("e" . my/elfeed-show-eww)
               ("h" . backward-char)
               ("j" . next-line)
               ("k" . previous-line)
               ("l" . forward-char)
-              ("U" . elfeed-update)
               :map elfeed-show-mode-map
+              ("i" . my/elfeed-hide-images)
+              ("e" . my/elfeed-show-eww)
+              ("q" . my/elfeed-kill-buffer-close-window-dwim)
               ("h" . backward-char)
               ("j" . next-line)
               ("k" . previous-line)
@@ -2808,13 +2945,59 @@ the current file."
               ("b" . backward-word))
   :init
   (setq elfeed-db-directory (expand-file-name "elfeed" my/dropbox-emacs-dir)
-        elfeed-search-filter "@10-days-ago +unread")
+        elfeed-use-curl t
+        elfeed-curl-max-connections 10
+        elfeed-search-clipboard-type 'CLIPBOARD
+        elfeed-search-filter "@10-days-ago +unread"
+        elfeed-search-title-max-width 100
+        elfeed-search-title-min-width 30
+        elfeed-search-trailing-width 30)
   :config
   (defun my/elfeed-hide-images (tog)
     (interactive "P")
     (let ((shr-inhibit-images (not tog)))
       (elfeed-show-refresh)))
-  (define-key elfeed-show-mode-map (kbd "i") #'my/elfeed-hide-images)
+
+  ;; prot
+  (defun my/elfeed-search-other-window (&optional arg)
+    (interactive "P")
+    (let* ((entry (if (eq major-mode 'elfeed-show-mode)
+                      elfeed-show-entry
+                    (elfeed-search-selected :ignore-region)))
+           (link (elfeed-entry-link entry))
+           (win (selected-window)))
+      (with-current-buffer (get-buffer "*elfeed-search*")
+        (unless (one-window-p)              ; experimental
+          (delete-other-windows win))
+        (split-window win (/ (frame-height) 3) 'below)
+        (other-window 1)
+        (if arg
+            (progn
+              (when (eq major-mode 'elfeed-search-mode)
+                (elfeed-search-untag-all-unread))
+              (my/elfeed-show-eww link))
+          (elfeed-search-show-entry entry)))))
+
+  (defun my/elfeed-show-eww (&optional link)
+    (interactive)
+    (let* ((entry (if (eq major-mode 'elfeed-show-mode)
+                      elfeed-show-entry
+                    (elfeed-search-selected :ignore-region)))
+           (link (if link link (elfeed-entry-link entry))))
+      (eww link)
+      (add-hook 'eww-after-render-hook 'eww-readable nil t)))
+
+  (defun my/elfeed-kill-buffer-close-window-dwim ()
+    (interactive)
+    (let ((win (selected-window)))
+      (cond ((eq major-mode 'elfeed-show-mode)
+             (elfeed-kill-buffer)
+             (unless (one-window-p) (delete-window win))
+             (switch-to-buffer "*elfeed-search*"))
+            ((eq major-mode 'elfeed-search-mode)
+             (if (one-window-p)
+                 (elfeed-search-quit-window)
+               (delete-other-windows win))))))
 
   (add-hook 'elfeed-show-mode-hook #'(lambda () (setq-local shr-width 100)))
 
@@ -2822,7 +3005,7 @@ the current file."
             (elfeed-make-tagger :before "2 weeks ago"
                                 :remove 'unread))
 
-  (add-hook 'elfeed-search-update-hook #'elfeed-db-save)
+  ;; (add-hook 'elfeed-search-update-hook #'elfeed-db-save)
   (add-hook 'elfeed-update-init-hooks #'elfeed-db-save)
 
   (defface my/elfeed-important
@@ -4161,7 +4344,7 @@ the minibuffer."
   :init
   (setq deft-directory my/org-directory
         deft-recursive t
-        deft-file-limit 100
+        deft-file-limit 50
         deft-extensions '("org")
         deft-ignore-file-regexp "index.org\\|theindex.org"
         deft-use-filter-string-for-filename t
@@ -4310,7 +4493,7 @@ the minibuffer."
     (propertize " srv " 'face 'compilation-info)))
 
 (defvar my/input-method-color-mappings
-  '(("greek" . (:foreground "black" :background "DeepSkyBlue3"))
+  '(("greek" . (:foreground "black" :background "DeepSkyBlue2"))
     ("TeX" . (:foreground "black" :background "SpringGreen3"))))
 
 (defun my/mode-line-input-method ()
@@ -4494,15 +4677,15 @@ the minibuffer."
 
 #+BEGIN_SRC emacs-lisp
 (custom-set-faces
- '(anzu-mode-line ((t (:inherit mode-line :foreground "magenta" :weight bold))))
- '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
+ ;; '(anzu-mode-line ((t (:inherit mode-line :foreground "magenta" :weight bold))))
+ ;; '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
  '(fixed-pitch ((t nil)))
- '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
- '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
- '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
- '(flycheck-fringe-warning ((t (:foreground "orange1"))))
- '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
- '(flycheck-fringe-error ((t (:foreground "#FB4933"))))
+ ;; '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+ ;; '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+ ;; '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+ ;; '(flycheck-fringe-warning ((t (:foreground "orange1"))))
+ ;; '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
+ ;; '(flycheck-fringe-error ((t (:foreground "#FB4933"))))
  ;; '(whitespace-trailing ((t (:background "#602020"))))
  )
 
