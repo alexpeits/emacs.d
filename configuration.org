@@ -918,6 +918,25 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
       (indent-rigidly (point-min) (point-max) my/edit-indirect-dedented-amount))))
 #+END_SRC
 
+** use =pulse= to flash cursor position
+
+#+begin_src emacs-lisp
+;; prot
+(use-package pulse
+  :commands (pulse-momentary-highlight-one-line)
+  :bind ("M-ESC" . my/pulse-line)
+  :init
+  (defun my/pulse-line ()
+    "Temporarily highlight the current line."
+    (interactive)
+    (let ((pulse-delay .06)
+          (face (if (facep 'modus-theme-intense-red)
+                    'modus-theme-intense-red
+                  'hi-red-b)))
+      (pulse-momentary-highlight-one-line (point) face))))
+
+#+end_src
+
 * term, eshell and comint-mode
 ** terms
 
@@ -1281,6 +1300,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(org-block ((t (:foreground "#dadada" :background "#112024"))))
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347"))))
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
+         `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
 
          `(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
@@ -1353,6 +1373,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
          `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
 
+         `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
 
          `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
