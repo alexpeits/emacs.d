@@ -1231,6 +1231,9 @@ CWD is not in a git repo (or the git command is not found)."
 ** modus themes
 
 #+begin_src emacs-lisp
+(use-package color
+  :commands (color-darken-name color-lighten-name))
+
 (use-package modus-vivendi-theme
   :ensure t
   :defer t
@@ -1245,53 +1248,59 @@ CWD is not in a git repo (or the git command is not found)."
         modus-vivendi-theme-scale-2 1.0
         modus-vivendi-theme-scale-1 1.0)
 
-  (defvar my/modus-vivendi-theme-alt-haskell-colors nil)
+  (defvar my/modus-vivendi-theme-haskell-alt-colors nil)
+  (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
 
   (defun my/modus-vivendi-theme ()
     (load-theme 'modus-vivendi t)
-    (custom-theme-set-faces
-     'modus-vivendi
-     '(default ((t (:background "#0a0a0a" :foreground "#eaeaea"))))
-     '(hl-line ((t (:background "#252833"))))
-     `(region ((t (:background ,(face-attribute 'modus-theme-subtle-cyan :background)))))
-     '(secondary-selection ((t (:inherit modus-theme-refine-green))))
-     '(fill-column-indicator ((t (:foreground "grey40"))))
-     '(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
-     '(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
-     '(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
-     '(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
-     '(org-block ((t (:foreground "#bbccc5" :background "#0e1a1d"))))
-     '(org-block-begin-line ((t (:foreground "#008ED1" :background "#002E41"))))
-     '(org-block-end-line ((t (:inherit org-block-begin-line))))
-     '(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground "#b9dfed" :underline t))))
-     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
-     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
-     '(flycheck-fringe-error ((t (:foreground "#fb4933"))))
-     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-     '(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
-     '(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
-     `(rst-block ((t (:inherit font-lock-doc-face))))
-     `(rst-definition ((t (:inherit font-lock-function-name-face))))
-     `(rst-directive ((t (:inherit font-lock-function-name-face))))
-     `(rst-external ((t (:inherit font-lock-type-face))))
-     `(rst-literal ((t (:inherit font-lock-doc-face))))
-     `(rst-reference ((t (:inherit font-lock-variable-name-face))))
-     `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
-     `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
-     `(rst-level-1 ((t (:inherit rst-adornment))))
-     `(rst-level-2 ((t (:inherit rst-level-1))))
-     `(rst-level-3 ((t (:inherit rst-level-1))))
-     `(rst-level-4 ((t (:inherit rst-level-1))))
-     `(rst-level-5 ((t (:inherit rst-level-1))))
-     `(rst-level-6 ((t (:inherit rst-level-1))))
-     )
-    (when my/modus-vivendi-theme-alt-haskell-colors
+    (modus-vivendi-theme-with-color-variables
+      (let ((hl-line (color-darken-name bg-active 2))
+            (haskell-constructor
+             (if my/modus-vivendi-theme-haskell-distinct-constructor
+                 'font-lock-doc-face
+               'haskell-type-face)))
+        (custom-theme-set-faces
+         'modus-vivendi
+         `(default ((t (:background "#0a0a0a" :foreground "#eaeaea"))))
+         `(hl-line ((t (:background ,hl-line))))
+         `(region ((t (:background ,cyan-subtle-bg))))
+         `(secondary-selection ((t (:inherit modus-theme-refine-green))))
+         `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
+         `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
+         `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
+         `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
+         `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+         `(org-block ((t (:foreground "#dadada" :background "#112024"))))
+         `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347"))))
+         `(org-block-end-line ((t (:inherit org-block-begin-line))))
+         `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
+         `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+         `(flycheck-fringe-warning ((t (:foreground "orange1"))))
+         `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
+         `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+         `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+         `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+         `(rst-block ((t (:inherit font-lock-doc-face))))
+         `(rst-definition ((t (:inherit font-lock-function-name-face))))
+         `(rst-directive ((t (:inherit font-lock-function-name-face))))
+         `(rst-external ((t (:inherit font-lock-type-face))))
+         `(rst-literal ((t (:inherit font-lock-doc-face))))
+         `(rst-reference ((t (:inherit font-lock-variable-name-face))))
+         `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
+         `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
+         `(rst-level-1 ((t (:inherit rst-adornment))))
+         `(rst-level-2 ((t (:inherit rst-level-1))))
+         `(rst-level-3 ((t (:inherit rst-level-1))))
+         `(rst-level-4 ((t (:inherit rst-level-1))))
+         `(rst-level-5 ((t (:inherit rst-level-1))))
+         `(rst-level-6 ((t (:inherit rst-level-1))))
+         `(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
+         `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
+         )))
+    (when my/modus-vivendi-theme-haskell-alt-colors
       (custom-theme-set-faces
        'modus-vivendi
        '(haskell-type-face ((t (:inherit font-lock-variable-name-face))))
-       ;; '(haskell-constructor-face ((t (:inherit font-lock-doc-face))))
-       '(haskell-constructor-face ((t (:inherit haskell-type-face))))
        '(haskell-operator-face ((t (:inherit font-lock-type-face))))
        ))))
 
@@ -1311,39 +1320,42 @@ CWD is not in a git repo (or the git command is not found)."
 
   (defun my/modus-operandi-theme ()
     (load-theme 'modus-operandi t)
-    (custom-theme-set-faces
-     'modus-operandi
-     `(region ((t (:background ,(face-attribute 'modus-theme-special-mild :background)))))
-     '(secondary-selection ((t (:inherit modus-theme-special-mild))))
-     '(fill-column-indicator ((t (:foreground "grey85"))))
-     '(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
-     '(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
-     '(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
-     '(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
-     `(org-roam-link ((t (:background ,(color-lighten-name (face-attribute 'modus-theme-subtle-cyan :background) 5) :foreground "#393980" :underline t))))
-     '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
-     '(flycheck-fringe-warning ((t (:foreground "orange1"))))
-     '(flycheck-fringe-error ((t (:foreground "#fb4933"))))
-     '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-     '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-     '(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
-     '(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
-     '(markdown-pre-face ((t (:inherit font-lock-variable-name-face))))
-     `(rst-block ((t (:inherit font-lock-doc-face))))
-     `(rst-definition ((t (:inherit font-lock-function-name-face))))
-     `(rst-directive ((t (:inherit font-lock-builtin-face))))
-     `(rst-external ((t (:inherit font-lock-type-face))))
-     `(rst-literal ((t (:inherit font-lock-variable-name-face))))
-     `(rst-reference ((t (:inherit font-lock-keyword-face))))
-     `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
-     `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
-     `(rst-level-1 ((t (:inherit rst-adornment))))
-     `(rst-level-2 ((t (:inherit rst-level-1))))
-     `(rst-level-3 ((t (:inherit rst-level-1))))
-     `(rst-level-4 ((t (:inherit rst-level-1))))
-     `(rst-level-5 ((t (:inherit rst-level-1))))
-     `(rst-level-6 ((t (:inherit rst-level-1))))
-     )))
+    (modus-operandi-theme-with-color-variables
+      (let ((cyan-more-subtle-bg (color-lighten-name cyan-subtle-bg 5))
+            (cyan-more-intense (color-darken-name cyan-intense 5)))
+        (custom-theme-set-faces
+         'modus-operandi
+         `(region ((t (:background ,bg-special-mild))))
+         `(secondary-selection ((t (:inherit modus-theme-special-mild))))
+         `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
+         `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
+         `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
+         `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
+         `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+         `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
+         `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+         `(flycheck-fringe-warning ((t (:foreground "orange1"))))
+         `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
+         `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+         `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+         `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+         `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
+         `(markdown-pre-face ((t (:inherit font-lock-variable-name-face))))
+         `(rst-block ((t (:inherit font-lock-doc-face))))
+         `(rst-definition ((t (:inherit font-lock-function-name-face))))
+         `(rst-directive ((t (:inherit font-lock-builtin-face))))
+         `(rst-external ((t (:inherit font-lock-type-face))))
+         `(rst-literal ((t (:inherit font-lock-variable-name-face))))
+         `(rst-reference ((t (:inherit font-lock-keyword-face))))
+         `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
+         `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
+         `(rst-level-1 ((t (:inherit rst-adornment))))
+         `(rst-level-2 ((t (:inherit rst-level-1))))
+         `(rst-level-3 ((t (:inherit rst-level-1))))
+         `(rst-level-4 ((t (:inherit rst-level-1))))
+         `(rst-level-5 ((t (:inherit rst-level-1))))
+         `(rst-level-6 ((t (:inherit rst-level-1))))
+         )))))
 #+end_src
 
 * Font
@@ -2089,6 +2101,11 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :bind (:map dired-mode-map (")" . dired-git-info-mode))
   :commands (dired-git-info-mode))
 
+;; more detailed colors
+(use-package diredfl
+  :ensure t
+  :hook (dired-mode . diredfl-mode))
+
 (defun my/dired-find-file-ace ()
   (interactive)
   (let ((find-file-run-dired t)
@@ -2147,6 +2164,28 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (set (make-local-variable 'dired-subdir-alist)
          (list (cons default-directory (point-min-marker)))))
   (goto-line 2))
+#+end_src
+
+* regex replace
+** re-builder (useful for debugging)
+
+#+begin_src emacs-lisp
+(use-package re-builder
+  :commands (re-builder)
+  :init
+  (setq reb-re-syntax 'string))
+#+end_src
+
+** visual-regexp-steroids
+
+#+begin_src emacs-lisp
+(use-package visual-regexp-steroids
+  :ensure t
+  :bind (("M-%" . vr/replace)
+         ("M-S-%" . vr/query-replace))
+  :init
+  (setq vr/engine 'python
+        vr/match-separator-use-custom-face t))
 #+end_src
 
 * nix
@@ -3857,6 +3896,20 @@ the minibuffer."
                                (expand-file-name "papers" my/org-directory)
                                (expand-file-name "orgzly" my/org-directory))))
 
+(use-package org-src
+  :after org
+  :init
+  (setq org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-window-setup 'other-window
+        org-src-preserve-indentation t))
+
+(use-package ox
+  :after org
+  :init
+  (setq org-export-with-toc nil
+        org-export-with-section-numbers 1))
+
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c b" . org-iswitchb)
@@ -3869,10 +3922,8 @@ the minibuffer."
         org-confirm-babel-evaluate nil
         org-clock-into-drawer nil
         org-keep-stored-link-after-insertion t
-        org-src-fontify-natively t
-        org-src-tab-acts-natively t
+        org-edit-src-content-indentation 0
         org-src-window-setup 'other-window
-        org-src-preserve-indentation t
         org-adapt-indentation nil
         org-ellipsis "…"
         org-tags-column -80
@@ -3882,10 +3933,6 @@ the minibuffer."
         org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
         org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold)))
         org-link-frame-setup '((file . find-file)))
-
-  ;; export
-  (setq org-export-with-toc nil
-        org-export-with-section-numbers 1)
 
   ;; templates
   (setq org-structure-template-alist
