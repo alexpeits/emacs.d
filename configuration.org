@@ -1310,7 +1310,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(rst-definition ((t (:inherit font-lock-function-name-face))))
          `(rst-directive ((t (:inherit font-lock-function-name-face))))
          `(rst-external ((t (:inherit font-lock-type-face))))
-         `(rst-literal ((t (:inherit font-lock-doc-face))))
+         `(rst-literal ((t (:foreground ,fg-special-mild))))
          `(rst-reference ((t (:inherit font-lock-variable-name-face))))
          `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
          `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
