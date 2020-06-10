@@ -1277,7 +1277,7 @@ CWD is not in a git repo (or the git command is not found)."
              (cyan-alt "#abe0ff")
              (haskell-constructor
               (if my/modus-vivendi-theme-haskell-distinct-constructor
-                  `(:foreground ,cyan-alt)
+                  `(:foreground ,cyan-refine-fg)
                 `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
