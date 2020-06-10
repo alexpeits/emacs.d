@@ -1270,16 +1270,21 @@ CWD is not in a git repo (or the git command is not found)."
          `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
          `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
          `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
-         `(org-block ((t (:foreground "#dadada" :background "#112024"))))
-         `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347"))))
-         `(org-block-end-line ((t (:inherit org-block-begin-line))))
-         `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
          `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
          `(flycheck-fringe-warning ((t (:foreground "orange1"))))
          `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
          `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
          `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
          `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+
+         `(org-block ((t (:foreground "#dadada" :background "#112024"))))
+         `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347"))))
+         `(org-block-end-line ((t (:inherit org-block-begin-line))))
+         `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
+
+         `(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
+         `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
+
          `(rst-block ((t (:inherit font-lock-doc-face))))
          `(rst-definition ((t (:inherit font-lock-function-name-face))))
          `(rst-directive ((t (:inherit font-lock-function-name-face))))
@@ -1294,8 +1299,6 @@ CWD is not in a git repo (or the git command is not found)."
          `(rst-level-4 ((t (:inherit rst-level-1))))
          `(rst-level-5 ((t (:inherit rst-level-1))))
          `(rst-level-6 ((t (:inherit rst-level-1))))
-         `(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
-         `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
          )))
     (when my/modus-vivendi-theme-haskell-alt-colors
       (custom-theme-set-faces
@@ -1318,11 +1321,21 @@ CWD is not in a git repo (or the git command is not found)."
         modus-operandi-theme-scale-2 1.0
         modus-operandi-theme-scale-1 1.0)
 
+  (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
+
   (defun my/modus-operandi-theme ()
     (load-theme 'modus-operandi t)
     (modus-operandi-theme-with-color-variables
       (let ((cyan-more-subtle-bg (color-lighten-name cyan-subtle-bg 5))
-            (cyan-more-intense (color-darken-name cyan-intense 5)))
+            (cyan-more-intense (color-darken-name cyan-intense 5))
+            (haskell-constructor
+             (if my/modus-operandi-theme-haskell-distinct-constructor
+                 'font-lock-variable-name-face
+               'haskell-type-face))
+            (haskell-operator
+             (if my/modus-operandi-theme-haskell-distinct-constructor
+                 'font-lock-constant-face
+               'font-lock-variable-name-face)))
         (custom-theme-set-faces
          'modus-operandi
          `(region ((t (:background ,bg-special-mild))))
@@ -1332,15 +1345,21 @@ CWD is not in a git repo (or the git command is not found)."
          `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
          `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
          `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
-         `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
          `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
          `(flycheck-fringe-warning ((t (:foreground "orange1"))))
          `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
          `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
          `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
          `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+
+         `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
+
          `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
+         `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
+         `(haskell-operator-face ((t (:inherit ,haskell-operator))))
+
          `(markdown-pre-face ((t (:inherit font-lock-variable-name-face))))
+
          `(rst-block ((t (:inherit font-lock-doc-face))))
          `(rst-definition ((t (:inherit font-lock-function-name-face))))
          `(rst-directive ((t (:inherit font-lock-builtin-face))))
