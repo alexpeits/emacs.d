@@ -1254,11 +1254,12 @@ CWD is not in a git repo (or the git command is not found)."
   (defun my/modus-vivendi-theme ()
     (load-theme 'modus-vivendi t)
     (modus-vivendi-theme-with-color-variables
-      (let ((hl-line (color-darken-name bg-active 2))
-            (haskell-constructor
-             (if my/modus-vivendi-theme-haskell-distinct-constructor
-                 'font-lock-doc-face
-               'haskell-type-face)))
+      (let* ((hl-line (color-darken-name bg-active 2))
+             (cyan-alt "#abe0ff")
+             (haskell-constructor
+              (if my/modus-vivendi-theme-haskell-distinct-constructor
+                  `(:foreground ,cyan-alt)
+                `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
          `(default ((t (:background "#0a0a0a" :foreground "#eaeaea"))))
@@ -1283,7 +1284,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
 
          `(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
-         `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
+         `(haskell-constructor-face ((t ,haskell-constructor)))
 
          `(rst-block ((t (:inherit font-lock-doc-face))))
          `(rst-definition ((t (:inherit font-lock-function-name-face))))
