@@ -1274,10 +1274,10 @@ CWD is not in a git repo (or the git command is not found)."
     (load-theme 'modus-vivendi t)
     (modus-vivendi-theme-with-color-variables
       (let* ((hl-line (color-darken-name bg-active 2))
-             (cyan-alt "#abe0ff")
+             (cyan-alt "#9de1ed")
              (haskell-constructor
               (if my/modus-vivendi-theme-haskell-distinct-constructor
-                  `(:foreground ,cyan-refine-fg)
+                  `(:foreground ,cyan-alt)
                 `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
