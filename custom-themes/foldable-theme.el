@@ -58,8 +58,8 @@
    '(mode-line          ((t (:foreground "black" :background "grey75" :box (:line-width -1 :style released-button)))))
    '(mode-line-inactive ((t (:foreground "grey48" :background "grey90" :box (:line-width -1 :color "grey75")))))
 
-   `(org-block            ((t (:background ,h2))))
-   `(org-block-begin-line ((t (:background ,h4))))
+   `(org-block            ((t (:background ,h2 :extend t))))
+   `(org-block-begin-line ((t (:background ,h4 :extend t))))
    '(org-block-end-line   ((t (:inherit org-block-begin-line))))
    '(org-hide             ((t (:inherit fill-column-indicator))))
    '(org-indent           ((t (:inherit default :foreground "white"))))

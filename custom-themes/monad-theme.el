@@ -262,8 +262,8 @@
  '(rainbow-delimiters-unmatched-face  ((t (:inherit font-lock-warning-face))))
  '(rainbow-delimiters-mismatched-face ((t (:inherit font-lock-warning-face))))
 
- '(org-block            ((t (:foreground "#bbccc5" :background "#1c2120"))))
- '(org-block-begin-line ((t (:foreground "#768e84" :background "#232b28" :slant italic))))
+ '(org-block            ((t (:foreground "#bbccc5" :background "#1c2120" :extend t))))
+ '(org-block-begin-line ((t (:foreground "#768e84" :background "#232b28" :slant italic :extend t))))
  '(org-block-end-line   ((t (:inherit org-block-begin-line))))
  '(org-hide             ((t (:inherit fill-column-indicator))))
  '(org-indent           ((t (:inherit default :foreground "#181818"))))

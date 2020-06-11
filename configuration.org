@@ -47,7 +47,9 @@
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/")
-             '("MELPA Stable" . "https://stable.melpa.org/packages/"))
+             ;; '("MELPA Stable" . "https://stable.melpa.org/packages/")
+             )
+
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
@@ -56,9 +58,10 @@
 (when (= emacs-major-version 26)
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
 
-;; activate installed packages
-(package-initialize)
-;; (setq package-enable-at-startup nil)
+(unless (bound-and-true-p package--initialized)
+  (setq package-enable-at-startup nil)
+  (package-initialize))
+
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -434,7 +437,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
                   (setq evil-symbol-word-search subword-mode))))
 
 (use-package outline
-  :ensure t
   :defer t
   :bind (:map outline-minor-mode-map
               ("<tab>" . outline-toggle-children))
@@ -1205,7 +1207,6 @@ CWD is not in a git repo (or the git command is not found)."
 
 #+BEGIN_SRC emacs-lisp
 (use-package whitespace
-  :ensure t
   :diminish whitespace-mode
   :diminish global-whitespace-mode
   :hook ((prog-mode . whitespace-mode))
@@ -1297,8 +1298,8 @@ CWD is not in a git repo (or the git command is not found)."
          `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
          `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
 
-         `(org-block ((t (:foreground "#dadada" :background "#112024"))))
-         `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347"))))
+         `(org-block ((t (:foreground "#dadada" :background "#112024" :extend t))))
+         `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
@@ -2763,7 +2764,10 @@ the current file."
   (setq coq-one-command-per-line nil
         coq-compile-before-require t)
   :config
-  (add-hook 'my/after-set-theme-hook 'coq-highlight-selected-hyps)
+  (my/add-hooks
+   '(my/after-set-theme-hook)
+   (when (fboundp 'coq-highlight-selected-hyps)
+     (coq-highlight-selected-hyps)))
   (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
   (my/add-hooks
    '(coq-mode-hook)
