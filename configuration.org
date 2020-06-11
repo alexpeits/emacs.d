@@ -1285,6 +1285,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(default ((t (:background "#0a0a0a" :foreground "#eaeaea"))))
          `(hl-line ((t (:background ,hl-line))))
          `(region ((t (:background ,cyan-subtle-bg))))
+         `(fringe ((t (:background ,bg-inactive :foreground ,fg-inactive))))
          `(secondary-selection ((t (:inherit modus-theme-refine-green))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
@@ -2051,7 +2052,21 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :ensure t
   :bind ("M-+" . zoom)
   :init
-  (setq zoom-size '(190 . 92)))
+  (defun my/zoom-size ()
+    (let* ((total-w (frame-width))
+           (total-h (frame-height))
+           (focus-w (max 100 (/ total-w 4)))
+           (focus-h (max 65 (/ total-h 3)))
+           (rest-w 20)
+           (rest-h 10)
+           (remain-w (abs (- total-w rest-w)))
+           (remain-h (abs (- total-h rest-h)))
+           (final-w (min focus-w remain-w))
+           (final-h (min focus-h remain-h))
+           )
+      (cons final-w final-h)
+      ))
+  (setq zoom-size 'my/zoom-size))
 #+end_src
 
 * eww
