@@ -3255,6 +3255,7 @@ And while inside a search:
 | M-s h r | highlight current search (=hi-lock=)          |
 | M-%     | run =query-replace= on search term            |
 | C-M-%   | run =query-replace-regexp= on search term     |
+| C-l     | =recenter=                                    |
 
 And some custom additions (mostly stolen from Protesilaos):
 
@@ -3273,6 +3274,7 @@ Other useful stuff:
 (use-package isearch
   :diminish
   :bind (:map isearch-mode-map
+              ("C-l" . recenter)
               ("C-SPC" . my/isearch-mark-and-exit)
               ("<C-return>" . my/isearch-other-end)
               ("<backspace>" . my/isearch-abort-dwim))
