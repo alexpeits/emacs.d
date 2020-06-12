@@ -3236,17 +3236,33 @@ the current file."
 
 #+BEGIN_SRC emacs-lisp
 (use-package isearch
+  :diminish
+  :bind (:map isearch-mode-map
+              ("C-SPC" . my/isearch-mark-and-exit)
+              ("<C-return>" . my/isearch-other-end))
   :init
   (setq search-whitespace-regexp ".*?"  ;; spaces match anything
         isearch-lax-whitespace t  ;; the default
         isearch-regex-lax-whitespace nil
+        isearch-yank-on-move 'shift
+        isearch-allow-scroll 'unlimited
         isearch-lazy-count t  ;; show match count and current match index
-        lazy-count-prefix-format "(%s/%s) "
-        lazy-count-suffix-format nil)
+        lazy-count-prefix-format nil
+        lazy-count-suffix-format " (%s/%s)")
   :config
-  (define-key isearch-mode-map
-    (kbd "M-s M-s")
-    (lambda () (interactive) (isearch-exit) (swiper isearch-string))))
+  ;; prot
+  (defun my/isearch-mark-and-exit ()
+    (interactive)
+    (push-mark isearch-other-end t 'activate)
+    (setq deactivate-mark nil)
+    (isearch-done))
+
+  (defun my/isearch-other-end ()
+    (interactive)
+    (isearch-done)
+    (when isearch-other-end
+      (goto-char isearch-other-end))))
+
 #+END_SRC
 
 ** rg
@@ -3605,14 +3621,15 @@ buffer, close it."
 
 (use-package swiper
   :ensure t
-  ;; :bind ("C-s" . my/swiper)
-  :bind ("C-s" . my/swiper-isearch)
+  ;; :bind (("C-s" . my/swiper-isearch))
+  :bind (("C-c f" . my/swiper-isearch))
   :commands (swiper swiper-isearch swiper-all swiper-multi)
   :init
   (defalias 'swi 'my/swiper-isearch)
   :config
   ;; use regular isearch when in minibuffer
-  (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward))
+  ;; (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward)
+  )
 
 ;; better fuzzy matching
 (use-package flx
