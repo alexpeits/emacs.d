@@ -3677,9 +3677,11 @@ buffer, close it."
         (swiper))
     (swiper)))
 
-(defun my/swiper-fuzzy ()
-  (interactive)
-  (my/swiper :fuzzy))
+(defun my/swiper-fuzzy-or-all (all)
+  (interactive "P")
+  (if all
+      (swiper-all)
+    (my/swiper :fuzzy)))
 
 (defun my/swiper-isearch (fuzzy)
   (interactive "P")
@@ -3694,7 +3696,7 @@ buffer, close it."
 
 (use-package swiper
   :ensure t
-  :bind (("C-c f" . my/swiper-fuzzy))
+  :bind (("C-c f" . my/swiper-fuzzy-or-all))
   :commands (swiper swiper-isearch swiper-all swiper-multi)
   :config
   ;; use regular isearch when in minibuffer
