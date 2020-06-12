@@ -3261,8 +3261,24 @@ the current file."
     (interactive)
     (isearch-done)
     (when isearch-other-end
-      (goto-char isearch-other-end))))
+      (goto-char isearch-other-end)))
 
+  ;; https://www.reddit.com/r/emacs/comments/b7yjje/isearch_region_search/
+  (defun my/isearch-region (&optional not-regexp no-recursive-edit)
+    "If a region is active, make this the isearch default search pattern."
+    (interactive "P\np")
+    (when (use-region-p)
+      (let ((search (buffer-substring-no-properties
+                     (region-beginning)
+                     (region-end))))
+        (deactivate-mark)
+        (isearch-yank-string search))))
+
+  (advice-add 'isearch-forward :after 'my/isearch-region)
+  (advice-add 'isearch-forward-regexp :after 'my/isearch-region)
+  (advice-add 'isearch-backward :after 'my/isearch-region)
+  (advice-add 'isearch-backward-regexp :after 'my/isearch-region)
+  )
 #+END_SRC
 
 ** rg
