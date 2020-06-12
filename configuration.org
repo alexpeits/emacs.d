@@ -3244,23 +3244,38 @@ Some useful isearch keys (before starting the search):
 
 And while inside a search:
 
-| key     | description                               |
-|---------+-------------------------------------------|
-| C-w     | add next word to search                   |
-| C-e     | add until EOL to search                   |
-| M-s o   | run =occur=                               |
-| M-s r   | toggle regexp search                      |
-| M-s .   | mark whole thing for search               |
-| M-s h r | highlight current search (=hi-lock=)      |
-| M-%     | run =query-replace= on search term        |
-| C-M-%   | run =query-replace-regexp= on search term |
+| key     | description                                   |
+|---------+-----------------------------------------------|
+| C-w     | add next word to search                       |
+| C-e     | add until EOL to search                       |
+| M-e     | edit search in minibuffer (commit with =RET=) |
+| M-s o   | run =occur=                                   |
+| M-s r   | toggle regexp search                          |
+| M-s .   | mark whole thing for search                   |
+| M-s h r | highlight current search (=hi-lock=)          |
+| M-%     | run =query-replace= on search term            |
+| C-M-%   | run =query-replace-regexp= on search term     |
+
+And some custom additions (mostly stolen from Protesilaos):
+
+| where     | key         | description                                   |
+|-----------+-------------+-----------------------------------------------|
+| in search | C-SPC       | mark search and exit                          |
+| in search | C-RET       | exit search, but move point to the other side |
+| in search | <backspace> | delete failing part, one char or exit         |
+
+Other useful stuff:
+
+- When exiting a search (with =RET=), =C-x C-x= will mark from where the search started to where
+  it finished.
 
 #+BEGIN_SRC emacs-lisp
 (use-package isearch
   :diminish
   :bind (:map isearch-mode-map
               ("C-SPC" . my/isearch-mark-and-exit)
-              ("<C-return>" . my/isearch-other-end))
+              ("<C-return>" . my/isearch-other-end)
+              ("<backspace>" . my/isearch-abort-dwim))
   :init
   (setq search-whitespace-regexp ".*?"  ;; spaces match anything
         isearch-lax-whitespace t  ;; the default
@@ -3283,6 +3298,23 @@ And while inside a search:
     (isearch-done)
     (when isearch-other-end
       (goto-char isearch-other-end)))
+
+  (defun my/isearch-abort-dwim ()
+    "Delete failed `isearch' input, single char, or cancel search.
+
+This is a modified variant of `isearch-abort' that allows us to
+perform the following, based on the specifics of the case: (i)
+delete the entirety of a non-matching part, when present; (ii)
+delete a single character, when possible; (iii) exit current
+search if no character is present and go back to point where the
+search started."
+    (interactive)
+    (if (eq (length isearch-string) 0)
+        (isearch-cancel)
+      (isearch-del-char)
+      (while (or (not isearch-success) isearch-error)
+        (isearch-pop-state)))
+    (isearch-update))
 
   ;; https://www.reddit.com/r/emacs/comments/b7yjje/isearch_region_search/
   (defun my/isearch-region (&optional not-regexp no-recursive-edit)
@@ -3645,6 +3677,10 @@ buffer, close it."
         (swiper))
     (swiper)))
 
+(defun my/swiper-fuzzy ()
+  (interactive)
+  (my/swiper :fuzzy))
+
 (defun my/swiper-isearch (fuzzy)
   (interactive "P")
   (if fuzzy
@@ -3658,11 +3694,8 @@ buffer, close it."
 
 (use-package swiper
   :ensure t
-  ;; :bind (("C-s" . my/swiper-isearch))
-  :bind (("C-c f" . my/swiper-isearch))
+  :bind (("C-c f" . my/swiper-fuzzy))
   :commands (swiper swiper-isearch swiper-all swiper-multi)
-  :init
-  (defalias 'swi 'my/swiper-isearch)
   :config
   ;; use regular isearch when in minibuffer
   ;; (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward)
