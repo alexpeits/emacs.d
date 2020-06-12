@@ -3234,6 +3234,27 @@ the current file."
 * Searching & jumping
 ** isearch
 
+=C-h k C-s= to get a help menu for isearch
+
+Some useful isearch keys (before starting the search):
+
+| key   | description                |
+|-------+----------------------------|
+| M-s . | isearch for thing at point |
+
+And while inside a search:
+
+| key     | description                               |
+|---------+-------------------------------------------|
+| C-w     | add next word to search                   |
+| C-e     | add until EOL to search                   |
+| M-s o   | run =occur=                               |
+| M-s r   | toggle regexp search                      |
+| M-s .   | mark whole thing for search               |
+| M-s h r | highlight current search (=hi-lock=)      |
+| M-%     | run =query-replace= on search term        |
+| C-M-%   | run =query-replace-regexp= on search term |
+
 #+BEGIN_SRC emacs-lisp
 (use-package isearch
   :diminish
