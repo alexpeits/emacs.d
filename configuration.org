@@ -1338,20 +1338,22 @@ CWD is not in a git repo (or the git command is not found)."
          `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
          `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
-         `(rst-block ((t (:inherit font-lock-doc-face))))
-         `(rst-definition ((t (:inherit font-lock-function-name-face))))
-         `(rst-directive ((t (:inherit font-lock-function-name-face))))
-         `(rst-external ((t (:inherit font-lock-type-face))))
-         `(rst-literal ((t (:foreground ,fg-special-mild))))
-         `(rst-reference ((t (:inherit font-lock-variable-name-face))))
-         `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
-         `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
-         `(rst-level-1 ((t (:inherit rst-adornment))))
+         `(markdown-header-face ((t (:foreground ,cyan :weight bold))))
+
+         `(rst-adornment ((t (:inherit rst-level-1))))
+         `(rst-block ((t (:foreground ,cyan))))
+         `(rst-definition ((t (:foreground ,magenta))))
+         `(rst-directive ((t (:foreground ,magenta))))
+         `(rst-external ((t (:foreground ,cyan))))
+         `(rst-level-1 ((t (:foreground ,cyan-alt-other :weight bold))))
          `(rst-level-2 ((t (:inherit rst-level-1))))
          `(rst-level-3 ((t (:inherit rst-level-1))))
          `(rst-level-4 ((t (:inherit rst-level-1))))
          `(rst-level-5 ((t (:inherit rst-level-1))))
          `(rst-level-6 ((t (:inherit rst-level-1))))
+         `(rst-literal ((t (:foreground ,fg-special-mild))))
+         `(rst-reference ((t (:inherit link))))
+         `(rst-transition ((t (:foreground ,red))))
          )))))
 
 (use-package modus-operandi-theme
@@ -1408,22 +1410,23 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(coq-cheat-face ((t (:inherit hi-red-b))))
 
-         `(markdown-pre-face ((t (:inherit font-lock-variable-name-face))))
+         `(markdown-pre-face ((t (:foreground ,cyan))))
+         `(markdown-header-face ((t (:foreground ,cyan :weight bold))))
 
-         `(rst-block ((t (:inherit font-lock-doc-face))))
-         `(rst-definition ((t (:inherit font-lock-function-name-face))))
-         `(rst-directive ((t (:inherit font-lock-builtin-face))))
-         `(rst-external ((t (:inherit font-lock-type-face))))
-         `(rst-literal ((t (:inherit font-lock-variable-name-face))))
-         `(rst-reference ((t (:inherit font-lock-keyword-face))))
-         `(rst-transition ((t (:inherit font-lock-preprocessor-face))))
-         `(rst-adornment ((t (:inherit font-lock-constant-face :weight bold))))
-         `(rst-level-1 ((t (:inherit rst-adornment))))
+         `(rst-adornment ((t (:inherit rst-level-1))))
+         `(rst-block ((t (:foreground ,green))))
+         `(rst-definition ((t (:foreground ,magenta))))
+         `(rst-directive ((t (:foreground ,magenta))))
+         `(rst-external ((t (:foreground ,cyan))))
+         `(rst-level-1 ((t (:foreground ,blue-alt-other :weight bold))))
          `(rst-level-2 ((t (:inherit rst-level-1))))
          `(rst-level-3 ((t (:inherit rst-level-1))))
          `(rst-level-4 ((t (:inherit rst-level-1))))
          `(rst-level-5 ((t (:inherit rst-level-1))))
          `(rst-level-6 ((t (:inherit rst-level-1))))
+         `(rst-literal ((t (:foreground ,cyan))))
+         `(rst-reference ((t (:inherit link))))
+         `(rst-transition ((t (:foreground ,red))))
          )))))
 #+end_src
 
@@ -4250,8 +4253,7 @@ the minibuffer."
               ("C-c n !" . my/org-roam-refresh)
               :map org-mode-map
               ("C-c n I" . org-roam-insert)
-              ("C-c n i" . my/org-roam-insert-no-capture)
-              ("C-c n h" . my/org-roam-insert-link-to-heading))
+              ("C-c n i" . my/org-roam-insert-no-capture))
   :init
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
@@ -4279,6 +4281,10 @@ the minibuffer."
      (add-hook 'before-save-hook #'my/org-roam-add-roam-tags-property nil t)))
   (with-eval-after-load 'evil
     (evil-define-key 'visual org-mode-map (kbd "[[") 'my/org-roam-insert-no-capture))
+  ;; don't show tags in `org-roam-find-file'
+  (advice-add 'org-roam--get-title-path-completions
+              :filter-return
+              #'my/org-roam-process-title-path-completions)
   (add-to-list 'org-tempo-keywords-alist '("ra" . "ROAM_ALIAS"))
   (add-to-list 'org-tempo-keywords-alist '("rt" . "ROAM_TAGS")))
 
@@ -4327,8 +4333,15 @@ the minibuffer."
 (defun my/org-roam-rg ()
   (interactive)
   ;; TODO: find a better way
-  (let ((ivy--display-transformers-list '(counsel-rg my/org-roam-rg-transformer)))
+  (let ((ivy--display-transformers-alist '((counsel-rg . my/org-roam-rg-transformer))))
     (counsel-rg "" org-roam-directory "-g '*.org'")))
+
+(defun my/org-roam-process-title-path-completions (completions)
+  (mapcar
+   '(lambda (x)
+      (let ((str (car x)))
+        (setcar x (replace-regexp-in-string "\\((.*)\\) " "" str))))
+   (copy-alist completions)))
 
 (defun my/org-roam-filename-from-title (title)
   (let* ((tmpl (concat org-roam-capture--file-name-default "-${slug}"))
@@ -4396,45 +4409,6 @@ the minibuffer."
           (insert (format "#+ROAM_TAGS:%s" tags-str))
         (kill-line)))))
 #+END_SRC
-
-#+begin_src emacs-lisp
-;; Insert link to heading
-(defun my/org-mode-select-heading (&optional filename)
-  (if (null filename)
-      (my/-org-mode-select-heading)
-    (with-temp-buffer
-      (insert-file-contents filename)
-      (org-mode)
-      (my/-org-mode-select-heading))))
-
-(defun my/-org-mode-select-heading ()
-  (let* ((settings (cdr (assq 'org-mode counsel-outline-settings)))
-         (res (substring-no-properties
-               (ivy-read "Heading: " (counsel-outline-candidates settings)
-                         :history (or (plist-get settings :history)
-                                      'counsel-outline-history)
-                         :preselect (max (1- counsel-outline--preselect) 0)
-                         :caller (or (plist-get settings :caller)
-                                     'counsel-outline)))))
-    (car (last (split-string res "/")))))
-
-(defun my/org-link-make-string-with-heading (params)
-  (let* ((link (car params))
-         (description (cadr params))
-         (fname (string-trim-left link "file:"))
-         (heading (my/org-mode-select-heading fname))
-         (newlink (format "%s::%s" link heading))
-         (newdescription (if (null description)
-                             nil
-                           (format "%s::%s" description heading))))
-    (list newlink newdescription)))
-
-(defun my/org-roam-insert-link-to-heading ()
-  (interactive)
-  (advice-add 'org-link-make-string :filter-args 'my/org-link-make-string-with-heading)
-  (funcall-interactively 'org-roam-insert)
-  (advice-remove 'org-link-make-string 'my/org-link-make-string-with-heading))
-#+end_src
 
 * org-download
 
