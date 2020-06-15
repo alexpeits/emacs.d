@@ -936,7 +936,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
                     'modus-theme-intense-red
                   'hi-red-b)))
       (pulse-momentary-highlight-one-line (point) face))))
-
 #+end_src
 
 * term, eshell and comint-mode
@@ -2879,6 +2878,9 @@ the current file."
          ("\\.page\\'" . gfm-mode))
   :init
   (setq markdown-asymmetric-header t
+        markdown-enable-wiki-links t
+        markdown-wiki-link-fontify-missing t
+        markdown-enable-math t
         markdown-gfm-use-electric-backquote nil
         markdown-css-paths
         (list (expand-file-name (expand-file-name "static/github.css" user-emacs-directory))))
