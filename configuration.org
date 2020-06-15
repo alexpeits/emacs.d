@@ -1293,10 +1293,10 @@ CWD is not in a git repo (or the git command is not found)."
          `(secondary-selection ((t (:inherit modus-theme-refine-green))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
 
-         `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box bg-active "#404040")
+         `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box bg-active (color-lighten-name bg-active 12))
                                         ,@(modus-vivendi-theme-modeline-props
                                            bg-dim fg-inactive
-                                           bg-inactive fg-inactive)))))
+                                           bg-inactive (color-darken-name fg-inactive 12))))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
@@ -1402,10 +1402,10 @@ CWD is not in a git repo (or the git command is not found)."
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
 
-         `(mode-line-inactive ((t (:box ,(modus-operandi-theme-modeline-box bg-active "#cbcbcb")
+         `(mode-line-inactive ((t (:box ,(modus-operandi-theme-modeline-box bg-active (color-darken-name bg-active 10))
                                         ,@(modus-operandi-theme-modeline-props
                                            bg-dim fg-inactive
-                                           bg-inactive fg-inactive)))))
+                                           bg-inactive (color-lighten-name fg-inactive 20))))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
@@ -3101,6 +3101,7 @@ the current file."
               ("o" . my/elfeed-search-other-window)
               ("q" . my/elfeed-kill-buffer-close-window-dwim)
               ("e" . my/elfeed-show-eww)
+              ("x" . my/elfeed-org-capture)
               ("h" . backward-char)
               ("j" . next-line)
               ("k" . previous-line)
@@ -3124,6 +3125,7 @@ the current file."
         elfeed-search-title-max-width 100
         elfeed-search-title-min-width 30
         elfeed-search-trailing-width 30)
+  (setq my/elfeed-org-capture-default-filename (expand-file-name "saved-elfeed-posts.org" my/org-directory))
   :config
   (defun my/elfeed-hide-images (tog)
     (interactive "P")
@@ -3170,6 +3172,21 @@ the current file."
              (if (one-window-p)
                  (elfeed-search-quit-window)
                (delete-other-windows win))))))
+
+  (defun my/elfeed-org-capture-get-tags (entry)
+    (let* ((all-tags (elfeed-entry-tags entry))
+           (tags (seq-filter '(lambda (tag) (not (eq tag 'unread))) all-tags))
+           (tags-str (mapcar '(lambda (tag) (format "%s" tag)) tags)))
+      (if (null tags)
+          ""
+        (concat ":" (string-join tags-str ":") ":"))))
+
+  (defvar my/elfeed-org-capture-entry nil)
+  (defun my/elfeed-org-capture (immediate)
+    (interactive "P")
+    (let ((my/elfeed-org-capture-entry (elfeed-search-selected :ignore-region))
+          (template (if immediate "E" "e")))
+      (org-capture nil template)))
 
   (add-hook 'elfeed-show-mode-hook #'(lambda () (setq-local shr-width 100)))
 
@@ -4079,6 +4096,23 @@ the minibuffer."
            entry
            (file my/org-roam-find-filename)
            "* %^{Title|%:description} %U\nSource: %a \n\n%i")
+          ("e"
+           "Elfeed"
+           entry
+           (file my/org-roam-find-filename)
+           "* %U %(car (elfeed-entry-id my/elfeed-org-capture-entry)) - \
+%(elfeed-entry-title my/elfeed-org-capture-entry) \
+%(my/elfeed-org-capture-get-tags my/elfeed-org-capture-entry)
+%(elfeed-entry-link my/elfeed-org-capture-entry)")
+          ("E"
+           "Elfeed (immediate)"
+           entry
+           (file my/elfeed-org-capture-default-filename)
+           "* %U %(car (elfeed-entry-id my/elfeed-org-capture-entry)) - \
+%(elfeed-entry-title my/elfeed-org-capture-entry) \
+%(my/elfeed-org-capture-get-tags my/elfeed-org-capture-entry)
+%(elfeed-entry-link my/elfeed-org-capture-entry)"
+           :immediate-finish t)
           ("i"
            "Immediate note"
            entry
