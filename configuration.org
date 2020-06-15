@@ -1310,7 +1310,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
          `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
 
-         `(org-block ((t (:foreground "#dadada" :background "#112024" :extend t))))
+         `(org-block ((t (:foreground "#dadada" :background "#0d1c20" :extend t))))
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
