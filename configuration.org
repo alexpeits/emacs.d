@@ -1270,6 +1270,7 @@ CWD is not in a git repo (or the git command is not found)."
 
   (defvar my/modus-vivendi-theme-alt-colors nil)
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
+  (defvar my/modus-vivendi-theme-markdown-scale-headers nil)
 
   (defun my/modus-vivendi-theme ()
     (load-theme 'modus-vivendi t)
@@ -1307,19 +1308,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
-         `(font-lock-type-face ((t (:foreground ,type))))
-         ;; `(font-lock-type-face ((t (:foreground ,cyan-alt))))
-         ;; `(font-lock-type-face ((t (:foreground ,cyan-nuanced))))
-         `(font-lock-string-face ((t (:foreground ,blue))))
-         `(font-lock-preprocessor-face ((t (:foreground ,red))))
 
-         ;; defaults
-         ;; `(font-lock-variable-name-face ((t (:foreground ,cyan))))
-         ;; `(font-lock-function-name-face ((t (:foreground ,magenta))))
-         ;; `(font-lock-keyword-face ((t (:foreground ,magenta-alt-other))))
-         ;; `(font-lock-constant-face ((t (:foreground ,blue-alt-other))))
-         ;; `(font-lock-builtin-face ((t (:foreground ,magenta-alt))))
-         ;; `(font-lock-doc-face ((t (:foreground ,fg-special-cold))))
+         `(font-lock-type-face ((t (:foreground ,type))))
+         `(font-lock-preprocessor-face ((t (:foreground ,red-alt))))
 
          `(highlight-numbers-number ((t (:inherit font-lock-string-face))))
 
@@ -1338,14 +1329,25 @@ CWD is not in a git repo (or the git command is not found)."
          `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
          `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
-         `(markdown-header-face ((t (:foreground ,cyan :weight bold))))
+         `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
+         `(markdown-header-face ((t (:weight bold))))
+         `(markdown-header-face-1
+           ((t (:inherit markdown-header-face
+                         :height ,(if my/modus-vivendi-theme-markdown-scale-headers 1.4 1.0)))))
+         `(markdown-header-face-2
+           ((t (:inherit markdown-header-face
+                         :height ,(if my/modus-vivendi-theme-markdown-scale-headers 1.3 1.0)))))
+         `(markdown-header-face-3
+           ((t (:inherit markdown-header-face
+                         :height ,(if my/modus-vivendi-theme-markdown-scale-headers 1.2 1.0)))))
+         `(markdown-list-face ((t (:foreground ,cyan))))
 
-         `(rst-adornment ((t (:inherit rst-level-1))))
+         `(rst-adornment ((t (:foreground ,cyan :weight bold))))
          `(rst-block ((t (:foreground ,cyan))))
          `(rst-definition ((t (:foreground ,magenta))))
          `(rst-directive ((t (:foreground ,magenta))))
          `(rst-external ((t (:foreground ,cyan))))
-         `(rst-level-1 ((t (:foreground ,cyan-alt-other :weight bold))))
+         `(rst-level-1 ((t (:weight bold))))
          `(rst-level-2 ((t (:inherit rst-level-1))))
          `(rst-level-3 ((t (:inherit rst-level-1))))
          `(rst-level-4 ((t (:inherit rst-level-1))))
@@ -1371,12 +1373,14 @@ CWD is not in a git repo (or the git command is not found)."
         modus-operandi-theme-scale-1 1.0)
 
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
+  (defvar my/modus-operandi-theme-markdown-scale-headers nil)
 
   (defun my/modus-operandi-theme ()
     (load-theme 'modus-operandi t)
     (modus-operandi-theme-with-color-variables
       (let ((cyan-more-subtle-bg (color-lighten-name cyan-subtle-bg 5))
             (cyan-more-intense (color-darken-name cyan-intense 5))
+            (cyan-light (color-darken-name cyan-intense-bg 13))
             (haskell-constructor
              (if my/modus-operandi-theme-haskell-distinct-constructor
                  'font-lock-variable-name-face
@@ -1411,14 +1415,25 @@ CWD is not in a git repo (or the git command is not found)."
          `(coq-cheat-face ((t (:inherit hi-red-b))))
 
          `(markdown-pre-face ((t (:foreground ,cyan))))
-         `(markdown-header-face ((t (:foreground ,cyan :weight bold))))
+         `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
+         `(markdown-header-face ((t (:weight bold))))
+         `(markdown-header-face-1
+           ((t (:inherit markdown-header-face
+                         :height ,(if my/modus-operandi-theme-markdown-scale-headers 1.4 1.0)))))
+         `(markdown-header-face-2
+           ((t (:inherit markdown-header-face
+                         :height ,(if my/modus-operandi-theme-markdown-scale-headers 1.3 1.0)))))
+         `(markdown-header-face-3
+           ((t (:inherit markdown-header-face
+                         :height ,(if my/modus-operandi-theme-markdown-scale-headers 1.2 1.0)))))
+         `(markdown-list-face ((t (:foreground ,cyan-light))))
 
-         `(rst-adornment ((t (:inherit rst-level-1))))
+         `(rst-adornment ((t (:foreground ,cyan-light :weight bold))))
          `(rst-block ((t (:foreground ,green))))
          `(rst-definition ((t (:foreground ,magenta))))
          `(rst-directive ((t (:foreground ,magenta))))
          `(rst-external ((t (:foreground ,cyan))))
-         `(rst-level-1 ((t (:foreground ,blue-alt-other :weight bold))))
+         `(rst-level-1 ((t (:weight bold))))
          `(rst-level-2 ((t (:inherit rst-level-1))))
          `(rst-level-3 ((t (:inherit rst-level-1))))
          `(rst-level-4 ((t (:inherit rst-level-1))))
@@ -4332,12 +4347,15 @@ the minibuffer."
 
 (defun my/org-roam-rg ()
   (interactive)
+  ;; this is required, otherwise the transformers alist that will be edited when
+  ;; counsel initializes will be the temporary one :/
   ;; TODO: find a better way
+  (unless (featurep 'counsel) (require 'counsel))
   (let ((ivy--display-transformers-alist '((counsel-rg . my/org-roam-rg-transformer))))
     (counsel-rg "" org-roam-directory "-g '*.org'")))
 
 (defun my/org-roam-process-title-path-completions (completions)
-  (mapcar
+  (mapc
    '(lambda (x)
       (let ((str (car x)))
         (setcar x (replace-regexp-in-string "\\((.*)\\) " "" str))))
