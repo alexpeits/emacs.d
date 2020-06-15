@@ -1405,7 +1405,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(mode-line-inactive ((t (:box ,(modus-operandi-theme-modeline-box bg-active (color-darken-name bg-active 10))
                                         ,@(modus-operandi-theme-modeline-props
                                            bg-dim fg-inactive
-                                           bg-inactive (color-lighten-name fg-inactive 20))))))
+                                           bg-inactive (color-lighten-name fg-inactive 15))))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
