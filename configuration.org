@@ -1292,10 +1292,17 @@ CWD is not in a git repo (or the git command is not found)."
          `(fringe ((t (:background ,bg-inactive :foreground ,fg-inactive))))
          `(secondary-selection ((t (:inherit modus-theme-refine-green))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
+
+         `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box bg-active "#404040")
+                                        ,@(modus-vivendi-theme-modeline-props
+                                           bg-dim fg-inactive
+                                           bg-inactive fg-inactive)))))
+
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
          `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
          `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+
          `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
          `(flycheck-fringe-warning ((t (:foreground "orange1"))))
          `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
