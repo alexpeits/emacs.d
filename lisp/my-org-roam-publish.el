@@ -119,11 +119,11 @@
          (home-link "/")
          (index-link "/theindex.html"))
     (string-join `("<div id=\"postamble\" class=\"status\">"
-                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-edit\" href=\"%s\">Edit file</a></p>" edit-link)
-                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-graph-server\" href=\"%s\" target=\"_blank\">Graph server</a></p>" graph-server-link)
-                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-graph\" href=\"%s\" target=\"_blank\">Graph</a></p>" graph-link)
-                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-home\" href=\"%s\">Back to home</a></p>" home-link)
-                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-index\" href=\"%s\">Back to index</a></p>" index-link)
+                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-edit\" href=\"%s\">Edit file (e)</a></p>" edit-link)
+                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-graph-server\" href=\"%s\" target=\"_blank\">Graph server (s)</a></p>" graph-server-link)
+                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-graph\" href=\"%s\" target=\"_blank\">Graph (g)</a></p>" graph-link)
+                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-home\" href=\"%s\">Back to home (h)</a></p>" home-link)
+                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-index\" href=\"%s\">Back to index (i)</a></p>" index-link)
                    "</div>"
                    )
                  "\n")))
