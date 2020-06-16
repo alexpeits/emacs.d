@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: yaml-metadata
+# key: meta
+# expand-env: ((yas-indent-line 'fixed))
+# --
+---
+title: $1
+tags:
+  - $2
+---
+
+$0

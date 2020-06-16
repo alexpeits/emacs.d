@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: aligned-math
+# key: amath
+# --
+$$
+\begin{align}
+&$0
+\end{align}
+$$

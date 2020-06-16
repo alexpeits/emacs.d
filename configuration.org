@@ -1314,6 +1314,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced :underline t))))
+         `(org-ref-cite-face ((t (:foreground ,green :underline t))))
 
          `(font-lock-type-face ((t (:foreground ,type))))
          `(font-lock-preprocessor-face ((t (:foreground ,red-alt))))

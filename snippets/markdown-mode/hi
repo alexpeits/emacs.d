@@ -1,5 +1,0 @@
-# name: Highlight
-# --
-{% highlight ${1:language} %}
-${2:content}
-{% endhighlight %}

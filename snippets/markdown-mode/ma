@@ -1,5 +1,0 @@
-# name: Block math
-# --
-{% math %}
-${1:math}
-{% endmath %}

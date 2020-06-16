@@ -1,3 +1,0 @@
-# name: Margin note
-# --
-{% marginnote '${1:id}' '${2:content}' %}

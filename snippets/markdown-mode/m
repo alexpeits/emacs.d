@@ -1,3 +1,0 @@
-# name: Inline math
-# --
-{% m %}${1:math}{% em %}
