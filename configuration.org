@@ -4319,7 +4319,7 @@ the minibuffer."
               ("C-c n !" . my/org-roam-refresh)
               :map org-mode-map
               ("C-c n I" . org-roam-insert)
-              ("C-c n i" . my/org-roam-insert-no-capture))
+              ("C-c n i" . org-roam-insert-immediate))
   :init
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
@@ -4346,7 +4346,7 @@ the minibuffer."
               (org-roam--org-roam-file-p (buffer-file-name)))
      (add-hook 'before-save-hook #'my/org-roam-add-roam-tags-property nil t)))
   (with-eval-after-load 'evil
-    (evil-define-key 'visual org-mode-map (kbd "[[") 'my/org-roam-insert-no-capture))
+    (evil-define-key 'visual org-mode-map (kbd "[[") 'org-roam-insert-immediate))
   ;; don't show tags in `org-roam-find-file'
   (advice-add 'org-roam--get-title-path-completions
               :filter-return
@@ -4428,14 +4428,6 @@ the minibuffer."
           (write-region key nil filename)
           (org-roam-db-build-cache :force)))
     filename))
-
-(defun my/org-roam-insert-no-capture ()
-  (interactive)
-  (let ((org-roam-capture-templates
-         (mapcar
-          #'(lambda (tmpl) (append tmpl '(:immediate-finish t)))
-          org-roam-capture-templates)))
-    (funcall-interactively 'org-roam-insert)))
 
 (defun my/org-roam-extract-tags ()
   (let ((tags nil))
