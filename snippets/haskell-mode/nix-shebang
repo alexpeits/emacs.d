@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: nix-shebang
+# key: nix
+# expand-env: ((yas-indent-line 'fixed))
+# --
+#! /usr/bin/env nix-shell
+#! nix-shell -p ghcid
+#! nix-shell -p "haskellPackages.ghcWithPackages (p: with p; [ $1 ])"
+#! nix-shell -i ${2:$$(yas-choose-value '("runhaskell" "ghcid -c 'ghci -Wall'" "ghcid -c 'ghci -Wall' -T main" "nix-haskell-script.sh"))}
