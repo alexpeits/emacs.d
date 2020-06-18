@@ -1986,6 +1986,15 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (add-to-list 'emulation-mode-map-alists 'my/mark-active-alist))
 #+END_SRC
 
+** terminal cursor
+
+#+begin_src emacs-lisp
+;; in <user-emacs-directory>/lisp
+(use-package term-cursor
+  :if is-term
+  :hook (after-init . global-term-cursor-mode))
+#+end_src
+
 * Hybrid input mode
 
 # Copied directly from spacemacs
