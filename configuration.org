@@ -1459,80 +1459,58 @@ CWD is not in a git repo (or the git command is not found)."
          )))))
 #+end_src
 
-** solarized theme
+** zenburn theme
 
 #+begin_src emacs-lisp
-(use-package solarized-theme
+(use-package zenburn-theme
   :ensure t
   :defer t
   :init
-  (setq solarized-use-variable-pitch nil
-        solarized-height-minus-1 1.0
-        solarized-height-plus-4 1.2
-        solarized-height-plus-3 1.0
-        solarized-height-plus-2 1.0
-        solarized-height-plus-1 1.0)
+  (setq zenburn-use-variable-pitch nil
+        zenburn-scale-org-headlines t
+        zenburn-height-minus-1 1.0
+        zenburn-height-plus-4 1.2
+        zenburn-height-plus-3 1.0
+        zenburn-height-plus-2 1.0
+        zenburn-height-plus-1 1.0)
 
-  (defun my/solarized-dark-theme ()
-    (unless (featurep 'solarized-palettes) (require 'solarized-palettes))
-    (load-theme 'solarized-dark t)
-    (let* ((palette solarized-dark-color-palette-alist)
-           (fg (cdr (assoc 'base0 palette)))
-           (fg-1 (color-darken-name fg 3))
-           (bg (cdr (assoc 'base03 palette)))
-           (bg+1 (color-lighten-name bg 2))
-           (bg+2 (color-lighten-name bg 5))
-           (cyan-fg "#7abebe")
-           (cyan-bg "#074866"))
+  (defun my/zenburn-theme ()
+    (load-theme 'zenburn t)
+    (zenburn-with-color-variables
       (custom-theme-set-faces
-       'solarized-dark
-       `(org-block ((t (:background ,bg+1 :extend t))))
-       `(org-block-begin-line ((t (:foreground ,fg-1 :background ,bg+2 :slant italic :extend t))))
-       `(org-block-end-line ((t (:inherit org-block-begin-line))))
-       `(org-roam-link ((t (:background ,cyan-bg :foreground ,cyan-fg :underline t))))
-       ))))
-#+end_src
-
-** nord theme
-
-#+begin_src emacs-lisp
-(use-package nord-theme
-  :ensure t
-  :defer t
-  :init
-  (defun my/nord-theme ()
-    (load-theme 'nord t)
-    (let* ((bg "#2e3440")
-           (bg+1 (color-lighten-name bg 2))
-           (bg+2 (color-lighten-name bg 6))
-           (bg+3 (color-lighten-name bg 18))
-           (fg "#d3d8e3")
-           (fg-1 (color-darken-name fg 3))
-           (fg-2 (color-darken-name fg 10))
-           (green "#A3BE8C")
-           (cyan "#88c0d0")
-           (cyan+1 (color-lighten-name cyan 5))
-           (cyan-bg (color-darken-name cyan 43)))
-      (custom-theme-set-faces
-       'nord
-       `(default ((t (:foreground ,fg :background ,bg))))
-       `(fringe ((t (:background ,bg+1))))
-       `(vertical-border ((t (:foreground ,bg+3))))
-       `(region ((t (:background "#3f6c7b"))))
-
+       'zenburn
+       `(region ((t (:background ,zenburn-bg+2))))
+       `(vertical-border ((t (:foreground "#a5a5a5"))))
+       `(fringe ((t (:background "#484848"))))
+       `(hl-line ((t (:background ,zenburn-bg+05))))
+       `(fill-column-indicator ((t (:foreground ,zenburn-bg+2))))
+       `(compilation-info ((t (:foreground ,zenburn-green+3 :weight bold))))
+       `(mode-line ((t
+                     (:box
+                      (:line-width -1 :color nil :style released-button)
+                      :foreground ,zenburn-green+3 :background ,zenburn-bg+05))))
+       `(mode-line-inactive ((t
+                              (:box
+                               (:line-width -1 :color nil :style released-button)
+                               :foreground ,zenburn-green-2 :background ,zenburn-bg-05))))
        `(mode-line-buffer-id ((t (:weight bold))))
-       `(mode-line ((t (:foreground ,cyan+1 :background "#515b6f"))))
-       `(mode-line-inactive ((t (:foreground "#869ca6" :background "#3b4252"))))
+       `(persp-selected-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
 
-       `(persp-selected-face ((t (:foreground ,green :weight bold))))
+       `(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
+       `(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
+       `(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
 
-       `(font-lock-comment-face ((t (:foreground "#727f99"))))
-       `(font-lock-doc-face ((t (:inherit font-lock-comment-face))))
-
-       `(org-block ((t (:foreground ,fg-1 :background ,bg+1 :extend t))))
-       `(org-block-begin-line ((t (:foreground ,fg-2 :background ,bg+2 :slant italic :extend t))))
+       `(org-block ((t (:background "#434343" :extend t))))
+       `(org-block-begin-line ((t (:background ,zenburn-bg+1 :foreground ,zenburn-fg-05 :slant italic :extend t))))
        `(org-block-end-line ((t (:inherit org-block-begin-line))))
-       `(org-roam-link ((t (:background ,cyan-bg :foreground ,cyan+1 :underline t))))
+       `(org-roam-link ((t (:foreground ,zenburn-green+3 :background ,zenburn-bg+1 :underline t))))
+
+       `(rst-level-1 ((t (:inherit rst-adornment))))
+       `(rst-level-2 ((t (:inherit rst-level-1))))
+       `(rst-level-3 ((t (:inherit rst-level-1))))
+       `(rst-level-4 ((t (:inherit rst-level-1))))
+       `(rst-level-5 ((t (:inherit rst-level-1))))
+       `(rst-level-6 ((t (:inherit rst-level-1))))
        ))))
 #+end_src
 
@@ -2960,8 +2938,8 @@ the current file."
         markdown-wiki-link-fontify-missing t
         markdown-enable-math t
         markdown-gfm-use-electric-backquote nil
-        markdown-css-paths
-        (list (expand-file-name (expand-file-name "static/github.css" user-emacs-directory))))
+        markdown-command "pandoc --highlight-style=pygments --standalone"
+        markdown-css-paths `(,(expand-file-name "static/github.css" user-emacs-directory)))
   :config
   (if (executable-find "marked")
       (setq markdown-command "marked"))
