@@ -1496,6 +1496,8 @@ CWD is not in a git repo (or the git command is not found)."
        `(mode-line-buffer-id ((t (:weight bold))))
        `(persp-selected-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
 
+       `(font-lock-keyword-face ((t (:foreground ,zenburn-yellow-1 :weight bold))))
+
        `(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
        `(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
        `(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
