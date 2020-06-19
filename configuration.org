@@ -562,6 +562,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
               ("M-<down>" . sp-splice-sexp-killing-forward)
               ("M-r" . sp-splice-sexp-killing-around)
               ("M-(" . sp-wrap-round)
+              ("M-{" . sp-wrap-curly)
+              ("M-[" . sp-wrap-square)
               ("C-)" . sp-forward-slurp-sexp)
               ("C-<right>" . sp-forward-slurp-sexp)
               ("C-}" . sp-forward-barf-sexp)
@@ -982,8 +984,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (use-package eshell
   :commands (eshell)
-  :bind (("C-!" . my/eshell-maybe-here)
-         ("<f2>" . my/eshell-maybe-here)
+  :bind (("C-!" . my/eshell)
+         ("<f2>" . my/eshell)
          :map eshell-mode-map
          ("C-l" . my/eshell-clear)
          ("C-c o" . my/eshell-put-last-output-to-buffer)
@@ -1045,19 +1047,25 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
         eshell-review-quick-commands nil
         eshell-smart-space-goes-to-end t))
 
-(defun my/eshell-maybe-here (prompt)
-  "Opens up a new shell in the directory associated with the
-current buffer's file. The eshell is renamed to match that
-directory to make multiple eshell windows easier."
-  (interactive "P")
+(defun my/eshell (&optional dir prompt)
+  "Open up a new shell in the directory associated with the current buffer.
+
+The shell is renamed to match that directory to make multiple
+eshell windows easier. If DIR is provided, open the shell there. If PROMPT is
+non-nil, prompt for the directory instead. With a prefix argument, prompt for
+directory."
+  (interactive (list nil current-prefix-arg))
   (let* ((parent (if prompt
                      (read-directory-name "Open eshell in: ")
-                   (if (buffer-file-name)
-                       (file-name-directory (buffer-file-name))
-                     default-directory)))
+                   (if dir
+                       dir
+                     (if (buffer-file-name)
+                         (file-name-directory (buffer-file-name))
+                       default-directory))))
          (height (/ (window-total-height) 3))
          (name (car (last (split-string parent "/" t))))
-         (bufname (format "*eshell:%s*" name)))
+         (bufname (format "*eshell:%s*" name))
+         (default-directory parent))
     (split-window-vertically (- height))
     (other-window 1)
     (let ((eshell-banner-message
@@ -1331,7 +1339,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(proof-tactics-name-face ((t (:foreground ,blue-alt-other))))
          `(proof-error-face ((t (:inherit hi-red-b))))
-         `(proof-locked-face ((t (:background ,(color-darken-name magenta-subtle-bg 10)))))
+         `(proof-locked-face ((t (:background ,(color-darken-name green-refine-bg 2)))))
          `(proof-queue-face ((t (:background ,(color-darken-name red-subtle-bg 10)))))
          `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
          `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
@@ -1479,12 +1487,14 @@ CWD is not in a git repo (or the git command is not found)."
     (zenburn-with-color-variables
       (custom-theme-set-faces
        'zenburn
-       `(region ((t (:background ,zenburn-bg+2))))
+       ;; `(region ((t (:background ,zenburn-bg+2))))
        `(vertical-border ((t (:foreground "#a5a5a5"))))
        `(fringe ((t (:background "#484848"))))
        `(hl-line ((t (:background ,zenburn-bg+05))))
        `(fill-column-indicator ((t (:foreground ,zenburn-bg+2))))
        `(compilation-info ((t (:foreground ,zenburn-green+3 :weight bold))))
+       `(isearch ((t (:foreground ,zenburn-blue+2 :background ,zenburn-blue-5 :weight bold))))
+       `(lazy-highlight ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+2 :weight bold))))
        `(mode-line ((t
                      (:box
                       (:line-width -1 :color nil :style released-button)
@@ -1496,16 +1506,26 @@ CWD is not in a git repo (or the git command is not found)."
        `(mode-line-buffer-id ((t (:weight bold))))
        `(persp-selected-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
 
+       `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
        `(font-lock-keyword-face ((t (:foreground ,zenburn-yellow-1 :weight bold))))
 
        `(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
        `(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
        `(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
 
-       `(org-block ((t (:background "#434343" :extend t))))
-       `(org-block-begin-line ((t (:background ,zenburn-bg+1 :foreground ,zenburn-fg-05 :slant italic :extend t))))
+       `(diredfl-dir-name ((t (:foreground ,zenburn-blue+1 :weight bold))))
+       `(diredfl-dir-heading ((t (:foreground ,zenburn-blue-1))))
+
+       `(org-block ((t (:background "#444444" :extend t))))
+       `(org-block-begin-line ((t (:background "#4b4b4b" :foreground ,zenburn-fg-05 :slant italic :extend t))))
        `(org-block-end-line ((t (:inherit org-block-begin-line))))
        `(org-roam-link ((t (:foreground ,zenburn-green+3 :background ,zenburn-bg+1 :underline t))))
+
+       `(coq-button-face ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+05))))
+       `(coq-button-face-pressed ((t (:foreground ,zenburn-green+4 :background ,zenburn-bg+2))))
+       `(proof-locked-face ((t (:background ,(color-darken-name zenburn-blue-5 4)))))
+       `(proof-warning-face ((t (:background ,(color-darken-name zenburn-yellow-2 35)))))
+       `(proof-tactics-name-face ((t (:inherit font-lock-constant-face))))
 
        `(rst-level-1 ((t (:inherit rst-adornment))))
        `(rst-level-2 ((t (:inherit rst-level-1))))
@@ -1520,7 +1540,7 @@ CWD is not in a git repo (or the git command is not found)."
        `(my/elfeed-yellow ((t (:foreground ,zenburn-yellow))))
        `(my/elfeed-magenta ((t (:foreground ,zenburn-magenta))))
        `(my/elfeed-red ((t (:foreground ,zenburn-red))))
-       `(elfeed-search-date-face ((t (:foreground ,zenburn-yellow-2))))
+       `(elfeed-search-date-face ((t (:foreground ,zenburn-orange))))
        ))))
 #+end_src
 
@@ -2915,13 +2935,15 @@ the current file."
    '(my/after-set-theme-hook)
    (when (fboundp 'coq-highlight-selected-hyps)
      (coq-highlight-selected-hyps)))
-  (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
   (my/add-hooks
    '(coq-mode-hook)
    (setq evil-shift-width 2)
    (push '(?# . ("(* " . " *)")) evil-surround-pairs-alist)
    (undo-tree-mode 1)
-   (whitespace-mode 1)))
+   (whitespace-mode 1))
+  (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
+  ;; use yas-expand instead
+  (define-key coq-mode-map (kbd "<C-return>") nil))
 #+END_SRC
 
 * agda
@@ -3966,7 +3988,7 @@ buffer, close it."
           ace-select-window)
         "select window")
        ("e"
-        my/eshell-in-dir
+        my/eshell
         "eshell")
        ("j"
         my/counsel-file-jump-from-here
@@ -4001,7 +4023,7 @@ buffer, close it."
         (lambda (f) (projectile-recentf))
         "recent files")
        ("e"
-        (lambda (f) (my/eshell-in-dir (projectile-expand-root f)))
+        (lambda (f) (my/eshell (projectile-expand-root f)))
         "eshell")
        )))
 
