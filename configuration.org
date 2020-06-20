@@ -940,7 +940,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
       (pulse-momentary-highlight-one-line (point) face))))
 #+end_src
 
-* term, eshell and comint-mode
+* term & eshell
 ** terms
 
 #+BEGIN_SRC emacs-lisp
@@ -1074,10 +1074,7 @@ directory."
                                'face
                                'font-lock-keyword-face))))
       (eshell :new))
-    (rename-buffer (generate-new-buffer-name bufname))
-    ;; (insert "ls")
-    ;; (eshell-send-input)
-    ))
+    (rename-buffer (generate-new-buffer-name bufname))))
 
 ;; stolen from prot
 (defun my/eshell-narrow-output-highlight-regexp ()
@@ -1253,14 +1250,15 @@ CWD is not in a git repo (or the git command is not found)."
 (defun my/refresh-theme ()
   (interactive)
   (my/set-theme))
+
+(use-package color
+  :commands (color-darken-name color-lighten-name))
 #+END_SRC
 
 ** modus themes
+*** =modus-vivendi= (dark)
 
 #+begin_src emacs-lisp
-(use-package color
-  :commands (color-darken-name color-lighten-name))
-
 (use-package modus-vivendi-theme
   :ensure t
   :defer t
@@ -1339,7 +1337,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(proof-tactics-name-face ((t (:foreground ,blue-alt-other))))
          `(proof-error-face ((t (:inherit hi-red-b))))
-         `(proof-locked-face ((t (:background ,(color-darken-name green-refine-bg 2)))))
+         `(proof-locked-face ((t (:background "#213d3d"))))
          `(proof-queue-face ((t (:background ,(color-darken-name red-subtle-bg 10)))))
          `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
          `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
@@ -1372,7 +1370,11 @@ CWD is not in a git repo (or the git command is not found)."
          `(rst-reference ((t (:inherit link))))
          `(rst-transition ((t (:foreground ,red))))
          )))))
+#+end_src
 
+*** =modus-operandi= (light)
+
+#+begin_src emacs-lisp
 (use-package modus-operandi-theme
   :ensure t
   :defer t
@@ -1467,7 +1469,7 @@ CWD is not in a git repo (or the git command is not found)."
          )))))
 #+end_src
 
-** zenburn theme
+** zenburn theme (low contrast)
 
 #+begin_src emacs-lisp
 (use-package zenburn-theme
@@ -1521,10 +1523,13 @@ CWD is not in a git repo (or the git command is not found)."
        `(org-block-end-line ((t (:inherit org-block-begin-line))))
        `(org-roam-link ((t (:foreground ,zenburn-green+3 :background ,zenburn-bg+1 :underline t))))
 
+       `(coq-cheat-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2 :weight bold))))
        `(coq-button-face ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+05))))
        `(coq-button-face-pressed ((t (:foreground ,zenburn-green+4 :background ,zenburn-bg+2))))
+
        `(proof-locked-face ((t (:background ,(color-darken-name zenburn-blue-5 4)))))
        `(proof-warning-face ((t (:background ,(color-darken-name zenburn-yellow-2 35)))))
+       `(proof-error-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2))))
        `(proof-tactics-name-face ((t (:inherit font-lock-constant-face))))
 
        `(rst-level-1 ((t (:inherit rst-adornment))))
@@ -1601,6 +1606,30 @@ CWD is not in a git repo (or the git command is not found)."
 * VCS
 ** vc
 
+Common prefix is =C-x v=
+
+Some useful commands:
+
+| key            | name                | description                                       |
+|----------------+---------------------+---------------------------------------------------|
+| C-x v C-h      | -                   | show help for vc-related actions                  |
+| C-x v p        | =my/vc-project=     | run =vc-dir= in repo root                         |
+| C-x v v        | =vc-next-action=    | next logical action in a repo (init, add, commit) |
+| C-x v d /or/ = | =vc-diff=           | show diff for current file                        |
+| C-x v D        | =vc-root-diff=      | show diff for whole repo                          |
+| C-x v a        | =vc-annotate=       | show history, color-coded                         |
+| C-x v h        | =vc-region-history= | show history (buffer or region)                   |
+| C-x v l        | =vc-print-log=      | show log for current file                         |
+| C-x v +        | =vc-update=         | pull                                              |
+| C-x v P        | =vc-push=           | push                                              |
+
+In =vc-git-log-edit-mode=:
+
+| key     | name                   | description   |
+|---------+------------------------+---------------|
+| C-c C-c | =log-edit-done=        | save commit   |
+| C-c C-k | =log-edit-kill-buffer= | cancel commit |
+
 #+BEGIN_SRC emacs-lisp
 (use-package vc
   :bind (("C-x v p" . my/vc-project)
@@ -1611,6 +1640,7 @@ CWD is not in a git repo (or the git command is not found)."
     (interactive)
     (vc-dir (vc-root-dir)))
   :config
+  (add-hook 'vc-git-log-edit-mode-hook 'auto-fill-mode)
   (define-key diff-mode-map (kbd "M-o") nil))
 
 (use-package vc-git
@@ -1648,12 +1678,51 @@ CWD is not in a git repo (or the git command is not found)."
                   (evil-emacs-state)
                 (evil-exit-emacs-state)))))
 
+;; most stuff copied from prot
+(use-package magit-diff
+  :after magit
+  :init
+  (setq magit-diff-refine-hunk t))
+
+(use-package git-commit
+  :after magit
+  :init
+  (setq git-commit-summary-max-length 50)
+  (setq git-commit-style-convention-checks
+        '(non-empty-second-line
+          overlong-summary-line)))
+
+(use-package magit-repos
+  :after magit
+  :commands (magit-list-repositories)
+  :init
+  (setq magit-repository-directories
+        '(("~/projects" . 1)
+          ("~/job/projects" . 1))))
+
 (use-package magit-todos
   :ensure t
   :after magit
   :config
   (magit-todos-mode))
 #+END_SRC
+
+** ediff
+
+#+begin_src emacs-lisp
+(use-package ediff
+  :commands (ediff-files
+             ediff-files3
+             ediff-buffers
+             ediff-buffers3
+             smerge-ediff)
+  :init
+  (setq ediff-keep-variants nil
+        ediff-make-buffers-readonly-at-startup nil
+        ediff-show-clashes-only t
+        ediff-split-window-function 'split-window-horizontally
+        ediff-window-setup-function 'ediff-setup-windows-plain))
+#+end_src
 
 ** git-timemachine
 
@@ -3528,16 +3597,17 @@ search started."
 (use-package rg
   :ensure t
   :commands (rg my/rg-project-or-ask)
-  :bind (:map rg-mode-map
-              ("m" . rg-menu)
-              ("s" . my/rg-save-search-as-name)
-              ("N" . my/rg-open-ace-window)
-              ("C-n" . next-line)
-              ("C-p" . previous-line)
-              ("j" . next-line)
-              ("k" . previous-line)
-              ("M-n" . rg-next-file)
-              ("M-p" . rg-prev-file))
+  :bind (("C-c g" . my/rg-project-or-ask)
+         :map rg-mode-map
+         ("m" . rg-menu)
+         ("s" . my/rg-save-search-as-name)
+         ("N" . my/rg-open-ace-window)
+         ("C-n" . next-line)
+         ("C-p" . previous-line)
+         ("j" . next-line)
+         ("k" . previous-line)
+         ("M-n" . rg-next-file)
+         ("M-p" . rg-prev-file))
   :init
   (setq rg-group-result t
         rg-ignore-case 'smart)
@@ -3548,13 +3618,6 @@ search started."
   (rg-define-toggle "--multiline --multiline-dotall" "u")
   (rg-define-toggle "--word-regexp" "w")
   (rg-define-toggle "--files-with-matches" "L")
-  (rg-define-search my/rg-project-or-ask
-    :query ask
-    :format regexp
-    :files "all"
-    :dir (or (projectile-project-root)
-             (read-directory-name "rg in: "))
-    :confirm prefix)
 
   (rg-define-search my/rg-org-directory
     :query ask
@@ -3563,7 +3626,16 @@ search started."
     :dir my/org-directory
     :confirm prefix)
 
+  ;; prot
   ;; https://protesilaos.com/dotemacs/#h:31622bf2-526b-4426-9fda-c0fc59ac8f4b
+  (rg-define-search my/rg-project-or-ask
+    :query ask
+    :format regexp
+    :files "all"
+    :dir (or (projectile-project-root)
+             (read-directory-name "rg in: "))
+    :confirm prefix)
+
   (defun my/rg-save-search-as-name ()
     "Save `rg' buffer, naming it after the current search query."
     (interactive)
@@ -3580,7 +3652,7 @@ search started."
                               (progn
                                 (ace-window nil)
                                 (switch-to-buffer buf))))))
-      (compile-goto-error event)))
+          (compile-goto-error event)))
   )
 
 #+END_SRC
@@ -3885,11 +3957,7 @@ buffer, close it."
 (use-package swiper
   :ensure t
   :bind (("C-c f" . my/swiper-fuzzy-or-all))
-  :commands (swiper swiper-isearch swiper-all swiper-multi)
-  :config
-  ;; use regular isearch when in minibuffer
-  ;; (define-key minibuffer-local-map (kbd "C-s") #'isearch-forward)
-  )
+  :commands (swiper swiper-isearch swiper-all swiper-multi))
 
 ;; better fuzzy matching
 (use-package flx
@@ -3897,11 +3965,17 @@ buffer, close it."
   :after ivy)
 
 ;; mostly to bring recently used M-x targets at the top
-(use-package smex
+;; (trying out instead of `smex`)
+(use-package amx
   :ensure t
   :after ivy
   :init
-  (setq smex-history-length 12))
+  (setq amx-backend 'auto
+        amx-save-file (expand-file-name "amx-items" user-emacs-directory)
+        amx-history-length 50
+        amx-show-key-bindings nil)
+  :config
+  (amx-mode +1))
 
 (defun my/ivy-reset-builders ()
   (setq ivy-re-builders-alist
@@ -3945,6 +4019,7 @@ buffer, close it."
 
 (use-package counsel
   :ensure t
+  :after ivy
   :bind (("M-x" . counsel-M-x)
          ("M-i" . counsel-imenu)
          ("C-x C-f" . counsel-find-file)
@@ -3955,8 +4030,13 @@ buffer, close it."
          ("C-S-p" . my/counsel-file-jump-temp-root)
          ("C-S-s" . my/counsel-rg-temp-root)
          :map org-mode-map
-         ("M-i" . counsel-outline))
-  :after ivy
+         ("M-i" . counsel-outline)
+         :map help-map
+         ("f" . counsel-describe-function)
+         ("o" . counsel-describe-symbol)
+         ("u" . counsel-describe-face)
+         ("v" . counsel-describe-variable))
+  :diminish
   :init
   (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s"
         counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
@@ -4266,8 +4346,7 @@ the minibuffer."
 
 (use-package org
   :mode ("\\.org\\'" . org-mode)
-  :bind (("C-c b" . org-iswitchb)
-         ("C-c l" . org-store-link)
+  :bind (("C-c l" . org-store-link)
          ("C-c &" . org-mark-ring-goto))
   :init
   (setq org-directory my/org-directory
