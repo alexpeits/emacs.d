@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: nix-shebang
+# name: Nix shebang
 # key: nix
 # expand-env: ((yas-indent-line 'fixed))
 # --

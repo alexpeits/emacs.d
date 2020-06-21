@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: yaml-metadata
+# name: YAML metadata
 # key: meta
 # expand-env: ((yas-indent-line 'fixed))
 # --

@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: roam-tags-dlist
+# name: org-roam tags dlist
 # key: t
 # --
 - tags :: $0

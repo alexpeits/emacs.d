@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: code-block-text
+# name: Plaintext code block
 # key: tx
 # --
 \`\`\` text

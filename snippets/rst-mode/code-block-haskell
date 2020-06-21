@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: code-block-haskell
+# name: Haskell code block
 # key: hs
 # --
 .. code-block:: haskell
