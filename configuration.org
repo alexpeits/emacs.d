@@ -409,9 +409,20 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 (global-set-key (kbd "M-\\") 'just-one-space)
 ;; proper count-words keybinding
 (global-set-key (kbd "M-=") 'count-words)
-;; commenting TODO: use newcomment
-(global-set-key (kbd "C-;") 'comment-indent)
-(global-set-key (kbd "C-:") 'comment-kill)
+
+(use-package newcomment
+  :commands (comment-indent comment-kill)
+  :bind (("C-;" . my/comment-end-of-line)
+         ("C-:" . comment-kill))
+  :init
+  (defvar-local my/comment-offset 2)
+  (defun my/comment-end-of-line ()
+    "Add an inline comment, 2 spaces after EOL."
+    (interactive)
+    (let* ((len (- (line-end-position)
+                   (line-beginning-position)))
+           (comment-column (+ my/comment-offset len)))
+      (funcall-interactively 'comment-indent))))
 
 ;; DocView
 (setq doc-view-continuous t)
@@ -521,6 +532,14 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 ** Smartparens
 
+Paredit keys:
+
+| key     | opposite | description           | example                         |
+|---------+----------+-----------------------+---------------------------------|
+| =C-M-f= | =C-M-b=  | forward/backward sexp | =_(...)(...)= <-> =(...)_(...)= |
+| =C-M-d= | =C-M-u=  | down-up sexp          | =_(...)= <-> =(_...)=           |
+| =C-M-n= | =C-M-p=  | up-down sexp (end)    | =(..._)= <-> =(...)_=           |
+
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens-config
   :after smartparens
@@ -553,10 +572,10 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
               ;; paredit bindings
               ("C-M-f" . sp-forward-sexp)
               ("C-M-b" . sp-backward-sexp)
-              ("C-M-u" . sp-backward-up-sexp)
               ("C-M-d" . sp-down-sexp)
-              ("C-M-p" . sp-backward-down-sexp)
+              ("C-M-u" . sp-backward-up-sexp)
               ("C-M-n" . sp-up-sexp)
+              ("C-M-p" . sp-backward-down-sexp)
               ("M-s" . sp-splice-sexp)
               ("M-<up>" . sp-splice-sexp-killing-backward)
               ("M-<down>" . sp-splice-sexp-killing-forward)
@@ -3025,6 +3044,35 @@ the current file."
   (my/add-hooks
    '(agda2-mode-hook)
    (activate-input-method "Agda")))
+#+end_src
+
+* rust
+
+#+begin_src emacs-lisp
+(use-package rust-mode
+  :ensure t
+  :mode (("\\.rs\\'" . rust-mode)))
+
+(use-package cargo
+  :ensure t
+  :after rust-mode
+  :hook (rust-mode . cargo-minor-mode)
+  :diminish cargo-minor-mode)
+
+(use-package flycheck-rust
+  :ensure t
+  :after (rust-mode flycheck)
+  :init
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+
+(use-package racer
+  :ensure t
+  :after rust-mode
+  :hook (rust-mode . racer-mode)
+  :diminish racer-mode
+  :init
+  (setq racer-rust-src-path (expand-file-name "rust/src/" "~/sources")))
 #+end_src
 
 * markdown
