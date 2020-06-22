@@ -485,15 +485,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (add-to-list 'auth-sources (expand-file-name "authinfo.gpg" my/dropbox-dir)))
 #+END_SRC
 
-** server
-
-#+BEGIN_SRC emacs-lisp
-(use-package server
-  :init
-  ;; don't kill buffers in server sessions
-  (setq server-kill-new-buffers nil))
-#+END_SRC
-
 ** advise raise-frame with wmctrl
 
 #+begin_src emacs-lisp
@@ -1695,10 +1686,6 @@ In =vc-git-log-edit-mode=:
   (defalias 'gl   'magit-log-buffer-file)
   (defalias 'magl 'magit-log-buffer-file)
   :config
-  (defun my/magit-kill-commit-buffer ()
-    (let ((buf (magit-commit-message-buffer)))
-      (unless (null buf)
-        (kill-buffer buf))))
   (add-hook 'magit-blame-mode-hook
             (lambda ()
               (if (or (not (boundp 'magit-blame-mode))
@@ -1710,9 +1697,7 @@ In =vc-git-log-edit-mode=:
 (use-package magit-diff
   :after magit
   :init
-  (setq magit-diff-refine-hunk t)
-  :config
-  (add-hook 'git-commit-post-finish-hook 'my/magit-kill-commit-buffer))
+  (setq magit-diff-refine-hunk t))
 
 (use-package git-commit
   :after magit
