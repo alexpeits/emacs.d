@@ -415,6 +415,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   :bind (("C-;" . my/comment-end-of-line)
          ("C-:" . comment-kill))
   :init
+  (setq-default comment-indent-function nil)
   (defvar-local my/comment-offset 2)
   (defun my/comment-end-of-line ()
     "Add an inline comment, 2 spaces after EOL."
