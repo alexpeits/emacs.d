@@ -8,7 +8,7 @@
 (setq my/current-font 0)
 
 ;;; themes
-(setq my/modus-vivendi-theme-alt-colors nil
+(setq my/modus-vivendi-theme-alt-colors t
       my/modus-vivendi-theme-haskell-distinct-constructor t
       my/modus-vivendi-theme-markdown-scale-headers t
       my/modus-operandi-theme-haskell-distinct-constructor t

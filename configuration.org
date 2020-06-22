@@ -3918,6 +3918,12 @@ buffer, close it."
          ("M-P" . persp-prev)
          ("M-J" . persp-switch))
   :config
+  ;; accidentally changing perspectives while in the minibuffer messes things up
+  ;; using `ignore' (rather than nil) makes these keys do nothing
+  (add-hook 'minibuffer-setup-hook
+            '(lambda ()
+               (dolist (k '("M-N" "M-P" "M-J"))
+                 (local-set-key (kbd k) 'ignore))))
   (advice-add 'persp-switch
               :after
               #'(lambda (n &optional r)
