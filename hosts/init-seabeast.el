@@ -26,6 +26,7 @@
 
 ;;; hooks
 (add-hook 'prog-mode-hook 'hl-line-mode)
+(add-hook 'LaTeX-mode-hook 'hl-line-mode)
 
 ;;; projectile overrides
 (dolist (override '(

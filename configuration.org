@@ -450,8 +450,13 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 (use-package outline
   :defer t
   :bind (:map outline-minor-mode-map
-              ("<tab>" . outline-toggle-children))
-  :diminish outline-minor-mode)
+              ("<tab>" . my/outline-toggle-heading))
+  :diminish outline-minor-mode
+  :init
+  (defun my/outline-toggle-heading ()
+    (interactive)
+    (when (outline-on-heading-p)
+      (funcall-interactively 'outline-toggle-children))))
 
 ;; elisp: ;; -*- eval: (outshine-mode) -*-
 (use-package outshine
@@ -1690,6 +1695,10 @@ In =vc-git-log-edit-mode=:
   (defalias 'gl   'magit-log-buffer-file)
   (defalias 'magl 'magit-log-buffer-file)
   :config
+  (defun my/magit-kill-commit-buffer ()
+    (let ((buf (magit-commit-message-buffer)))
+      (unless (null buf)
+        (kill-buffer buf))))
   (add-hook 'magit-blame-mode-hook
             (lambda ()
               (if (or (not (boundp 'magit-blame-mode))
@@ -1701,7 +1710,9 @@ In =vc-git-log-edit-mode=:
 (use-package magit-diff
   :after magit
   :init
-  (setq magit-diff-refine-hunk t))
+  (setq magit-diff-refine-hunk t)
+  :config
+  (add-hook 'git-commit-post-finish-hook 'my/magit-kill-commit-buffer))
 
 (use-package git-commit
   :after magit
@@ -3096,6 +3107,7 @@ the current file."
         markdown-wiki-link-fontify-missing t
         markdown-enable-math t
         markdown-gfm-use-electric-backquote nil
+        markdown-list-indent-width 2
         markdown-command "pandoc --highlight-style=pygments --standalone"
         markdown-css-paths `(,(expand-file-name "static/github.css" user-emacs-directory)))
   :config
@@ -3127,7 +3139,12 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (use-package tex-mode
   :ensure auctex
-  :mode (("\\.tex\\'" . latex-mode)))
+  :mode (("\\.tex\\'" . latex-mode))
+  :config
+  (my/add-hooks
+   '(LaTeX-mode-hook)
+   (smartparens-mode)
+   (whitespace-mode)))
 
 (use-package latex-preview-pane
   :ensure t
@@ -4979,7 +4996,7 @@ the minibuffer."
       (propertize (format "%s:%s %s:%s %s:%s" l lines w words c chars)))))
 
 (defun my/mode-line-position ()
-  (let* ((ln "%l")
+  (let* ((ln "%2l")
          (col-tmpl "%2c")
          (cur-col (current-column))
          (col (if (>= cur-col fill-column)
