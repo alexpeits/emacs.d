@@ -494,9 +494,12 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     (let* ((fr (or frame (selected-frame)))
            (name (frame-parameter fr 'name))
            (flag (if (string-equal name my/xmonad-emacs-sp-name) "-R" "-a")))
-      (call-process
-       "wmctrl" nil nil nil "-i" flag
-       (frame-parameter fr 'outer-window-id)))))
+      ;; catch any exception, otherwise might interfere with terminal emacsclients
+      (condition-case ex
+          (call-process
+           "wmctrl" nil nil nil "-i" flag
+           (frame-parameter fr 'outer-window-id))
+        ('error nil)))))
 
 (advice-add 'raise-frame :after 'my/wmctrl-raise-frame)
 #+end_src
@@ -579,7 +582,6 @@ Paredit keys:
               ("M-r" . sp-splice-sexp-killing-around)
               ("M-(" . sp-wrap-round)
               ("M-{" . sp-wrap-curly)
-              ("M-[" . sp-wrap-square)
               ("C-)" . sp-forward-slurp-sexp)
               ("C-<right>" . sp-forward-slurp-sexp)
               ("C-}" . sp-forward-barf-sexp)
@@ -608,7 +610,11 @@ Paredit keys:
                 (smartparens-strict-mode)
                 (evil-smartparens-mode))
   (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook)
-                (smartparens-mode)))
+                (smartparens-mode))
+  :config
+  (when is-gui
+    ;; interferes in terminal
+    (define-key smartparens-mode-map (kbd "M-[") 'sp-wrap-square)))
 
 (use-package evil-smartparens
   :ensure t
@@ -1385,7 +1391,10 @@ CWD is not in a git repo (or the git command is not found)."
          `(rst-literal ((t (:foreground ,fg-special-mild))))
          `(rst-reference ((t (:inherit link))))
          `(rst-transition ((t (:foreground ,red))))
-         )))))
+         )
+        (custom-theme-set-variables
+         'modus-vivendi
+         `(coq-highlighted-hyps-bg ,green-subtle-bg))))))
 #+end_src
 
 *** =modus-operandi= (light)
@@ -1562,7 +1571,10 @@ CWD is not in a git repo (or the git command is not found)."
        `(my/elfeed-magenta ((t (:foreground ,zenburn-magenta))))
        `(my/elfeed-red ((t (:foreground ,zenburn-red))))
        `(elfeed-search-date-face ((t (:foreground ,zenburn-orange))))
-       ))))
+       )
+      (custom-theme-set-variables
+       'zenburn
+       `(coq-highlighted-hyps-bg ,zenburn-bg+2)))))
 #+end_src
 
 * Font
