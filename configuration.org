@@ -336,6 +336,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 (setq-default fill-column 80)
 (defun my/set-mode-fill-width (mode-hook width)
   (add-hook mode-hook `(lambda () (setq fill-column ,width))))
+(setq fill-indent-according-to-mode t)
 
 (use-package autorevert
   :hook (after-init . global-auto-revert-mode)
@@ -3138,11 +3139,38 @@ the current file."
 (use-package tex-mode
   :ensure auctex
   :mode (("\\.tex\\'" . latex-mode))
+  :init
+  (defvar-local my/texcount nil)
+  (defun my/texcount-update ()
+    (let ((fname (buffer-file-name)))
+      (when (and (eq major-mode 'latex-mode)
+                 (not (null fname)))
+        (setq-local my/texcount
+                    (string-trim
+                     (shell-command-to-string
+                      (format "texcount -sum -brief -total %s" fname)))))))
+  (setq TeX-brace-indent-level 0
+        LaTeX-item-indent 0
+        LaTeX-indent-level 2)
   :config
   (my/add-hooks
    '(LaTeX-mode-hook)
    (smartparens-mode)
-   (whitespace-mode)))
+   (whitespace-mode)
+   (when (executable-find "texcount")
+     (my/texcount-update)
+     (add-hook 'after-save-hook #'my/texcount-update nil t)))
+
+  (defun my/mode-line-extra-latex-mode ()
+    (if (null my/texcount)
+        "(-)"
+      (let ((face (if (buffer-modified-p)
+                      'compilation-warning
+                    'compilation-info)))
+        (format "(%s)"
+                (propertize my/texcount
+                            'face
+                            face))))))
 
 (use-package latex-preview-pane
   :ensure t
@@ -5043,6 +5071,7 @@ the minibuffer."
        ;; mode-line-mule-info
        mode-line-modified "  "
        mode-line-buffer-identification " "
+       ;; mode-line-modes
        (:eval (string-remove-suffix "-mode" (format "%s" major-mode)))
        (:eval (my/mode-line-input-method))
        (:eval mode-line-process) " "
