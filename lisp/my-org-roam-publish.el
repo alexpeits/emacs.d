@@ -1,5 +1,9 @@
 (require 'org)
 (require 'org-roam)
+(require 'org-ref)
+
+;; To run from shell:
+;; emacs --batch --eval "(progn (load-file (expand-file-name \"init.el\" user-emacs-directory)) (require 'my-org-roam-publish) (my/org-roam-publish t))" --kill
 
 (defvar my/org-roam-publish-directory "~/org-roam-publish")
 
@@ -50,32 +54,45 @@
     (when (executable-find "notify-send")
       (format "notify-send --urgency=%s '%s' '%s'" urgency title desc))))
 
+(defvar my/org-roam-publish-lock-file (expand-file-name ".my-org-roam-publish-lock" user-emacs-directory))
+
+(defun my/org-roam-publish-write-lock-file (notify)
+  (if (file-exists-p my/org-roam-publish-lock-file)
+      (progn
+        (let ((desc "There is already a publish process in progress"))
+          (when notify (my/notify 'critical "org-roam-publish failed" desc))
+          (user-error desc)))
+    (with-temp-buffer (write-file my/org-roam-publish-lock-file))))
+
 (defun my/-org-roam-publish (run force &optional notify)
-  (condition-case ex
-      (let ((org-html-htmlize-output-type 'css)
-            (hooks '(my/org-roam-export-add-backlinks
-                     my/org-roam-export-add-index))
-            (old-file-link-export-param (org-link-get-parameter "file" :export))
-            (old-cite-link-export-param (org-link-get-parameter "cite" :export)))
-        (unwind-protect
-            (progn
-              (dolist (hook hooks)
-                (add-hook 'org-export-before-processing-hook hook))
-              (org-link-set-parameters "file" :export #'my/org-roam-file-link-export)
-              (org-link-set-parameters "cite" :export #'my/org-roam-cite-link-export)
-              (funcall run)
-              (org-roam-graph--build nil
-                                     #'(lambda (path)
-                                         (copy-file path
-                                                    (expand-file-name "graph.html" my/org-roam-publish-directory)
-                                                    :overwrite)))
-              (when notify (my/notify 'low "emacs" "org-roam-publish finished")))
-          (progn
-            (dolist (hook hooks)
-              (remove-hook 'org-export-before-processing-hook hook))
-            (org-link-set-parameters "file" :export old-file-link-export-param)
-            (org-link-set-parameters "cite" :export old-cite-link-export-param))))
-    ('error (when notify (my/notify 'critical "org-roam-publish-failed" ex)))))
+  (my/org-roam-publish-write-lock-file notify)
+  (unwind-protect
+      (condition-case ex
+          (let ((org-html-htmlize-output-type 'css)
+                (hooks '(my/org-roam-export-add-backlinks
+                         my/org-roam-export-add-index))
+                (old-file-link-export-param (org-link-get-parameter "file" :export))
+                (old-cite-link-export-param (org-link-get-parameter "cite" :export)))
+            (unwind-protect
+                (progn
+                  (dolist (hook hooks)
+                    (add-hook 'org-export-before-processing-hook hook))
+                  (org-link-set-parameters "file" :export #'my/org-roam-file-link-export)
+                  (org-link-set-parameters "cite" :export #'my/org-roam-cite-link-export)
+                  (funcall run)
+                  (org-roam-graph--build nil
+                                         #'(lambda (path)
+                                             (copy-file path
+                                                        (expand-file-name "graph.html" my/org-roam-publish-directory)
+                                                        :overwrite)))
+                  (when notify (my/notify 'low "emacs" "org-roam-publish finished")))
+              (progn
+                (dolist (hook hooks)
+                  (remove-hook 'org-export-before-processing-hook hook))
+                (org-link-set-parameters "file" :export old-file-link-export-param)
+                (org-link-set-parameters "cite" :export old-cite-link-export-param))))
+        ('error (when notify (my/notify 'critical "org-roam-publish failed" ex))))
+    (delete-file my/org-roam-publish-lock-file)))
 
 (defun my/org-roam-publish (force)
   (interactive "P")

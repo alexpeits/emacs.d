@@ -2226,7 +2226,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
          (memq (or state evil-state) '(insert hybrid))))
 
   (define-key evil-hybrid-state-map [escape] 'evil-normal-state)
-  (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
+  ;; (define-key evil-hybrid-state-map (kbd "C-w") 'evil-delete-backward-word)
   )
 #+END_SRC
 
@@ -3024,7 +3024,11 @@ the current file."
   :ensure proof-general
   :mode (("\\.v\\'" . coq-mode))
   :bind (:map coq-mode-map
-              ("C-c ." . proof-electric-terminator-toggle))
+              ("C-c ." . proof-electric-terminator-toggle)
+              ("M-e" . forward-paragraph)
+              ("M-a" . backward-paragraph)
+              ("M-n" . proof-assert-next-command-interactive)
+              ("M-p" . proof-undo-last-successful-command))
   :init
   (setq coq-one-command-per-line nil
         coq-compile-before-require t)
@@ -3039,7 +3043,13 @@ the current file."
    (push '(?# . ("(* " . " *)")) evil-surround-pairs-alist)
    (undo-tree-mode 1)
    (whitespace-mode 1))
+
+  (defun my/coq-browse-stdlib ()
+    (interactive)
+    (browse-url "https://coq.inria.fr/library/"))
+
   (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
+  (my/define-major-mode-key 'coq-mode "i" 'my/coq-browse-stdlib)
   ;; use yas-expand instead
   (define-key coq-mode-map (kbd "<C-return>") nil))
 #+END_SRC
