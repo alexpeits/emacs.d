@@ -3689,6 +3689,11 @@ search started."
   (advice-add 'isearch-forward-regexp :after 'my/isearch-region)
   (advice-add 'isearch-backward :after 'my/isearch-region)
   (advice-add 'isearch-backward-regexp :after 'my/isearch-region)
+
+  (with-eval-after-load 'evil
+    (dolist (st '(normal visual))
+      (evil-global-set-key st (kbd "gs") 'isearch-forward)
+      (evil-global-set-key st (kbd "gr") 'isearch-backward)))
   )
 #+END_SRC
 
