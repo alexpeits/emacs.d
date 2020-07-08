@@ -150,7 +150,7 @@
                   `(:foreground ,blue+1)))
        (keyword (if functor-theme-less-colors
                     `(:foreground ,cyan-pale-1 :weight bold)
-                  `(:foreground ,cyan-2)))
+                  `(:foreground ,cyan-1)))
        (string (if functor-theme-less-colors
                    `(:foreground ,cyan-1)
                  `(:foreground ,beige)))
