@@ -10,9 +10,7 @@
 ;;; themes
 (setq my/modus-vivendi-theme-alt-colors t
       my/modus-vivendi-theme-haskell-distinct-constructor t
-      my/modus-vivendi-theme-markdown-scale-headers t
-      my/modus-operandi-theme-haskell-distinct-constructor t
-      my/modus-operandi-theme-markdown-scale-headers t)
+      my/modus-operandi-theme-haskell-distinct-constructor t)
 
 (add-to-list 'custom-theme-load-path "~/Dropbox/emacs/themes")
 

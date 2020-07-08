@@ -470,7 +470,13 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (use-package rainbow-mode
   :ensure t
-  :commands (rainbow-mode))
+  :commands (rainbow-mode)
+  :init
+  (setq rainbow-ansi-colors nil
+        rainbow-html-colors nil
+        rainbow-latex-colors nil
+        rainbow-r-colors nil
+        rainbow-x-colors nil))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -1298,12 +1304,12 @@ CWD is not in a git repo (or the git command is not found)."
 
   (defvar my/modus-vivendi-theme-alt-colors nil)
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
-  (defvar my/modus-vivendi-theme-markdown-scale-headers nil)
 
   (defun my/modus-vivendi-theme ()
     (load-theme 'modus-vivendi t)
     (modus-vivendi-theme-with-color-variables
-      (let* ((hl-line (color-darken-name bg-active 2))
+      (let* ((hl-line (color-darken-name bg-active 3))
+             (pink-subtle "#e8b7e8")
              (type
               (if my/modus-vivendi-theme-alt-colors
                   cyan-refine-fg
@@ -1314,16 +1320,18 @@ CWD is not in a git repo (or the git command is not found)."
                 `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
-         `(default ((t (:background "#0a0a0a" :foreground "#eaeaea"))))
+         `(default ((t (:background "#101010" :foreground "#e7e7e7"))))
          `(hl-line ((t (:background ,hl-line))))
          `(region ((t (:background ,cyan-subtle-bg))))
-         `(fringe ((t (:background ,bg-inactive :foreground ,fg-inactive))))
+         `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
          `(secondary-selection ((t (:inherit modus-theme-refine-green))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
 
-         `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box bg-active (color-lighten-name bg-active 12))
+         `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box
+                                          (color-lighten-name bg-active 8)
+                                          (color-lighten-name bg-active 12))
                                         ,@(modus-vivendi-theme-modeline-props
-                                           bg-dim fg-inactive
+                                           bg-dim (color-darken-name fg-inactive 14)
                                            bg-inactive (color-darken-name fg-inactive 12))))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
@@ -1347,6 +1355,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(font-lock-type-face ((t (:foreground ,type))))
          `(font-lock-preprocessor-face ((t (:foreground ,red-alt))))
+         `(font-lock-builtin-face ((t (:foreground ,(color-darken-name fg-special-mild 3)))))
 
          `(highlight-numbers-number ((t (:inherit font-lock-string-face))))
 
@@ -1360,22 +1369,12 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(proof-tactics-name-face ((t (:foreground ,blue-alt-other))))
          `(proof-error-face ((t (:inherit hi-red-b))))
-         `(proof-locked-face ((t (:background "#213d3d"))))
+         `(proof-locked-face ((t (:background "#173333"))))
          `(proof-queue-face ((t (:background ,(color-darken-name red-subtle-bg 10)))))
          `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
          `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
          `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
-         `(markdown-header-face ((t (:weight bold))))
-         `(markdown-header-face-1
-           ((t (:inherit markdown-header-face
-                         :height ,(if my/modus-vivendi-theme-markdown-scale-headers 1.4 1.0)))))
-         `(markdown-header-face-2
-           ((t (:inherit markdown-header-face
-                         :height ,(if my/modus-vivendi-theme-markdown-scale-headers 1.3 1.0)))))
-         `(markdown-header-face-3
-           ((t (:inherit markdown-header-face
-                         :height ,(if my/modus-vivendi-theme-markdown-scale-headers 1.2 1.0)))))
          `(markdown-list-face ((t (:foreground ,cyan))))
 
          `(rst-adornment ((t (:foreground ,cyan :weight bold))))
@@ -1416,7 +1415,6 @@ CWD is not in a git repo (or the git command is not found)."
         modus-operandi-theme-scale-1 1.0)
 
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
-  (defvar my/modus-operandi-theme-markdown-scale-headers nil)
 
   (defun my/modus-operandi-theme ()
     (load-theme 'modus-operandi t)
@@ -1438,9 +1436,11 @@ CWD is not in a git repo (or the git command is not found)."
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
 
-         `(mode-line-inactive ((t (:box ,(modus-operandi-theme-modeline-box bg-active (color-darken-name bg-active 10))
+         `(mode-line-inactive ((t (:box ,(modus-operandi-theme-modeline-box
+                                          (color-darken-name bg-active 6)
+                                          (color-darken-name bg-active 10))
                                         ,@(modus-operandi-theme-modeline-props
-                                           bg-dim fg-inactive
+                                           bg-dim (color-lighten-name fg-inactive 15)
                                            bg-inactive (color-lighten-name fg-inactive 15))))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
@@ -1466,16 +1466,6 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(markdown-pre-face ((t (:foreground ,cyan))))
          `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
-         `(markdown-header-face ((t (:weight bold))))
-         `(markdown-header-face-1
-           ((t (:inherit markdown-header-face
-                         :height ,(if my/modus-operandi-theme-markdown-scale-headers 1.4 1.0)))))
-         `(markdown-header-face-2
-           ((t (:inherit markdown-header-face
-                         :height ,(if my/modus-operandi-theme-markdown-scale-headers 1.3 1.0)))))
-         `(markdown-header-face-3
-           ((t (:inherit markdown-header-face
-                         :height ,(if my/modus-operandi-theme-markdown-scale-headers 1.2 1.0)))))
          `(markdown-list-face ((t (:foreground ,cyan-light))))
 
          `(rst-adornment ((t (:foreground ,cyan-light :weight bold))))
@@ -1595,8 +1585,8 @@ CWD is not in a git repo (or the git command is not found)."
          (size (cadr spec))
          (spacing (or (caddr spec) 0)))
     (set-face-font 'default (format "%s-%s" name size))
-    (setq-default line-spacing spacing)
     (setq line-spacing spacing)
+    (setq-default line-spacing spacing)
     (run-hooks 'my/after-set-font-hook)))
 
 (defun my/toggle-font ()
@@ -3005,7 +2995,7 @@ the current file."
   (my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save))
 #+END_SRC
 
-* coq (proof-general)
+* coq & proof-general
 
 #+BEGIN_SRC emacs-lisp
 (use-package proof-general
@@ -3027,6 +3017,7 @@ the current file."
               ("C-c ." . proof-electric-terminator-toggle)
               ("M-e" . forward-paragraph)
               ("M-a" . backward-paragraph)
+              ("M-RET" . proof-goto-point)
               ("M-n" . proof-assert-next-command-interactive)
               ("M-p" . proof-undo-last-successful-command))
   :init
@@ -3053,6 +3044,14 @@ the current file."
   ;; use yas-expand instead
   (define-key coq-mode-map (kbd "<C-return>") nil))
 #+END_SRC
+
+* ocaml
+
+#+begin_src emacs-lisp
+(use-package tuareg
+  :ensure t
+  :mode ("\\.ml[ip]?\\'" . tuareg-mode))
+#+end_src
 
 * agda
 
