@@ -308,7 +308,7 @@
    `(ivy-current-match           ((t (:inherit match :weight bold))))
    `(ivy-minibuffer-match-face-1 ((t (:inherit highlight :weight bold))))
    `(ivy-minibuffer-match-face-2 ((t (:inherit hi-green-b :weight bold))))
-   `(ivy-minibuffer-match-face-3 ((t (:inherit hi-yellow-b :weight bold))))
+   `(ivy-minibuffer-match-face-3 ((t (:inherit hi-black-b :weight bold))))
    `(ivy-minibuffer-match-face-4 ((t (:inherit hi-red-b :weight bold))))
    `(ivy-grep-info               ((t (:foreground ,cyan+1))))
    `(ivy-grep-line-number        ((t (:foreground ,magenta))))
