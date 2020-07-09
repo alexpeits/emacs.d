@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: reveal_type
+# key: rt
+# --
+reveal_type($0)  # noqa

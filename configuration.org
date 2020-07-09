@@ -2828,8 +2828,6 @@ the current file."
 #+BEGIN_SRC emacs-lisp
 (use-package python
   :mode ("\\.py\\'" . python-mode)
-  :bind (:map python-mode-map
-              ("C-c C-j" . counsel-imenu))
   :init
   (setq python-shell-prompt-detect-failure-warning nil)
   :config
@@ -2837,20 +2835,44 @@ the current file."
    '(python-mode-hook)
    (setq-default flycheck-disabled-checkers
                  (append flycheck-disabled-checkers
-                         '(python-pycompile)))))
+                         '(python-pycompile))))
+  (defun my/python-format-and-save ()
+    (interactive)
+    (blacken-buffer)
+    (py-isort-before-save)
+    (save-buffer))
+  (my/define-major-mode-key 'python-mode "s" 'my/python-format-and-save))
 
 (use-package blacken
   :ensure t
   :if (executable-find "black")
   :after python
   :commands (blacken-mode blacken-buffer)
+  :diminish
   :init
-  (setq blacken-line-length 80)
-  (defun my/python-format-and-save ()
-    (interactive)
-    (blacken-buffer)
-    (save-buffer))
-  (my/define-major-mode-key 'python-mode "s" 'my/python-format-and-save))
+  (setq blacken-line-length 80))
+
+(use-package py-isort
+  :ensure t
+  :if (executable-find "isort")
+  :after python
+  :commands (py-isort-buffer py-isort-before-save))
+
+(define-minor-mode my/python-format-on-save-mode
+  "Minor mode for autoformatting python buffers on save."
+  :lighter " pyf"
+  :global nil
+  (if my/python-format-on-save-mode
+      (if (eq major-mode 'python-mode)
+          (progn
+            (blacken-mode +1)
+            (add-hook 'before-save-hook #'py-isort-before-save nil :local))
+        (progn
+          (setq my/python-format-on-save-mode nil)
+          (user-error "Not a python-mode buffer")))
+    (progn
+      (blacken-mode -1)
+      (remove-hook 'before-save-hook #'py-isort-before-save :local))))
 
 (use-package anaconda-mode
   :ensure t
@@ -2872,10 +2894,8 @@ the current file."
         (let ((venv (if (null pyvenv-virtual-env-name)
                         "-"
                       pyvenv-virtual-env-name)))
-          (concat
-           "["
-           (propertize venv 'face '(:underline t))
-           "] "))
+          (format "(%s) " venv)
+          )
       "")))
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
@@ -5101,6 +5121,7 @@ the minibuffer."
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
        (:eval (frame-parameter nil 'persp--modestring)) "  "
+       (:eval (my/mode-line-venv))
        (:eval (my/mode-line-position))
        (:eval (my/mode-line-hud)) "  "
        ))
