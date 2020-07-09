@@ -26,6 +26,13 @@
 (add-hook 'prog-mode-hook 'hl-line-mode)
 (add-hook 'LaTeX-mode-hook 'hl-line-mode)
 
+;;; variables
+(setq magit-repository-directories
+      '(
+        ("~/projects" . 1)
+        ("~/job/projects" . 1)
+        ))
+
 ;;; projectile overrides
 (dolist (override '(
                     ("/home/alex/projects/software-foundations" . "sf")
