@@ -194,7 +194,7 @@
    `(powerline-inactive1             ((t (:inherit powerline-inactive0))))
    `(powerline-inactive2             ((t (:inherit powerline-inactive0))))
 
-   `(minibuffer-prompt ((t (:foreground ,blue+1))))
+   `(minibuffer-prompt ((t (:foreground ,cyan))))
 
    `(persp-selected-face ((t (:foreground ,green-alt :weight bold))))
 
