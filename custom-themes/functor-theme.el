@@ -59,6 +59,8 @@
        (green+1 "#5faf5f")
        (green+2 "#87d7af")
 
+       (green-bright-1 "#006800")
+
        (green-alt-pale "#afd7af")
        (green-alt      "#afd787")
 
@@ -90,6 +92,7 @@
        (blue-1 "#005f87")
        (blue   "#5fafd7")
        (blue+1 "#87d7ff")
+       (blue+2 "#8ae4f2")
 
        (blue-bright-2 "#298ed5")
        (blue-bright-1 "#0798db")
@@ -120,11 +123,12 @@
        (red-1 "#bc4d4d")
        (red   "#ff5f5f")
        (red+1 "#ff8787")
+       (red+2 "#ffb9ab")
 
-       (hi-green-bg  "#354a3c") (hi-green-fg  "#8ec19d")
-       (hi-red-bg    "#453237") (hi-red-fg    "#cf7e8a")
-       (hi-blue-bg   "#374b4f") (hi-blue-fg   "#8bc8d6")
-       (hi-yellow-bg "#444532") (hi-yellow-fg "#b5af82")
+       (hi-green-bg  "#3c5444") (hi-green-fg  "#9ad6ac")
+       (hi-red-bg    "#593e45") (hi-red-fg    "#eb94a1")
+       (hi-blue-bg   "#3d5559") (hi-blue-fg   "#90d7e8")
+       (hi-yellow-bg "#574833") (hi-yellow-fg "#c9c079")
 
        ;; the following are copied from modus-vivendi-theme
        (diff-added-bg-1 "#002600") (diff-added-fg-1 "#94ba94")
@@ -194,9 +198,11 @@
 
    `(persp-selected-face ((t (:foreground ,green-alt :weight bold))))
 
-   `(isearch-fail   ((t (:foreground ,grey-4 :background ,red+1))))
-   `(isearch        ((t (:foreground ,black :background ,blue))))
-   `(lazy-highlight ((t (:foreground ,grey+3 :background ,grey-3))))
+   `(isearch-fail   ((t (:foreground ,red+2 :background ,red-2))))
+   `(isearch        ((t (:foreground ,white :background ,green-bright-1 :weight bold))))
+   `(lazy-highlight ((t (:foreground ,blue+2 :background ,blue-2))))
+
+   `(evil-ex-substitute-replacement ((t (:inherit hi-yellow))))
 
    `(font-lock-negation-char-face        ((t (:foreground ,orange))))
    `(font-lock-regexp-grouping-backslash ((t (:foreground ,yellow))))
@@ -296,16 +302,22 @@
    `(hi-red-b   ((t (:background ,hi-red-bg :foreground ,hi-red-fg :weight bold))))
    `(hi-black-b ((t (:background ,hi-yellow-bg :foreground ,hi-yellow-fg :weight bold))))
 
-   `(match ((t (:foreground ,cyan+3 :background ,cyan-5))))
+   ;; `(match ((t (:foreground ,cyan+3 :background ,cyan-5))))
+   `(match ((t (:background ,blue-1 :foreground ,white))))
 
-   `(ivy-current-match           ((t (:inherit match :weight bold :underline t))))
+   `(ivy-current-match           ((t (:inherit match :weight bold))))
    `(ivy-minibuffer-match-face-1 ((t (:inherit highlight :weight bold))))
-   `(ivy-minibuffer-match-face-2 ((t (:inherit hi-black-b))))
-   `(ivy-minibuffer-match-face-3 ((t (:inherit hi-blue-b))))
-   `(ivy-minibuffer-match-face-4 ((t (:inherit hi-red-b))))
+   `(ivy-minibuffer-match-face-2 ((t (:inherit hi-green-b :weight bold))))
+   `(ivy-minibuffer-match-face-3 ((t (:inherit hi-yellow-b :weight bold))))
+   `(ivy-minibuffer-match-face-4 ((t (:inherit hi-red-b :weight bold))))
    `(ivy-grep-info               ((t (:foreground ,cyan+1))))
    `(ivy-grep-line-number        ((t (:foreground ,magenta))))
    `(ivy-highlight-face          ((t (:foreground ,magenta))))
+
+   `(swiper-match-face-1 ((t (:background ,blue-3 :foreground ,blue+2))))
+   `(swiper-match-face-2 ((t (:inherit hi-gren-b :weight normal))))
+   `(swiper-match-face-3 ((t (:inherit hi-red-b :weight normal))))
+   `(swiper-match-face-4 ((t (:inherit hi-black-b :weight normal))))
 
    `(helm-source-header    ((t (:inherit hi-blue-b :height 1.3))))
    `(helm-selection        ((t (:inherit ivy-current-match :underline nil))))
