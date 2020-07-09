@@ -126,7 +126,7 @@
        (red+2 "#ffb9ab")
 
        (hi-green-bg  "#3c5444") (hi-green-fg  "#9ad6ac")
-       (hi-red-bg    "#593e45") (hi-red-fg    "#eb94a1")
+       (hi-red-bg    "#543b41") (hi-red-fg    "#eb94a1")
        (hi-blue-bg   "#3d5559") (hi-blue-fg   "#90d7e8")
        (hi-yellow-bg "#574833") (hi-yellow-fg "#c9c079")
 
