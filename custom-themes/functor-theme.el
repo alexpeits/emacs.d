@@ -2,11 +2,12 @@
 ;;;
 ;;; Author: Alex Peitsinis <alexpeitsinis@gmail.com>
 ;;; Url: https://github.com/alexpeits/emacs-functor-theme
-;;; Version: 20190222.0
+;;; Version: 20200708.0
 ;;;
 ;;; Changelog :
 ;;;
 ;;; 20190222.0: Initial version
+;;; 20200708.0: Switch to using a palette
 ;;;
 ;;; This program is free software: you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
@@ -61,8 +62,8 @@
        (green-alt-pale "#afd7af")
        (green-alt      "#afd787")
 
-       (cyan-pale-3 "#2c3333")
-       (cyan-pale-2 "#498279")
+       (cyan-pale-3 "#2c3232")
+       (cyan-pale-2 "#548a81")
        (cyan-pale-1 "#86b8b5")
        (cyan-pale   "#99d1ce")
        (cyan-pale+1 "#bfebe0")
@@ -74,7 +75,7 @@
        (cyan-3 "#006553")
        (cyan-2 "#2da49b")
        (cyan-1 "#1da89f")
-       (cyan   "#20bdb3")
+       (cyan   "#1ebab0")
        (cyan+1 "#5fd7d7")
        (cyan+2 "#87d7d7")
        (cyan+3 "#afd7d7")
@@ -94,8 +95,8 @@
        (blue-bright-1 "#0798db")
        (blue-bright   "#00aee6")
 
-       (magenta-pale   "#5f5f87")
-       (magenta-pale+1 "#819fc7")
+       (magenta-pale-1 "#5f5f87")
+       (magenta-pale   "#819fc7")
 
        (magenta   "#d7afd7")
        (magenta+1 "#e6c5df")
@@ -107,9 +108,9 @@
        (yellow-1 "#585800")
        (yellow   "#d7af5f")
 
-       (beige-2 "#b5b594")
-       (beige-1 "#cacaa7")
-       (beige   "#d7d7af")
+       (beige-1 "#b5b594")
+       (beige   "#cacaa7")
+       (beige+1 "#d7d7af")
 
        (red-pale-1 "#6e3a50")
        (red-pale   "#875f5f")
@@ -120,19 +121,12 @@
        (red   "#ff5f5f")
        (red+1 "#ff8787")
 
-       (hi-green-fg    "#8ec19d")
-       (hi-green-bg    "#6d997a")
-       (hi-green-bg-1  "#354a3c")
-       (hi-red-fg      "#cf7e8a")
-       (hi-red-bg      "#c9717a")
-       (hi-red-bg-1    "#453237")
-       (hi-blue-fg     "#8bc8d6")
-       (hi-blue-bg     "#659fad")
-       (hi-blue-bg-1   "#374b4f")
-       (hi-yellow-fg   "#b5af82")
-       (hi-yellow-bg   "#99986d")
-       (hi-yellow-bg-1 "#444532")
+       (hi-green-bg  "#354a3c") (hi-green-fg  "#8ec19d")
+       (hi-red-bg    "#453237") (hi-red-fg    "#cf7e8a")
+       (hi-blue-bg   "#374b4f") (hi-blue-fg   "#8bc8d6")
+       (hi-yellow-bg "#444532") (hi-yellow-fg "#b5af82")
 
+       ;; the following are copied from modus-vivendi-theme
        (diff-added-bg-1 "#002600") (diff-added-fg-1 "#94ba94")
        (diff-added-bg   "#244024") (diff-added-fg   "#b4ddb4")
        (diff-added-bg+1 "#005a00") (diff-added-fg+1 "#e0ffe0")
@@ -145,21 +139,12 @@
        (diff-removed-bg   "#542222") (diff-removed-fg   "#eebdba")
        (diff-removed-bg+1 "#7d0000") (diff-removed-fg+1 "#ffc8bb")
 
-       (builtin (if functor-theme-less-colors
-                    `(:foreground ,cyan-pale-1)
-                  `(:foreground ,blue+1)))
-       (keyword (if functor-theme-less-colors
-                    `(:foreground ,cyan-pale-1 :weight bold)
-                  `(:foreground ,cyan-1)))
-       (string (if functor-theme-less-colors
-                   `(:foreground ,cyan-1)
-                 `(:foreground ,beige)))
-       (doc (if functor-theme-less-colors
-                `(:foreground ,cyan-2)
-              `(:foreground ,beige-1)))
-       (type (if functor-theme-less-colors
-                 `(:foreground ,cyan-pale-1)
-               `(:foreground ,cyan+2)))
+       (builtin-fg     (if functor-theme-less-colors cyan-pale-1 blue+1))
+       (keyword-fg     (if functor-theme-less-colors cyan-pale-1 cyan-1))
+       (keyword-weight (if functor-theme-less-colors 'bold 'normal))
+       (string-fg      (if functor-theme-less-colors cyan-1 beige+1))
+       (doc-fg         (if functor-theme-less-colors cyan-2 beige))
+       (type-fg        (if functor-theme-less-colors cyan-pale-1 cyan+2))
        )
   (custom-theme-set-faces
    'functor
@@ -207,7 +192,7 @@
 
    `(minibuffer-prompt ((t (:foreground ,cyan-1 :weight bold))))
 
-   `(persp-selected-face ((t (:inherit font-lock-function-name-face :weight bold))))
+   `(persp-selected-face ((t (:foreground ,green-alt :weight bold))))
 
    `(isearch-fail   ((t (:foreground ,grey-4 :background ,red+1))))
    `(isearch        ((t (:foreground ,black :background ,blue))))
@@ -221,14 +206,14 @@
    `(font-lock-preprocessor-face      ((t (:foreground ,olive))))
    `(font-lock-comment-face           ((t (:foreground ,grey+1))))
    `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-   `(font-lock-function-name-face     ((t (:foreground ,green-alt))))
+   `(font-lock-doc-face               ((t (:foreground ,doc-fg))))
+   `(font-lock-string-face            ((t (:foreground ,string-fg))))
    `(font-lock-constant-face          ((t (:foreground ,green+2))))
-   `(font-lock-builtin-face           ((t ,builtin)))
-   `(font-lock-keyword-face           ((t ,keyword)))
-   `(font-lock-string-face            ((t ,string)))
-   `(font-lock-doc-face               ((t ,doc)))
-   `(font-lock-type-face              ((t ,type)))
+   `(font-lock-builtin-face           ((t (:foreground ,builtin-fg))))
    `(font-lock-variable-name-face     ((t (:inherit font-lock-builtin-face))))
+   `(font-lock-keyword-face           ((t (:foreground ,keyword-fg :weight ,keyword-weight))))
+   `(font-lock-function-name-face     ((t (:foreground ,green-alt))))
+   `(font-lock-type-face              ((t (:foreground ,type-fg))))
 
    `(haskell-pragma-face ((t (:foreground ,magenta))))
 
@@ -240,7 +225,7 @@
    `(coq-solve-tactics-face  ((t (:foreground ,red+1))))
    `(coq-cheat-face          ((t (:inherit hi-red-b))))
    `(coq-button-face         ((t (:inherit hi-green-b))))
-   `(coq-button-face-pressed ((t (:inherit hi-green-b :background "grey43"))))
+   `(coq-button-face-pressed ((t (:inherit hi-green-b :background ,grey-1))))
 
    `(proof-tacticals-name-face   ((t (:foreground ,magenta))))
    `(proof-tactics-name-face     ((t (:foreground ,blue-bright))))
@@ -273,40 +258,43 @@
    `(diff-indicator-added   ((t (:inherit diff-added))))
    `(diff-indicator-changed ((t (:inherit diff-changed))))
    `(diff-indicator-removed ((t (:inherit diff-removed))))
-   `(diff-header            ((t (:foreground ,magenta-pale+1))))
+   `(diff-header            ((t (:foreground ,magenta-pale))))
    `(diff-hunk-header       ((t (:inherit region :weight bold))))
    `(diff-file-header       ((t (:foreground ,blue-bright :weight bold))))
    `(diff-function          ((t (:foreground ,cyan-pale ))))
    `(diff-context           ((t (:inherit shadow))))
 
-   `(magit-diff-added                  ((t (:foreground ,diff-added-fg-1 :background ,diff-added-bg-1))))
-   `(magit-diff-base                   ((t (:foreground ,diff-changed-fg-1 :background ,diff-changed-bg-1))))
-   `(magit-diff-removed                ((t (:foreground ,diff-removed-fg-1 :background ,diff-removed-bg-1))))
+   `(magit-diff-added                  ((t (:foreground ,diff-added-fg-1
+                                                        :background ,diff-added-bg-1))))
+   `(magit-diff-base                   ((t (:foreground ,diff-changed-fg-1
+                                                        :background ,diff-changed-bg-1))))
+   `(magit-diff-removed                ((t (:foreground ,diff-removed-fg-1
+                                                        :background ,diff-removed-bg-1))))
    `(magit-diff-added-highlight        ((t (:inherit diff-added))))
    `(magit-diff-base-highlight         ((t (:inherit diff-changed))))
    `(magit-diff-removed-highlight      ((t (:inherit diff-removed))))
    `(magit-diff-hunk-heading           ((t (:background ,grey-5 :foreground ,grey+4 :weight bold))))
    `(magit-diff-hunk-heading-highlight ((t (:background ,blue-2 :foreground ,cyan+4 :weight bold))))
    `(magit-diff-context-highlight      ((t (:background ,grey-7 region :foreground ,grey+3))))
-   `(magit-section-heading             ((t (:foreground ,beige-1 :weight bold))))
+   `(magit-section-heading             ((t (:foreground ,beige :weight bold))))
    `(magit-section-highlight           ((t (:inherit hl-line))))
    `(magit-branch-local                ((t (:foreground ,blue-bright))))
    `(magit-branch-remote               ((t (:foreground ,magenta))))
    `(magit-tag                         ((t (:foreground ,olive+1))))
 
    `(change-log-date           ((t (:foreground ,magenta))))
-   `(change-log-name           ((t (:inherit font-lock-keyword-face))))
+   `(change-log-name           ((t (:foreground ,cyan))))
    `(change-log-email          ((t (:inherit change-log-name))))
-   `(change-log-acknowledgment ((t (:foreground ,beige-1))))
+   `(change-log-acknowledgment ((t (:foreground ,beige))))
 
-   `(hi-green   ((t (:background ,hi-green-bg :foreground "black"))))
-   `(hi-blue    ((t (:background ,hi-blue-bg :foreground "black"))))
-   `(hi-pink    ((t (:background ,hi-red-bg :foreground "black"))))
-   `(hi-yellow  ((t (:background ,hi-yellow-bg :foreground "black"))))
-   `(hi-green-b ((t (:background ,hi-green-bg-1 :foreground ,hi-green-fg :weight bold))))
-   `(hi-blue-b  ((t (:background ,hi-blue-bg-1 :foreground ,hi-blue-fg :weight bold))))
-   `(hi-red-b   ((t (:background ,hi-red-bg-1 :foreground ,hi-red-fg :weight bold))))
-   `(hi-black-b ((t (:background ,hi-yellow-bg-1 :foreground ,hi-yellow-fg :weight bold))))
+   `(hi-green   ((t (:background ,grey-5 :foreground ,hi-green-fg :underline t))))
+   `(hi-blue    ((t (:background ,grey-5 :foreground ,hi-blue-fg :underline t))))
+   `(hi-pink    ((t (:background ,grey-5 :foreground ,hi-red-fg :underline t))))
+   `(hi-yellow  ((t (:background ,grey-5 :foreground ,hi-yellow-fg :underline t))))
+   `(hi-green-b ((t (:background ,hi-green-bg :foreground ,hi-green-fg :weight bold))))
+   `(hi-blue-b  ((t (:background ,hi-blue-bg :foreground ,hi-blue-fg :weight bold))))
+   `(hi-red-b   ((t (:background ,hi-red-bg :foreground ,hi-red-fg :weight bold))))
+   `(hi-black-b ((t (:background ,hi-yellow-bg :foreground ,hi-yellow-fg :weight bold))))
 
    `(match ((t (:foreground ,cyan+3 :background ,cyan-5))))
 
@@ -323,7 +311,7 @@
    `(helm-selection        ((t (:inherit ivy-current-match :underline nil))))
    `(helm-candidate-number ((t (:inherit hi-blue-b))))
 
-   `(ag-hit-face ((t (:inherit font-lock-function-name-face :weight bold))))
+   `(ag-hit-face ((t (:foreground ,cyan+1 :weight bold))))
 
    `(aw-leading-char-face ((t (:foreground ,magenta :weight bold :height 2.5))))
 
@@ -343,7 +331,7 @@
    `(diredfl-number      ((t (:foreground ,cyan-2))))
    `(diredfl-date-time   ((t (:foreground ,cyan-pale))))
    `(diredfl-file-name   ((t (:foreground ,white))))
-   `(diredfl-file-suffix ((t (:foreground ,beige-2))))
+   `(diredfl-file-suffix ((t (:foreground ,beige-1))))
    `(diredfl-dir-name    ((t (:inherit dired-directory))))
    `(diredfl-symlink     ((t (:inherit dired-symlink))))
 
@@ -353,7 +341,12 @@
 
    `(header-line ((t (:foreground ,grey+3 :background ,grey-4))))
 
-   `(Info-quoted ((t (:inherit font-lock-type-face))))
+   `(Info-quoted      ((t (:foreground ,magenta))))
+   `(info-header-node ((t (:foreground ,grey+2 :weight bold))))
+   `(info-title-1     ((t (:foreground ,white :weight bold :height 1.2))))
+   `(info-title-2     ((t (:foreground ,cyan-pale+1 :weight bold))))
+   `(info-title-3     ((t (:foreground ,magenta+1 :weight bold))))
+   `(info-title-4     ((t (:foreground ,beige+1 :weight bold))))
 
    `(eww-valid-certificate   ((t (:foreground ,green-alt :weight bold))))
    `(eww-invalid-certificate ((t (:foreground ,red+1 :weight bold))))
@@ -376,7 +369,7 @@
    `(anzu-mode-line          ((t (:foreground ,magenta :weight bold))))
    `(anzu-mode-line-no-match ((t (:foreground ,red :weight bold))))
 
-   `(rainbow-delimiters-depth-1-face    ((t (:foreground ,beige))))
+   `(rainbow-delimiters-depth-1-face    ((t (:foreground ,beige+1))))
    `(rainbow-delimiters-depth-2-face    ((t (:foreground ,cyan+2))))
    `(rainbow-delimiters-depth-3-face    ((t (:foreground ,magenta))))
    `(rainbow-delimiters-depth-4-face    ((t (:foreground ,green+2))))
@@ -391,7 +384,7 @@
    `(org-block            ((t (:background ,blue-4 :extend t))))
    `(org-block-begin-line ((t (:foreground ,blue-bright-1 :background ,blue-3 :extend t))))
    `(org-block-end-line   ((t (:inherit org-block-begin-line))))
-   `(org-hide             ((t (:inherit fill-column-indicator))))
+   `(org-hide             ((t (:foreground ,black))))
    `(org-indent           ((t (:foreground ,black :background ,black))))
    `(org-ellipsis         ((t (:foreground ,magenta :underline t))))
    `(org-date             ((t (:foreground ,green+2 :underline t))))
@@ -406,7 +399,7 @@
 
    `(outline-1 ((t (:foreground ,blue-pale))))
    `(outline-2 ((t (:foreground ,cyan+2))))
-   `(outline-3 ((t (:foreground ,beige))))
+   `(outline-3 ((t (:foreground ,beige+1))))
    `(outline-4 ((t (:foreground ,cyan-1))))
    `(outline-5 ((t (:foreground ,magenta))))
    `(outline-6 ((t (:foreground ,olive+1))))
@@ -453,13 +446,13 @@
    `(markup-title-4-face             ((t (:inherit markup-title-0-face))))
    `(markup-title-5-face             ((t (:inherit markup-title-0-face))))
 
-   `(imenu-list-entry-face-0          ((t (:inherit font-lock-function-name-face ))))
+   `(imenu-list-entry-face-0          ((t (:foreground ,green-alt))))
    `(imenu-list-entry-subalist-face-0 ((t (:inherit imenu-list-entry-face-0 :weight bold))))
-   `(imenu-list-entry-face-1          ((t (:foreground ,cyan+1))))
+   `(imenu-list-entry-face-1          ((t (:foreground ,cyan-pale))))
    `(imenu-list-entry-subalist-face-1 ((t (:inherit imenu-list-entry-face-1 :weight bold))))
-   `(imenu-list-entry-face-2          ((t (:foreground ,cyan-pale))))
+   `(imenu-list-entry-face-2          ((t (:foreground ,cyan-pale+1))))
    `(imenu-list-entry-subalist-face-2 ((t (:inherit imenu-list-entry-face-2 :weight bold))))
-   `(imenu-list-entry-face-3          ((t (:foreground ,cyan-pale-1))))
+   `(imenu-list-entry-face-3          ((t (:foreground ,cyan-pale+1))))
    `(imenu-list-entry-subalist-face-3 ((t (:inherit imenu-list-entry-face-3 :weight bold))))
 
    `(elfeed-search-title-face        ((t (:inherit shadow :slant italic :background ,grey-4))))
@@ -467,13 +460,13 @@
    `(elfeed-search-feed-face         ((t (:foreground ,yellow))))
    `(elfeed-search-tag-face          ((t (:foreground ,olive))))
 
-   `(erc-timestamp-face ((t (:inherit font-lock-string-face :weight bold))))
-   `(erc-prompt-face    ((t (:inherit font-lock-keyword-face :weight bold))))
-   `(erc-action-face    ((t (:inherit font-lock-string-face))))
+   `(erc-timestamp-face ((t (:foreground ,beige :weight bold))))
+   `(erc-prompt-face    ((t (:foreground ,cyan-1 :weight bold))))
+   `(erc-action-face    ((t (:foreground ,beige+1))))
 
    `(message-header-name    ((t (:foreground ,olive))))
-   `(message-header-subject ((t (:inherit font-lock-function-name-face :weight bold))))
-   `(message-header-to      ((t (:inherit font-lock-function-name-face))))
+   `(message-header-subject ((t (:foreground ,green-alt :weight bold))))
+   `(message-header-to      ((t (:foreground ,cyan-1))))
    `(message-header-other   ((t (:foreground ,yellow))))
 
    `(shr-link ((t (:foreground ,cyan+1 :underline t))))
