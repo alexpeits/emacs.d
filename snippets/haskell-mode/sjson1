@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: aeson instances for sum type with 1 constructor
+# key: sjson1
+# expand-env: ((yas-indent-line 'fixed))
+# --
+instance Ae.ToJSON $1 where
+  toJSON $2 = Ae.String "$3"
+
+instance Ae.FromJSON $1 where
+  parseJSON = Ae.withText "$1" $ \case
+    "$3" -> pure $2
+    v -> fail $ "Invalid $1 value: " <> show v

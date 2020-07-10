@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: newtype
+# key: nt
+# expand-env: ((yas-indent-line 'fixed))
+# --
+newtype $1
+  = $1
+      { get$1$2 :: $2
+      }
+  $0

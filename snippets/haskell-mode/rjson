@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: aeson instances for record
+# key: rjson
+# expand-env: ((yas-indent-line 'fixed))
+# --
+instance Ae.ToJSON $1 where
+  toJSON $1 {..} =
+    Ae.object
+      [ $0
+      ]
+
+instance Ae.FromJSON $1 where
+  parseJSON = Ae.withObject "$1" $ \v ->
+    $1
+     <$> v .:
