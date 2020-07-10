@@ -32,8 +32,8 @@
 
 (defvar functor-theme-less-colors nil)
 
-(let* ((black "#1a1a1a")
-       (white "#d7d7d7")
+(let* ((black "#181818")
+       (white "#dadada")
 
        (grey-8 "#202020")
        (grey-7 "#242424")
