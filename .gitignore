@@ -15,6 +15,7 @@ amx-items
 smex-items
 transient/
 anaconda-mode/
+elpy/
 url/
 org-roam.db
 org-journal.cache

@@ -166,7 +166,7 @@
    `(show-paren-match    ((t (:background ,red-pale-1 :foreground ,white))))
    `(link                ((t (:foreground ,blue-bright :underline t))))
    `(italic              ((t (:foreground ,cyan-pale+1 :slant italic))))
-   `(warning             ((t (:foreground ,orange :weight bold))))
+   `(warning             ((t (:foreground ,yellow :weight bold))))
    `(whitespace-trailing ((t (:background ,red-2))))
    `(fixed-pitch         ((t nil)))
    `(fixed-pitch-serif   ((t nil)))
@@ -207,7 +207,7 @@
    `(font-lock-negation-char-face        ((t (:foreground ,orange))))
    `(font-lock-regexp-grouping-backslash ((t (:foreground ,yellow))))
    `(font-lock-regexp-grouping-construct ((t (:foreground ,red))))
-   `(font-lock-warning-face              ((t (:foreground ,orange))))
+   `(font-lock-warning-face              ((t (:foreground ,yellow))))
 
    `(font-lock-preprocessor-face      ((t (:foreground ,olive))))
    `(font-lock-comment-face           ((t (:foreground ,grey+1))))

@@ -2874,14 +2874,16 @@ the current file."
       (blacken-mode -1)
       (remove-hook 'before-save-hook #'py-isort-before-save :local))))
 
-(use-package anaconda-mode
+(use-package elpy
   :ensure t
-  :defer t
-  :hook ((python-mode . anaconda-mode)
-         (python-mode . anaconda-eldoc-mode)
-         )
-  :diminish anaconda-mode
-  :diminish anaconda-eldoc-mode)
+  :hook ((python-mode . elpy-enable))
+  :init
+  (setq elpy-modules '(elpy-module-sane-defaults
+                       elpy-module-company
+                       elpy-module-eldoc
+                       elpy-module-pyvenv))
+  (setq python-shell-interpreter "ipython"
+        python-shell-interpreter-args "-i --simple-prompt"))
 
 (defun my/mode-line-venv ())
 (use-package pyvenv
