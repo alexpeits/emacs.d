@@ -1359,7 +1359,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(highlight-numbers-number ((t (:inherit font-lock-string-face))))
 
-         `(haskell-pragma-face ((t (:inherit font-lock-constant-face))))
+         `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
          `(haskell-constructor-face ((t ,haskell-constructor)))
 
          `(coq-solve-tactics-face ((t (:foreground ,red))))
