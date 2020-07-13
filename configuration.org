@@ -2850,7 +2850,7 @@ the current file."
   :commands (blacken-mode blacken-buffer)
   :diminish
   :init
-  (setq blacken-line-length 80))
+  (setq blacken-line-length 79))
 
 (use-package py-isort
   :ensure t
@@ -2877,6 +2877,7 @@ the current file."
 (use-package elpy
   :ensure t
   :hook ((python-mode . elpy-enable))
+  :diminish
   :init
   (setq elpy-modules '(elpy-module-sane-defaults
                        elpy-module-company
