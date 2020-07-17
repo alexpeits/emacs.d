@@ -4,6 +4,7 @@
       '(
         ("Source Code Pro" 10.5)
         ("Source Code Pro" 11)
+        ;; ("Source Sans Pro" 13)
         ))
 (setq my/current-font 0)
 

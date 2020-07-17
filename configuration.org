@@ -2563,6 +2563,18 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (with-eval-after-load 'haskell-mode
       (sp-local-pair 'haskell-mode "'" nil :actions nil)))
 
+  ;; fontify special ghcid comments in haskell-mode
+  ;; the comments look like this '-- $> '
+  ;; and are evaluated if ghcid is started with the '-a/--allow-eval' flag
+  (defface my/haskell-ghcid-eval-face
+    '((t (:inherit font-lock-warning-face)))
+    "Face for highlighting ghcid eval directives in haskell-mode"
+    :group 'my/faces)
+
+  (font-lock-add-keywords
+   'haskell-mode
+   '(("^[ \t]*-- $> .*" 0 'my/haskell-ghcid-eval-face prepend)))
+
   :config
   (my/highlight-keyword-in-mode 'haskell-mode "error" nil 'font-lock-preprocessor-face)
   (my/highlight-keyword-in-mode 'haskell-mode "undefined" nil 'font-lock-preprocessor-face)
@@ -3889,16 +3901,11 @@ buffer, close it."
   (setq company-backends (delete 'company-dabbrev company-backends))
   (setq company-backends (delete 'company-capf company-backends))
   (add-to-list 'company-backends 'company-elisp)
-  (add-to-list 'company-backends 'company-anaconda)
   (add-to-list 'company-backends 'company-files))
 
 (use-package company-quickhelp
   :ensure t
   :after company)
-
-(use-package company-anaconda
-  :ensure t
-  :after (company anaconda-mode))
 #+END_SRC
 
 * flycheck
