@@ -2998,6 +2998,14 @@ the current file."
               :map css-mode-map
               ("<C-return>" . emmet-expand-line))
   :hook ((web-html-mode html-mode css-mode) . emmet-mode))
+
+(use-package mustache-mode
+  :ensure t
+  :mode (("\\.mustache\\'" . mustache-mode))
+  :init
+  (setq mustache-basic-offset 2)
+  :config
+  (add-hook 'mustache-mode-hook #'evil-local-mode))
 #+END_SRC
 
 * Lisps
@@ -4538,6 +4546,7 @@ the minibuffer."
 
   :config
   (require 'org-tempo nil :noerror)
+  (require 'org-ref nil :noerror)
 
   (my/define-major-mode-key 'org-mode "c" 'org-cliplink)
   (my/define-major-mode-key 'org-mode "it" 'my/org-insert-date-today)
