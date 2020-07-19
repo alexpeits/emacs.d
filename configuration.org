@@ -1293,7 +1293,7 @@ CWD is not in a git repo (or the git command is not found)."
   :defer t
   :init
   (setq modus-vivendi-theme-visible-fringes t
-        modus-vivendi-theme-distinct-org-blocks t
+        modus-vivendi-theme-org-blocks 'greyscale
         modus-vivendi-theme-rainbow-headings t
         modus-vivendi-theme-scale-headings t
         modus-vivendi-theme-scale-5 1.3
@@ -1405,7 +1405,7 @@ CWD is not in a git repo (or the git command is not found)."
   :defer t
   :init
   (setq modus-operandi-theme-visible-fringes t
-        modus-operandi-theme-distinct-org-blocks t
+        modus-operandi-theme-org-blocks 'greyscale
         modus-operandi-theme-rainbow-headings t
         modus-operandi-theme-scale-headings t
         modus-operandi-theme-scale-5 1.3
@@ -1482,7 +1482,32 @@ CWD is not in a git repo (or the git command is not found)."
          `(rst-literal ((t (:foreground ,cyan))))
          `(rst-reference ((t (:inherit link))))
          `(rst-transition ((t (:foreground ,red))))
-         )))))
+         ))))
+
+  (defun my/modus-operandi-emacs-theme ()
+    "Modus operandi theme that looks like the default emacs theme"
+    (my/modus-operandi-theme)
+    (modus-operandi-theme-with-color-variables
+      (custom-theme-set-faces
+       'modus-operandi
+       `(font-lock-comment-face ((t (:foreground ,red-intense))))
+       `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+       `(font-lock-string-face ((t (:foreground ,red-faint))))
+       `(font-lock-doc-face ((t (:foreground ,red-faint))))
+       `(font-lock-variable-name-face ((t (:foreground ,yellow-intense))))
+       `(font-lock-constant-face ((t (:foreground ,cyan))))
+       `(font-lock-builtin-face ((t (:foreground ,cyan-alt))))
+       `(font-lock-keyword-face ((t (:foreground ,magenta-intense))))
+       `(font-lock-function-name-face ((t (:foreground ,blue-intense))))
+       `(font-lock-type-face ((t (:foreground ,green-intense))))
+
+       `(highlight-numbers-number ((t (:inherit font-lock-constant-face))))
+
+       `(haskell-type-face ((t (:inherit font-lock-type-face))))
+       `(haskell-constructor-face ((t (:inherit font-lock-type-face))))
+       `(haskell-operator-face ((t (:inherit font-lock-variable-name-face))))
+       )))
+  )
 #+end_src
 
 ** zenburn theme (low contrast)
@@ -3161,11 +3186,21 @@ the current file."
         markdown-list-indent-width 2
         markdown-command "pandoc --highlight-style=pygments --standalone"
         markdown-css-paths `(,(expand-file-name "static/github.css" user-emacs-directory)))
+
+  (defface my/markdown-pandoc-native-div-face
+    '((t (:inherit font-lock-preprocessor-face)))
+    "Face for highlighting pandoc native div blocks (starting with ':::')"
+    :group 'my/faces)
+
+  (font-lock-add-keywords
+   'markdown-mode
+   '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
   :config
   (if (executable-find "marked")
       (setq markdown-command "marked"))
   (my/add-hooks
    '(markdown-mode-hook)
+   (setq evil-shift-width 2)
    (auto-fill-mode 1)
    (whitespace-mode +1)
    (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))

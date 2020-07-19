@@ -3,7 +3,6 @@
 # key: rec
 # expand-env: ((yas-indent-line 'fixed))
 # --
-data $1
-  = $1
-      { $0
-      }
+data $1 = $1
+  { $0
+  }

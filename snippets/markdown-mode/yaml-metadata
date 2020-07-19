@@ -5,8 +5,8 @@
 # --
 ---
 title: $1
+description:
+date:
 tags:
-  - $2
+  -
 ---
-
-$0

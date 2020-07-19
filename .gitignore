@@ -22,3 +22,4 @@ org-journal.cache
 .org-id-locations
 result
 network-security.data
+.lsp-session*

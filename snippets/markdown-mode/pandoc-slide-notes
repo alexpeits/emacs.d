@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Pandoc slide notes
+# key: pnote
+# --
+
+::: notes
+$0
+:::

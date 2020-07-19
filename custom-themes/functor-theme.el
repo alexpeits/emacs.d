@@ -89,7 +89,7 @@
        (blue-4 "#0d1c20")
        (blue-3 "#003347")
        (blue-2 "#004065")
-       (blue-1 "#005f87")
+       (blue-1 "#005881")
        (blue   "#5fafd7")
        (blue+1 "#87d7ff")
        (blue+2 "#8ae4f2")
@@ -153,23 +153,24 @@
   (custom-theme-set-faces
    'functor
 
-   `(cursor              ((t (:background ,cyan-pale))))
-   `(default             ((t (:foreground ,white :background ,black))))
-   `(escape-glyph        ((t (:foreground ,orange))))
-   `(highlight           ((t (:background ,grey-4))))
-   `(hl-line             ((t (:background ,grey-6))))
-   `(region              ((t (:background ,blue-1))))
+   `(default ((t (:foreground ,white :background ,black))))
+   `(cursor  ((t (:background ,cyan-pale))))
+   `(region  ((t (:background ,blue-1))))
+
    `(fringe              ((t (:foreground ,grey+2 :background ,grey-6))))
    `(vertical-border     ((t (:foreground ,grey))))
-   `(shadow              ((t (:foreground ,grey+2))))
-   `(secondary-selection ((t (:inherit highlight))))
-   `(show-paren-match    ((t (:background ,red-pale-1 :foreground ,white))))
    `(link                ((t (:foreground ,blue-bright :underline t))))
    `(italic              ((t (:foreground ,cyan-pale+1 :slant italic))))
-   `(warning             ((t (:foreground ,yellow :weight bold))))
+   `(hl-line             ((t (:background ,grey-6))))
+   `(show-paren-match    ((t (:background ,red-pale-1 :foreground ,white))))
+   `(match               ((t (:background ,blue-1 :foreground ,white))))
    `(whitespace-trailing ((t (:background ,red-2))))
-   `(fixed-pitch         ((t nil)))
-   `(fixed-pitch-serif   ((t nil)))
+
+   `(shadow              ((t (:foreground ,grey+2))))
+   `(highlight           ((t (:background ,grey-4))))
+   `(secondary-selection ((t (:inherit highlight))))
+   `(escape-glyph        ((t (:foreground ,orange))))
+   `(warning             ((t (:foreground ,yellow :weight bold))))
 
    ;; emacs >= 27
    `(fill-column-indicator ((t (:foreground ,grey-2))))
@@ -187,12 +188,12 @@
    `(mode-line-inactive  ((t (:foreground ,cyan-pale-2 :background ,cyan-pale-3
                                           :box (:line-width 1 :color ,cyan-6)))))
 
-   `(powerline-active0               ((t (:background ,cyan-3 :foreground ,cyan+4))))
-   `(powerline-active1               ((t (:background ,cyan-5 :foreground ,cyan+4))))
-   `(powerline-active2               ((t (:background ,cyan-6 :foreground ,cyan+4))))
-   `(powerline-inactive0             ((t (:background ,cyan-pale-3 :foreground ,cyan-pale-2))))
-   `(powerline-inactive1             ((t (:inherit powerline-inactive0))))
-   `(powerline-inactive2             ((t (:inherit powerline-inactive0))))
+   `(powerline-active0   ((t (:background ,cyan-3 :foreground ,cyan+4))))
+   `(powerline-active1   ((t (:background ,cyan-5 :foreground ,cyan+4))))
+   `(powerline-active2   ((t (:background ,cyan-6 :foreground ,cyan+4))))
+   `(powerline-inactive0 ((t (:background ,cyan-pale-3 :foreground ,cyan-pale-2))))
+   `(powerline-inactive1 ((t (:inherit powerline-inactive0))))
+   `(powerline-inactive2 ((t (:inherit powerline-inactive0))))
 
    `(minibuffer-prompt ((t (:foreground ,cyan))))
 
@@ -301,9 +302,6 @@
    `(hi-blue-b  ((t (:background ,hi-blue-bg :foreground ,hi-blue-fg :weight bold))))
    `(hi-red-b   ((t (:background ,hi-red-bg :foreground ,hi-red-fg :weight bold))))
    `(hi-black-b ((t (:background ,hi-yellow-bg :foreground ,hi-yellow-fg :weight bold))))
-
-   ;; `(match ((t (:foreground ,cyan+3 :background ,cyan-5))))
-   `(match ((t (:background ,blue-1 :foreground ,white))))
 
    `(ivy-current-match           ((t (:inherit match :weight bold))))
    `(ivy-minibuffer-match-face-1 ((t (:inherit highlight :weight bold))))
