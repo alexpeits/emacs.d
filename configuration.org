@@ -1030,6 +1030,7 @@ Paredit keys:
   (defalias 'eshell/x 'eshell/exit)
   (defalias 'eshell/e 'find-file)
   (defalias 'eshell/ff 'find-file)
+  (defalias 'eshell/gc 'magit-commit-create)
 
   (setq eshell-destroy-buffer-when-process-dies t
         eshell-history-size 1024
