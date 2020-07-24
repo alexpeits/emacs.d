@@ -1791,13 +1791,20 @@ In =vc-git-log-edit-mode=:
          (dired-mode . diff-hl-dired-mode))
   :config
   ;; https://github.com/dgutov/diff-hl#magit
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+  (defun my/toggle-git-gutters ()
+    (interactive)
+    (call-interactively 'global-diff-hl-mode)))
 
 (use-package git-gutter+
   :ensure t
   :unless is-gui
   :diminish
-  :hook (after-init . global-git-gutter+-mode))
+  :hook (after-init . global-git-gutter+-mode)
+  :config
+  (defun my/toggle-git-gutters ()
+    (interactive)
+    (call-interactively 'global-git-gutter+-mode)))
 #+END_SRC
 
 ** Helpers
@@ -1881,7 +1888,7 @@ In =vc-git-log-edit-mode=:
         ("t8" display-fill-column-indicator-mode)
         ("tc" global-company-mode)
         ("tf" my/toggle-font)
-        ("tg" global-diff-hl-mode)
+        ("tg" my/toggle-git-gutters)
         ("tl" my/line-numbers)
         ("to" symbol-overlay-mode)
         ("th" hl-line-mode)
