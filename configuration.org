@@ -854,7 +854,6 @@ Paredit keys:
             c-mode
             emacs-lisp-mode
             coq-mode
-            markdown-mode
             ))
   (my/highlight-comment-keywords mode))
 #+END_SRC
@@ -1340,12 +1339,15 @@ CWD is not in a git repo (or the git command is not found)."
          `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
          `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
 
-         `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
-         `(flycheck-fringe-warning ((t (:foreground "orange1"))))
-         `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
-         `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-         `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-         `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+         `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
+         `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
+         `(flycheck-fringe-error ((t (:foreground ,fg-lang-error))))
+         ;; `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
+         ;; `(flycheck-fringe-warning ((t (:foreground "orange1"))))
+         ;; `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
+         ;; `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
+         ;; `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
+         ;; `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
 
          `(org-block ((t (:foreground "#dadada" :background "#0d1c20" :extend t))))
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
@@ -1449,12 +1451,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
          `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
 
-         `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
-         `(flycheck-fringe-warning ((t (:foreground "orange1"))))
-         `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
-         `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-         `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-         `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
+         `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
+         `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
+         `(flycheck-fringe-error ((t (:foreground ,fg-lang-error))))
 
          `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
@@ -3273,6 +3272,17 @@ the current file."
   :commands (latex-preview-pane-mode
              latex-preview-pane-enable))
 #+END_SRC
+
+* writing
+** writegood-mode (disabled)
+
+#+begin_src emacs-lisp :tangle no
+(use-package writegood-mode
+  :ensure t
+  :after markdown-mode
+  :bind (:map markdown-mode-map
+              ("C-c C-c g" . writegood-mode)))
+#+end_src
 
 * Other prog modes
 ** idris
