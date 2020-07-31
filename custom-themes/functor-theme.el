@@ -425,10 +425,10 @@
    `(markdown-blockquote-face       ((t (:foreground ,green-alt-pale :weight normal))))
    `(markdown-language-keyword-face ((t (:foreground ,green+1))))
 
-   `(rst-literal    ((t (:inherit ,cyan-2))))
+   `(rst-literal    ((t (:foreground ,cyan-2))))
    `(rst-directive  ((t (:foreground ,magenta))))
-   `(rst-transition ((t (:inherit ,cyan+2))))
-   `(rst-adornment  ((t (:inherit ,olive :weight bold))))
+   `(rst-transition ((t (:foreground ,cyan+2))))
+   `(rst-adornment  ((t (:foreground ,olive :weight bold))))
    `(rst-level-1    ((t (:inherit rst-adornment))))
    `(rst-level-2    ((t (:inherit rst-level-1))))
    `(rst-level-3    ((t (:inherit rst-level-1))))
