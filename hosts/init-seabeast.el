@@ -1,18 +1,16 @@
-;; elisp: ;; -*- eval: (outshine-mode) -*-
-;;; fonts
-(setq my/avail-fonts
-      '(
-        ("Source Code Pro" 10.5)
-        ("Source Code Pro" 11)
+;; fonts
+(setq my/fonts
+      '(("small" . (:fixed ("Source Code Pro" . 10.5) :variable ("Source Serif Pro" . 12)))
+        ("medium" . (:fixed ("Source Code Pro" . 11) :variable ("Source Serif Pro" . 13.5)))
+        ("large" . (:fixed ("Source Code Pro" . 15) :variable ("Source Serif Pro" . 17)))
         ))
-(setq my/current-font 0)
 
-;;; themes
+(setq my/font-variant "small")
+
+;; themes
 (setq my/modus-vivendi-theme-alt-colors t
       my/modus-vivendi-theme-haskell-distinct-constructor t
       my/modus-operandi-theme-haskell-distinct-constructor t)
-
-(add-to-list 'custom-theme-load-path "~/Dropbox/emacs/themes")
 
 (setq my/avail-themes
       '(
@@ -22,18 +20,18 @@
         ))
 (setq my/current-theme 0)
 
-;;; hooks
+;; hooks
 (add-hook 'prog-mode-hook 'hl-line-mode)
 (add-hook 'LaTeX-mode-hook 'hl-line-mode)
 
-;;; variables
+;; variables
 (setq magit-repository-directories
       '(
         ("~/projects" . 1)
         ("~/job/projects" . 1)
         ))
 
-;;; projectile overrides
+;; projectile overrides
 (dolist (override '(
                     ("/home/alex/projects/software-foundations" . "sf")
                     ))

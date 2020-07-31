@@ -1593,58 +1593,66 @@ CWD is not in a git repo (or the git command is not found)."
        `(coq-highlighted-hyps-bg ,zenburn-bg+2)))))
 #+end_src
 
-* Font
+* Fonts
 
 #+BEGIN_SRC emacs-lisp
-(defvar my/avail-fonts '(("Monospace" 12)))
-(defvar my/current-font 0)
-(defvar my/current-font-size nil)
-(defvar my/font-size-step 0.5)
+(defvar my/font-variant "default")
+(defvar my/fonts
+  '(("default" . (:fixed ("Monospace" . 12) :variable ("sans-serif" . 12)))))
 
 (defvar my/after-set-font-hook nil
   "Hook called after updating fonts")
 
-(defun my/set-font (&optional spec)
-  (let* ((spec (if (null spec) (elt my/avail-fonts my/current-font) spec))
-         (name (car spec))
-         (size (cadr spec))
-         (spacing (or (caddr spec) 0)))
-    (set-face-font 'default (format "%s-%s" name size))
+(defun my/all-font-variants ()
+  (mapcar 'car my/fonts))
+
+(defun my/set-font (&optional variant)
+  (let* ((variant (or variant my/font-variant))
+         (spec (cdr (assoc variant my/fonts)))
+         (fixed (plist-get spec :fixed))
+         (variable (plist-get spec :variable))
+         (spacing (or (plist-get spec :spacing) 0)))
+    (dolist (face '(default fixed-pitch))
+      (set-face-attribute
+       face nil :font (format
+                       "%s-%s"
+                       (car fixed)
+                       (cdr fixed))))
+    (set-face-attribute
+     'variable-pitch nil :font (format
+                                "%s-%s"
+                                (car variable)
+                                (cdr variable)))
     (setq line-spacing spacing)
     (setq-default line-spacing spacing)
     (run-hooks 'my/after-set-font-hook)))
 
+(defun my/select-font-variant (&optional new-variant)
+  (interactive)
+  (let* ((variants (my/all-font-variants))
+         (new-variant (or new-variant (completing-read "Font variant: "
+                                                       variants
+                                                       nil nil nil nil
+                                                       my/font-variant))))
+    (setq my/font-variant new-variant)
+    (my/set-font)))
+
 (defun my/toggle-font ()
   (interactive)
-  (let ((next-font (mod (1+ my/current-font) (length my/avail-fonts))))
-    (setq my/current-font-size nil)
-    (my/set-font (elt my/avail-fonts next-font))
-    (setq my/current-font next-font)))
+  (let* ((variants (my/all-font-variants))
+         (cur-idx (cl-position my/font-variant variants :test 'string-equal))
+         (next-idx (mod (1+ cur-idx) (length variants)))
+         (new-variant (elt variants next-idx)))
+    (my/select-font-variant new-variant)))
 
 (defun my/refresh-font ()
   (interactive)
-  (setq my/current-font-size nil)
-  (my/set-font (elt my/avail-fonts my/current-font)))
-
-;; NOTE: trying this out
-(defun my/change-font-size (&optional dec)
-  (let* ((spec (elt my/avail-fonts my/current-font))
-         (name (car spec))
-         (size (or my/current-font-size (cadr spec))))
-    (setq my/current-font-size
-          (if dec
-              (- size my/font-size-step)
-            (+ size my/font-size-step)))
-    (my/set-font (list name my/current-font-size))))
-
-(global-set-key (kbd "C-+") #'(lambda () (interactive) (my/change-font-size)))
-(global-set-key (kbd "C--") #'(lambda () (interactive) (my/change-font-size :dec)))
-(global-set-key (kbd "C-x C-0") #'my/refresh-font)
+  (my/set-font))
 
 ;; size & scaling
-;; (setq text-scale-mode-step 1.05)
-;; (define-key global-map (kbd "C-+") 'text-scale-increase)
-;; (define-key global-map (kbd "C--") 'text-scale-decrease)
+(setq text-scale-mode-step 1.05)
+(define-key global-map (kbd "C-+") 'text-scale-increase)
+(define-key global-map (kbd "C--") 'text-scale-decrease)
 #+END_SRC
 
 * VCS
@@ -1887,6 +1895,7 @@ In =vc-git-log-edit-mode=:
         ("t8" display-fill-column-indicator-mode)
         ("tc" global-company-mode)
         ("tf" my/toggle-font)
+        ("tF" my/select-font-variant)
         ("tg" my/toggle-git-gutters)
         ("tl" my/line-numbers)
         ("to" symbol-overlay-mode)
