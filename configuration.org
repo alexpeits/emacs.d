@@ -1326,6 +1326,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
          `(secondary-selection ((t (:inherit modus-theme-refine-green))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
+         `(term ((t (:inherit default))))
 
          `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box
                                           (color-lighten-name bg-active 8)
@@ -2635,6 +2636,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (my/define-major-mode-key 'haskell-mode "?" 'engine/search-stackage)
   (my/define-major-mode-key 'haskell-mode "#" 'engine/search-haskell-language-extensions)
 
+  (my/define-major-mode-key 'haskell-cabal-mode "s" 'my/haskell-cabal-format-and-save)
+
   (my/add-hooks
    '(haskell-mode-hook)
    (setq evil-shift-width 2)
@@ -2665,6 +2668,12 @@ If COUNT is given, move COUNT - 1 lines downward first."
 (defun my/haskell-format-brittany ()
   (interactive)
   (my/format-and-save "brittany"))
+
+(defun my/haskell-cabal-format-and-save ()
+  (interactive)
+  (save-buffer)
+  (shell-command (format "cabal format %s" (buffer-file-name)))
+  (revert-buffer nil t))
 
 (defun my/haskell-format-and-save (use-ormolu)
   "Formats the import statements using haskell-stylish and saves
