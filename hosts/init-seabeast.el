@@ -33,8 +33,8 @@
 
 ;; projectile overrides
 (dolist (override '(
-                    ("/home/alex/projects/software-foundations" . "sf")
+                    ("~/projects/software-foundations" . "sf")
                     ))
-  (let ((proj (car override))
+  (let ((proj (expand-file-name (car override)))
         (name (cdr override)))
     (my/projectile-add-to-project-name-overrides proj name)))
