@@ -1308,7 +1308,7 @@ CWD is not in a git repo (or the git command is not found)."
   (defun my/modus-vivendi-theme ()
     (load-theme 'modus-vivendi t)
     (modus-vivendi-theme-with-color-variables
-      (let* ((hl-line (color-darken-name bg-active 3))
+      (let* ((hl-line (color-darken-name bg-active 4))
              (pink-subtle "#e8b7e8")
              (type
               (if my/modus-vivendi-theme-alt-colors
@@ -1320,7 +1320,7 @@ CWD is not in a git repo (or the git command is not found)."
                 `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
-         `(default ((t (:background "#101010" :foreground "#e7e7e7"))))
+         `(default ((t (:background "#0d0d0d" :foreground "#e7e7e7"))))
          `(hl-line ((t (:background ,hl-line))))
          `(region ((t (:background ,cyan-subtle-bg))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
