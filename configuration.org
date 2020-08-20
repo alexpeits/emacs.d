@@ -4237,6 +4237,12 @@ buffer, close it."
                (file-name-directory path))))
     (counsel-file-jump "" dir)))
 
+(defun my/ivy-insert-relative (fn)
+  (let* ((trimmed-fn (ivy--trim-grep-line-number fn))
+         (curdir (file-name-directory (buffer-file-name)))
+         (rel-fn (file-relative-name trimmed-fn curdir)))
+    (insert rel-fn)))
+
 (use-package counsel
   :ensure t
   :after ivy
@@ -4272,6 +4278,9 @@ buffer, close it."
     (ivy-set-actions
      action
      `(
+       ("I"
+        my/ivy-insert-relative
+        "insert relative")
        ("s"
         ,(my/control-function-window-split
           find-file-other-window
