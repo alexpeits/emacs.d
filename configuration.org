@@ -1324,16 +1324,16 @@ CWD is not in a git repo (or the git command is not found)."
          `(hl-line ((t (:background ,hl-line))))
          `(region ((t (:background ,cyan-subtle-bg))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
-         `(secondary-selection ((t (:inherit modus-theme-refine-green))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
          `(term ((t (:inherit default))))
 
-         `(mode-line-inactive ((t (:box ,(modus-vivendi-theme-modeline-box
-                                          (color-lighten-name bg-active 8)
-                                          (color-lighten-name bg-active 12))
-                                        ,@(modus-vivendi-theme-modeline-props
-                                           bg-dim (color-darken-name fg-inactive 14)
-                                           bg-inactive (color-darken-name fg-inactive 12))))))
+         `(mode-line-inactive ((t ,@(modus-vivendi-theme-mode-line-attrs
+                                     (color-darken-name fg-inactive 12)
+                                     bg-inactive
+                                     (color-darken-name fg-inactive 14)
+                                     bg-dim
+                                     (color-lighten-name bg-active 12)
+                                     (color-lighten-name bg-active 8)))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
@@ -1343,12 +1343,6 @@ CWD is not in a git repo (or the git command is not found)."
          `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
          `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
          `(flycheck-fringe-error ((t (:foreground ,fg-lang-error))))
-         ;; `(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
-         ;; `(flycheck-fringe-warning ((t (:foreground "orange1"))))
-         ;; `(flycheck-fringe-error ((t (:foreground "#fb4933"))))
-         ;; `(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
-         ;; `(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
-         ;; `(flycheck-error ((t (:underline (:color "#fb4933" :style wave)))))
 
          `(org-block ((t (:foreground "#dadada" :background "#0d1c20" :extend t))))
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
@@ -1440,12 +1434,13 @@ CWD is not in a git repo (or the git command is not found)."
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
 
-         `(mode-line-inactive ((t (:box ,(modus-operandi-theme-modeline-box
-                                          (color-darken-name bg-active 6)
-                                          (color-darken-name bg-active 10))
-                                        ,@(modus-operandi-theme-modeline-props
-                                           bg-dim (color-lighten-name fg-inactive 15)
-                                           bg-inactive (color-lighten-name fg-inactive 15))))))
+         `(mode-line-inactive ((t ,@(modus-vivendi-theme-mode-line-attrs
+                                     (color-lighten-name fg-inactive 15)
+                                     bg-inactive
+                                     (color-darken-name fg-inactive 15)
+                                     bg-dim
+                                     (color-lighten-name bg-active 10)
+                                     (color-lighten-name bg-active 6)))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
