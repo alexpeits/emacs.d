@@ -480,7 +480,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (use-package rainbow-delimiters
   :ensure t
-  :hook ((lisp-mode emacs-lisp-mode) . rainbow-delimiters-mode)
+  :hook ((lisp-mode emacs-lisp-mode clojure-mode) . rainbow-delimiters-mode)
   :commands (rainbow-delimiters-mode)
   :diminish)
 #+END_SRC
@@ -2815,6 +2815,20 @@ the current file."
                          '(warning . haskell-hlint)))))
 #+END_SRC
 
+* clojure
+
+#+begin_src emacs-lisp
+(use-package cider
+  :ensure t
+  :commands (cider-jack-in)
+  :diminish)
+
+(use-package clojure-mode
+  :ensure t
+  :mode (("\\.clj\\'" . clojure-mode)
+         ("\\.edn\\'" . clojure-mode)))
+#+end_src
+
 * purescript
 
 #+BEGIN_SRC emacs-lisp
@@ -2961,6 +2975,21 @@ the current file."
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
 #+END_SRC
+
+* ruby
+
+#+begin_src emacs-lisp
+;; https://github.com/howardabrams/dot-files/blob/master/emacs-ruby.org
+(use-package ruby-mode
+  :mode (("\\.rb\\'" . ruby-mode)
+         ("Rakefile\\'" . ruby-mode)
+         ("Gemfile\\'" . ruby-mode))
+  :init
+  (setq ruby-indent-level 2
+        ruby-indent-tabs-mode nil))
+
+;; TODO: robe-mode, ruby formatting
+#+end_src
 
 * js/ts/html/css
 
