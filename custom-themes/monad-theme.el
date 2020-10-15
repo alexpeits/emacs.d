@@ -53,6 +53,7 @@
        (cyan-faded-1 "#698080")
        (cyan-faded "#a0bebe")
 
+       (cyan-pale-1 "#79b1ae")
        (cyan-pale   "#99d1ce")
        (cyan-pale+1 "#bfebe0")
 
@@ -77,7 +78,7 @@
 
        (blue-3 "#003347")
        (blue-2 "#004065")
-       (blue-1 "#005881")
+       (blue-1 "#00466a")
        (blue   "#5fafd7")
        (blue+1 "#7dccf0")
        (blue+2 "#8ae4f2")
@@ -139,7 +140,7 @@
    `(fringe              ((t (:foreground ,grey+2 :background ,grey-6))))
    `(vertical-border     ((t (:foreground ,grey))))
    `(link                ((t (:foreground ,blue-bright :underline t))))
-   `(italic              ((t (:foreground ,cyan-pale+1 :slant italic))))
+   `(italic              ((t (:foreground ,cyan-pale :slant italic))))
    `(hl-line             ((t (:background ,grey-6))))
    `(show-paren-match    ((t (:background ,red-pale-1 :foreground ,fg))))
    `(match               ((t (:background ,blue-1 :foreground ,fg))))
@@ -283,7 +284,7 @@
    `(hi-red-b   ((t (:background ,hi-red-bg :foreground ,hi-red-fg :weight bold))))
    `(hi-black-b ((t (:background ,hi-yellow-bg :foreground ,hi-yellow-fg :weight bold))))
 
-   `(ivy-current-match           ((t (:inherit match :weight bold))))
+   `(ivy-current-match           ((t (:inherit match :weight bold :underline t))))
    `(ivy-minibuffer-match-face-1 ((t (:inherit highlight :weight bold))))
    `(ivy-minibuffer-match-face-2 ((t (:inherit hi-green-b :weight bold))))
    `(ivy-minibuffer-match-face-3 ((t (:inherit hi-black-b :weight bold))))
@@ -319,9 +320,9 @@
    `(diredfl-write-priv  ((t (:foreground ,yellow))))
    `(diredfl-exec-priv   ((t (:foreground ,green+1))))
    `(diredfl-number      ((t (:foreground ,cyan))))
-   `(diredfl-date-time   ((t (:foreground ,cyan-pale))))
+   `(diredfl-date-time   ((t (:foreground ,cyan-pale-1))))
    `(diredfl-file-name   ((t (:foreground ,fg))))
-   `(diredfl-file-suffix ((t (:foreground ,grey))))
+   `(diredfl-file-suffix ((t (:foreground ,cyan-pale-1))))
    `(diredfl-dir-name    ((t (:inherit dired-directory))))
    `(diredfl-symlink     ((t (:inherit dired-symlink))))
 
@@ -377,7 +378,7 @@
    `(org-hide             ((t (:foreground ,bg))))
    `(org-indent           ((t (:foreground ,bg :background ,bg))))
    `(org-ellipsis         ((t (:foreground ,green-bright+1 :underline t))))
-   `(org-list-dt          ((t (:foreground ,cyan))))
+   `(org-list-dt          ((t (:foreground ,magenta-pale))))
    `(org-level-1          ((t (:inherit outline-1 :height 1.2))))
 
    `(org-roam-link         ((t (:foreground ,green-bright+1 :underline t))))
