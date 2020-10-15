@@ -203,6 +203,7 @@
    `(isearch        ((t (:foreground ,white :background ,green-bright-1 :weight bold))))
    `(lazy-highlight ((t (:foreground ,blue+2 :background ,blue-2))))
 
+   `(evil-ex-substitute-matches     ((t (:inherit hi-blue))))
    `(evil-ex-substitute-replacement ((t (:inherit hi-yellow))))
 
    `(font-lock-negation-char-face        ((t (:foreground ,orange))))
