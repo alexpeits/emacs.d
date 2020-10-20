@@ -3233,7 +3233,8 @@ the current file."
 #+begin_src emacs-lisp
 (use-package rust-mode
   :ensure t
-  :mode (("\\.rs\\'" . rust-mode)))
+  :mode (("\\.rs\\'" . rust-mode))
+  :hook (rust-mode . lsp))
 
 (use-package cargo
   :ensure t
@@ -3251,10 +3252,14 @@ the current file."
 (use-package racer
   :ensure t
   :after rust-mode
-  :hook (rust-mode . racer-mode)
+  ;; :hook (rust-mode . racer-mode)
   :diminish racer-mode
   :init
-  (setq racer-rust-src-path (expand-file-name "rust/src/" "~/sources")))
+  :config
+  (let* ((root (string-trim
+                (shell-command-to-string "rustc --print sysroot")))
+         (rust-src (expand-file-name "lib/rustlib/src/rust/library/" root)))
+    (setq racer-rust-src-path rust-src)))
 #+end_src
 
 * markdown
