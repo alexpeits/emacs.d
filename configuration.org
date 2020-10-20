@@ -2572,6 +2572,23 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (defun file-attribute-size (attrs) (elt attrs 7))))
 #+end_src
 
+* lsp
+
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :hook (lsp-mode . lsp-lens-mode)
+  :init
+  (setq lsp-prefer-flymake nil))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :init
+  (setq lsp-ui-doc-delay 1))
+#+end_src
+
 * haskell
 
 #+BEGIN_SRC emacs-lisp
@@ -2989,6 +3006,35 @@ the current file."
         ruby-indent-tabs-mode nil))
 
 ;; TODO: robe-mode, ruby formatting
+#+end_src
+
+* scala
+
+#+begin_src emacs-lisp
+(use-package scala-mode
+  :ensure t
+  :mode (("\\.scala\\'" . scala-mode))
+  :interpreter ("scala" . scala-mode)
+  :hook (scala-mode . lsp))
+
+(use-package sbt-mode
+  :ensure t
+  :after scala-mode
+  :commands (sbt-start sbt-command)
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition 'minibuffer-complete-word
+                             'self-insert-command
+                             minibuffer-local-completion-map)
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+(use-package lsp-metals
+  :ensure t
+  :after scala-mode
+  :init
+  (setq lsp-metals-treeview-show-when-views-received t))
 #+end_src
 
 * js/ts/html/css
@@ -4275,7 +4321,7 @@ buffer, close it."
          ("C-x C-f" . counsel-find-file)
          ("C-x f" . counsel-file-jump)
          ("C-x r b" . counsel-bookmark)
-         ("C-x C-a" . counsel-recentf)
+         ;; ("C-x C-a" . counsel-recentf)
          ("C-c s" . my/counsel-rg-in)
          ("C-S-p" . my/counsel-file-jump-temp-root)
          ("C-S-s" . my/counsel-rg-temp-root)
