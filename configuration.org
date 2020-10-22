@@ -355,6 +355,10 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (setq auto-save-file-name-transforms
         `((".*" ,temporary-file-directory t))))
 
+(use-package simple
+  :init
+  (defalias 'dw #'delete-trailing-whitespace))
+
 ;; only with this set to nil can org-mode export & open too
 ;; ... but it also breaks some stuff so it's disabled
 ;; (setq process-connection-type nil)
@@ -2522,7 +2526,39 @@ If COUNT is given, move COUNT - 1 lines downward first."
         vr/match-separator-use-custom-face t))
 #+end_src
 
-* nix
+* direnv
+
+#+begin_src emacs-lisp
+(use-package direnv
+  :ensure t
+  :if (executable-find "direnv")
+  :hook (after-init . direnv-mode)
+  :init
+  (setq direnv-show-paths-in-summary nil
+        direnv-always-show-summary nil)
+  (unless (fboundp 'file-attribute-size)
+    (defun file-attribute-size (attrs) (elt attrs 7))))
+#+end_src
+
+* lsp
+
+#+begin_src emacs-lisp
+(use-package lsp-mode
+  :ensure t
+  :commands lsp
+  :hook (lsp-mode . lsp-lens-mode)
+  :init
+  (setq lsp-prefer-flymake nil))
+
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode
+  :init
+  (setq lsp-ui-doc-delay 1))
+#+end_src
+
+* LANGUAGES
+** nix
 
 #+BEGIN_SRC emacs-lisp
 (use-package nix-mode
@@ -2558,38 +2594,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (my/edit-indirect-region))
 #+END_SRC
 
-* direnv
-
-#+begin_src emacs-lisp
-(use-package direnv
-  :ensure t
-  :if (executable-find "direnv")
-  :hook (after-init . direnv-mode)
-  :init
-  (setq direnv-show-paths-in-summary nil
-        direnv-always-show-summary nil)
-  (unless (fboundp 'file-attribute-size)
-    (defun file-attribute-size (attrs) (elt attrs 7))))
-#+end_src
-
-* lsp
-
-#+begin_src emacs-lisp
-(use-package lsp-mode
-  :ensure t
-  :commands lsp
-  :hook (lsp-mode . lsp-lens-mode)
-  :init
-  (setq lsp-prefer-flymake nil))
-
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :init
-  (setq lsp-ui-doc-delay 1))
-#+end_src
-
-* haskell
+** haskell
 
 #+BEGIN_SRC emacs-lisp
 (use-package haskell-mode
@@ -2832,86 +2837,57 @@ the current file."
                          '(warning . haskell-hlint)))))
 #+END_SRC
 
-* clojure
-
-#+begin_src emacs-lisp
-(use-package cider
-  :ensure t
-  :commands (cider-jack-in)
-  :diminish)
-
-(use-package clojure-mode
-  :ensure t
-  :mode (("\\.clj\\'" . clojure-mode)
-         ("\\.edn\\'" . clojure-mode)))
-#+end_src
-
-* purescript
+** coq (proof-general)
 
 #+BEGIN_SRC emacs-lisp
-(use-package purescript-mode
+(use-package proof-general
   :ensure t
-  :mode ("\\.purs\\'" . purescript-mode)
   :init
-  (setq purescript-indent-offset 2
-        purescript-align-imports-pad-after-name t)
+  (setq proof-splash-enable nil
+        proof-script-fly-past-comments t))
+
+(use-package holes
+  :ensure proof-general
+  :after proof-general coq-mode
+  :commands (holes-mode)
+  :diminish)
+
+(use-package coq-mode
+  :ensure proof-general
+  :mode (("\\.v\\'" . coq-mode))
+  :bind (:map coq-mode-map
+              ("C-c ." . proof-electric-terminator-toggle)
+              ("M-e" . forward-paragraph)
+              ("M-a" . backward-paragraph)
+              ("M-RET" . proof-goto-point)
+              ("M-n" . proof-assert-next-command-interactive)
+              ("M-p" . proof-undo-last-successful-command))
+  :init
+  (setq coq-one-command-per-line nil
+        coq-compile-before-require t)
   :config
-  (my/define-major-mode-key 'purescript-mode "a" 'my/purescript-sort-and-align-imports)
-  (my/define-major-mode-key 'purescript-mode "i" 'purescript-navigate-imports)
-  (my/define-major-mode-key 'purescript-mode "s" 'my/purescript-format-and-save)
-  (my/define-major-mode-key 'purescript-mode "/" 'engine/search-pursuit)
-  (add-hook
-   'purescript-mode-hook
-   (lambda ()
-     (setq evil-shift-width 2)
-     (turn-on-purescript-indentation)
-     (turn-on-purescript-decl-scan)
-     ;; (turn-on-purescript-font-lock)
-     (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
-     (subword-mode 1)
-     (make-variable-buffer-local 'find-tag-default-function)
-     (setq find-tag-default-function (lambda () (current-word t t)))
-     ))
-  ;; xref for purescript works a bit weird with qualified identifiers
-  ;; (define-key purescript-mode-map (kbd "M-.")
-  ;; #'(lambda () (interactive) (xref-find-definitions (current-word t t))))
-  )
+  (my/add-hooks
+   '(my/after-set-theme-hook)
+   (when (fboundp 'coq-highlight-selected-hyps)
+     (coq-highlight-selected-hyps)))
+  (my/add-hooks
+   '(coq-mode-hook)
+   (setq evil-shift-width 2)
+   (push '(?# . ("(* " . " *)")) evil-surround-pairs-alist)
+   (undo-tree-mode 1)
+   (whitespace-mode 1))
 
-(defvar my/purescript-align-stuff t)
+  (defun my/coq-browse-stdlib ()
+    (interactive)
+    (browse-url "https://coq.inria.fr/library/"))
 
-(defun my/purescript-sort-and-align-imports ()
-  (interactive)
-  (save-excursion
-    (goto-line 1)
-    (while (purescript-navigate-imports)
-      (progn
-        (purescript-sort-imports)
-        (when my/purescript-align-stuff (purescript-align-imports))))
-    (purescript-navigate-imports-return)))
-
-(defun my/purescript-format-and-save ()
-  "Formats the import statements using haskell-stylish and saves
-the current file."
-  (interactive)
-  (my/purescript-sort-and-align-imports)
-  (save-buffer))
-
-;; This needs to exist in the `load-path'
-;; (use-package custom-purescript-font-lock
-;;   :after purescript-mode)
-
-;; copy these into the purescript-mode definition
-;; (setq-local font-lock-defaults
-;;             '((purescript-font-lock-keywords)
-;;               nil nil nil nil
-;;               (font-lock-syntactic-face-function
-;;                . purescript-syntactic-face-function)
-;;               (parse-sexp-lookup-properties . t)
-;;               (font-lock-extra-managed-props . (composition purescript-type))))
-;; (setq-local font-lock-multiline t)
+  (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
+  (my/define-major-mode-key 'coq-mode "i" 'my/coq-browse-stdlib)
+  ;; use yas-expand instead
+  (define-key coq-mode-map (kbd "<C-return>") nil))
 #+END_SRC
 
-* python
+** python
 
 #+BEGIN_SRC emacs-lisp
 (use-package python
@@ -2993,7 +2969,42 @@ the current file."
 (defun eshell/deactivate () (pyvenv-deactivate))
 #+END_SRC
 
-* ruby
+** rust
+
+#+begin_src emacs-lisp
+(use-package rust-mode
+  :ensure t
+  :mode (("\\.rs\\'" . rust-mode))
+  ; :hook (rust-mode . lsp)
+  )
+
+(use-package cargo
+  :ensure t
+  :after rust-mode
+  :hook (rust-mode . cargo-minor-mode)
+  :diminish cargo-minor-mode)
+
+(use-package flycheck-rust
+  :ensure t
+  :after (rust-mode flycheck)
+  :init
+  (with-eval-after-load 'rust-mode
+    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
+
+(use-package racer
+  :ensure t
+  :after rust-mode
+  :hook (rust-mode . racer-mode)
+  :diminish racer-mode
+  :init
+  :config
+  (let* ((root (string-trim
+                (shell-command-to-string "rustc --print sysroot")))
+         (rust-src (expand-file-name "lib/rustlib/src/rust/library/" root)))
+    (setq racer-rust-src-path rust-src)))
+#+end_src
+
+** ruby
 
 #+begin_src emacs-lisp
 ;; https://github.com/howardabrams/dot-files/blob/master/emacs-ruby.org
@@ -3005,39 +3016,40 @@ the current file."
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil))
 
-;; TODO: robe-mode, ruby formatting
+(use-package robe
+  :ensure t
+  :after ruby-mode
+  :hook (ruby-mode . robe-mode)
+  :diminish)
+
+(use-package rubocopfmt
+  :ensure t
+  :after ruby-mode
+  :commands (rubocopfmt rubocopfmt-mode)
+  :init
+  (defun my/ruby-format-and-save ()
+    (interactive)
+    (save-buffer)
+    (call-interactively 'rubocopfmt))
+  :config
+  (my/define-major-mode-key 'ruby-mode "s" 'my/ruby-format-and-save))
 #+end_src
 
-* scala
+** clojure
 
 #+begin_src emacs-lisp
-(use-package scala-mode
+(use-package cider
   :ensure t
-  :mode (("\\.scala\\'" . scala-mode))
-  :interpreter ("scala" . scala-mode)
-  :hook (scala-mode . lsp))
+  :commands (cider-jack-in)
+  :diminish)
 
-(use-package sbt-mode
+(use-package clojure-mode
   :ensure t
-  :after scala-mode
-  :commands (sbt-start sbt-command)
-  :config
-  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
-  (substitute-key-definition 'minibuffer-complete-word
-                             'self-insert-command
-                             minibuffer-local-completion-map)
-  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
-  (setq sbt:program-options '("-Dsbt.supershell=false")))
-
-(use-package lsp-metals
-  :ensure t
-  :after scala-mode
-  :init
-  (setq lsp-metals-treeview-show-when-views-received t))
+  :mode (("\\.clj\\'" . clojure-mode)
+         ("\\.edn\\'" . clojure-mode)))
 #+end_src
 
-* js/ts/html/css
+** javascript, typescript, html, css
 
 #+BEGIN_SRC emacs-lisp
 (use-package rjsx-mode
@@ -3128,7 +3140,71 @@ the current file."
   (add-hook 'mustache-mode-hook #'evil-local-mode))
 #+END_SRC
 
-* Lisps
+** purescript
+
+#+BEGIN_SRC emacs-lisp
+(use-package purescript-mode
+  :ensure t
+  :mode ("\\.purs\\'" . purescript-mode)
+  :init
+  (setq purescript-indent-offset 2
+        purescript-align-imports-pad-after-name t)
+  :config
+  (my/define-major-mode-key 'purescript-mode "a" 'my/purescript-sort-and-align-imports)
+  (my/define-major-mode-key 'purescript-mode "i" 'purescript-navigate-imports)
+  (my/define-major-mode-key 'purescript-mode "s" 'my/purescript-format-and-save)
+  (my/define-major-mode-key 'purescript-mode "/" 'engine/search-pursuit)
+  (add-hook
+   'purescript-mode-hook
+   (lambda ()
+     (setq evil-shift-width 2)
+     (turn-on-purescript-indentation)
+     (turn-on-purescript-decl-scan)
+     ;; (turn-on-purescript-font-lock)
+     (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
+     (subword-mode 1)
+     (make-variable-buffer-local 'find-tag-default-function)
+     (setq find-tag-default-function (lambda () (current-word t t)))
+     ))
+  ;; xref for purescript works a bit weird with qualified identifiers
+  ;; (define-key purescript-mode-map (kbd "M-.")
+  ;; #'(lambda () (interactive) (xref-find-definitions (current-word t t))))
+  )
+
+(defvar my/purescript-align-stuff t)
+
+(defun my/purescript-sort-and-align-imports ()
+  (interactive)
+  (save-excursion
+    (goto-line 1)
+    (while (purescript-navigate-imports)
+      (progn
+        (purescript-sort-imports)
+        (when my/purescript-align-stuff (purescript-align-imports))))
+    (purescript-navigate-imports-return)))
+
+(defun my/purescript-format-and-save ()
+  "Formats the import statements using haskell-stylish and saves
+the current file."
+  (interactive)
+  (my/purescript-sort-and-align-imports)
+  (save-buffer))
+
+;; This needs to exist in the `load-path'
+;; (use-package custom-purescript-font-lock
+;;   :after purescript-mode)
+
+;; copy these into the purescript-mode definition
+;; (setq-local font-lock-defaults
+;;             '((purescript-font-lock-keywords)
+;;               nil nil nil nil
+;;               (font-lock-syntactic-face-function
+;;                . purescript-syntactic-face-function)
+;;               (parse-sexp-lookup-properties . t)
+;;               (font-lock-extra-managed-props . (composition purescript-type))))
+;; (setq-local font-lock-multiline t)
+#+END_SRC
+
 ** all lisps
 
 #+BEGIN_SRC emacs-lisp
@@ -3158,57 +3234,36 @@ the current file."
   (my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save))
 #+END_SRC
 
-* coq & proof-general
+** scala
 
-#+BEGIN_SRC emacs-lisp
-(use-package proof-general
+#+begin_src emacs-lisp
+(use-package scala-mode
   :ensure t
-  :init
-  (setq proof-splash-enable nil
-        proof-script-fly-past-comments t))
+  :mode (("\\.scala\\'" . scala-mode))
+  :interpreter ("scala" . scala-mode)
+  :hook (scala-mode . lsp))
 
-(use-package holes
-  :ensure proof-general
-  :after proof-general coq-mode
-  :commands (holes-mode)
-  :diminish)
-
-(use-package coq-mode
-  :ensure proof-general
-  :mode (("\\.v\\'" . coq-mode))
-  :bind (:map coq-mode-map
-              ("C-c ." . proof-electric-terminator-toggle)
-              ("M-e" . forward-paragraph)
-              ("M-a" . backward-paragraph)
-              ("M-RET" . proof-goto-point)
-              ("M-n" . proof-assert-next-command-interactive)
-              ("M-p" . proof-undo-last-successful-command))
-  :init
-  (setq coq-one-command-per-line nil
-        coq-compile-before-require t)
+(use-package sbt-mode
+  :ensure t
+  :after scala-mode
+  :commands (sbt-start sbt-command)
   :config
-  (my/add-hooks
-   '(my/after-set-theme-hook)
-   (when (fboundp 'coq-highlight-selected-hyps)
-     (coq-highlight-selected-hyps)))
-  (my/add-hooks
-   '(coq-mode-hook)
-   (setq evil-shift-width 2)
-   (push '(?# . ("(* " . " *)")) evil-surround-pairs-alist)
-   (undo-tree-mode 1)
-   (whitespace-mode 1))
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition 'minibuffer-complete-word
+                             'self-insert-command
+                             minibuffer-local-completion-map)
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
 
-  (defun my/coq-browse-stdlib ()
-    (interactive)
-    (browse-url "https://coq.inria.fr/library/"))
+(use-package lsp-metals
+  :ensure t
+  :after scala-mode
+  :init
+  (setq lsp-metals-treeview-show-when-views-received t))
+#+end_src
 
-  (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
-  (my/define-major-mode-key 'coq-mode "i" 'my/coq-browse-stdlib)
-  ;; use yas-expand instead
-  (define-key coq-mode-map (kbd "<C-return>") nil))
-#+END_SRC
-
-* ocaml
+** ocaml
 
 #+begin_src emacs-lisp
 (use-package tuareg
@@ -3216,7 +3271,7 @@ the current file."
   :mode ("\\.ml[ip]?\\'" . tuareg-mode))
 #+end_src
 
-* agda
+** agda
 
 #+begin_src emacs-lisp
 ;; currently managed by nixos (emacsPackages.agda2-mode)
@@ -3228,156 +3283,6 @@ the current file."
    (activate-input-method "Agda")))
 #+end_src
 
-* rust
-
-#+begin_src emacs-lisp
-(use-package rust-mode
-  :ensure t
-  :mode (("\\.rs\\'" . rust-mode))
-  :hook (rust-mode . lsp))
-
-(use-package cargo
-  :ensure t
-  :after rust-mode
-  :hook (rust-mode . cargo-minor-mode)
-  :diminish cargo-minor-mode)
-
-(use-package flycheck-rust
-  :ensure t
-  :after (rust-mode flycheck)
-  :init
-  (with-eval-after-load 'rust-mode
-    (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-
-(use-package racer
-  :ensure t
-  :after rust-mode
-  ;; :hook (rust-mode . racer-mode)
-  :diminish racer-mode
-  :init
-  :config
-  (let* ((root (string-trim
-                (shell-command-to-string "rustc --print sysroot")))
-         (rust-src (expand-file-name "lib/rustlib/src/rust/library/" root)))
-    (setq racer-rust-src-path rust-src)))
-#+end_src
-
-* markdown
-
-#+BEGIN_SRC emacs-lisp
-(use-package markdown-mode
-  :ensure t
-  :commands (markdown-mode gfm-mode)
-  :bind (:map markdown-mode-map
-              ("M-a" . beginning-of-defun)
-              ("M-e" . end-of-defun)
-              ("TAB" . my/markdown-toggle-heading)
-              ("<tab>" . my/markdown-toggle-heading))
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode)
-         ("\\.page\\'" . gfm-mode))
-  :init
-  (setq markdown-asymmetric-header t
-        markdown-enable-wiki-links t
-        markdown-wiki-link-fontify-missing t
-        markdown-enable-math t
-        markdown-gfm-use-electric-backquote nil
-        markdown-list-indent-width 2
-        markdown-command "pandoc --highlight-style=pygments --standalone"
-        markdown-css-paths `(,(expand-file-name "static/github.css" user-emacs-directory)))
-
-  (defface my/markdown-pandoc-native-div-face
-    '((t (:inherit font-lock-preprocessor-face)))
-    "Face for highlighting pandoc native div blocks (starting with ':::')"
-    :group 'my/faces)
-
-  (font-lock-add-keywords
-   'markdown-mode
-   '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
-  :config
-  (if (executable-find "marked")
-      (setq markdown-command "marked"))
-  (my/add-hooks
-   '(markdown-mode-hook)
-   (setq evil-shift-width 2)
-   (auto-fill-mode 1)
-   (whitespace-mode +1)
-   (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))
-
-  (defun my/markdown-toggle-heading ()
-    (interactive)
-    (when (markdown-heading-at-point)
-      (outline-toggle-children))))
-
-(use-package markdown-toc
-  :ensure t
-  :after markdown-mode
-  :commands (markdown-toc-refresh-toc
-             markdown-toc-generate-toc
-             markdown-toc-generate-or-refresh-toc)
-  :init
-  (defalias 'mtoc 'markdown-toc-generate-or-refresh-toc))
-#+END_SRC
-
-* LaTeX
-
-#+BEGIN_SRC emacs-lisp
-(use-package tex-mode
-  :ensure auctex
-  :mode (("\\.tex\\'" . latex-mode))
-  :init
-  (defvar-local my/texcount nil)
-  (defun my/texcount-update ()
-    (let ((fname (buffer-file-name)))
-      (when (and (eq major-mode 'latex-mode)
-                 (not (null fname)))
-        (setq-local my/texcount
-                    (string-trim
-                     (shell-command-to-string
-                      (format "texcount -sum -brief -total %s" fname)))))))
-  (setq TeX-brace-indent-level 0
-        LaTeX-item-indent 0
-        LaTeX-indent-level 2)
-  :config
-  (my/add-hooks
-   '(LaTeX-mode-hook)
-   (smartparens-mode)
-   (whitespace-mode)
-   (when (executable-find "texcount")
-     (my/texcount-update)
-     (add-hook 'after-save-hook #'my/texcount-update nil t)))
-
-  (defun my/mode-line-extra-latex-mode ()
-    (if (null my/texcount)
-        "(-)"
-      (let ((face (if (buffer-modified-p)
-                      'compilation-warning
-                    'compilation-info)))
-        (format "(%s)"
-                (propertize my/texcount
-                            'face
-                            face))))))
-
-(use-package latex-preview-pane
-  :ensure t
-  :after tex-mode
-  :commands (latex-preview-pane-mode
-             latex-preview-pane-enable))
-#+END_SRC
-
-* writing
-** writegood-mode (disabled)
-
-#+begin_src emacs-lisp :tangle no
-(use-package writegood-mode
-  :ensure t
-  :after markdown-mode
-  :bind (:map markdown-mode-map
-              ("C-c C-c g" . writegood-mode)))
-#+end_src
-
-* Other prog modes
 ** idris
 
 #+BEGIN_SRC emacs-lisp
@@ -3386,7 +3291,7 @@ the current file."
   :mode ("\\.idr\\'" . idris-mode))
 #+END_SRC
 
-** c/c++
+** c, c++
 
 #+BEGIN_SRC emacs-lisp
 (setq c-default-style "linux"
@@ -3517,6 +3422,75 @@ the current file."
 (add-to-list 'auto-mode-alist '("env\\.example\\'" . conf-mode))
 #+end_src
 
+* markdown
+
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :bind (:map markdown-mode-map
+              ("M-a" . beginning-of-defun)
+              ("M-e" . end-of-defun)
+              ("TAB" . my/markdown-toggle-heading)
+              ("<tab>" . my/markdown-toggle-heading))
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode)
+         ("\\.page\\'" . gfm-mode))
+  :init
+  (setq markdown-asymmetric-header t
+        markdown-enable-wiki-links t
+        markdown-wiki-link-fontify-missing t
+        markdown-enable-math t
+        markdown-gfm-use-electric-backquote nil
+        markdown-list-indent-width 2
+        markdown-command "pandoc --highlight-style=pygments --standalone"
+        markdown-css-paths `(,(expand-file-name "static/github.css" user-emacs-directory)))
+
+  (defface my/markdown-pandoc-native-div-face
+    '((t (:inherit font-lock-preprocessor-face)))
+    "Face for highlighting pandoc native div blocks (starting with ':::')"
+    :group 'my/faces)
+
+  (font-lock-add-keywords
+   'markdown-mode
+   '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
+  :config
+  (if (executable-find "marked")
+      (setq markdown-command "marked"))
+  (my/add-hooks
+   '(markdown-mode-hook)
+   (setq evil-shift-width 2)
+   (auto-fill-mode 1)
+   (whitespace-mode +1)
+   (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))
+
+  (defun my/markdown-toggle-heading ()
+    (interactive)
+    (when (markdown-heading-at-point)
+      (outline-toggle-children))))
+
+(use-package markdown-toc
+  :ensure t
+  :after markdown-mode
+  :commands (markdown-toc-refresh-toc
+             markdown-toc-generate-toc
+             markdown-toc-generate-or-refresh-toc)
+  :init
+  (defalias 'mtoc 'markdown-toc-generate-or-refresh-toc))
+#+END_SRC
+
+* other writing
+** writegood-mode (disabled)
+
+#+begin_src emacs-lisp :tangle no
+(use-package writegood-mode
+  :ensure t
+  :after markdown-mode
+  :bind (:map markdown-mode-map
+              ("C-c C-c g" . writegood-mode)))
+#+end_src
+
 ** reStructuredText
 
 #+BEGIN_SRC emacs-lisp
@@ -3541,8 +3515,53 @@ the current file."
   :mode ("\\.adoc\\'" . adoc-mode))
 #+END_SRC
 
-* Other major modes
-** elfeed
+** LaTeX
+
+#+BEGIN_SRC emacs-lisp
+(use-package tex-mode
+  :ensure auctex
+  :mode (("\\.tex\\'" . latex-mode))
+  :init
+  (defvar-local my/texcount nil)
+  (defun my/texcount-update ()
+    (let ((fname (buffer-file-name)))
+      (when (and (eq major-mode 'latex-mode)
+                 (not (null fname)))
+        (setq-local my/texcount
+                    (string-trim
+                     (shell-command-to-string
+                      (format "texcount -sum -brief -total %s" fname)))))))
+  (setq TeX-brace-indent-level 0
+        LaTeX-item-indent 0
+        LaTeX-indent-level 2)
+  :config
+  (my/add-hooks
+   '(LaTeX-mode-hook)
+   (smartparens-mode)
+   (whitespace-mode)
+   (when (executable-find "texcount")
+     (my/texcount-update)
+     (add-hook 'after-save-hook #'my/texcount-update nil t)))
+
+  (defun my/mode-line-extra-latex-mode ()
+    (if (null my/texcount)
+        "(-)"
+      (let ((face (if (buffer-modified-p)
+                      'compilation-warning
+                    'compilation-info)))
+        (format "(%s)"
+                (propertize my/texcount
+                            'face
+                            face))))))
+
+(use-package latex-preview-pane
+  :ensure t
+  :after tex-mode
+  :commands (latex-preview-pane-mode
+             latex-preview-pane-enable))
+#+END_SRC
+
+* elfeed
 
 #+BEGIN_SRC emacs-lisp
 (use-package elfeed-web
@@ -3664,7 +3683,7 @@ the current file."
   (load-file (expand-file-name "lisp/elfeed-feeds.el" my/dropbox-emacs-dir)))
 #+END_SRC
 
-** pdf tools
+* pdf tools
 
 #+BEGIN_SRC emacs-lisp
 (use-package pdf-tools
@@ -3718,6 +3737,7 @@ the current file."
               ("<backtab>" . outline-hide-sublevels)))
 #+END_SRC
 
+* other major modes
 ** erc
 
 #+BEGIN_SRC emacs-lisp
@@ -3775,7 +3795,7 @@ the current file."
   (defalias 'lilypond-mode 'LilyPond-mode))
 #+end_src
 
-* Searching & jumping
+* searching & jumping
 ** isearch
 
 =C-h k C-s= to get a help menu for isearch

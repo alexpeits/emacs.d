@@ -23,3 +23,4 @@ org-journal.cache
 result
 network-security.data
 .lsp-session*
+.dap-breakpoints
