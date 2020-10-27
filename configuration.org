@@ -1438,7 +1438,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
 
-         `(mode-line-inactive ((t ,@(modus-vivendi-theme-mode-line-attrs
+         `(mode-line-inactive ((t ,@(modus-operandi-theme-mode-line-attrs
                                      (color-lighten-name fg-inactive 15)
                                      bg-inactive
                                      (color-darken-name fg-inactive 15)
@@ -1758,6 +1758,13 @@ In =vc-git-log-edit-mode=:
   :config
   (magit-todos-mode))
 #+END_SRC
+
+** git modes
+
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist
+             (cons "/\\.gitignore\\'" 'conf-unix-mode))
+#+end_src
 
 ** ediff
 
@@ -2375,7 +2382,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
               ("K" . dired-prev-dirline)
               ("h" . backward-char)
               ("l" . forward-char)
-              ("C-c n" . my/dired-find-file-ace)
+              ("C-c C-n" . my/dired-find-file-ace)
               ("M-j" . my/dired-file-jump-from-here)
               ("M-u" . dired-up-directory)
               ("C-c C-q" . my/dired-kill-all-buffers))
