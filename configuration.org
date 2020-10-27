@@ -3584,7 +3584,7 @@ the current file."
               ("o" . my/elfeed-search-other-window)
               ("q" . my/elfeed-kill-buffer-close-window-dwim)
               ("e" . my/elfeed-show-eww)
-              ("x" . my/elfeed-org-capture)
+              ("x" . my/elfeed-search-org-capture)
               ("h" . backward-char)
               ("j" . next-line)
               ("k" . previous-line)
@@ -3593,12 +3593,12 @@ the current file."
               ("i" . my/elfeed-hide-images)
               ("e" . my/elfeed-show-eww)
               ("q" . my/elfeed-kill-buffer-close-window-dwim)
+              ("b" . my/elfeed-show-browse-url)
+              ("x" . my/elfeed-show-org-capture)
               ("h" . backward-char)
               ("j" . next-line)
               ("k" . previous-line)
-              ("l" . forward-char)
-              ("w" . forward-word)
-              ("b" . backward-word))
+              ("l" . forward-char))
   :init
   (setq elfeed-db-directory (expand-file-name "elfeed" my/dropbox-emacs-dir)
         elfeed-use-curl t
@@ -3644,6 +3644,10 @@ the current file."
       (eww link)
       (add-hook 'eww-after-render-hook 'eww-readable nil t)))
 
+  (defun my/elfeed-show-browse-url ()
+    (interactive)
+    (browse-url (elfeed-entry-link elfeed-show-entry)))
+
   (defun my/elfeed-kill-buffer-close-window-dwim ()
     (interactive)
     (let ((win (selected-window)))
@@ -3665,11 +3669,19 @@ the current file."
         (concat ":" (string-join tags-str ":") ":"))))
 
   (defvar my/elfeed-org-capture-entry nil)
-  (defun my/elfeed-org-capture (immediate)
-    (interactive "P")
-    (let ((my/elfeed-org-capture-entry (elfeed-search-selected :ignore-region))
+
+  (defun my/elfeed-org-capture (entry immediate)
+    (let ((my/elfeed-org-capture-entry entry)
           (template (if immediate "E" "e")))
       (org-capture nil template)))
+
+  (defun my/elfeed-search-org-capture (immediate)
+    (interactive "P")
+    (my/elfeed-org-capture (elfeed-search-selected :ignore-region) immediate))
+
+  (defun my/elfeed-show-org-capture (immediate)
+    (interactive "P")
+    (my/elfeed-org-capture elfeed-show-entry immediate))
 
   (add-hook 'elfeed-show-mode-hook #'(lambda () (setq-local shr-width 100)))
 
