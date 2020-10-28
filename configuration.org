@@ -256,6 +256,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     ".hlint.yaml"
     ;; python
     "requirements.txt"
+    ;; ruby
+    "Gemfile"
     ;; docker
     "docker-compose.yml"
     "Dockerfile"
@@ -1296,8 +1298,7 @@ CWD is not in a git repo (or the git command is not found)."
   :ensure t
   :defer t
   :init
-  (setq modus-vivendi-theme-visible-fringes t
-        modus-vivendi-theme-org-blocks 'greyscale
+  (setq modus-vivendi-theme-org-blocks 'greyscale
         modus-vivendi-theme-headings '((t . t))
         modus-vivendi-theme-scale-headings t
         modus-vivendi-theme-scale-5 1.3
@@ -1406,8 +1407,7 @@ CWD is not in a git repo (or the git command is not found)."
   :ensure t
   :defer t
   :init
-  (setq modus-operandi-theme-visible-fringes t
-        modus-operandi-theme-org-blocks 'greyscale
+  (setq modus-operandi-theme-org-blocks 'greyscale
         modus-operandi-theme-headings '((t . t))
         modus-operandi-theme-scale-headings t
         modus-operandi-theme-scale-5 1.3
@@ -1437,6 +1437,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(region ((t (:background ,bg-special-mild))))
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
+         `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
 
          `(mode-line-inactive ((t ,@(modus-operandi-theme-mode-line-attrs
                                      (color-lighten-name fg-inactive 15)
@@ -3016,30 +3017,43 @@ the current file."
 #+begin_src emacs-lisp
 ;; https://github.com/howardabrams/dot-files/blob/master/emacs-ruby.org
 (use-package ruby-mode
-  :mode (("\\.rb\\'" . ruby-mode)
-         ("Rakefile\\'" . ruby-mode)
-         ("Gemfile\\'" . ruby-mode))
+  ;; :mode (("\\.rb\\'" . ruby-mode)
+         ;; ("Rakefile\\'" . ruby-mode)
+         ;; ("Gemfile\\'" . ruby-mode))
   :init
   (setq ruby-indent-level 2
-        ruby-indent-tabs-mode nil))
+        ruby-indent-tabs-mode nil)
+  (my/set-mode-fill-width 'ruby-mode-hook 99)
+  :config
+  (my/define-major-mode-key 'ruby-mode "s" 'my/ruby-format-and-save))
+
+(use-package enh-ruby-mode
+  :mode (("\\.rb\\'" . enh-ruby-mode)
+         ("Rakefile\\'" . enh-ruby-mode)
+         ("Gemfile\\'" . enh-ruby-mode))
+  :init
+  (setq enh-ruby-indent-level 2
+        enh-ruby-indent-tabs-mode nil
+        enh-ruby-check-syntax nil)
+  (my/set-mode-fill-width 'enh-ruby-mode-hook 99)
+  :config
+  (my/define-major-mode-key 'enh-ruby-mode "s" 'my/ruby-format-and-save))
 
 (use-package robe
   :ensure t
-  :after ruby-mode
-  :hook (ruby-mode . robe-mode)
+  :after enh-ruby-mode
+  :hook (enh-ruby-mode . robe-mode)
   :diminish)
 
 (use-package rubocopfmt
   :ensure t
-  :after ruby-mode
+  :after enh-ruby-mode
   :commands (rubocopfmt rubocopfmt-mode)
   :init
   (defun my/ruby-format-and-save ()
     (interactive)
     (save-buffer)
-    (call-interactively 'rubocopfmt))
-  :config
-  (my/define-major-mode-key 'ruby-mode "s" 'my/ruby-format-and-save))
+    (call-interactively 'rubocopfmt)))
 #+end_src
 
 ** clojure
@@ -3574,7 +3588,11 @@ the current file."
 (use-package elfeed-web
   :ensure t
   :commands (elfeed-web-start)
-  :after elfeed)
+  :after elfeed
+  :config
+  (defun my/elfeed-web-browse ()
+    (interactive)
+    (browse-url "http://localhost:8080/elfeed/")))
 
 (use-package elfeed
   :ensure t
@@ -3582,6 +3600,8 @@ the current file."
   :bind (:map elfeed-search-mode-map
               ("U" . elfeed-update)
               ("o" . my/elfeed-search-other-window)
+              ("t" . my/elfeed-filter-tag)
+              ("T" . my/elfeed-filter-tag-clear)
               ("q" . my/elfeed-kill-buffer-close-window-dwim)
               ("e" . my/elfeed-show-eww)
               ("x" . my/elfeed-search-org-capture)
@@ -3614,6 +3634,20 @@ the current file."
     (interactive "P")
     (let ((shr-inhibit-images (not tog)))
       (elfeed-show-refresh)))
+
+  (defun my/elfeed-filter-tag (clear)
+    (interactive "P")
+    (when clear
+      (call-interactively 'elfeed-search-clear-filter))
+    (let* ((tags (elfeed-db-get-all-tags))
+           (old-filter elfeed-search-filter)
+           (selection (completing-read "Tag: " tags nil :require-match))
+           (new-filter (format "%s +%s" old-filter selection)))
+      (elfeed-search-set-filter new-filter)))
+
+  (defun my/elfeed-filter-tag-clear ()
+    (interactive)
+    (my/elfeed-filter-tag :clear))
 
   ;; prot
   (defun my/elfeed-search-other-window (&optional arg)
