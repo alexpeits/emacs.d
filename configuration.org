@@ -1241,6 +1241,20 @@ CWD is not in a git repo (or the git command is not found)."
        (propertize (if (> modified-updated 0) "•" "") 'face '(:foreground "SeaGreen4"))))))
 #+END_SRC
 
+** vterm
+
+#+begin_src emacs-lisp
+;; NOTE: on NixOS this is managed by the OS, not melpa
+(use-package vterm
+  :ensure t
+  :commands (vterm)
+  :init
+  ;; kill vterm buffers when exiting with C-d
+  (defun my/vterm-exit-kill-buffer (buffer event)
+    (kill-buffer buffer))
+  (setq vterm-exit-functions '(my/vterm-exit-kill-buffer)))
+#+end_src
+
 * UI
 
 #+BEGIN_SRC emacs-lisp
@@ -1784,10 +1798,14 @@ In =vc-git-log-edit-mode=:
 (use-package magit-repos
   :after magit
   :commands (magit-list-repositories)
-  :init
-  (setq magit-repository-directories
-        '(("~/projects" . 1)
-          ("~/job/projects" . 1))))
+  :bind (:map magit-repolist-mode-map
+              ("d" . my/magit-repolist-dired))
+  :config
+  (defun my/magit-repolist-dired ()
+    (interactive)
+    (--if-let (tabulated-list-get-id)
+        (dired (expand-file-name it))
+      (user-error "There is no repository at point"))))
 
 (use-package magit-todos
   :ensure t
