@@ -441,8 +441,8 @@
    `(imenu-list-entry-face-3          ((t (:foreground ,grey+3))))
    `(imenu-list-entry-subalist-face-3 ((t (:inherit imenu-list-entry-face-3 :weight bold))))
 
-   `(elfeed-search-title-face        ((t (:inherit shadow :slant italic :background "#3a4040"))))
-   `(elfeed-search-unread-title-face ((t (:inherit default :slant normal :foreground "#bcc6ce"))))
+   `(elfeed-search-title-face        ((t (:inherit default :slant italic))))
+   `(elfeed-search-unread-title-face ((t (:inherit default :weight bold))))
    `(elfeed-search-feed-face         ((t (:foreground ,yellow))))
    `(elfeed-search-tag-face          ((t (:foreground ,green-bright+1))))
 

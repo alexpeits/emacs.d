@@ -466,8 +466,8 @@
    `(imenu-list-entry-face-3          ((t (:foreground ,cyan-pale+1))))
    `(imenu-list-entry-subalist-face-3 ((t (:inherit imenu-list-entry-face-3 :weight bold))))
 
-   `(elfeed-search-title-face        ((t (:inherit shadow :slant italic :background ,grey-4))))
-   `(elfeed-search-unread-title-face ((t (:inherit default :slant normal :foreground ,grey+3))))
+   `(elfeed-search-title-face        ((t (:inherit default :slant italic))))
+   `(elfeed-search-unread-title-face ((t (:inherit default :weight bold))))
    `(elfeed-search-feed-face         ((t (:foreground ,yellow))))
    `(elfeed-search-tag-face          ((t (:foreground ,olive))))
 
