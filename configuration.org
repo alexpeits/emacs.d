@@ -1382,6 +1382,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
          `(term ((t (:inherit default))))
+         `(vterm-color-default ((t (:inherit default))))
 
          `(mode-line-inactive ((t ,@(modus-vivendi-theme-mode-line-attrs
                                      (color-darken-name fg-inactive 12)
@@ -1491,6 +1492,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
+         `(vterm-color-default ((t (:inherit default))))
 
          `(mode-line-inactive ((t ,@(modus-operandi-theme-mode-line-attrs
                                      (color-lighten-name fg-inactive 15)
@@ -3749,8 +3751,8 @@ the current file."
            (link (elfeed-entry-link entry))
            (win (selected-window)))
       (with-current-buffer (get-buffer "*elfeed-search*")
-        (unless (one-window-p)              ; experimental
-          (delete-other-windows win))
+        ;; (unless (one-window-p)
+        ;;   (delete-other-windows win))
         (split-window win (/ (frame-height) 3) 'below)
         (other-window 1)
         (if arg
@@ -5023,9 +5025,10 @@ the minibuffer."
    (copy-alist completions)))
 
 (defun my/org-roam-filename-from-title (title)
-  (let* ((tmpl (concat org-roam-capture--file-name-default "-${slug}"))
-         (slug (org-roam--title-to-slug title)))
-    (string-trim (org-roam-capture--fill-template tmpl `((slug . ,slug))))))
+  (let* ((tmpl "%<%Y%m%d%H%M%S>-${slug}")
+         (slug (org-roam--title-to-slug title))
+         (org-roam-capture--info (list (cons 'slug slug))))
+    (string-trim (org-roam-capture--fill-template tmpl))))
 
 (defun my/org-roam-find-filename ()
   (let* ((completions (org-roam--get-title-path-completions))
