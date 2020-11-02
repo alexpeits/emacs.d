@@ -1253,7 +1253,9 @@ CWD is not in a git repo (or the git command is not found)."
   ;; kill vterm buffers when exiting with C-d
   (defun my/vterm-exit-kill-buffer (buffer event)
     (kill-buffer buffer))
-  (setq vterm-exit-functions '(my/vterm-exit-kill-buffer)))
+  (setq vterm-exit-functions '(my/vterm-exit-kill-buffer))
+  :config
+  (add-to-list 'vterm-eval-cmds '("magit-commit-create" magit-commit-create)))
 #+end_src
 
 * UI
