@@ -3666,6 +3666,7 @@ the current file."
               ("o" . my/elfeed-search-other-window)
               ("t" . my/elfeed-filter-in-tag)
               ("T" . my/elfeed-filter-out-tag)
+              ("f" . my/elfeed-filter-in-feed)
               ("q" . my/elfeed-kill-buffer-close-window-dwim)
               ("e" . my/elfeed-show-eww)
               ("x" . my/elfeed-search-org-capture)
@@ -3699,7 +3700,22 @@ the current file."
     (let ((shr-inhibit-images (not tog)))
       (elfeed-show-refresh)))
 
-  (defun my/elfeed-all-used-tags ()
+  (defun my/elfeed-all-visible-feeds ()
+    "Return a list of all currently shown tags"
+    (-distinct
+     (-map (-compose 'elfeed-feed-title 'elfeed-entry-feed)
+           elfeed-search-entries)))
+
+  (defun my/elfeed-filter-in-feed ()
+    (interactive)
+    (call-interactively 'elfeed-search-clear-filter)
+    (let* ((feeds (my/elfeed-all-visible-feeds))
+           (old-filter elfeed-search-filter)
+           (selection (completing-read "Feed: " feeds nil :require-match))
+           (new-filter (format "%s %s" old-filter selection)))
+      (elfeed-search-set-filter new-filter)))
+
+  (defun my/elfeed-all-visible-tags ()
     "Return a list of all currently shown tags"
     (-distinct
      (apply #'append
@@ -3708,7 +3724,7 @@ the current file."
   (defun my/elfeed-filter-tag (clear inverse)
     (when clear
       (call-interactively 'elfeed-search-clear-filter))
-    (let* ((tags (my/elfeed-all-used-tags))
+    (let* ((tags (my/elfeed-all-visible-tags))
            (old-filter elfeed-search-filter)
            (selection (completing-read "Tag: " tags nil :require-match))
            (op (if inverse "-" "+"))
