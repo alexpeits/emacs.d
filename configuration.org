@@ -79,6 +79,7 @@
 
 ;; `dash' is used in various places
 (use-package dash :ensure t)
+(use-package dash-functional :ensure dash)
 #+END_SRC
 
 * Various utility functions
