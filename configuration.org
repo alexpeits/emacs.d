@@ -1442,6 +1442,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
          `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
+         `(js2-object-property ((t (:foreground ,cyan-nuanced))))
+         `(rjsx-tag-bracket-face ((t (:foreground ,cyan-nuanced))))
+
          `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan))))
 
@@ -1540,6 +1543,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(haskell-operator-face ((t (:inherit ,haskell-operator))))
 
          `(coq-cheat-face ((t (:inherit hi-red-b))))
+
+         `(js2-object-property ((t (:foreground ,cyan-nuanced))))
+         `(rjsx-tag-bracket-face ((t (:foreground ,cyan-nuanced))))
 
          `(markdown-pre-face ((t (:foreground ,cyan))))
          `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
@@ -3175,6 +3181,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (setq js2-mode-show-strict-warnings nil)
   :config
   (my/define-major-mode-key 'rjsx-mode "s" 'my/prettier-and-save)
+  (my/define-major-mode-key 'rjsx-mode "d" 'js-doc-insert-function-doc)
+  (my/define-major-mode-key 'rjsx-mode "D" 'js-doc-insert-file-doc)
   (my/add-hooks
    '(rjsx-mode-hook)
    (setq evil-shift-width 2)
@@ -3191,6 +3199,11 @@ If COUNT is given, move COUNT - 1 lines downward first."
    '(typescript-mode-hook)
    (subword-mode 1)
    (setq evil-shift-width 2)))
+
+(use-package js-doc
+  :ensure t
+  :commands (js-doc-insert-function-doc
+             js-doc-insert-file-doc))
 
 (use-package web-mode
   :ensure t
@@ -3732,10 +3745,13 @@ the current file."
       (elfeed-show-refresh)))
 
   (defun my/elfeed-all-visible-feeds ()
-    "Return a list of all currently shown tags"
-    (-distinct
-     (-map (-compose 'elfeed-feed-title 'elfeed-entry-feed)
-           elfeed-search-entries)))
+    "Return an alist (name -> feed struct) of all currently shown feeds"
+    ;; `-compare-fn' is used internally by `-distinct', to remove duplicate
+    ;; feeds by name (`car')
+    (let ((-compare-fn (-on 'eq 'car)))
+      (-distinct
+       (-annotate 'elfeed-feed-title
+                  (mapcar 'elfeed-entry-feed elfeed-search-entries)))))
 
   (defun my/elfeed-filter-in-feed ()
     (interactive)
@@ -3743,7 +3759,9 @@ the current file."
     (let* ((feeds (my/elfeed-all-visible-feeds))
            (old-filter elfeed-search-filter)
            (selection (completing-read "Feed: " feeds nil :require-match))
-           (new-filter (format "%s %s" old-filter selection)))
+           (feed (cdr (assoc selection feeds)))
+           (feed-url (elfeed-feed-url feed))
+           (new-filter (format "%s =%s" old-filter feed-url)))
       (elfeed-search-set-filter new-filter)))
 
   (defun my/elfeed-all-visible-tags ()
