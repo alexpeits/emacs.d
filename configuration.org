@@ -1048,46 +1048,6 @@ Paredit keys:
               (define-key comint-mode-map (kbd "C-l") 'my/comint-clear-buffer))))
 #+END_SRC
 
-** generic function for opening new shell/term buffers
-
-#+begin_src emacs-lisp
-
-(defun my/new-shell (name-tmpl callback &optional dir prompt)
-  "Open up a new shell in the directory associated with the current buffer.
-
-The shell is renamed to match that directory to make multiple
-eshell windows easier. If DIR is provided, open the shell there. If PROMPT is
-non-nil, prompt for the directory instead. With a prefix argument, prompt for
-directory."
-  (interactive (list nil current-prefix-arg))
-  (let* ((parent (if prompt
-                     (read-directory-name "Open eshell in: ")
-                   (if dir
-                       dir
-                     (if (buffer-file-name)
-                         (file-name-directory (buffer-file-name))
-                       default-directory))))
-         (height (/ (window-total-height) 3))
-         (name (car (last (split-string parent "/" t))))
-         (bufname (format name-tmpl name))
-         (default-directory parent))
-    (split-window-vertically (- height))
-    (other-window 1)
-    (funcall callback parent bufname)))
-
-(defun asdf ()
-  (interactive "P")
-  (funcall-interactively (-partial 'my/new-shell "*eshell:%s*"
-                                   '(lambda (parent name)
-                                      (let ((eshell-banner-message
-                                             (format "eshell in %s\n\n"
-                                                     (propertize (abbreviate-file-name parent)
-                                                                 'face
-                                                                 'font-lock-keyword-face))))
-                                        (eshell :new))
-                                      (rename-buffer (generate-new-buffer-name name))))))
-#+end_src
-
 ** eshell
 
 #+BEGIN_SRC emacs-lisp
@@ -1226,9 +1186,7 @@ CWD is not in a git repo (or the git command is not found)."
              (locate-dominating-file cwd ".git"))
     (let ((git-output
            (shell-command-to-string
-            (concat "cd "
-                    cwd
-                    " && git branch | grep '\\*' | sed -e 's/^\\* //'"))))
+            (format "git -C %s branch | grep '\\*' | sed -e 's/^\\* //'" cwd))))
       (concat
        (propertize
         (concat "["
@@ -1250,9 +1208,7 @@ CWD is not in a git repo (or the git command is not found)."
     (let ((git-output
            (split-string
             (shell-command-to-string
-             (concat "cd "
-                     cwd
-                     " && git status --porcelain"))
+             (format "git -C %S status --porcelain" cwd))
             "\n" t))
           (untracked 0)
           (modified 0)
@@ -2154,6 +2110,7 @@ In =vc-git-log-edit-mode=:
          . evil-local-mode)
   :init
   (setq evil-want-C-i-jump nil
+        evil-undo-system 'undo-tree
         evil-intercept-esc t
         evil-respect-visual-line-mode t
         evil-mode-line-format '(before . mode-line-front-space))
