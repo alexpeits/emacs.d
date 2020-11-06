@@ -3188,6 +3188,11 @@ If COUNT is given, move COUNT - 1 lines downward first."
    (setq evil-shift-width 2)
    (define-key js2-mode-map (kbd "C-c C-f") nil)))
 
+(use-package flow-js2-mode
+  :ensure t
+  :after rjsx-mode
+  :diminish)
+
 (use-package typescript-mode
   :ensure t
   :mode (("\\.ts\\'" . typescript-mode))
@@ -3204,6 +3209,24 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :ensure t
   :commands (js-doc-insert-function-doc
              js-doc-insert-file-doc))
+
+(use-package nvm
+  :ensure t
+  :commands (nvm-use nvm-use-for nvm-use-for-buffer))
+
+(use-package js
+  :commands (js-mode)
+  :init
+  (setq js-indent-level 2))
+
+(use-package prettier-js
+  :ensure t
+  :commands (prettier-js prettier-js-mode)
+  :init
+  (defun my/prettier-and-save ()
+    (interactive)
+    (prettier-js)
+    (save-buffer)))
 
 (use-package web-mode
   :ensure t
@@ -3226,28 +3249,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :init
   (setq css-indent-offset 2
         css-fontify-colors nil))
-
-(use-package js
-  :commands (js-mode)
-  :init
-  (setq js-indent-level 2))
-
-;; (use-package prettier-js
-;;   :ensure t
-;;   :commands (prettier-js prettier-js-mode my/prettier-and-save)
-;;   :init
-;;   (setq prettier-js-args '("--trailing-comma" "es5"
-;;                            "--tab-width" "2"
-;;                            "--semi" "false"
-;;                            "--single-quote" "false")))
-
-(defun my/prettier-and-save ()
-  (interactive)
-  (unless (executable-find "prettier")
-    (user-error "`prettier' executable not found"))
-  (let* ((fn (file-name-nondirectory buffer-file-name)))
-    (my/format-and-save "prettier" "--stdin" "--stdin-filepath" fn))
-  (save-buffer))
 
 (use-package emmet-mode
   :ensure t
