@@ -318,6 +318,15 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 #+END_SRC
 
 * Various configurations
+** disable custom file
+
+#+begin_src emacs-lisp
+(use-package cus-edit
+  :defer t
+  :custom
+  (custom-file null-device "Don't store customizations"))
+#+end_src
+
 ** basic editing
 
 #+BEGIN_SRC emacs-lisp
@@ -5588,9 +5597,6 @@ the minibuffer."
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-;; (load custom-file 'noerror)
-
 ;; make underlines show under mode-line (cleaner)
 (setq x-underline-at-descent-line t)
 
