@@ -240,8 +240,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (let* ((full-fp (buffer-file-name))
          (prefix (read-directory-name "prefix to strip: " (projectile-project-root)))
          (suffix (if include-line-number (format ":%s" (number-to-string (line-number-at-pos))) ""))
-         (fp (concat (string-remove-prefix prefix full-fp) suffix))
-         )
+         (fp (concat (string-remove-prefix prefix full-fp) suffix)))
     (kill-new fp)
     (message fp)
     t))
@@ -259,6 +258,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     "requirements.txt"
     ;; ruby
     "Gemfile"
+    ;; js
+    "package.json"
     ;; docker
     "docker-compose.yml"
     "Dockerfile"
@@ -524,7 +525,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
            (frame-parameter fr 'outer-window-id))
         ('error nil)))))
 
-(advice-add 'raise-frame :after 'my/wmctrl-raise-frame)
+(unless is-mac
+  (advice-add 'raise-frame :after 'my/wmctrl-raise-frame))
 #+end_src
 
 ** compilation
@@ -3062,20 +3064,14 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "-i --simple-prompt"))
 
-(defun my/mode-line-venv ())
 (use-package pyvenv
   :ensure t
   :after python
   :commands (pyvenv-workon)
   :config
-  (defun my/mode-line-venv ()
-    (if (string= major-mode "python-mode")
-        (let ((venv (if (null pyvenv-virtual-env-name)
-                        "-"
-                      pyvenv-virtual-env-name)))
-          (format "(%s) " venv)
-          )
-      "")))
+  (defun my/mode-line-extra-python-mode ()
+    (let ((venv pyvenv-virtual-env-name))
+      (format "(%s) " (or venv "-")))))
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
@@ -3136,6 +3132,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
 (use-package enh-ruby-mode
   :mode (("\\.rb\\'" . enh-ruby-mode)
+         ("\\.rake\\'" . enh-ruby-mode)
          ("Rakefile\\'" . enh-ruby-mode)
          ("Gemfile\\'" . enh-ruby-mode))
   :init
@@ -3146,7 +3143,9 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :config
   (my/add-hooks
    '(enh-ruby-mode-hook)
-   (setq evil-shift-width 2))
+   (setq evil-shift-width 2)
+   (when (buffer-file-name)
+     (add-hook 'before-save-hook #'my/ruby-insert-frozen-string-literal nil :local)))
   (my/define-major-mode-key 'enh-ruby-mode "s" 'my/ruby-format-and-save))
 
 (use-package robe
@@ -3154,6 +3153,15 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :after enh-ruby-mode
   :hook (enh-ruby-mode . robe-mode)
   :diminish)
+
+(use-package rbenv
+  :ensure t
+  :after enh-ruby-mode
+  :hook (enh-ruby-mode . rbenv-use-corresponding)
+  :config
+  (defun my/mode-line-extra-enh-ruby-mode ()
+    (let ((version (rbenv--active-ruby-version)))
+      (format "(%s) " (or version "-")))))
 
 (use-package rubocopfmt
   :ensure t
@@ -3164,6 +3172,17 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (interactive)
     (save-buffer)
     (call-interactively 'rubocopfmt)))
+
+(defvar my/ruby-frozen-string-literal "# frozen_string_literal: true")
+(defun my/ruby-insert-frozen-string-literal ()
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (unless (re-search-forward my/ruby-frozen-string-literal nil t)
+      (goto-char (point-min))
+      (newline 2)
+      (previous-line 2)
+      (insert my/ruby-frozen-string-literal))))
 #+end_src
 
 ** clojure
@@ -5007,7 +5026,7 @@ the minibuffer."
    '(org-mode-hook)
    (when (and (buffer-file-name)
               (org-roam--org-roam-file-p (buffer-file-name)))
-     (add-hook 'before-save-hook #'my/org-roam-add-roam-tags-property nil t)))
+     (add-hook 'before-save-hook #'my/org-roam-add-roam-tags-property nil :local)))
   (with-eval-after-load 'evil
     (evil-define-key 'visual org-mode-map (kbd "[[") 'org-roam-insert-immediate))
   ;; don't show tags in `org-roam-find-file'
@@ -5479,7 +5498,7 @@ the minibuffer."
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
        (:eval (frame-parameter nil 'persp--modestring)) "  "
-       (:eval (my/mode-line-venv))
+       ;; (:eval (my/mode-line-venv))
        (:eval (my/mode-line-position))
        (:eval (my/mode-line-hud)) "  "
        ))
