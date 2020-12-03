@@ -32,8 +32,8 @@
 
 (defvar functor-theme-less-colors nil)
 
-(let* ((black "#181818")
-       (white "#dadada")
+(let* ((bg "#181818")
+       (fg "#dadada")
 
        (grey-8 "#202020")
        (grey-7 "#242424")
@@ -153,7 +153,7 @@
   (custom-theme-set-faces
    'functor
 
-   `(default ((t (:foreground ,white :background ,black))))
+   `(default ((t (:foreground ,fg :background ,bg))))
    `(cursor  ((t (:background ,cyan-pale))))
    `(region  ((t (:background ,blue-1))))
 
@@ -162,8 +162,8 @@
    `(link                ((t (:foreground ,blue-bright :underline t))))
    `(italic              ((t (:foreground ,cyan-pale+1 :slant italic))))
    `(hl-line             ((t (:background ,grey-6))))
-   `(show-paren-match    ((t (:background ,red-pale-1 :foreground ,white))))
-   `(match               ((t (:background ,blue-1 :foreground ,white))))
+   `(show-paren-match    ((t (:background ,red-pale-1 :foreground ,fg))))
+   `(match               ((t (:background ,blue-1 :foreground ,fg))))
    `(whitespace-trailing ((t (:background ,red-2))))
 
    `(shadow              ((t (:foreground ,grey+2))))
@@ -200,7 +200,7 @@
    `(persp-selected-face ((t (:foreground ,green-alt :weight bold))))
 
    `(isearch-fail   ((t (:foreground ,red+2 :background ,red-2))))
-   `(isearch        ((t (:foreground ,white :background ,green-bright-1 :weight bold))))
+   `(isearch        ((t (:foreground ,fg :background ,green-bright-1 :weight bold))))
    `(lazy-highlight ((t (:foreground ,blue+2 :background ,blue-2))))
 
    `(evil-ex-substitute-matches     ((t (:inherit hi-blue))))
@@ -244,6 +244,12 @@
    `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
 
    `(nix-attribute-face ((t (:inherit font-lock-function-name-face))))
+
+   `(enh-ruby-heredoc-delimiter-face ((t (:inherit font-lock-string-face))))
+   `(enh-ruby-op-face ((t (:foreground ,fg))))
+   `(enh-ruby-regexp-delimiter-face ((t (:foreground ,green+1))))
+   `(enh-ruby-regexp-face ((t (:foreground ,magenta))))
+   `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
 
    `(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
    `(sh-heredoc     ((t (:foreground ,magenta))))
@@ -341,7 +347,7 @@
    `(diredfl-exec-priv   ((t (:foreground ,green+1))))
    `(diredfl-number      ((t (:foreground ,cyan-2))))
    `(diredfl-date-time   ((t (:foreground ,cyan-pale))))
-   `(diredfl-file-name   ((t (:foreground ,white))))
+   `(diredfl-file-name   ((t (:foreground ,fg))))
    `(diredfl-file-suffix ((t (:foreground ,beige-1))))
    `(diredfl-dir-name    ((t (:inherit dired-directory))))
    `(diredfl-symlink     ((t (:inherit dired-symlink))))
@@ -354,7 +360,7 @@
 
    `(Info-quoted      ((t (:foreground ,magenta))))
    `(info-header-node ((t (:foreground ,grey+2 :weight bold))))
-   `(info-title-1     ((t (:foreground ,white :weight bold :height 1.2))))
+   `(info-title-1     ((t (:foreground ,fg :weight bold :height 1.2))))
    `(info-title-2     ((t (:foreground ,cyan-pale+1 :weight bold))))
    `(info-title-3     ((t (:foreground ,magenta+1 :weight bold))))
    `(info-title-4     ((t (:foreground ,beige+1 :weight bold))))
@@ -395,8 +401,8 @@
    `(org-block            ((t (:background ,blue-4 :extend t))))
    `(org-block-begin-line ((t (:foreground ,blue-bright-1 :background ,blue-3 :extend t))))
    `(org-block-end-line   ((t (:inherit org-block-begin-line))))
-   `(org-hide             ((t (:foreground ,black))))
-   `(org-indent           ((t (:foreground ,black :background ,black))))
+   `(org-hide             ((t (:foreground ,bg))))
+   `(org-indent           ((t (:foreground ,bg :background ,bg))))
    `(org-ellipsis         ((t (:foreground ,magenta :underline t))))
    `(org-date             ((t (:foreground ,green+2 :underline t))))
    `(org-verbatim         ((t (:foreground ,magenta+1))))

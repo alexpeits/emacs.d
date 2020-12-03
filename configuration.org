@@ -3123,7 +3123,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :init
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil)
-  (my/set-mode-fill-width 'ruby-mode-hook 99)
+  (my/set-mode-fill-width 'ruby-mode-hook 120)
   :config
   (my/add-hooks
    '(ruby-mode-hook)
@@ -3139,7 +3139,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (setq enh-ruby-indent-level 2
         enh-ruby-indent-tabs-mode nil
         enh-ruby-check-syntax nil)
-  (my/set-mode-fill-width 'enh-ruby-mode-hook 99)
+  (my/set-mode-fill-width 'enh-ruby-mode-hook 120)
   :config
   (my/add-hooks
    '(enh-ruby-mode-hook)

@@ -225,6 +225,12 @@
    `(nix-constant-face  ((t (:inherit font-lock-type-face))))
    `(nix-builtin-face   ((t (:inherit font-lock-preprocessor-face))))
 
+   `(enh-ruby-heredoc-delimiter-face ((t (:inherit font-lock-string-face))))
+   `(enh-ruby-op-face ((t (:foreground ,fg))))
+   `(enh-ruby-regexp-delimiter-face ((t (:foreground ,green+1))))
+   `(enh-ruby-regexp-face ((t (:foreground ,magenta))))
+   `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
+
    `(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
    `(sh-heredoc     ((t (:foreground ,magenta))))
 
