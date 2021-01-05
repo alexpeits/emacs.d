@@ -5071,7 +5071,7 @@ the minibuffer."
              (line (elt parts 1))
              (match (string-join (cddr parts) ":"))
              (abspath (concat org-roam-directory path))
-             (roam-title (org-roam--get-title-or-slug abspath)))
+             (roam-title (org-roam-db--get-title abspath)))
         (format "%s:%s:%s"
                 (propertize roam-title 'face 'ivy-grep-info)
                 (propertize line 'face 'ivy-grep-line-number)
