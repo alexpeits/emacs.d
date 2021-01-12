@@ -171,7 +171,7 @@
                                 (bls (cdr group)))
                             (insert (format "** [[file:%s][%s]]\n"
                                             file-from
-                                            (org-roam--get-title-or-slug file-from)))
+                                            (org-roam-db--get-title file-from)))
                             (dolist (backlink bls)
                               (pcase-let ((`(,file-from _ ,props) backlink))
                                 (insert (s-trim (s-replace "\n" " " (plist-get props :content))))
