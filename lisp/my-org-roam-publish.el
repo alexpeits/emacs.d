@@ -46,13 +46,17 @@
  )
 
 (defun my/notify (urgency title desc)
-  (if (executable-find "dunstify")
-      (let ((ignore (if (not (eq urgency 'critical)) "-a 'history-ignore'" ""))
-            (time (if (eq urgency 'critical) 0 4000)))
-        (shell-command
-         (format "dunstify %s -t %d -u %s '%s' '%s'" ignore time urgency title desc)))
-    (when (executable-find "notify-send")
-      (format "notify-send --urgency=%s '%s' '%s'" urgency title desc))))
+  (when-let ((cmd (cond
+                   ((executable-find "dunstify")
+                    (let ((ignore (if (not (eq urgency 'critical)) "-a 'history-ignore'" ""))
+                          (time (if (eq urgency 'critical) 0 4000)))
+                      (format "dunstify %s -t %d -u %s '%s' '%s'" ignore time urgency title desc)))
+                   ((executable-find "notify-send")
+                    (format "notify-send --urgency=%s '%s' '%s'" urgency title desc))
+                   ((executable-find "osascript")
+                    (format "osascript -e 'display notification \"%s\" with title \"%s\"'" desc title))
+                   )))
+    (shell-command cmd)))
 
 (defvar my/org-roam-publish-lock-file (expand-file-name ".my-org-roam-publish-lock" user-emacs-directory))
 
