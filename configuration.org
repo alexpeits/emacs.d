@@ -1497,6 +1497,9 @@ CWD is not in a git repo (or the git command is not found)."
   (setq modus-themes-org-blocks 'greyscale
         modus-themes-headings '((t . t))
         modus-themes-scale-headings t
+        modus-themes-region 'bg-only
+        modus-themes-fringes 'subtle
+        modus-themes-intense-hl-line t
         modus-themes-scale-5 1.3
         modus-themes-scale-4 1.2
         modus-themes-scale-3 1.0
@@ -1589,7 +1592,7 @@ CWD is not in a git repo (or the git command is not found)."
   (defun my/modus-operandi-emacs-theme ()
     "Modus operandi theme that looks like the default emacs theme"
     (my/modus-operandi-theme)
-    (modus-operandi-theme-with-color-variables
+    (modus-themes-with-colors
       (custom-theme-set-faces
        'modus-operandi
        `(font-lock-comment-face ((t (:foreground ,red-intense))))
@@ -1787,7 +1790,13 @@ In =vc-git-log-edit-mode=:
 #+BEGIN_SRC emacs-lisp
 (use-package vc
   :bind (("C-x v p" . my/vc-project)
-         ("C-x v d" . vc-diff))
+         ("C-x v d" . vc-diff)
+         :map log-view-mode-map
+         ("<tab>" . log-view-toggle-entry-display)
+         ("j" . next-line)
+         ("k" . previous-line)
+         ("l" . forward-char)
+         ("h" . backward-char))
   :init
   ;; prot
   (defun my/vc-project ()
