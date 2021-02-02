@@ -23,9 +23,9 @@
   "Default light emacs theme with a twist")
 
 (defvar foldable-theme-hues
-  ;;         foreground    org-block   hl-line     org-block   fci
+  ;;         background    org-block   hl-line     org-block   fci
   '((white . ("white"      "grey99"    "grey96"    "grey92"    "grey85"))
-    (tan .   ("#fbf4e8"    "#f5efe3"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
+    (tan .   ("oldlace"    "#f5efe3"   "#f2eadc"   "#efe6d5"   "#e7dbc2"))
     (cyan .  ("honeydew"   "#ecfaec"   "#e7f6e7"   "#d9f1d9"   "#d0dfd0"))))
 
 (defvar foldable-theme-variant 'white)

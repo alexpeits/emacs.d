@@ -1525,6 +1525,7 @@ CWD is not in a git repo (or the git command is not found)."
         (custom-theme-set-faces
          'modus-operandi
          `(region ((t (:background ,bg-special-mild))))
+         `(hl-line ((t (:background ,(color-darken-name bg-main 5)))))
          `(secondary-selection ((t (:inherit modus-theme-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
@@ -1803,6 +1804,7 @@ In =vc-git-log-edit-mode=:
     (interactive)
     (vc-dir (vc-root-dir)))
   :config
+  (use-package log-view)
   (add-hook 'vc-git-log-edit-mode-hook 'auto-fill-mode)
   (define-key diff-mode-map (kbd "M-o") nil))
 
@@ -5047,12 +5049,6 @@ the minibuffer."
 
 (use-package org-roam-protocol
   :after org-roam)
-
-(use-package company-org-roam
-  :ensure t
-  :after company org-roam
-  :config
-  (push 'company-org-roam company-backends))
 
 (use-package org-roam-server
   :ensure t
