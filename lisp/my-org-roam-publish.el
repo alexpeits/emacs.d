@@ -160,6 +160,7 @@
 
 (defun my/org-roam-export-add-backlinks (backend)
   (let* ((fn (buffer-file-name))
+         (message "$$$")
          ;; TODO (ref (cdr (org-roam--extract-ref)))
          (links (with-temp-buffer
                   (if-let* ((backlinks (org-roam--get-backlinks fn))
