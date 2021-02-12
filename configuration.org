@@ -3134,9 +3134,11 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+begin_src emacs-lisp
 ;; https://github.com/howardabrams/dot-files/blob/master/emacs-ruby.org
 (use-package ruby-mode
-  ;; :mode (("\\.rb\\'" . ruby-mode)
-         ;; ("Rakefile\\'" . ruby-mode)
-         ;; ("Gemfile\\'" . ruby-mode))
+  :disabled
+  :mode (("\\.rb\\'" . enh-ruby-mode)
+         ("\\.rake\\'" . enh-ruby-mode)
+         ("Rakefile\\'" . enh-ruby-mode)
+         ("Gemfile\\'" . enh-ruby-mode))
   :init
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil)
@@ -3174,7 +3176,23 @@ If COUNT is given, move COUNT - 1 lines downward first."
 (use-package rbenv
   :ensure t
   :after enh-ruby-mode
-  :hook (enh-ruby-mode . rbenv-use-corresponding)
+  :commands (rbenv--locate-file rbenv-use-corresponding)
+  ;; :hook (enh-ruby-mode . rbenv-use-corresponding)
+  :init
+  ;; testing this, runs on every buffer switch so might add overhead
+  (defvar my/rbenv-current-version-file nil)
+  (defun my/rbenv-use-corresponding ()
+    (interactive)
+    (when (eq major-mode 'enh-ruby-mode)
+      (let ((version-file-path (or (rbenv--locate-file ".ruby-version")
+                                   (rbenv--locate-file ".rbenv-version"))))
+        (when (and version-file-path
+                   (not (string-equal version-file-path
+                                      my/rbenv-current-version-file)))
+          (setq my/rbenv-current-version-file version-file-path)
+          (rbenv-use-corresponding)))))
+
+  (add-hook 'buffer-list-update-hook 'my/rbenv-use-corresponding)
   :config
   (defun my/mode-line-extra-enh-ruby-mode ()
     (let ((version (rbenv--active-ruby-version)))
