@@ -324,8 +324,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 #+begin_src emacs-lisp
 (use-package cus-edit
   :defer t
-  :custom
-  (custom-file null-device "Don't store customizations"))
+  :init
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory)))
 #+end_src
 
 ** basic editing
@@ -1456,6 +1456,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(js2-object-property ((t (:foreground ,cyan-nuanced-fg))))
          `(rjsx-tag-bracket-face ((t (:foreground ,cyan-nuanced-fg))))
 
+         `(terraform--resource-type-face ((t (:foreground ,green-alt-other))))
+         `(terraform--resource-name-face ((t (:foreground ,red-alt-other-faint))))
+
          `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan))))
 
@@ -1561,6 +1564,9 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(js2-object-property ((t (:foreground ,cyan-nuanced-fg))))
          `(rjsx-tag-bracket-face ((t (:foreground ,cyan-nuanced-fg))))
+
+         `(terraform--resource-type-face ((t (:foreground ,green-intense))))
+         `(terraform--resource-name-face ((t (:foreground ,red-intense))))
 
          `(markdown-pre-face ((t (:foreground ,cyan))))
          `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
@@ -4893,6 +4899,8 @@ the minibuffer."
           ("ht" . "export html")
           ("la" . "export latex")
           ("b" . "src bash")
+          ("t" . "src terraform")
+          ("y" . "src yaml")
           ("el" . "src emacs-lisp")
           ("h" . "src haskell")
           ("p" . "src python")))
@@ -4918,6 +4926,7 @@ the minibuffer."
 
   (my/define-major-mode-key 'org-mode "c" 'org-cliplink)
   (my/define-major-mode-key 'org-mode "it" 'my/org-insert-date-today)
+  (my/define-major-mode-key 'org-mode "ti" 'org-toggle-inline-images)
   (my/define-major-mode-key 'org-mode "tl" 'org-toggle-link-display)
   (my/define-major-mode-key 'org-mode "tm" 'my/org-toggle-markup)
 
@@ -5169,7 +5178,7 @@ the minibuffer."
   :init
   (setq org-download-method 'directory
         org-download-screenshot-method "scrot -s %s"
-        org-download-image-dir "~/Pictures/Screenshots/"
+        org-download-image-dir (expand-file-name "~/Pictures/org-download")
         org-download-heading-lvl nil)
   :config
   (defalias 'scrot 'org-download-screenshot))
@@ -5641,16 +5650,7 @@ the minibuffer."
 
 #+BEGIN_SRC emacs-lisp
 (custom-set-faces
- ;; '(anzu-mode-line ((t (:inherit mode-line :foreground "magenta" :weight bold))))
- ;; '(anzu-mode-line-no-match ((t (:inherit mode-line :foreground "red" :weight bold))))
  '(fixed-pitch ((t nil)))
- ;; '(flycheck-info ((t (:underline (:color "DeepSkyBlue2" :style wave)))))
- ;; '(flycheck-fringe-info ((t (:foreground "DeepSkyBlue2"))))
- ;; '(flycheck-warning ((t (:underline (:color "orange1" :style wave)))))
- ;; '(flycheck-fringe-warning ((t (:foreground "orange1"))))
- ;; '(flycheck-error ((t (:underline (:color "red1" :style wave)))))
- ;; '(flycheck-fringe-error ((t (:foreground "#FB4933"))))
- ;; '(whitespace-trailing ((t (:background "#602020"))))
  )
 
 (dolist (val '((eval . (setq flycheck-disabled-checkers
@@ -5666,7 +5666,7 @@ the minibuffer."
                (my/haskell-align-stuff . nil)
                (my/haskell-use-ormolu . t)
                (my/purescript-align-stuff . nil)
-               (org-download-image-dir . "~/Dropbox/emacs/org-roam/static/images")
+               (org-download-image-dir . "~/Dropbox/emacs/org/static/images/")
                ))
   (add-to-list 'safe-local-variable-values val))
 #+END_SRC
