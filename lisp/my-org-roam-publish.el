@@ -74,6 +74,7 @@
       (condition-case ex
           (let ((org-html-htmlize-output-type 'css)
                 (hooks '(my/org-roam-export-add-backlinks
+                         my/org-roam-export-all-by-date-file
                          my/org-roam-export-add-index))
                 (old-file-link-export-param (org-link-get-parameter "file" :export))
                 (old-cite-link-export-param (org-link-get-parameter "cite" :export)))
@@ -137,12 +138,14 @@
          (edit-link (format "org-protocol://roam-file?file=%s" fn))
          (graph-server-link (format "http://localhost:%d" org-roam-server-port))
          (graph-link "/graph.html")
+         (all-by-date-link "/all_files_sorted_by_date.html")
          (home-link "/")
          (index-link "/theindex.html"))
     (string-join `("<div id=\"postamble\" class=\"status\">"
                    ,(format "<p class=\"postamble-row\"><a id=\"postamble-edit\" href=\"%s\">Edit file (e)</a></p>" edit-link)
                    ,(format "<p class=\"postamble-row\"><a id=\"postamble-graph-server\" href=\"%s\" target=\"_blank\">Graph server (s)</a></p>" graph-server-link)
                    ,(format "<p class=\"postamble-row\"><a id=\"postamble-graph\" href=\"%s\" target=\"_blank\">Graph (g)</a></p>" graph-link)
+                   ,(format "<p class=\"postamble-row\"><a id=\"postamble-all-by-date\" href=\"%s\">All files by date (a)</a></p>" all-by-date-link)
                    ,(format "<p class=\"postamble-row\"><a id=\"postamble-home\" href=\"%s\">Back to home (h)</a></p>" home-link)
                    ,(format "<p class=\"postamble-row\"><a id=\"postamble-index\" href=\"%s\">Back to index (i)</a></p>" index-link)
                    "</div>"
@@ -158,9 +161,14 @@
         (goto-char (point-min))
         (insert (format "#+INDEX: %s" title))))))
 
+(defvar my/org-roam-export-all-by-date-file "all_files_sorted_by_date.org")
+
+(defun my/org-roam-export-all-by-date-file? (fn)
+  (string= (file-name-nondirectory fn)
+           my/org-roam-export-all-by-date-file))
+
 (defun my/org-roam-export-add-backlinks (backend)
   (let* ((fn (buffer-file-name))
-         (message "$$$")
          ;; TODO (ref (cdr (org-roam--extract-ref)))
          (links (with-temp-buffer
                   (if-let* ((backlinks (org-roam--get-backlinks fn))
@@ -179,7 +187,9 @@
                                             (org-roam-db--get-title file-from)))
                             (dolist (backlink bls)
                               (pcase-let ((`(,file-from _ ,props) backlink))
-                                (insert (s-trim (s-replace "\n" " " (plist-get props :content))))
+                                (insert (s-trim
+                                         (s-replace "\n" " "
+                                                    (funcall org-roam-buffer-preview-function fn (plist-get props :point)))))
                                 (insert "\n\n")))))))
                   (buffer-string))))
     (unless (string= links "")
@@ -187,6 +197,26 @@
         (goto-char (point-max))
         (insert "-----\n")
         (insert links)))))
+
+(defun my/org-roam-export-all-by-date-file (backend)
+  (let ((fn (buffer-file-name)))
+    (when (my/org-roam-export-all-by-date-file? fn)
+      (let* ((all-files (org-roam--get-title-path-completions))
+             (links (with-temp-buffer
+                      (dolist (fprops all-files)
+                        (let* ((ftitle (car fprops))
+                               (fpath (plist-get (cdr fprops) :path))
+                               (fname (file-name-nondirectory fpath)))
+                          (unless (string= fname my/org-roam-export-all-by-date-file)
+                            (insert (format "* [[file:%s][%s]]\n" fname ftitle)))))
+                      (buffer-string))))
+        (unless (string= links "")
+          (save-excursion
+            (goto-char (point-max))
+            (insert "\n")
+            (insert links)))
+        (setq foo links)
+        (setq foo (buffer-substring-no-properties (point-min) (point-max)))))))
 
 (provide 'my-org-roam-publish)
 ;;; my-org-roam-publish.el ends here
