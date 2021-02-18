@@ -1313,6 +1313,15 @@ CWD is not in a git repo (or the git command is not found)."
   :if (>= emacs-major-version 27)
   :commands (display-fill-column-indicator-mode)
   :hook ((python-mode markdown-mode) . display-fill-column-indicator-mode))
+
+(use-package visual-fill-column
+  :ensure t
+  :commands (visual-fill-column-mode)
+  :init
+  (defun my/visual-fill-column ()
+    (interactive)
+    (visual-line-mode 'toggle)
+    (visual-fill-column-mode 'toggle)))
 #+END_SRC
 
 ** highlight trailing whitespace
@@ -4289,7 +4298,8 @@ buffer, close it."
         company-idle-delay 0.4)
   :config
   (setq company-backends (delete 'company-dabbrev company-backends))
-  (setq company-backends (delete 'company-capf company-backends))
+  ;; (setq company-backends (delete 'company-capf company-backends))
+  (add-to-list 'company-backends 'company-capf)
   (add-to-list 'company-backends 'company-elisp)
   (add-to-list 'company-backends 'company-files))
 
@@ -4956,7 +4966,14 @@ the minibuffer."
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
    (define-key org-mode-map (kbd "<tab>") 'org-cycle)
    (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)
-   (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle))
+   (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
+   (smartparens-mode)
+   )
+
+  (with-eval-after-load 'smartparens
+    (sp-local-pair 'org-mode "=" "=")
+    (sp-local-pair 'org-mode "'" "'" :actions '(rem))
+    (sp-local-pair 'org-mode "\"" "\"" :actions '(rem)))
 
   ;; kill any "unsaved" fontification buffer that might cause a save prompt when quitting emacs
   (advice-add 'save-buffers-kill-terminal
@@ -5044,7 +5061,8 @@ the minibuffer."
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
         org-roam-index-file "home.org"
-        org-roam-link-title-format "%s")
+        org-roam-link-title-format "%s"
+        org-roam-link-auto-replace t)
   (setq org-roam-graph-viewer
         (or (executable-find "google-chrome-stable")
             (executable-find "google-chrome")
