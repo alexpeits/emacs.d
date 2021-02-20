@@ -4595,6 +4595,10 @@ buffer, close it."
   ;; NOTE: this also applies to rg
   (define-key counsel-ag-map (kbd "S-SPC") nil)
 
+  (defvar my/ripgrep-config (expand-file-name "~/.config/ripgrep/ripgreprc"))
+  (when (file-exists-p my/ripgrep-config)
+    (setenv "RIPGREP_CONFIG_PATH" my/ripgrep-config))
+
   (dolist (action '(counsel-find-file counsel-file-jump counsel-recentf))
     (ivy-set-actions
      action
