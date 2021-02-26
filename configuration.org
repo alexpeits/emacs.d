@@ -1615,10 +1615,10 @@ CWD is not in a git repo (or the git command is not found)."
        `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
        `(font-lock-string-face ((t (:foreground ,red-faint))))
        `(font-lock-doc-face ((t (:foreground ,red-faint))))
-       `(font-lock-variable-name-face ((t (:foreground ,yellow-intense))))
+       `(font-lock-variable-name-face ((t (:foreground ,orange-intense))))
        `(font-lock-constant-face ((t (:foreground ,cyan))))
        `(font-lock-builtin-face ((t (:foreground ,cyan-alt))))
-       `(font-lock-keyword-face ((t (:foreground ,magenta-intense))))
+       `(font-lock-keyword-face ((t (:foreground ,magenta-alt))))
        `(font-lock-function-name-face ((t (:foreground ,blue-intense))))
        `(font-lock-type-face ((t (:foreground ,green-intense))))
 
@@ -3284,7 +3284,20 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
 (use-package nvm
   :ensure t
-  :commands (nvm-use nvm-use-for nvm-use-for-buffer))
+  :commands (nvm-use nvm-use-for nvm-use-for-buffer)
+  :init
+  (defun my/nvm-auto-use ()
+    (when (locate-dominating-file (buffer-file-name) ".nvmrc")
+      (nvm-use-for-buffer)))
+  (defun my/nvm ()
+    (interactive)
+    (nvm-use-for-buffer))
+  (my/add-hooks
+   '(rjsx-mode-hook
+     typescript-mode-hook
+     web-tsx-mode-hook
+     web-jsx-mode-hook)
+   (my/nvm-auto-use)))
 
 (use-package js
   :commands (js-mode)
@@ -3308,13 +3321,18 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
         web-mode-code-indent-offset 2
-        web-mode-attr-indent-offset 2)
+        web-mode-attr-indent-offset 2
+        web-mode-enable-auto-quoting nil)
   (define-derived-mode web-tsx-mode web-mode "web-tsx")
   (define-derived-mode web-html-mode web-mode "web-html")
   :config
   ;; web-tsx-mode
   (my/define-major-mode-key 'web-tsx-mode "s" 'my/prettier-and-save)
-  (my/add-hooks '(web-tsx-mode) (subword-mode 1)))
+  (custom-set-faces
+   '(web-mode-keyword-face ((t (:inherit font-lock-keyword-face)))))
+  (my/add-hooks
+   '(web-tsx-mode)
+   (subword-mode 1)))
 
 (use-package css-mode
   :mode (("\\.css\\'" . css-mode))
@@ -3632,12 +3650,11 @@ the current file."
   :commands (markdown-mode gfm-mode)
   :bind (:map markdown-mode-map
               ("M-a" . beginning-of-defun)
-              ("M-e" . end-of-defun)
-              ("TAB" . my/markdown-toggle-heading)
-              ("<tab>" . my/markdown-toggle-heading))
+              ("M-e" . end-of-defun))
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)
+         ("\\.mdx\\'" . markdown-mode)
          ("\\.page\\'" . gfm-mode))
   :init
   (setq markdown-asymmetric-header t
@@ -3666,11 +3683,7 @@ the current file."
    (auto-fill-mode 1)
    (whitespace-mode +1)
    (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))
-
-  (defun my/markdown-toggle-heading ()
-    (interactive)
-    (when (markdown-heading-at-point)
-      (outline-toggle-children))))
+  )
 
 (use-package markdown-toc
   :ensure t
