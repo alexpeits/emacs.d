@@ -5123,8 +5123,15 @@ the minibuffer."
   :after org-roam
   :commands (my/org-roam-publish)
   :bind (:map org-roam-mode-map
-              ("C-c n p" . my/org-roam-publish)
-              ("C-c n P" . my/org-roam-publish-current-file)))
+              ("C-c n p p" . my/org-roam-publish)
+              ("C-c n p P" . my/org-roam-publish-current-file)))
+
+(use-package org-roam-publish-gatsby
+  :after org-roam
+  :commands (og/publish-all og/publish-current-file)
+  :bind (:map org-roam-mode-map
+              ("C-c n p G" . og/publish-all)
+              ("C-c n p g" . og/publish-current-file)))
 
 (defun my/org-roam-refresh ()
   (interactive)

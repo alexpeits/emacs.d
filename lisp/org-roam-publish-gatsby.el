@@ -1,17 +1,18 @@
-(require 'package)
+(when noninteractive
+  (require 'package)
 
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/"))
 
-(package-initialize)
+  (package-initialize)
 
-(defun og/package-install (package)
-  (unless (package-installed-p package)
-    (package-install package)))
+  (defun og/package-install (package)
+    (unless (package-installed-p package)
+      (package-install package)))
 
-(og/package-install 'org-roam)
-(og/package-install 's)
-(og/package-install 'dash)
+  (og/package-install 'org-roam)
+  (og/package-install 's)
+  (og/package-install 'dash))
 
 (require 'org)
 (require 'ox-publish)
@@ -23,14 +24,14 @@
 (defvar og/org-directory
   (expand-file-name "~/Dropbox/emacs/org/"))
 (defvar og/publish-base-directory
-  (expand-file-name "~/tmp/gatsby-tutorial/"))
+  (expand-file-name "~/code/gatsby-tutorial/"))
 (defvar og/publish-content-directory
   (expand-file-name "content/notes" og/publish-base-directory))
 (defvar og/publish-static-directory
   (expand-file-name "static/" og/publish-base-directory))
 
-(setq org-roam-directory og/org-directory)
-(setq make-backup-files nil)
+;; (setq org-roam-directory og/org-directory)
+;; (setq make-backup-files nil)
 
 (org-export-define-derived-backend 'gatsby 'md
   :filters-alist '((:filter-parse-tree . og/separate-elements))
@@ -426,33 +427,61 @@ Return output file name."
   (let ((org-publish-project-alist (og/get-publish-alist all)))
     (org-publish "gatsby-all" :force)))
 
-(defun og/get-publish-alist-foo (&rest files)
-  `(
-    ("gatsby-files"
-     :base-directory ,og/org-directory
-     :base-extension "org"
-     :publishing-directory ,og/publish-content-directory
-     :recursive t
-     :publishing-function og/publish-to-md
-     :headline-levels 5
-     :section-numbers nil
-     :exclude ".*"
-     :with-toc nil
-     :include ,(apply 'vector files)
-     )
-    ("gatsby-static"
-     :base-directory ,og/org-directory
-     :base-extension "css\\|js\\|png\\|jpg\\|jpeg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|ico"
-     :publishing-directory ,og/publish-static-directory
-     :recursive t
-     :publishing-function org-publish-attachment
-     )
-    ("gatsby-all" :components ("gatsby-files" "gatsby-static"))
-    ))
+(defun og/get-publish-alist (&rest files)
+  (let* ((everything (null files))
+         (to-exclude
+          (if everything
+              "mobile_capture.org\\|index.org\\|theindex.org\\|all_files_sorted_by_date.org"
+            ".*"))
+         (to-include
+          (if everything
+              nil
+            (apply 'vector files))))
+    (setq foo to-include)
+    `(
+      ("gatsby-files"
+       :base-directory ,og/org-directory
+       :base-extension "org"
+       :publishing-directory ,og/publish-content-directory
+       :recursive t
+       :publishing-function og/publish-to-md
+       :headline-levels 5
+       :section-numbers nil
+       :exclude ,to-exclude
+       :with-toc nil
+       :include ,to-include
+       )
+      ("gatsby-static"
+       :base-directory ,og/org-directory
+       :base-extension "css\\|js\\|png\\|jpg\\|jpeg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|ico"
+       :publishing-directory ,og/publish-static-directory
+       :recursive t
+       :publishing-function org-publish-attachment
+       )
+      ("gatsby-all" :components ("gatsby-files" "gatsby-static"))
+      )))
 
 (defun og/publish-files (&rest files)
-  (let ((org-publish-project-alist (apply 'og/get-publish-alist-foo files)))
-    (org-publish "gatsby-files" :force)
-    (org-publish "gatsby-static" :force)))
+  (let ((org-publish-project-alist (apply 'og/get-publish-alist files))
+        (org-roam-directory og/org-directory)
+        (make-backup-files nil)
+        (create-lockfiles nil))
+    (org-publish "gatsby-all" :force)))
+
+(defun og/publish-all (force)
+  (interactive "P")
+  (let ((org-publish-project-alist (og/get-publish-alist))
+        (org-roam-directory og/org-directory)
+        (make-backup-files nil)
+        (create-lockfiles nil))
+    (org-publish "gatsby-all" force)))
+
+(defun og/publish-current-file (force)
+  (interactive "P")
+  (let ((org-publish-project-alist (og/get-publish-alist (buffer-file-name)))
+        (org-roam-directory og/org-directory)
+        (make-backup-files nil)
+        (create-lockfiles nil))
+    (org-publish "gatsby-all" force)))
 
 (provide 'org-roam-publish-gatsby)
