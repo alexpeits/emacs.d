@@ -1470,6 +1470,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan))))
+         `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
 
          `(rst-adornment ((t (:foreground ,cyan :weight bold))))
          `(rst-block ((t (:foreground ,cyan))))
@@ -1577,9 +1578,10 @@ CWD is not in a git repo (or the git command is not found)."
          `(terraform--resource-type-face ((t (:foreground ,green-intense))))
          `(terraform--resource-name-face ((t (:foreground ,red-intense))))
 
-         `(markdown-pre-face ((t (:foreground ,cyan))))
          `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan-light))))
+         `(markdown-pre-face ((t (:foreground ,cyan))))
+         `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
 
          `(rst-adornment ((t (:foreground ,cyan-light :weight bold))))
          `(rst-block ((t (:foreground ,green))))
