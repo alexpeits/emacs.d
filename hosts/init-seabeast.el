@@ -24,6 +24,10 @@
 (add-hook 'prog-mode-hook 'hl-line-mode)
 (add-hook 'LaTeX-mode-hook 'hl-line-mode)
 
+;; TODO
+(setq og/publish-base-directory
+  (expand-file-name "~/code/gatsby-tutorial/"))
+
 ;; variables
 (setq magit-repository-directories
       '(

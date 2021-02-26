@@ -24,7 +24,7 @@
 (defvar og/org-directory
   (expand-file-name "~/Dropbox/emacs/org/"))
 (defvar og/publish-base-directory
-  (expand-file-name "~/code/gatsby-tutorial/"))
+  (expand-file-name "~/tmp/gatsby-tutorial/"))
 (defvar og/publish-content-directory
   (expand-file-name "content/notes" og/publish-base-directory))
 (defvar og/publish-static-directory
