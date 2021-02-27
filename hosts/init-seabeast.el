@@ -15,7 +15,7 @@
 (setq my/avail-themes
       '(
         my/modus-vivendi-theme
-        my/zenburn-theme
+        ;; my/zenburn-theme
         my/modus-operandi-theme
         ))
 (setq my/current-theme 0)
