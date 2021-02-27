@@ -3954,6 +3954,37 @@ the current file."
     :group 'my/faces)
   (push '(important my/elfeed-important) elfeed-search-face-alist)
 
+  (defun my/elfeed-export-opml-feedly (file)
+    "Export all feeds to FILE, categorized for import in feedly."
+    (interactive "FOutput OPML file: ")
+    (with-temp-file file
+      (let ((standard-output (current-buffer))
+            (categorized (-group-by 'cadr elfeed-feeds)))
+        (princ "<?xml version=\"1.0\"?>\n")
+        (xml-print
+         `((opml ((version . "1.0"))
+                 (head () (title () "Elfeed Export"))
+                 (body ()
+                       ,@(cl-loop
+                          for group in (-group-by 'cadr elfeed-feeds)
+                          for category = (car group)
+                          for feeds = (cdr group)
+                          collect `(outline
+                                    ((text . ,(format "%s" category))
+                                     (title . ,(format "%s" category)))
+                                    ,@(cl-loop
+                                       for feed in feeds
+                                       for url = (car feed)
+                                       for elfeed-feed = (elfeed-db-get-feed url)
+                                       for maybe-title = (elfeed-feed-title elfeed-feed)
+                                       for title = (if (or (null maybe-title)
+                                                           (string-empty-p maybe-title))
+                                                       (url-host (url-generic-parse-url url))
+                                                     maybe-title)
+                                       collect `(outline
+                                                 ((xmlUrl . ,url)
+                                                  (title . ,title)))))))))))))
+
   ;; get feeds from personal dir
   (load-file (expand-file-name "lisp/elfeed-feeds.el" my/dropbox-emacs-dir)))
 #+END_SRC
