@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Nix code block
+# key: nix
+# --
+\`\`\` nix
+$0
+\`\`\`

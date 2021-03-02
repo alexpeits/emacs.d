@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Inline highlight
+# key: hi
+# --
+[$0]{.hi}

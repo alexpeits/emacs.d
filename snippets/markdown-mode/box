@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Info box
+# key: box
+# --
+[
+$0
+]{.box}

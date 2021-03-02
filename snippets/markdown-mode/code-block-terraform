@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Terraform code block
+# key: tf
+# --
+\`\`\` terraform
+$0
+\`\`\`

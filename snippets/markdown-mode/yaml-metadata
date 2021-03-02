@@ -4,9 +4,11 @@
 # expand-env: ((yas-indent-line 'fixed))
 # --
 ---
+id: ${1:$(downcase (s-replace " " "-" yas-text))}
 title: $1
-description:
+description: $0
 date:
+toc:
 tags:
   -
 ---

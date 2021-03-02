@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Interactive terminal code block
+# key: term
+# --
+\`\`\` shell-session
+$0
+\`\`\`
