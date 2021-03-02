@@ -3649,6 +3649,10 @@ the current file."
 * markdown
 
 #+BEGIN_SRC emacs-lisp
+(defvar my/markdown-css
+  `(,(expand-file-name "static/github.css" user-emacs-directory)
+    ,(expand-file-name "static/pygments.css" user-emacs-directory)))
+
 (use-package markdown-mode
   :ensure t
   :commands (markdown-mode gfm-mode)
@@ -3667,8 +3671,8 @@ the current file."
         markdown-enable-math t
         markdown-gfm-use-electric-backquote nil
         markdown-list-indent-width 2
-        markdown-command "pandoc --highlight-style=pygments --standalone"
-        markdown-css-paths `(,(expand-file-name "static/github.css" user-emacs-directory)))
+        markdown-command "pandoc --highlight-style=pygments --mathjax --to html"
+        markdown-css-paths my/markdown-css)
 
   (defface my/markdown-pandoc-native-div-face
     '((t (:inherit font-lock-preprocessor-face)))
