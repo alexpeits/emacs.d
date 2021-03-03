@@ -1399,6 +1399,7 @@ CWD is not in a git repo (or the git command is not found)."
     (modus-themes-with-colors
       (let* ((hl-line (color-darken-name bg-active 4))
              (pink-subtle "#e8b7e8")
+             (code-block-bg "#0d1c20")
              (type
               (if my/modus-vivendi-theme-alt-colors
                   cyan-refine-fg
@@ -1436,7 +1437,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(elfeed-search-unread-title-face ((t (:inherit elfeed-search-title-face :weight bold))))
 
-         `(org-block ((t (:foreground "#dadada" :background "#0d1c20" :extend t))))
+         `(org-block ((t (:foreground "#dadada" :background ,code-block-bg :extend t))))
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
@@ -1473,6 +1474,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan))))
          `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
+         `(markdown-code-face ((t (:background ,code-block-bg :extend t))))
 
          `(rst-adornment ((t (:foreground ,cyan :weight bold))))
          `(rst-block ((t (:foreground ,cyan))))
