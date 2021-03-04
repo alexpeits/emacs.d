@@ -1388,7 +1388,8 @@ CWD is not in a git repo (or the git command is not found)."
         modus-themes-scale-4 1.2
         modus-themes-scale-3 1.0
         modus-themes-scale-2 1.0
-        modus-themes-scale-1 1.0)
+        modus-themes-scale-1 1.0
+        modus-themes-subtle-line-numbers t)
 
   (defvar my/modus-vivendi-theme-alt-colors nil)
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
@@ -1396,7 +1397,9 @@ CWD is not in a git repo (or the git command is not found)."
   (defun my/modus-vivendi-theme ()
     (load-theme 'modus-vivendi t)
     (modus-themes-with-colors
-      (let* ((hl-line (color-darken-name bg-active 4))
+      (let* ((bg "#0d0d0d")
+             (fg "#e7e7e7")
+             (hl-line (color-darken-name bg-active 4))
              (pink-subtle "#e8b7e8")
              (code-block-bg "#0d1c20")
              (type
@@ -1409,7 +1412,7 @@ CWD is not in a git repo (or the git command is not found)."
                 `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
-         `(default ((t (:background "#0d0d0d" :foreground "#e7e7e7"))))
+         `(default ((t (:background ,bg :foreground ,fg))))
          `(hl-line ((t (:background ,hl-line))))
          `(region ((t (:background ,cyan-subtle-bg))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
@@ -1442,6 +1445,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced-fg :underline t))))
          `(org-ref-cite-face ((t (:foreground ,green :underline t))))
+         `(org-hide ((t :foreground ,bg)))
 
          `(font-lock-type-face ((t (:foreground ,type))))
          `(font-lock-preprocessor-face ((t (:foreground ,red-alt))))
@@ -1521,7 +1525,8 @@ CWD is not in a git repo (or the git command is not found)."
         modus-themes-scale-4 1.2
         modus-themes-scale-3 1.0
         modus-themes-scale-2 1.0
-        modus-themes-scale-1 1.0)
+        modus-themes-scale-1 1.0
+        modus-themes-subtle-line-numbers t)
 
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
 
@@ -1569,6 +1574,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(org-ellipsis ((t (:underline t))))
          `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
+         `(org-hide ((t :foreground ,bg-main)))
 
          `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
          `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
