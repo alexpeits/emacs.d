@@ -3683,6 +3683,17 @@ the current file."
   (font-lock-add-keywords
    'markdown-mode
    '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
+
+  (defface my/markdown-citation-face
+    '((t (:inherit font-lock-function-name-face :weight bold)))
+    "Face for highlighting citations ([@citation]) in pandoc markdown."
+    :group 'my/faces)
+
+  (font-lock-add-keywords
+   'markdown-mode
+   '(("\\(\\[@\\)\\(.+?\\)\\(\\]\\)[^[]" . ((1 markdown-markup-properties)
+                                            (2 '(face my/markdown-citation-face))
+                                            (3 markdown-markup-properties)))))
   :config
   (if (executable-find "marked")
       (setq markdown-command "marked"))
@@ -5297,7 +5308,7 @@ the minibuffer."
         bibtex-autokey-titleword-separator "-"
         bibtex-autokey-titlewords 2
         bibtex-autokey-titlewords-stretch 1
-        bibtex-autokey-titleword-length 5)
+        bibtex-autokey-titleword-length 8)
   :config
   (defun my/bibtex-format-and-clean-entry ()
     (interactive)
