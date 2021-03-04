@@ -31,13 +31,12 @@
 ;; variables
 (setq magit-repository-directories
       '(
-        ("~/projects" . 1)
-        ("~/job/projects" . 1)
+        ("~/code" . 1)
         ))
 
 ;; projectile overrides
 (dolist (override '(
-                    ("~/projects/software-foundations" . "sf")
+                    ("~/code/software-foundations" . "sf")
                     ))
   (let ((proj (expand-file-name (car override)))
         (name (cdr override)))

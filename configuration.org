@@ -4626,7 +4626,7 @@ buffer, close it."
          ("C-x C-f" . counsel-find-file)
          ("C-x f" . counsel-file-jump)
          ("C-x r b" . counsel-bookmark)
-         ;; ("C-x C-a" . counsel-recentf)
+         ("C-x C-a" . counsel-recentf)
          ("C-c s" . my/counsel-rg-in)
          ("C-S-p" . my/counsel-file-jump-temp-root)
          ("C-S-s" . my/counsel-rg-temp-root)
