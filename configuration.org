@@ -3697,6 +3697,7 @@ the current file."
   :config
   (if (executable-find "marked")
       (setq markdown-command "marked"))
+  (my/define-major-mode-key 'markdown-mode "c" 'check-parens)
   (my/add-hooks
    '(markdown-mode-hook)
    (setq evil-shift-width 2)
@@ -4406,7 +4407,7 @@ buffer, close it."
 
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
-                        '(javascript-jshint haskell-ghc haskell-stack-ghc)))
+                        '(javascript-jshint haskell-ghc haskell-stack-ghc yaml-ruby)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
 
