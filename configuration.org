@@ -3828,7 +3828,7 @@ the current file."
         elfeed-use-curl t
         elfeed-curl-max-connections 10
         elfeed-search-clipboard-type 'CLIPBOARD
-        elfeed-search-filter "@10-days-ago +unread "
+        elfeed-search-filter "@5-days-ago +unread "
         elfeed-search-title-max-width 100
         elfeed-search-title-min-width 30
         elfeed-search-trailing-width 30)
@@ -4927,13 +4927,6 @@ the minibuffer."
   :after org
   :bind (("C-c a" . org-agenda))
   :init
-  (setq org-agenda-custom-commands
-        '(("c" "Simple agenda view"
-           ((tags "PRIORITY=\"A\""
-                  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                   (org-agenda-overriding-header "High-priority unfinished tasks:")))
-            (agenda "")
-            (alltodo "")))))
   (setq org-agenda-files (list my/org-directory
                                (expand-file-name "papers" my/org-directory)
                                (expand-file-name "orgzly" my/org-directory))))
