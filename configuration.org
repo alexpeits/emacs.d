@@ -3166,6 +3166,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (my/define-major-mode-key 'ruby-mode "s" 'my/ruby-format-and-save))
 
 (use-package enh-ruby-mode
+  :ensure t
   :mode (("\\.rb\\'" . enh-ruby-mode)
          ("\\.rake\\'" . enh-ruby-mode)
          ("Rakefile\\'" . enh-ruby-mode)
