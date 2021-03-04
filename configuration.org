@@ -1474,6 +1474,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(markdown-list-face ((t (:foreground ,cyan))))
          `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
          `(markdown-code-face ((t (:background ,code-block-bg :extend t))))
+         `(markdown-footnote-text-face ((t (:inherit shadow))))
 
          `(rst-adornment ((t (:foreground ,cyan :weight bold))))
          `(rst-block ((t (:foreground ,cyan))))
@@ -1585,6 +1586,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(markdown-list-face ((t (:foreground ,cyan-light))))
          `(markdown-pre-face ((t (:foreground ,cyan))))
          `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
+         `(markdown-footnote-text-face ((t (:inherit shadow))))
 
          `(rst-adornment ((t (:foreground ,cyan-light :weight bold))))
          `(rst-block ((t (:foreground ,green))))
