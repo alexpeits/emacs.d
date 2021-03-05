@@ -5052,6 +5052,7 @@ the minibuffer."
    (define-key org-mode-map (kbd "<tab>") 'org-cycle)
    (evil-define-key 'normal org-mode-map (kbd "TAB") 'org-cycle)
    (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
+   (whitespace-mode +1)
    (smartparens-mode)
    )
 
