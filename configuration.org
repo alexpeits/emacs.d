@@ -3946,11 +3946,11 @@ the current file."
 
   (defun my/elfeed-org-capture-get-tags (entry)
     (let* ((all-tags (elfeed-entry-tags entry))
-           (tags (seq-filter '(lambda (tag) (not (eq tag 'unread))) all-tags))
-           (tags-str (mapcar '(lambda (tag) (format "%s" tag)) tags)))
+           (tags (seq-filter #'(lambda (tag) (not (eq tag 'unread))) all-tags))
+           (tags-str (mapcar #'(lambda (tag) (format "%s" tag)) tags)))
       (if (null tags)
           ""
-        (concat ":" (string-join tags-str ":") ":"))))
+        (string-join tags-str ", "))))
 
   (defvar my/elfeed-org-capture-entry nil)
 
@@ -4843,6 +4843,7 @@ the minibuffer."
 #+END_SRC
 
 * org-mode
+** org-babel
 
 #+BEGIN_SRC emacs-lisp
 ;; this is the same as doing org-babel-load-languages
@@ -4876,7 +4877,11 @@ the minibuffer."
   (advice-add 'org-babel-execute:lilypond
               :filter-args
               'my/org-lilypond-preprocess-block))
+#+END_SRC
 
+** org-protocol
+
+#+BEGIN_SRC emacs-lisp
 ;; use this bookmark:
 ;; javascript:location.href='org-protocol://capture?template=r'+
 ;;   '&url='+encodeURIComponent(location.href)+
@@ -4892,6 +4897,18 @@ the minibuffer."
             '(lambda (proc err)
                (message "exiting client")
                (server-delete-client proc)))
+#+END_SRC
+
+** org-capture
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/elfeed-capture-template
+  "* %(elfeed-entry-title my/elfeed-org-capture-entry)\n \
+- Feed: %(car (elfeed-entry-id my/elfeed-org-capture-entry))\n \
+- Link: %(elfeed-entry-link my/elfeed-org-capture-entry)\n \
+- Date: %U\n \
+- Elfeed tags: %(my/elfeed-org-capture-get-tags my/elfeed-org-capture-entry)
+")
 
 (use-package org-capture
   :after org
@@ -4899,33 +4916,27 @@ the minibuffer."
   :bind (("C-c c" . org-capture))
   :config
   (setq org-capture-templates
-        '(("r"
+        `(("r"
            "Web link (roam)"
            entry
-           (file my/org-roam-find-filename)
-           "* %U %^{Title|%:description}\nSource: %a \n\n%i")
+           (file+headline my/org-roam-find-filename "Captured (web)")
+           "* %^{Title|%:description}\n- Source: %a \n- Date: %U\n\n%i")
           ("e"
            "Elfeed"
            entry
-           (file my/org-roam-find-filename)
-           "* %U %(car (elfeed-entry-id my/elfeed-org-capture-entry)) - \
-%(elfeed-entry-title my/elfeed-org-capture-entry) \
-%(my/elfeed-org-capture-get-tags my/elfeed-org-capture-entry)
-%(elfeed-entry-link my/elfeed-org-capture-entry)")
+           (file+headline my/org-roam-find-filename "Captured (feeds)")
+           ,my/elfeed-capture-template)
           ("E"
            "Elfeed (immediate)"
            entry
            (file my/elfeed-org-capture-default-filename)
-           "* %U %(car (elfeed-entry-id my/elfeed-org-capture-entry)) - \
-%(elfeed-entry-title my/elfeed-org-capture-entry) \
-%(my/elfeed-org-capture-get-tags my/elfeed-org-capture-entry)
-%(elfeed-entry-link my/elfeed-org-capture-entry)"
+           ,my/elfeed-capture-template
            :immediate-finish t)
           ("i"
            "Immediate note"
            entry
            (file my/org-roam-find-filename)
-           "* %U %:description\n%i"
+           "* %^{Title}\n- Date: %U\n\n%(buffer-file-name) %i"
            :immediate-finish t)
           ("l"
            "Link to file"
@@ -4937,7 +4948,11 @@ the minibuffer."
            entry
            (file my/org-roam-find-filename)
            "* TODO %?\n%a\n\n#+begin_src %^{Language}\n%i#+end_src\n\n"))))
+#+END_SRC
 
+** org configuration
+
+#+BEGIN_SRC emacs-lisp
 (use-package org-indent
   :after org
   :hook (org-mode . org-indent-mode)
@@ -5081,7 +5096,11 @@ the minibuffer."
     (lambda (buf)
       (string-match "^\\ \\*org-src-fontification:.*\\*$" (buffer-name buf)))
     (buffer-list))))
+#+END_SRC
 
+** various extensions
+
+#+BEGIN_SRC emacs-lisp
 (use-package org-cliplink
   :ensure t
   :after org
