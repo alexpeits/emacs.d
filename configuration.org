@@ -2905,8 +2905,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
       (re-search-forward "^{-#" nil t)
       (beginning-of-line 1)
       (open-line 1)
-      (insert (format "{-# LANGUAGE %s #-}" ext))
-      (my/haskell-align-and-sort-language-extensions))))
+      (insert (format "{-# LANGUAGE %s #-}" ext)))))
 
 (defun my/haskell-insert-ghc-option ()
   (interactive)
