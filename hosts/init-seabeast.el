@@ -26,7 +26,7 @@
 
 ;; TODO
 (setq og/publish-base-directory
-  (expand-file-name "~/code/gatsby-tutorial/"))
+  (expand-file-name "~/code/notes-serve/"))
 
 ;; variables
 (setq magit-repository-directories
