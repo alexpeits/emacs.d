@@ -24,3 +24,4 @@ result
 network-security.data
 .lsp-session*
 .dap-breakpoints
+package-quickstart.el

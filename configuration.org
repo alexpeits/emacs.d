@@ -1389,7 +1389,7 @@ CWD is not in a git repo (or the git command is not found)."
         modus-themes-scale-3 1.0
         modus-themes-scale-2 1.0
         modus-themes-scale-1 1.0
-        modus-themes-subtle-line-numbers t)
+        modus-themes-subtle-line-numbers nil)
 
   (defvar my/modus-vivendi-theme-alt-colors nil)
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
@@ -1526,7 +1526,7 @@ CWD is not in a git repo (or the git command is not found)."
         modus-themes-scale-3 1.0
         modus-themes-scale-2 1.0
         modus-themes-scale-1 1.0
-        modus-themes-subtle-line-numbers t)
+        modus-themes-subtle-line-numbers nil)
 
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
 
