@@ -3688,9 +3688,9 @@ the current file."
     "Face for highlighting pandoc native div blocks (starting with ':::')"
     :group 'my/faces)
 
-  (font-lock-add-keywords
-   'markdown-mode
-   '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
+  ;; (font-lock-add-keywords
+  ;;  'markdown-mode
+  ;;  '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
 
   (defface my/markdown-citation-face
     '((t (:inherit font-lock-function-name-face :weight bold)))
