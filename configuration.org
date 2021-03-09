@@ -547,12 +547,25 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (define-key my/fast-recompile-mode-map (kbd "C-c C-c") #'recompile)
 
-(defun my/compile-in-dir ()
-  (interactive)
-  (let ((default-directory (read-directory-name "Run command in: ")))
-    (call-interactively 'compile)))
+(use-package ansi-color
+  :commands (ansi-color-apply-on-region)
+  :init
+  ;; http://endlessparentheses.com/ansi-colors-in-the-compilation-buffer-output.html
+  (defun my/compilation-mode-colorize ()
+    "Colorize from `compilation-filter-start' to `point'."
+    (let ((inhibit-read-only t))
+      (ansi-color-apply-on-region
+       compilation-filter-start (point)))))
 
-(setq compilation-scroll-output 'first-error)
+(use-package compile
+  :commands (compile recompile)
+  :init
+  (defun my/compile-in-dir ()
+    (interactive)
+    (let ((default-directory (read-directory-name "Run command in: ")))
+      (call-interactively 'compile)))
+  (setq compilation-scroll-output 'first-error)
+  (add-hook 'compilation-filter-hook #'my/compilation-mode-colorize))
 #+END_SRC
 
 ** Smartparens
