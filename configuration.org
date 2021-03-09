@@ -4935,7 +4935,7 @@ the minibuffer."
            "Web link (roam)"
            entry
            (file+headline my/org-roam-find-filename "Captured (web)")
-           "* %^{Title|%:description}\n- Source: %a \n- Date: %U\n\n%i")
+           "* %^{Title|%:description}\n- Source: %a\n- Date: %U\n\n%i")
           ("e"
            "Elfeed"
            entry
