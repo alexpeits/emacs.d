@@ -717,6 +717,10 @@ Paredit keys:
    '(prog-mode-hook)
    (setq dabbrev-abbrev-char-regexp "\\sw\\|\\s_\\|\\sw\\s.")))
 
+(use-package abbrev
+  :commands (abbrev-mode abbrev-prefix-mark)
+  :diminish)
+
 ;; Testing it out
 (use-package hippie-exp
   :bind (("M-/" . hippie-expand))
