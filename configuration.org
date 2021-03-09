@@ -416,7 +416,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 ;; always trim whitespace before saving
 ;; (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(defalias 'dw 'delete-trailing-whitespace)
 
 ;; some keymaps
 (global-set-key (kbd "M-o") 'other-window)
@@ -4034,7 +4033,7 @@ the current file."
               )
   :init
   (setq pdf-view-display-size 'fit-page
-        pdf-view-midnight-colors '("#b3dfdd" . "#0a3749")
+        pdf-view-midnight-colors '("#cfe8e7" . "#0a3749")
         ;; cache stuff, testing
         pdf-cache-image-limit 15
         pdf-cache-prefetch-delay 2
@@ -5585,15 +5584,6 @@ the minibuffer."
            (c (propertize "c" 'face 'compilation-error)))
       (propertize (format "%s:%s %s:%s %s:%s" l lines w words c chars)))))
 
-(defun my/mode-line-position ()
-  (let* ((ln "%2l")
-         (col-tmpl "%2c")
-         (cur-col (current-column))
-         (col (if (>= cur-col fill-column)
-                  (propertize col-tmpl 'face 'compilation-warning)
-                col-tmpl)))
-    (format "(%s,%s) " ln col)))
-
 (defun my/mode-line-server ()
   (when server-mode
     (propertize " srv " 'face 'compilation-info)))
@@ -5645,21 +5635,20 @@ the minibuffer."
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
        (:eval (frame-parameter nil 'persp--modestring)) "  "
-       ;; (:eval (my/mode-line-venv))
-       (:eval (my/mode-line-position))
+       mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if too narrow
      (quote
       ((:eval (my/mode-line-vc))
        (:eval (frame-parameter nil 'persp--modestring)) "  "
-       (:eval (my/mode-line-position))
+       mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if super narrow
      (quote
       ((:eval (frame-parameter nil 'persp--modestring)) "  "
-       (:eval (my/mode-line-position))
+       mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ))))
