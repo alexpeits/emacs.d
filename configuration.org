@@ -3205,8 +3205,8 @@ If COUNT is given, move COUNT - 1 lines downward first."
   :init
   (defun my/ruby-format-and-save ()
     (interactive)
-    (save-buffer)
-    (call-interactively 'rubocopfmt)))
+    (call-interactively 'rubocopfmt)
+    (save-buffer)))
 
 (defvar my/ruby-frozen-string-literal "# frozen_string_literal: true")
 (defun my/ruby-insert-frozen-string-literal ()
