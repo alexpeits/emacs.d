@@ -81,6 +81,15 @@
 (use-package dash :ensure t)
 ;; `s' as well
 (use-package s :ensure t)
+
+;; normally the PATH in nixos contains everything we'd like (e.g. rg, direnv),
+;; but on mac that's not true, so load the PATH that the shell would have and
+;; rely on bash/zsh/fishrc
+(use-package exec-path-from-shell
+  :ensure t
+  :if is-mac
+  :init
+  (exec-path-from-shell-initialize))
 #+END_SRC
 
 * Various utility functions
@@ -370,6 +379,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
         `((".*" ,temporary-file-directory t))))
 
 (use-package simple
+  :hook (after-init . global-visual-line-mode)
   :init
   (defalias 'dw #'delete-trailing-whitespace))
 
@@ -785,13 +795,6 @@ Paredit keys:
   (defengine haskell-language-extensions
     "https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-%s"
     :keybinding "#")
-
-  (defengine pursuit
-    "https://pursuit.purescript.org/search?q=%s"
-    :keybinding "p")
-
-  (defengine coq-tactics
-    "https://coq.inria.fr/refman/proof-engine/tactics.html#coq:tacn.%s")
   )
 #+END_SRC
 
@@ -925,6 +928,7 @@ Paredit keys:
             c-mode
             emacs-lisp-mode
             coq-mode
+            enh-ruby-mode
             ))
   (my/highlight-comment-keywords mode))
 #+END_SRC
@@ -997,8 +1001,7 @@ Paredit keys:
 
 (defun my/get-buffer-min-leading-spaces (&optional buffer)
   (let* ((buf (or buffer (current-buffer)))
-         (ind nil)
-         )
+         (ind nil))
     (save-excursion
       (goto-char (point-min))
       (setq ind (org-get-indentation))
@@ -1020,24 +1023,6 @@ Paredit keys:
     (save-excursion
       (indent-rigidly (point-min) (point-max) my/edit-indirect-dedented-amount))))
 #+END_SRC
-
-** use =pulse= to flash cursor position
-
-#+begin_src emacs-lisp
-;; prot
-(use-package pulse
-  :commands (pulse-momentary-highlight-one-line)
-  :bind ("M-ESC" . my/pulse-line)
-  :init
-  (defun my/pulse-line ()
-    "Temporarily highlight the current line."
-    (interactive)
-    (let ((pulse-delay .06)
-          (face (if (facep 'modus-theme-intense-red)
-                    'modus-theme-intense-red
-                  'hi-red-b)))
-      (pulse-momentary-highlight-one-line (point) face))))
-#+end_src
 
 * term & eshell
 ** terms
@@ -1333,12 +1318,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 (use-package visual-fill-column
   :ensure t
-  :commands (visual-fill-column-mode)
-  :init
-  (defun my/visual-fill-column ()
-    (interactive)
-    (visual-line-mode 'toggle)
-    (visual-fill-column-mode 'toggle)))
+  :commands (visual-fill-column-mode))
 #+END_SRC
 
 ** highlight trailing whitespace
@@ -1360,7 +1340,7 @@ CWD is not in a git repo (or the git command is not found)."
 (when (>= emacs-major-version 27)
   (setq custom--inhibit-theme-enable nil))
 
-(defvar my/avail-themes '(wombat))
+(defvar my/avail-themes '(wheatgrass tango))
 (defvar my/current-theme 0)
 
 (defvar my/after-set-theme-hook nil
@@ -1455,7 +1435,7 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(elfeed-search-unread-title-face ((t (:inherit elfeed-search-title-face :weight bold))))
 
-         `(org-block ((t (:foreground "#dadada" :background ,code-block-bg :extend t))))
+         `(org-block ((t (:inherit fixed-pitch :foreground "#dadada" :background ,code-block-bg :extend t))))
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
@@ -1493,8 +1473,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan))))
          `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
-         `(markdown-code-face ((t (:background ,code-block-bg :extend t))))
+         `(markdown-code-face ((t (:inherit fixed-pitch :background ,code-block-bg :extend t))))
          `(markdown-footnote-text-face ((t (:inherit shadow))))
+         `(markdown-math-face ((t (:inherit fixed-pitch :foreground ,magenta-alt-other))))
 
          `(rst-adornment ((t (:foreground ,cyan :weight bold))))
          `(rst-block ((t (:foreground ,cyan))))
@@ -1606,9 +1587,10 @@ CWD is not in a git repo (or the git command is not found)."
 
          `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
          `(markdown-list-face ((t (:foreground ,cyan-light))))
-         `(markdown-pre-face ((t (:foreground ,cyan))))
+         `(markdown-pre-face ((t (:inherit markdown-code-face :foreground ,cyan))))
          `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
          `(markdown-footnote-text-face ((t (:inherit shadow))))
+         `(markdown-math-face ((t (:inherit fixed-pitch :foreground ,magenta-alt-other))))
 
          `(rst-adornment ((t (:foreground ,cyan-light :weight bold))))
          `(rst-block ((t (:foreground ,green))))
@@ -1680,7 +1662,7 @@ CWD is not in a git repo (or the git command is not found)."
     (zenburn-with-color-variables
       (custom-theme-set-faces
        'zenburn
-       ;; `(region ((t (:background ,zenburn-bg+2))))
+       `(region ((t (:background ,zenburn-bg+2))))
        `(vertical-border ((t (:foreground "#a5a5a5"))))
        `(fringe ((t (:background "#484848"))))
        `(hl-line ((t (:background ,zenburn-bg+05))))
@@ -2830,8 +2812,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
    (setq evil-shift-width 2)
    (push '(?# . ("{- " . " -}")) evil-surround-pairs-alist)
    (haskell-decl-scan-mode)
-   (subword-mode 1)
-   )
+   (subword-mode 1))
   )
 
 (use-package ormolu
@@ -2850,11 +2831,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
           )))
 
 (defvar my/haskell-align-stuff t)
-(defvar my/haskell-use-ormolu nil)
-
-(defun my/haskell-format-brittany ()
-  (interactive)
-  (my/format-and-save "brittany"))
+(defvar my/haskell-use-ormolu t)
 
 (defun my/haskell-cabal-format-and-save ()
   (interactive)
@@ -2971,34 +2948,13 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp :tangle no
-(use-package intero
-  :ensure t
-  :after haskell-mode
-  :commands (intero-mode-blacklist)
-  :hook (haskell-mode . intero-mode-blacklist)
-  :diminish intero-mode
-  :init
-  (setq intero-blacklist '("~/.xmonad"))
-  :config
-  ;; pretty print (use :pretty, :prettyl, :no-pretty in ghci)
-  ;; this has to be installed in every repo until I find a solution
-  ;; (setq intero-extra-ghci-options '("-package" "pretty-simple"))
-
-  ;; don't auto insert matching single quotes in haskell mode, since I
-  ;; mostly use them for promoted data types
-  (define-key intero-mode-map (kbd "M-.") nil)
-  (sp-local-pair 'intero-repl-mode "'" nil :actions nil)
-
-  (flycheck-add-next-checker 'intero '(t . haskell-hlint)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp :tangle no
 (use-package dante
   :ensure t
   :after haskell-mode
   :commands (dante-mode)
   :hook (haskell-mode . dante-mode)
   :init
+  (setq dante-methods '(new-impure-nix))
   (add-hook 'dante-mode-hook
             '(lambda () (flycheck-add-next-checker
                          'haskell-dante
@@ -3438,20 +3394,6 @@ the current file."
   (interactive)
   (my/purescript-sort-and-align-imports)
   (save-buffer))
-
-;; This needs to exist in the `load-path'
-;; (use-package custom-purescript-font-lock
-;;   :after purescript-mode)
-
-;; copy these into the purescript-mode definition
-;; (setq-local font-lock-defaults
-;;             '((purescript-font-lock-keywords)
-;;               nil nil nil nil
-;;               (font-lock-syntactic-face-function
-;;                . purescript-syntactic-face-function)
-;;               (parse-sexp-lookup-properties . t)
-;;               (font-lock-extra-managed-props . (composition purescript-type))))
-;; (setq-local font-lock-multiline t)
 #+END_SRC
 
 ** all lisps
@@ -3638,7 +3580,8 @@ the current file."
 (use-package json-mode
   :ensure t
   :mode (("\\.json\\'" . json-mode)
-         ("\\.json.tmpl\\'" . json-mode))
+         ("\\.json.tmpl\\'" . json-mode)
+         ("\\.json.template\\'" . json-mode))
   :config
   (defun my/json-format-and-save ()
     (interactive)
@@ -3653,6 +3596,7 @@ the current file."
 (use-package yaml-mode
   :ensure t
   :mode (("\\.ya?ml\\'" . yaml-mode)
+         ("\\.ya?ml.tmpl\\'" . yaml-mode)
          ("\\.ya?ml.template\\'" . yaml-mode)))
 
 (use-package flycheck-yamllint
@@ -3722,6 +3666,7 @@ the current file."
   (if (executable-find "marked")
       (setq markdown-command "marked"))
   (my/define-major-mode-key 'markdown-mode "c" 'check-parens)
+  (my/define-major-mode-key 'markdown-mode "o" 'my/writeroom)
   (my/add-hooks
    '(markdown-mode-hook)
    (setq evil-shift-width 2)
@@ -3741,14 +3686,55 @@ the current file."
 #+END_SRC
 
 * other writing
-** writegood-mode (disabled)
+** writeroom
 
-#+begin_src emacs-lisp :tangle no
-(use-package writegood-mode
+#+begin_src emacs-lisp
+(use-package writeroom-mode
   :ensure t
-  :after markdown-mode
-  :bind (:map markdown-mode-map
-              ("C-c C-c g" . writegood-mode)))
+  :commands (writeroom-mode)
+  :init
+  (setq writeroom-global-effects nil
+        writeroom-fringes-outside-margins nil
+        writeroom-maximize-window nil
+        writeroom-width 100
+        writeroom-header-line nil
+        my/writeroom-fill-column-prev nil)
+  (setq writeroom-mode-line
+        '((:eval
+           (my/split-mode-line-render
+            ;; left
+            (quote
+             ("%e" " "
+              mode-line-modified "  "
+              mode-line-buffer-identification " "
+              (:eval (my/mode-line-major-mode-extra))
+              ))
+            ;; right
+            (quote
+             ((:eval (my/mode-line-input-method))
+              (:eval (my/mode-line-region-info))
+              mode-line-position
+              (:eval (my/mode-line-defun))
+              ))
+            ))))
+  (defun my/writeroom (variable-pitch)
+    (interactive "P")
+    (if (and (boundp 'writeroom-mode) writeroom-mode)
+        (progn
+          (writeroom-mode -1)
+          (variable-pitch-mode -1)
+          (when my/writeroom-fill-column-prev
+            (display-fill-column-indicator-mode)))
+      (setq-local writeroom-width fill-column)
+      (writeroom-mode)
+      (when variable-pitch
+        (variable-pitch-mode))
+      (setq-local my/writeroom-fill-column-prev
+            (and
+             (boundp 'display-fill-column-indicator-mode)
+             display-fill-column-indicator-mode))
+      (display-fill-column-indicator-mode -1))))
+
 #+end_src
 
 ** reStructuredText
@@ -4473,6 +4459,7 @@ buffer, close it."
 #+END_SRC
 
 * projectile
+** configuration
 
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
@@ -4512,6 +4499,8 @@ buffer, close it."
   :after (perspective projectile))
 #+END_SRC
 
+** project name override (for use with persp)
+
 #+begin_src emacs-lisp
 ;; override chosen project names
 (defvar my/projectile-project-name-overrides '())
@@ -4542,6 +4531,7 @@ buffer, close it."
 #+end_src
 
 * ivy/counsel/swiper
+** counsel-projectile
 
 #+BEGIN_SRC emacs-lisp
 (use-package counsel-projectile
@@ -4554,6 +4544,8 @@ buffer, close it."
   :init
   (setq projectile-switch-project-action 'counsel-projectile-find-file))
 #+END_SRC
+
+** swiper
 
 #+BEGIN_SRC emacs-lisp
 (defun my/swiper (fuzzy)
@@ -4588,7 +4580,11 @@ buffer, close it."
   :ensure t
   :bind (("C-c f" . my/swiper-fuzzy-or-all))
   :commands (swiper swiper-isearch swiper-all swiper-multi))
+#+END_SRC
 
+** flx, amx
+
+#+BEGIN_SRC emacs-lisp
 ;; better fuzzy matching
 (use-package flx
   :ensure t
@@ -4606,7 +4602,11 @@ buffer, close it."
         amx-show-key-bindings nil)
   :config
   (amx-mode +1))
+#+END_SRC
 
+** ivy, counsel
+
+#+BEGIN_SRC emacs-lisp
 (defun my/ivy-reset-builders ()
   (setq ivy-re-builders-alist
         '((swiper               . ivy--regex-plus)
@@ -4962,7 +4962,8 @@ the minibuffer."
            "Code comment"
            entry
            (file my/org-roam-find-filename)
-           "* TODO %?\n%a\n\n#+begin_src %^{Language}\n%i#+end_src\n\n"))))
+           "* TODO %?\n%a\n\n#+begin_src %^{Language}\n%i#+end_src\n\n")))
+  (add-hook 'org-capture-prepare-finalize-hook #'delete-trailing-whitespace))
 #+END_SRC
 
 ** org configuration
@@ -5054,6 +5055,7 @@ the minibuffer."
   (require 'org-ref nil :noerror)
 
   (my/define-major-mode-key 'org-mode "c" 'org-cliplink)
+  (my/define-major-mode-key 'org-mode "o" 'my/writeroom)
   (my/define-major-mode-key 'org-mode "it" 'my/org-insert-date-today)
   (my/define-major-mode-key 'org-mode "ti" 'org-toggle-inline-images)
   (my/define-major-mode-key 'org-mode "tl" 'org-toggle-link-display)
@@ -5479,8 +5481,10 @@ the minibuffer."
     (deft-refresh))
 
   :config
-  (advice-add 'deft-new-file-named :filter-args '(lambda (n) (mapcar 'my/org-roam-filename-from-title n))))
-
+  (advice-add
+   'deft-new-file-named
+   :filter-args
+   '(lambda (n) (mapcar 'my/org-roam-filename-from-title n))))
 #+end_src
 
 * modeline
@@ -5545,12 +5549,14 @@ the minibuffer."
   :commands (pl/render powerline-hud))
 
 ;; TODO: make it better
-(defun my/split-mode-line-render (left right-wide right-narrow right-super-narrow)
+(defun my/split-mode-line-render (left right-wide &optional -right-narrow -right-super-narrow)
   (let* ((fmt-left (format-mode-line left))
          (available-width (- (window-total-width)
                              (+ (length fmt-left)
                                 (length (format-mode-line right-wide)))))
-         (right right-wide))
+         (right right-wide)
+         (right-narrow (or -right-narrow right))
+         (right-super-narrow (or -right-super-narrow right-narrow)))
     (when (< available-width 0)  ;; narrow
       (setq right right-narrow)
       (setq available-width (- (window-total-width)
@@ -5669,29 +5675,11 @@ the minibuffer."
        (:eval (my/mode-line-hud)) "  "
        ))
      ))))
-
-;; evil-mode-line-tag
-;; mode-line-mule-info
-;; mode-line-client
-;; mode-line-remote
-;; (vc-mode vc-mode)
-;; mode-line-modes
-;; mode-line-misc-info
-;; (:eval minor-mode-alist)
-;; (:eval (my/mode-line-venv))
 #+END_SRC
 
 ** Powerline
 
 #+BEGIN_SRC emacs-lisp :tangle no
-;; local for now
-(use-package powerline-default-evil-theme
-  :commands (powerline-default-evil-theme)
-  :config
-  (add-to-list
-   'powerline-default-evil-theme-state-faces
-   '(hybrid . powerline-active0-evil-insert)))
-
 (use-package powerline
   :ensure t
   :after flycheck
@@ -5705,8 +5693,7 @@ the minibuffer."
   (setq global-mode-string
         (cons '(:eval (if (window-dedicated-p) "× " "")) global-mode-string))
   :config
-  (powerline-default-evil-theme)
-  ;; (powerline-default-theme)
+  (powerline-default-theme)
   (diminish-undo 'flycheck-mode)
   (add-hook 'my/after-set-theme-hook 'powerline-reset)
   (add-hook 'my/after-set-font-hook 'powerline-reset)
@@ -5788,10 +5775,6 @@ the minibuffer."
 ** custom
 
 #+BEGIN_SRC emacs-lisp
-(custom-set-faces
- '(fixed-pitch ((t nil)))
- )
-
 (dolist (val '((eval . (setq flycheck-disabled-checkers
                              (append flycheck-disabled-checkers
                                      (quote
