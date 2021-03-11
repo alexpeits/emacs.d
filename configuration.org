@@ -379,7 +379,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
         `((".*" ,temporary-file-directory t))))
 
 (use-package simple
-  :hook (after-init . global-visual-line-mode)
+  :diminish visual-line-mode
   :init
   (defalias 'dw #'delete-trailing-whitespace))
 
@@ -1318,7 +1318,13 @@ CWD is not in a git repo (or the git command is not found)."
 
 (use-package visual-fill-column
   :ensure t
-  :commands (visual-fill-column-mode))
+  :commands (visual-fill-column-mode)
+  :init
+  (defun my/visual-fill-column-mode-hook ()
+    (if visual-fill-column-mode
+        (visual-line-mode)
+      (visual-line-mode -1)))
+  (add-hook 'visual-fill-column-mode-hook #'my/visual-fill-column-mode-hook))
 #+END_SRC
 
 ** highlight trailing whitespace
