@@ -134,5 +134,21 @@
       (projectile-tab-bar-create-tab name)
       (projectile-switch-project-by-name project-to-switch)))))
 
+(defface projectile-tab-bar-modeline-active-face
+  '((t (:inherit font-lock-function-name-face :weight bold)))
+  "Face for highlighting active projectile tab in modeline"
+  :group 'projectile-tab-bar)
+
+(defun projectile-tab-bar-modeline ()
+  (let* ((all-tabs (projectile-tab-bar-all-tab-names))
+         (cur-tab (projectile-tab-bar-current-tab))
+         (propertized-tabs
+          (mapcar (lambda (tab)
+                    (if (string-equal tab cur-tab)
+                        (propertize tab 'face 'projectile-tab-bar-modeline-active-face)
+                      tab))
+                  all-tabs)))
+    (format "[%s]" (mapconcat 'identity propertized-tabs "|"))))
+
 (provide 'projectile-tab-bar)
 ;;; projectile-tab-bar.el ends here

@@ -1430,6 +1430,7 @@ CWD is not in a git repo (or the git command is not found)."
                                      bg-dim
                                      (color-lighten-name bg-active 12)
                                      (color-lighten-name bg-active 8)))))
+         `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
@@ -1564,6 +1565,7 @@ CWD is not in a git repo (or the git command is not found)."
                                      bg-dim
                                      (color-lighten-name bg-active 10)
                                      (color-lighten-name bg-active 6)))))
+         `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
 
          `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
          `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
@@ -1687,6 +1689,7 @@ CWD is not in a git repo (or the git command is not found)."
                                :foreground ,zenburn-green-2 :background ,zenburn-bg-05))))
        `(mode-line-buffer-id ((t (:weight bold))))
        `(persp-selected-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
+       `(projectile-tab-bar-modeline-active-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
 
        `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
        `(font-lock-keyword-face ((t (:foreground ,zenburn-yellow-1 :weight bold))))
@@ -5754,6 +5757,7 @@ the minibuffer."
        (:eval (my/mode-line-vc))
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
+       ;; (:eval (projectile-tab-bar-modeline))
        (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
