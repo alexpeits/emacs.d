@@ -642,6 +642,7 @@ Paredit keys:
               ;; mine
               ("C-M-k" . sp-kill-sexp)
               ("C-M-w" . sp-copy-sexp)
+              ("M-@" . sp-mark-sexp)
               )
   :diminish smartparens-mode
   :init
@@ -1421,6 +1422,9 @@ CWD is not in a git repo (or the git command is not found)."
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
          `(term ((t (:inherit default))))
          `(vterm-color-default ((t (:inherit default))))
+         `(tab-bar ((t (:foreground ,fg :background ,(color-lighten-name bg 23)))))
+         `(tab-bar-tab-inactive ((t (:box (:line-width 2 :color ,(color-lighten-name bg 32))
+                                          :background ,(color-lighten-name bg 27) :foreground ,fg-dim))))
 
          `(mode-line-inactive ((t ,@(modus-themes--mode-line-attrs
                                      (color-darken-name fg-inactive 12)
@@ -1835,14 +1839,23 @@ In =vc-git-log-edit-mode=:
   (defun my/vc-project ()
     (interactive)
     (vc-dir (vc-root-dir)))
+  (defun my/log-edit-toggle-amend ()
+    (interactive)
+    (log-edit-toggle-header "Amend" "yes"))
   :config
   (use-package log-view)
   (add-hook 'vc-git-log-edit-mode-hook 'auto-fill-mode)
   (define-key diff-mode-map (kbd "M-o") nil))
 
+(use-package log-edit
+  :defer t
+  :bind (:map log-edit-mode-map
+              ("C-c C-a" . my/log-edit-toggle-amend)))
+
 (use-package vc-git
   :init
-  (setq vc-git-print-log-follow t))
+  (setq vc-git-print-log-follow t
+        vc-git-diff-switches '("--patch-with-stat" "--histogram")))
 
 (use-package vc-annotate
   :bind (("C-x v a" . vc-annotate)
@@ -4328,6 +4341,61 @@ search started."
   :after (evil anzu))
 #+END_SRC
 
+** interactively search files/folders in project by regex with fd
+
+#+begin_src emacs-lisp
+;; stolen from prot :)
+(use-package dired-aux
+  :bind (("C-c C-s" . my/dired-fd-files-and-dirs))
+  :init
+  (setq dired-isearch-filenames 'dwim
+        dired-create-destination-dirs 'ask
+        dired-vc-rename-file t)
+  :config
+  (defmacro my/dired-fd (name doc prompt &rest flags)
+    "Make commands for selecting 'fd' results with completion.
+NAME is how the function should be named.  DOC is the function's
+documentation string.  PROMPT describes the scope of the query.
+FLAGS are the command-line arguments passed to the 'fd'
+executable, each of which is a string."
+    `(defun ,name (&optional arg)
+       ,doc
+       (interactive "P")
+       (let* ((vc (vc-root-dir))
+              (dir (expand-file-name (if vc vc default-directory)))
+              (regexp (read-regexp
+                       (format "%s matching REGEXP in %s: " ,prompt
+                               (propertize dir 'face 'bold))))
+              (names (process-lines "fd" ,@flags regexp dir))
+              (buf "*FD Dired*"))
+         (if names
+             (if arg
+                 (dired (cons (generate-new-buffer-name buf) names))
+               (find-file
+                (completing-read (format "Items matching %s (%s): "
+                                         (propertize regexp 'face 'success)
+                                         (length names))
+                                 names nil t))))
+         (user-error (format "No matches for « %s » in %s" regexp dir)))))
+
+  (my/dired-fd
+   my/dired-fd-dirs
+   "Search for directories in VC root or PWD.
+With \\[universal-argument] put the results in a `dired' buffer.
+This relies on the external 'fd' executable."
+   "Subdirectories"
+   "-i" "-H" "-a" "-t" "d" "-c" "never")
+
+  (my/dired-fd
+   my/dired-fd-files-and-dirs
+   "Search for files and directories in VC root or PWD.
+With \\[universal-argument] put the results in a `dired' buffer.
+This relies on the external 'fd' executable."
+   "Files and dirs"
+    "-i" "-H" "-a" "-t" "d" "-t" "f" "-c" "never")
+  )
+#+end_src
+
 * imenu-list
 
 #+BEGIN_SRC emacs-lisp
@@ -4423,7 +4491,7 @@ buffer, close it."
 
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
-                        '(javascript-jshint haskell-ghc haskell-stack-ghc yaml-ruby)))
+                        '(javascript-jshint haskell-ghc haskell-stack-ghc yaml-ruby proselint)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
 
@@ -4478,7 +4546,32 @@ buffer, close it."
         projectile-mode-line-function
         '(lambda () (format " P[%s]" (or (projectile-project-name) "-")))))
 
+(use-package tab-bar
+  :hook (after-init . tab-bar-mode)
+  :config
+  (tab-bar-rename-tab-by-name "*scratch*" "main"))
+
+;; in <user emacs directory>/lisp
+(use-package projectile-tab-bar
+  :after (tab-bar projectile)
+  :bind (("M-N" . projectile-tab-bar-switch-to-next-tab)
+         ("M-P" . projectile-tab-bar-switch-to-prev-tab)
+         ("C-x x c" . projectile-tab-bar-close-tab)
+         ("C-x x r" . projectile-tab-bar-rename-tab)
+         ("C-x x s" . projectile-tab-bar-switch-to-tab)
+         :map projectile-command-map
+         ("p" . projectile-tab-bar-switch-project))
+  :config
+  (add-hook 'minibuffer-setup-hook
+            '(lambda ()
+               (dolist (k '("M-N" "M-P" "M-J"))
+                 (local-set-key (kbd k) 'ignore))))
+  (setq frame-title-format
+        '("" invocation-name "@" system-name
+          (:eval (when tab-bar-mode (format "[%s]" (projectile-tab-bar-current-tab)))))))
+
 (use-package perspective
+  :disabled
   :ensure t
   :hook (after-init . persp-mode)
   :bind (("M-N" . persp-next)
@@ -4501,6 +4594,7 @@ buffer, close it."
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
 
 (use-package persp-projectile
+  :disabled
   :ensure t
   :after (perspective projectile))
 #+END_SRC
