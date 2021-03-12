@@ -1422,9 +1422,6 @@ CWD is not in a git repo (or the git command is not found)."
          `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
          `(term ((t (:inherit default))))
          `(vterm-color-default ((t (:inherit default))))
-         `(tab-bar ((t (:foreground ,fg :background ,(color-lighten-name bg 23)))))
-         `(tab-bar-tab-inactive ((t (:box (:line-width 2 :color ,(color-lighten-name bg 32))
-                                          :background ,(color-lighten-name bg 27) :foreground ,fg-dim))))
 
          `(mode-line-inactive ((t ,@(modus-themes--mode-line-attrs
                                      (color-darken-name fg-inactive 12)
