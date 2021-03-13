@@ -4546,14 +4546,14 @@ buffer, close it."
         projectile-mode-line-function
         '(lambda () (format " P[%s]" (or (projectile-project-name) "-")))))
 
+;; tab-bar-mode is not actually needed for tabs to be enabled
 (use-package tab-bar
-  :hook (after-init . tab-bar-mode)
-  :config
-  (tab-bar-rename-tab-by-name "*scratch*" "main"))
+  :init
+  (setq tab-bar-show nil))
 
 ;; in <user emacs directory>/lisp
 (use-package projectile-tab-bar
-  :after (tab-bar projectile)
+  :after projectile
   :bind (("M-N" . projectile-tab-bar-switch-to-next-tab)
          ("M-P" . projectile-tab-bar-switch-to-prev-tab)
          ("C-x x c" . projectile-tab-bar-close-tab)
@@ -4561,6 +4561,9 @@ buffer, close it."
          ("C-x x s" . projectile-tab-bar-switch-to-tab)
          :map projectile-command-map
          ("p" . projectile-tab-bar-switch-project))
+  :init
+  (require 'projectile-tab-bar)
+  (projectile-tab-bar-rename-tab "main")
   :config
   (add-hook 'minibuffer-setup-hook
             '(lambda ()
@@ -5757,21 +5760,24 @@ the minibuffer."
        (:eval (my/mode-line-vc))
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
-       ;; (:eval (projectile-tab-bar-modeline))
-       (:eval (frame-parameter nil 'persp--modestring)) "  "
+       (:eval projectile-tab-bar-modeline) " "
+       ;; (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if too narrow
      (quote
       ((:eval (my/mode-line-vc))
-       (:eval (frame-parameter nil 'persp--modestring)) "  "
+       (:eval projectile-tab-bar-modeline) " "
+       ;; (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if super narrow
      (quote
-      ((:eval (frame-parameter nil 'persp--modestring)) "  "
+      (
+       (:eval projectile-tab-bar-modeline) " "
+       ;; (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))

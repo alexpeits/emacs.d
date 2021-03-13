@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(defvar projectile-tab-bar-tab-list-update-hook nil)
+
 (defun projectile-tab-bar-all-tab-names ()
   (mapcar (lambda (tab) (alist-get 'name tab))
           (tab-bar-tabs)))
@@ -54,15 +56,18 @@
   (interactive
    (list
     (completing-read "Tab name: " (projectile-tab-bar-all-tab-names-recent))))
-  (tab-bar-select-tab-by-name name))
+  (tab-bar-select-tab-by-name name)
+  (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
 (defun projectile-tab-bar-switch-to-next-tab ()
   (interactive)
-  (tab-bar-switch-to-next-tab))
+  (tab-bar-switch-to-next-tab)
+  (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
 (defun projectile-tab-bar-switch-to-prev-tab ()
   (interactive)
-  (tab-bar-switch-to-prev-tab))
+  (tab-bar-switch-to-prev-tab)
+  (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
 (defun projectile-tab-bar-kill-scratch-buffer (name)
   (kill-buffer (projectile-tab-bar-scratch-buffer-name name)))
@@ -93,17 +98,20 @@
      (projectile-tab-bar-current-tab))))
   (ignore-errors (projectile-tab-bar-kill-scratch-buffer name))
   (projectile-tab-bar-kill-projectile-buffers)
-  (tab-bar-close-tab-by-name name))
+  (tab-bar-close-tab-by-name name)
+  (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
 (defun projectile-tab-bar-rename-tab (name)
   (interactive "sNew name: ")
-  (tab-bar-rename-tab name))
+  (tab-bar-rename-tab name)
+  (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
 (defun projectile-tab-bar-create-tab (name)
   "Switch to tab with name NAME, or create one if it does not exist."
   (let ((tab-bar-new-tab-to 'rightmost))
     (tab-bar-new-tab)
     (tab-bar-rename-tab name)
+    (run-hooks 'projectile-tab-bar-tab-list-update-hook)
     (projectile-tab-bar-create-scratch-buffer name)))
 
 (defun projectile-tab-bar-switch-or-create-tab (name)
@@ -139,7 +147,9 @@
   "Face for highlighting active projectile tab in modeline"
   :group 'projectile-tab-bar)
 
-(defun projectile-tab-bar-modeline ()
+(defvar projectile-tab-bar-modeline "")
+
+(defun projectile-tab-bar-modeline-update ()
   (let* ((all-tabs (projectile-tab-bar-all-tab-names))
          (cur-tab (projectile-tab-bar-current-tab))
          (propertized-tabs
@@ -148,7 +158,10 @@
                         (propertize tab 'face 'projectile-tab-bar-modeline-active-face)
                       tab))
                   all-tabs)))
-    (format "[%s]" (mapconcat 'identity propertized-tabs "|"))))
+    (setq projectile-tab-bar-modeline
+          (format "[%s]" (mapconcat 'identity propertized-tabs "|")))))
+
+(add-hook 'projectile-tab-bar-tab-list-update-hook #'projectile-tab-bar-modeline-update)
 
 (provide 'projectile-tab-bar)
 ;;; projectile-tab-bar.el ends here
