@@ -4558,7 +4558,7 @@ buffer, close it."
          ("M-P" . projectile-tab-bar-switch-to-prev-tab)
          ("C-x x c" . projectile-tab-bar-close-tab)
          ("C-x x r" . projectile-tab-bar-rename-tab)
-         ("C-x x s" . projectile-tab-bar-switch-to-tab)
+         ("C-x x s" . projectile-tab-bar-switch-or-create-tab)
          :map projectile-command-map
          ("p" . projectile-tab-bar-switch-project))
   :init

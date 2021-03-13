@@ -26,6 +26,8 @@
 
 ;;; Code:
 
+(require 'projectile)
+
 (defvar projectile-tab-bar-tab-list-update-hook nil)
 
 (defun projectile-tab-bar-all-tab-names ()
@@ -53,11 +55,17 @@
       (insert initial-scratch-message))))
 
 (defun projectile-tab-bar-switch-to-tab (name)
-  (interactive
-   (list
-    (completing-read "Tab name: " (projectile-tab-bar-all-tab-names-recent))))
   (tab-bar-select-tab-by-name name)
   (run-hooks 'projectile-tab-bar-tab-list-update-hook))
+
+(defun projectile-tab-bar-switch-or-create-tab (name)
+  "Switch to tab with name NAME, or create one if it does not exist."
+  (interactive
+   (list (completing-read "Tab name: " (projectile-tab-bar-all-tab-names-recent))))
+  (let ((tab-bar-new-tab-to 'rightmost))
+    (if (not (projectile-tab-bar-tab-exists-p name))
+        (projectile-tab-bar-create-tab name)
+      (projectile-tab-bar-switch-to-tab name))))
 
 (defun projectile-tab-bar-switch-to-next-tab ()
   (interactive)
@@ -88,16 +96,18 @@
   (projectile-kill-buffers)
   (advice-remove 'projectile-kill-buffers #'projectile-tab-bar--disable-y-or-n-p))
 
-(defun projectile-tab-bar-close-tab (name)
+(defun projectile-tab-bar-close-tab (name dont-kill-buffers)
   (interactive
    (list
     (completing-read
      "Tab name: "
      (projectile-tab-bar-all-tab-names)
      nil nil nil nil
-     (projectile-tab-bar-current-tab))))
+     (projectile-tab-bar-current-tab))
+    prefix-arg))
   (ignore-errors (projectile-tab-bar-kill-scratch-buffer name))
-  (projectile-tab-bar-kill-projectile-buffers)
+  (when dont-kill-buffers
+    (projectile-tab-bar-kill-projectile-buffers))
   (tab-bar-close-tab-by-name name)
   (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
@@ -113,15 +123,6 @@
     (tab-bar-rename-tab name)
     (run-hooks 'projectile-tab-bar-tab-list-update-hook)
     (projectile-tab-bar-create-scratch-buffer name)))
-
-(defun projectile-tab-bar-switch-or-create-tab (name)
-  "Switch to tab with name NAME, or create one if it does not exist."
-  (interactive
-   (list (completing-read "Tab name: " (projectile-tab-bar-all-tab-names))))
-  (let ((tab-bar-new-tab-to 'rightmost))
-    (if (not (projectile-tab-bar-tab-exists-p name))
-        (projectile-tab-bar-create-tab name)
-      (projectile-tab-bar-switch-to-tab name))))
 
 ;;;###autoload
 (defun projectile-tab-bar-switch-project (project-to-switch)
