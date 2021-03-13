@@ -96,18 +96,16 @@
   (projectile-kill-buffers)
   (advice-remove 'projectile-kill-buffers #'projectile-tab-bar--disable-y-or-n-p))
 
-(defun projectile-tab-bar-close-tab (name dont-kill-buffers)
+(defun projectile-tab-bar-close-tab (name)
   (interactive
    (list
     (completing-read
      "Tab name: "
      (projectile-tab-bar-all-tab-names)
      nil nil nil nil
-     (projectile-tab-bar-current-tab))
-    prefix-arg))
+     (projectile-tab-bar-current-tab))))
   (ignore-errors (projectile-tab-bar-kill-scratch-buffer name))
-  (when dont-kill-buffers
-    (projectile-tab-bar-kill-projectile-buffers))
+  (projectile-tab-bar-kill-projectile-buffers)
   (tab-bar-close-tab-by-name name)
   (run-hooks 'projectile-tab-bar-tab-list-update-hook))
 
