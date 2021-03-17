@@ -42,8 +42,9 @@
 #+END_SRC
 
 * Package management
+** package.el
 
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (require 'package)
 (add-to-list 'package-archives
              '("melpa" . "https://melpa.org/packages/")
@@ -61,7 +62,30 @@
 (unless (bound-and-true-p package--initialized)
   (package-initialize)
   (setq package-enable-at-startup nil))
+#+end_src
 
+** straight.el
+
+#+begin_src emacs-lisp
+(setq straight-recipe-repositories nil)
+(setq straight-check-for-modifications nil)
+
+(let ((straight--bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (straight--bootstrap-version 5))
+  (unless (file-exists-p straight--bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load straight--bootstrap-file nil 'nomessage))
+#+end_src
+
+** use-package
+
+#+begin_src emacs-lisp
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -72,7 +96,11 @@
 
 (eval-when-compile
   (require 'use-package))
+#+end_src
 
+** load required packages
+
+#+BEGIN_SRC emacs-lisp
 (if (< emacs-major-version 27)
     (require 'cl))
 (use-package diminish :ensure t)
@@ -1383,6 +1411,7 @@ CWD is not in a git repo (or the git command is not found)."
 (use-package modus-themes
   :ensure t
   :defer t
+  :straight (modus-themes :type git :host gitlab :repo "protesilaos/modus-themes")
   :init
   (setq modus-themes-org-blocks 'greyscale
         modus-themes-headings '((t . t))
@@ -1432,10 +1461,10 @@ CWD is not in a git repo (or the git command is not found)."
                                      (color-lighten-name bg-active 8)))))
          `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
 
-         `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
-         `(hi-blue-b((t (:inherit modus-theme-refine-blue :weight bold))))
-         `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
-         `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+         `(hi-green-b ((t (:inherit modus-themes-refine-green :weight bold))))
+         `(hi-blue-b((t (:inherit modus-themes-refine-blue :weight bold))))
+         `(hi-red-b ((t (:inherit modus-themes-refine-red :weight bold))))
+         `(hi-black-b ((t (:inherit modus-themes-refine-yellow :weight bold))))
 
          `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
          `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
@@ -1447,7 +1476,7 @@ CWD is not in a git repo (or the git command is not found)."
          `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
          `(org-block-end-line ((t (:inherit org-block-begin-line))))
          `(org-ellipsis ((t (:underline t))))
-         `(org-roam-link ((t (:inherit modus-theme-subtle-cyan :foreground ,cyan-nuanced-fg :underline t))))
+         `(org-roam-link ((t (:inherit modus-themes-subtle-cyan :foreground ,cyan-nuanced-fg :underline t))))
          `(org-ref-cite-face ((t (:foreground ,green :underline t))))
          `(org-hide ((t :foreground ,bg)))
 
@@ -1519,6 +1548,7 @@ CWD is not in a git repo (or the git command is not found)."
 (use-package modus-themes
   :ensure t
   :defer t
+  :straight (modus-themes :type git :host gitlab :repo "protesilaos/modus-themes")
   :init
   (setq modus-themes-org-blocks 'greyscale
         modus-themes-headings '((t . t))
@@ -1553,7 +1583,7 @@ CWD is not in a git repo (or the git command is not found)."
          'modus-operandi
          `(region ((t (:background ,bg-special-mild))))
          `(hl-line ((t (:background ,(color-darken-name bg-main 5)))))
-         `(secondary-selection ((t (:inherit modus-theme-special-mild))))
+         `(secondary-selection ((t (:inherit modus-themes-special-mild))))
          `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
          `(vterm-color-default ((t (:inherit default))))
@@ -1567,10 +1597,10 @@ CWD is not in a git repo (or the git command is not found)."
                                      (color-lighten-name bg-active 6)))))
          `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
 
-         `(hi-green-b ((t (:inherit modus-theme-refine-green :weight bold))))
-         `(hi-blue-b ((t (:inherit modus-theme-refine-blue :weight bold))))
-         `(hi-red-b ((t (:inherit modus-theme-refine-red :weight bold))))
-         `(hi-black-b ((t (:inherit modus-theme-refine-yellow :weight bold))))
+         `(hi-green-b ((t (:inherit modus-themes-refine-green :weight bold))))
+         `(hi-blue-b ((t (:inherit modus-themes-refine-blue :weight bold))))
+         `(hi-red-b ((t (:inherit modus-themes-refine-red :weight bold))))
+         `(hi-black-b ((t (:inherit modus-themes-refine-yellow :weight bold))))
 
          `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
          `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
