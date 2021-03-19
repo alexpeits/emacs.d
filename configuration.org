@@ -3472,6 +3472,12 @@ the current file."
     (save-buffer))
 
   (my/define-major-mode-key 'emacs-lisp-mode "s" #'my/emacs-lisp-format-and-save))
+
+(use-package eros
+  :ensure t
+  :after elisp-mode
+  :config
+  (eros-mode))
 #+END_SRC
 
 ** scala
