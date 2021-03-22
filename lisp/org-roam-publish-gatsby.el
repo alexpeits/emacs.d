@@ -453,7 +453,7 @@ Return output file name."
        )
       ("gatsby-static"
        :base-directory ,og/org-directory
-       :base-extension "css\\|js\\|png\\|jpg\\|jpeg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|ico"
+       :base-extension "css\\|js\\|png\\|jpg\\|jpeg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|ico\\|html"
        :publishing-directory ,og/publish-static-directory
        :recursive t
        :publishing-function org-publish-attachment
