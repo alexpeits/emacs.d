@@ -1437,10 +1437,10 @@ CWD is not in a git repo (or the git command is not found)."
              (type
               (if my/modus-vivendi-theme-alt-colors
                   cyan-refine-fg
-                magenta-alt))
+                cyan-alt-other))
              (haskell-constructor
               (if my/modus-vivendi-theme-haskell-distinct-constructor
-                  `(:foreground ,(if my/modus-vivendi-theme-alt-colors cyan-refine-fg cyan-alt))
+                  `(:foreground ,(if my/modus-vivendi-theme-alt-colors cyan-alt cyan-refine-fg))
                 `(:inherit haskell-type-face))))
         (custom-theme-set-faces
          'modus-vivendi
@@ -1483,6 +1483,8 @@ CWD is not in a git repo (or the git command is not found)."
          `(font-lock-type-face ((t (:foreground ,type))))
          `(font-lock-preprocessor-face ((t (:foreground ,red-alt))))
          `(font-lock-builtin-face ((t (:foreground ,(color-darken-name fg-special-mild 3)))))
+         ;; `(font-lock-function-name-face ((t (:foreground ,magenta-alt-other))))
+         ;; `(font-lock-keyword-face ((t (:foreground ,magenta))))
 
          `(highlight-numbers-number ((t (:inherit font-lock-string-face))))
 
@@ -1514,20 +1516,27 @@ CWD is not in a git repo (or the git command is not found)."
          `(markdown-footnote-text-face ((t (:inherit shadow))))
          `(markdown-math-face ((t (:inherit fixed-pitch :foreground ,magenta-alt-other))))
 
-         `(rst-adornment ((t (:foreground ,cyan :weight bold))))
          `(rst-block ((t (:foreground ,cyan))))
          `(rst-definition ((t (:foreground ,magenta))))
-         `(rst-directive ((t (:foreground ,magenta))))
-         `(rst-external ((t (:foreground ,cyan))))
-         `(rst-level-1 ((t (:weight bold))))
-         `(rst-level-2 ((t (:inherit rst-level-1))))
-         `(rst-level-3 ((t (:inherit rst-level-1))))
-         `(rst-level-4 ((t (:inherit rst-level-1))))
-         `(rst-level-5 ((t (:inherit rst-level-1))))
-         `(rst-level-6 ((t (:inherit rst-level-1))))
-         `(rst-literal ((t (:foreground ,fg-special-mild))))
+         `(rst-level-1 ((t (:inherit modus-themes-heading-1))))
+         `(rst-level-2 ((t (:inherit modus-themes-heading-2))))
+         `(rst-level-3 ((t (:inherit modus-themes-heading-3))))
+         `(rst-level-4 ((t (:inherit modus-themes-heading-4))))
+         `(rst-level-5 ((t (:inherit modus-themes-heading-5))))
+         `(rst-level-6 ((t (:inherit modus-themes-heading-6))))
+         `(rst-literal ((t (:inherit fixed-pitch :foreground ,fg-special-mild))))
          `(rst-reference ((t (:inherit link))))
          `(rst-transition ((t (:foreground ,red))))
+
+         `(markup-reference-face ((t (:inherit link))))
+         `(markup-code-face ((t (:inherit fixed-pitch :foreground ,fg-special-mild))))
+         `(markup-secondary-text-face ((t (:foreground ,blue-refine-fg))))
+         `(markup-title-0-face ((t (:inherit modus-themes-heading-3 :height 1.6))))
+         `(markup-title-1-face ((t (:inherit modus-themes-heading-1))))
+         `(markup-title-2-face ((t (:inherit modus-themes-heading-2))))
+         `(markup-title-3-face ((t (:inherit modus-themes-heading-3))))
+         `(markup-title-4-face ((t (:inherit modus-themes-heading-4))))
+         `(markup-title-5-face ((t (:inherit modus-themes-heading-5))))
 
          `(my/elfeed-blue ((t (:foreground ,blue))))
          `(my/elfeed-cyan ((t (:foreground ,cyan))))
@@ -1631,20 +1640,28 @@ CWD is not in a git repo (or the git command is not found)."
          `(markdown-footnote-text-face ((t (:inherit shadow))))
          `(markdown-math-face ((t (:inherit fixed-pitch :foreground ,magenta-alt-other))))
 
-         `(rst-adornment ((t (:foreground ,cyan-light :weight bold))))
          `(rst-block ((t (:foreground ,green))))
          `(rst-definition ((t (:foreground ,magenta))))
-         `(rst-directive ((t (:foreground ,magenta))))
-         `(rst-external ((t (:foreground ,cyan))))
          `(rst-level-1 ((t (:weight bold))))
-         `(rst-level-2 ((t (:inherit rst-level-1))))
-         `(rst-level-3 ((t (:inherit rst-level-1))))
-         `(rst-level-4 ((t (:inherit rst-level-1))))
-         `(rst-level-5 ((t (:inherit rst-level-1))))
-         `(rst-level-6 ((t (:inherit rst-level-1))))
-         `(rst-literal ((t (:foreground ,cyan))))
+         `(rst-level-1 ((t (:inherit modus-themes-heading-1))))
+         `(rst-level-2 ((t (:inherit modus-themes-heading-2))))
+         `(rst-level-3 ((t (:inherit modus-themes-heading-3))))
+         `(rst-level-4 ((t (:inherit modus-themes-heading-4))))
+         `(rst-level-5 ((t (:inherit modus-themes-heading-5))))
+         `(rst-level-6 ((t (:inherit modus-themes-heading-6))))
+         `(rst-literal ((t (:inherit fixed-pitch :foreground ,cyan))))
          `(rst-reference ((t (:inherit link))))
          `(rst-transition ((t (:foreground ,red))))
+
+         `(markup-reference-face ((t (:inherit link))))
+         `(markup-code-face ((t (:inherit fixed-pitch :foreground ,fg-special-mild))))
+         `(markup-secondary-text-face ((t (:foreground ,green-refine-fg))))
+         `(markup-title-0-face ((t (:inherit modus-themes-heading-3 :height 1.6))))
+         `(markup-title-1-face ((t (:inherit modus-themes-heading-1))))
+         `(markup-title-2-face ((t (:inherit modus-themes-heading-2))))
+         `(markup-title-3-face ((t (:inherit modus-themes-heading-3))))
+         `(markup-title-4-face ((t (:inherit modus-themes-heading-4))))
+         `(markup-title-5-face ((t (:inherit modus-themes-heading-5))))
 
          `(my/elfeed-blue ((t (:foreground ,blue))))
          `(my/elfeed-cyan ((t (:foreground ,cyan))))
@@ -1704,6 +1721,7 @@ CWD is not in a git repo (or the git command is not found)."
        `(region ((t (:background ,zenburn-bg+2))))
        `(vertical-border ((t (:foreground "#a5a5a5"))))
        `(fringe ((t (:background "#484848"))))
+       `(link ((t (:foreground ,zenburn-yellow :underline t))))
        `(hl-line ((t (:background ,zenburn-bg+05))))
        `(fill-column-indicator ((t (:foreground ,zenburn-bg+2))))
        `(compilation-info ((t (:foreground ,zenburn-green+3 :weight bold))))
@@ -3708,7 +3726,7 @@ the current file."
   ;;  '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
 
   (defface my/markdown-citation-face
-    '((t (:inherit font-lock-function-name-face :weight bold)))
+    '((t (:inherit font-lock-function-name-face)))
     "Face for highlighting citations ([@citation]) in pandoc markdown."
     :group 'my/faces)
 
