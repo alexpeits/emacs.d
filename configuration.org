@@ -1098,11 +1098,7 @@ Paredit keys:
 (use-package eshell
   :commands (eshell)
   :bind (("C-!" . my/eshell)
-         ("<f2>" . my/eshell)
-         :map eshell-mode-map
-         ("C-l" . my/eshell-clear)
-         ("C-c o" . my/eshell-put-last-output-to-buffer)
-         ("C-c h" . my/eshell-narrow-output-highlight-regexp))
+         ("<f2>" . my/eshell))
   :init
   ;; eshell/clear doesn't work anymore because eshell has its own clear function
   (defun my/eshell-clear ()
@@ -1110,6 +1106,13 @@ Paredit keys:
     "Clear the eshell buffer."
     (let ((eshell-buffer-maximum-lines 0))
       (eshell-truncate-buffer)))
+
+  ;; eshell bug prevents using eshell-mode-map so this is run in the mode hook
+  (defun my/eshell-define-keys ()
+    (let ((map eshell-mode-map))
+      (define-key map (kbd "C-l") #'my/eshell-clear)
+      (define-key map (kbd "C-c o") #'my/eshell-put-last-output-to-buffer)
+      (define-key map (kbd "C-c h") #'my/eshell-narrow-output-highlight-regexp)))
 
   (defalias 'eshell/x 'eshell/exit)
   (defalias 'eshell/e 'find-file)
@@ -1146,6 +1149,8 @@ Paredit keys:
            (propertize "$" 'face 'font-lock-function-name-face)
            (propertize " " 'face 'default))))
   :config
+  (add-hook 'eshell-mode-hook #'my/eshell-define-keys)
+
   (add-hook 'eshell-exit-hook 'delete-window)
   ;; Don't ask, just save
   (if (boundp 'eshell-save-history-on-exit)
@@ -1192,6 +1197,7 @@ directory."
 
 ;; stolen from prot
 (defun my/eshell-narrow-output-highlight-regexp ()
+  "Narrow to last command output and highlight REGEXP."
   (interactive)
   (let ((regexp (read-regexp "Regexp to highlight" "nothing")))
     (narrow-to-region (eshell-beginning-of-output)
@@ -1678,7 +1684,7 @@ CWD is not in a git repo (or the git command is not found)."
     (modus-themes-with-colors
       (custom-theme-set-faces
        'modus-operandi
-       `(font-lock-comment-face ((t (:foreground ,red-intense))))
+       `(font-lock-comment-face ((t (:foreground ,cyan-intense :slant italic))))
        `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
        `(font-lock-string-face ((t (:foreground ,red-faint))))
        `(font-lock-doc-face ((t (:foreground ,red-faint))))
@@ -2070,6 +2076,8 @@ In =vc-git-log-edit-mode=:
         ("SPC" display-fill-column-indicator-mode)
 
         ("a" align-regexp)
+
+        ("b" my/eww-browse-dwim)
 
         ;; dired
         ("dn" find-name-dired)
@@ -2574,12 +2582,51 @@ If COUNT is given, move COUNT - 1 lines downward first."
 (use-package eww
   :commands (eww)
   :bind (:map eww-mode-map
-              ("q" . my/eww-quit))
+              ("q" . my/eww-quit)
+              ("G" . my/eww-browse-dwim))
   :config
+  (add-hook 'eww-after-render-hook #'my/eww-rename-buffer)
+  (advice-add 'eww-back-url :after #'my/eww-rename-buffer)
+  (advice-add 'eww-forward-url :after #'my/eww-rename-buffer)
+
+
+  (my/add-hooks
+   '(eww-mode-hook)
+   (setq shr-width 100)
+   (setq-local shr-max-image-proportion 0.35))
+
   (defun my/eww-quit ()
     (interactive)
     (quit-window :kill)
-    (unless (one-window-p) (delete-window))))
+    (unless (one-window-p) (delete-window)))
+
+  ;; prot
+  (defun my/eww-browse-dwim (url &optional arg)
+    "Visit a URL, maybe from `eww-prompt-history', with completion.
+
+With optional prefix ARG (\\[universal-argument]) open URL in a
+new eww buffer.
+
+If URL does not look like a valid link, run a web query using
+`eww-search-prefix'.
+
+When called from an eww buffer, provide the current link as
+initial input."
+    (interactive
+     (list
+      (completing-read "Run EWW on: " eww-prompt-history
+                       nil nil (plist-get eww-data :url) 'eww-prompt-history)
+      current-prefix-arg))
+    (eww url (if arg 4 nil)))
+
+  (defun my/eww-rename-buffer ()
+  "Rename EWW buffer using page title or URL.
+To be used by `eww-after-render-hook'."
+  (let ((name (if (eq "" (plist-get eww-data :title))
+                  (plist-get eww-data :url)
+                (plist-get eww-data :title))))
+    (rename-buffer (format "*%s # eww*" name) t)))
+  )
 #+end_src
 
 * dired
