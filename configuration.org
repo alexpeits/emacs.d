@@ -2828,7 +2828,8 @@ To be used by `eww-after-render-hook'."
 #+BEGIN_SRC emacs-lisp
 (use-package nix-mode
   :ensure t
-  :mode (("\\.nix\\'" . nix-mode))
+  :mode (("\\.nix\\'" . nix-mode)
+         ("\\.drv\\'" . nix-drv-mode))
   :init
   (setq nix-nixfmt-bin "nixpkgs-fmt")
   :config
@@ -4572,6 +4573,7 @@ buffer, close it."
   (setq flycheck-temp-prefix ".flycheck"
         flycheck-emacs-lisp-load-path 'inherit
         flycheck-check-syntax-automatically '(save mode-enabled)
+        flycheck-markdown-markdownlint-cli-config ".markdownlint.yml"
         ;; to check while typing:
         ;; flycheck-check-syntax-automatically '(save idle-change new-line mode-enabled)
         )
