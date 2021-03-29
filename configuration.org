@@ -2231,6 +2231,7 @@ In =vc-git-log-edit-mode=:
           haskell-cabal-mode
           bibtex-mode
           coq-mode easycrypt-mode phox-mode
+          mermaid-mode
           conf-unix-mode
           conf-colon-mode
           conf-space-mode
@@ -2675,7 +2676,8 @@ To be used by `eww-after-render-hook'."
          :map dired-sidebar-mode-map
          ("M-u" . dired-sidebar-up-directory))
   :init
-  (setq dired-sidebar-theme 'none))
+  (setq dired-sidebar-theme 'none
+        dired-sidebar-should-follow-file t))
 
 (defun my/dired-sidebar-smart-toggle (curdir)
   (interactive "P")
@@ -3734,6 +3736,24 @@ the current file."
 (add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '(".env.*\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env\\.example\\'" . conf-mode))
+#+end_src
+
+** graphviz
+
+#+begin_src emacs-lisp
+(use-package graphviz-dot-mode
+  :ensure t
+  :mode (("\\.dot\\'" . graphviz-dot-mode))
+  :init
+  (setq graphviz-dot-indent-width 4))
+#+end_src
+
+** mermaid
+
+#+begin_src emacs-lisp
+(use-package mermaid-mode
+  :ensure t
+  :mode (("\\.mmd\\'" . mermaid-mode)))
 #+end_src
 
 * markdown
