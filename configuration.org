@@ -399,6 +399,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (use-package files
   :init
+  ;; add trailing newline if missing
+  (setq require-final-newline t)
   ;; store all backup and autosave files in
   ;; one dir
   (setq backup-directory-alist
