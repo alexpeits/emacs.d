@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Mermaid diagram code block
+# key: mmd
+# --
+\`\`\` mermaid
+$0
+\`\`\`

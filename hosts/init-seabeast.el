@@ -1,8 +1,8 @@
 ;; fonts
 (setq my/fonts
       '(("small" . (:fixed ("Source Code Pro" . 10.5) :variable ("Source Serif Pro" . 12)))
-        ("medium" . (:fixed ("Source Code Pro" . 11) :variable ("Source Serif Pro" . 13.5)))
-        ("large" . (:fixed ("Source Code Pro" . 15) :variable ("Source Serif Pro" . 17)))
+        ("medium" . (:fixed ("Source Code Pro" . 13) :variable ("Source Serif Pro" . 16)))
+        ("large" . (:fixed ("Source Code Pro" . 16) :variable ("Source Serif Pro" . 20)))
         ))
 
 (setq my/font-variant "small")
