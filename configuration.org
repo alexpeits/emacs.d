@@ -385,8 +385,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 ;; use column width 80 to fill (e.g. with `M-q'/`gq')
 (setq-default fill-column 80)
-(defun my/set-mode-fill-width (mode-hook width)
-  (add-hook mode-hook `(lambda () (setq fill-column ,width))))
 (setq fill-indent-according-to-mode t)
 
 (use-package autorevert
@@ -550,7 +548,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (add-to-list 'auth-sources (expand-file-name "authinfo.gpg" my/dropbox-dir)))
 #+END_SRC
 
-** advise raise-frame with wmctrl
+** advise raise-frame with wmctrl (linux only)
 
 #+begin_src emacs-lisp
 (defun my/wmctrl-raise-frame (&optional frame)
@@ -1318,6 +1316,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+end_src
 
 * UI
+** various
 
 #+BEGIN_SRC emacs-lisp
 ;; highlight numbers
@@ -2579,59 +2578,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (setq zoom-size 'my/zoom-size))
 #+end_src
 
-* eww
-
-#+begin_src emacs-lisp
-(use-package eww
-  :commands (eww)
-  :bind (:map eww-mode-map
-              ("q" . my/eww-quit)
-              ("G" . my/eww-browse-dwim))
-  :config
-  (add-hook 'eww-after-render-hook #'my/eww-rename-buffer)
-  (advice-add 'eww-back-url :after #'my/eww-rename-buffer)
-  (advice-add 'eww-forward-url :after #'my/eww-rename-buffer)
-
-
-  (my/add-hooks
-   '(eww-mode-hook)
-   (setq shr-width 100)
-   (setq-local shr-max-image-proportion 0.35))
-
-  (defun my/eww-quit ()
-    (interactive)
-    (quit-window :kill)
-    (unless (one-window-p) (delete-window)))
-
-  ;; prot
-  (defun my/eww-browse-dwim (url &optional arg)
-    "Visit a URL, maybe from `eww-prompt-history', with completion.
-
-With optional prefix ARG (\\[universal-argument]) open URL in a
-new eww buffer.
-
-If URL does not look like a valid link, run a web query using
-`eww-search-prefix'.
-
-When called from an eww buffer, provide the current link as
-initial input."
-    (interactive
-     (list
-      (completing-read "Run EWW on: " eww-prompt-history
-                       nil nil (plist-get eww-data :url) 'eww-prompt-history)
-      current-prefix-arg))
-    (eww url (if arg 4 nil)))
-
-  (defun my/eww-rename-buffer ()
-  "Rename EWW buffer using page title or URL.
-To be used by `eww-after-render-hook'."
-  (let ((name (if (eq "" (plist-get eww-data :title))
-                  (plist-get eww-data :url)
-                (plist-get eww-data :title))))
-    (rename-buffer (format "*%s # eww*" name) t)))
-  )
-#+end_src
-
 * dired
 
 #+BEGIN_SRC emacs-lisp
@@ -2739,39 +2685,6 @@ To be used by `eww-after-render-hook'."
   :init
   (if is-mac (setq dired-use-ls-dired nil)))
 #+END_SRC
-
-#+begin_src emacs-lisp
-;; https://gist.github.com/surajacharya/4127526
-(defun my/git-grep-dired (repo wildcards regexp)
-  "Find Git-controlled files in DIR with a name like WILDCARDS containing a regexp REGEXP and start Dired on output."
-  (interactive "DGit-grep (directory): \nsGit-grep (filename wildcard(s), e.g. *.xml): \nsGit-grep (grep regexp): ")
-  (setq repo (file-name-as-directory (expand-file-name repo)))
-  (switch-to-buffer (concat "*Git Grep " repo "*"))
-  (fundamental-mode)
-  (setq buffer-read-only nil)
-  (erase-buffer)
-  (setq default-directory repo)
-  (let ((cmd (format "git --git-dir %s/.git ls-files -z%s | xargs -0 grep -lZ -- %s | xargs -0 ls -l"
-                     repo
-                     (apply 'concat (mapcar (lambda (s) (concat " " (shell-quote-argument s))) (split-string wildcards)))
-                     (shell-quote-argument regexp))))
-    (insert " " cmd "\n " repo ":\n")
-    (call-process-shell-command (concat cmd " | sed -e 's/^/ /g'") nil t))
-  (dired-mode)
-
-  ;; (dired-build-subdir-alist)
-  ;; From find-dired:
-  ;; Set subdir-alist so that Tree Dired will work:
-  (if (fboundp 'dired-simple-subdir-alist)
-      ;; will work even with nested dired format (dired-nstd.el,v 1.15
-      ;; and later)
-      (dired-simple-subdir-alist)
-    ;; else we have an ancient tree dired (or classic dired, where
-    ;; this does no harm)
-    (set (make-local-variable 'dired-subdir-alist)
-         (list (cons default-directory (point-min-marker)))))
-  (goto-line 2))
-#+end_src
 
 * regex replace
 ** re-builder (useful for debugging)
@@ -3254,11 +3167,11 @@ To be used by `eww-after-render-hook'."
   :init
   (setq ruby-indent-level 2
         ruby-indent-tabs-mode nil)
-  (my/set-mode-fill-width 'ruby-mode-hook 120)
   :config
   (my/add-hooks
    '(ruby-mode-hook)
-   (setq evil-shift-width 2))
+   (setq evil-shift-width 2)
+   (setq fill-column 120))
   (my/define-major-mode-key 'ruby-mode "s" 'my/ruby-format-and-save))
 
 (use-package enh-ruby-mode
@@ -3271,11 +3184,11 @@ To be used by `eww-after-render-hook'."
   (setq enh-ruby-indent-level 2
         enh-ruby-indent-tabs-mode nil
         enh-ruby-check-syntax nil)
-  (my/set-mode-fill-width 'enh-ruby-mode-hook 120)
   :config
   (my/add-hooks
    '(enh-ruby-mode-hook)
    (setq evil-shift-width 2)
+   (setq fill-column 120)
    (when (buffer-file-name)
      (add-hook 'before-save-hook #'my/ruby-insert-frozen-string-literal nil :local)))
   (my/define-major-mode-key 'enh-ruby-mode "s" 'my/ruby-format-and-save))
@@ -4393,6 +4306,7 @@ search started."
   :bind (("C-c g" . my/rg-project-or-ask)
          :map rg-mode-map
          ("m" . rg-menu)
+         ("l" . rg-list-searches)
          ("s" . my/rg-save-search-as-name)
          ("N" . my/rg-open-ace-window)
          ("C-n" . next-line)
@@ -4434,18 +4348,6 @@ search started."
     (interactive)
     (let ((pattern (rg-search-pattern rg-cur-search)))
       (rg-save-search-as-name (concat "«" pattern "»"))))
-
-  (defun my/rg-open-ace-window (&optional event)
-    (interactive)
-    (flet ((pop-to-buffer (buf &rest args)
-                          (let ((pop-up-windows nil))
-                            (if (get-buffer-window buf)
-                                (while (not (equal buf (current-buffer)))
-                                  (other-window 1))
-                              (progn
-                                (ace-window nil)
-                                (switch-to-buffer buf))))))
-          (compile-goto-error event)))
   )
 
 #+END_SRC
@@ -5291,7 +5193,6 @@ the minibuffer."
 
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
-  (my/set-mode-fill-width 'org-mode-hook 100)
   (my/add-hooks
    '(org-mode-hook)
    (define-key org-mode-map (kbd "TAB") 'org-cycle)
@@ -5300,6 +5201,7 @@ the minibuffer."
    (evil-define-key 'normal org-mode-map (kbd "<tab>") 'org-cycle)
    (whitespace-mode +1)
    (smartparens-mode)
+   (setq fill-column 100)
    )
 
   (with-eval-after-load 'smartparens

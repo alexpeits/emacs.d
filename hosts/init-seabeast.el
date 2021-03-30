@@ -9,8 +9,8 @@
 
 ;; themes
 (setq my/modus-vivendi-theme-alt-colors t
-      my/modus-vivendi-theme-haskell-distinct-constructor t
-      my/modus-operandi-theme-haskell-distinct-constructor t)
+      my/modus-vivendi-theme-haskell-distinct-constructor nil
+      my/modus-operandi-theme-haskell-distinct-constructor nil)
 
 (setq my/avail-themes
       '(
