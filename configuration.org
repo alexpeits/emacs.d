@@ -2578,6 +2578,25 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (setq zoom-size 'my/zoom-size))
 #+end_src
 
+* eww
+
+#+begin_src emacs-lisp
+(use-package eww
+  :commands (eww)
+  :bind (:map eww-mode-map
+              ("q" . my/eww-quit))
+  :config
+  (my/add-hooks
+   '(eww-mode-hook)
+   (setq shr-width 100)
+   (setq-local shr-max-image-proportion 0.35))
+
+  (defun my/eww-quit ()
+    (interactive)
+    (quit-window :kill)
+    (unless (one-window-p) (delete-window))))
+#+end_src
+
 * dired
 
 #+BEGIN_SRC emacs-lisp
@@ -2687,6 +2706,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+END_SRC
 
 * regex replace
+
 ** re-builder (useful for debugging)
 
 #+begin_src emacs-lisp
