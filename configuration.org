@@ -3738,6 +3738,30 @@ the current file."
    '(("\\(\\[@\\)\\(.+?\\)\\(\\]\\)[^[]" . ((1 markdown-markup-properties)
                                             (2 '(face my/markdown-citation-face))
                                             (3 markdown-markup-properties)))))
+
+  (defface my/markdown-mustache-curly-face
+    '((t (:inherit font-lock-preprocessor-face)))
+    "Face for highlighting template boundaries in pandoc markdown."
+    :group 'my/faces)
+
+  (defface my/markdown-mustache-modifier-face
+    '((t (:inherit font-lock-preprocessor-face)))
+    "Face for highlighting template modifiers (#, / or ^) in pandoc markdown."
+    :group 'my/faces)
+
+  (defface my/markdown-mustache-variable-face
+    '((t (:inherit font-lock-warning-face)))
+    "Face for highlighting template variables ({{ var }}) in pandoc markdown."
+    :group 'my/faces)
+
+  (font-lock-add-keywords
+   'markdown-mode
+   '(("\\({{\\)\\([#/^&]?\\)\\(.+?\\)\\(}}\\)"
+      . ((1 '(face my/markdown-mustache-curly-face))
+         (2 '(face my/markdown-mustache-modifier-face))
+         (3 '(face my/markdown-mustache-variable-face))
+         (4 '(face my/markdown-mustache-curly-face))))))
+
   :config
   (if (executable-find "marked")
       (setq markdown-command "marked"))
@@ -4618,7 +4642,7 @@ buffer, close it."
                  (local-set-key (kbd k) 'ignore))))
   (setq frame-title-format
         '("" invocation-name "@" system-name
-          (:eval (when tab-bar-mode (format "[%s]" (projectile-tab-bar-current-tab)))))))
+          (:eval (format "[%s]" (projectile-tab-bar-current-tab))))))
 
 (use-package perspective
   :disabled

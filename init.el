@@ -26,3 +26,4 @@
 
 (require 'org)
 (org-babel-load-file (concat user-emacs-directory "configuration.org"))
+(put 'narrow-to-region 'disabled nil)
