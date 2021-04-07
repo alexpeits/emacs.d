@@ -3387,14 +3387,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
               :map css-mode-map
               ("<C-return>" . emmet-expand-line))
   :hook ((web-html-mode html-mode css-mode) . emmet-mode))
-
-(use-package mustache-mode
-  :ensure t
-  :mode (("\\.mustache\\'" . mustache-mode))
-  :init
-  (setq mustache-basic-offset 2)
-  :config
-  (add-hook 'mustache-mode-hook #'evil-local-mode))
 #+END_SRC
 
 ** purescript
@@ -3668,8 +3660,8 @@ the current file."
 
 #+begin_src emacs-lisp
 ;; add env files to conf-mode alist
-(add-to-list 'auto-mode-alist '(".env\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '(".env.*\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env.*\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env\\.example\\'" . conf-mode))
 #+end_src
 
@@ -3688,7 +3680,26 @@ the current file."
 #+begin_src emacs-lisp
 (use-package mermaid-mode
   :ensure t
-  :mode (("\\.mmd\\'" . mermaid-mode)))
+  :mode (("\\.mmd\\'" . mermaid-mode)
+         ("\\.mermaid\\'" . mermaid-mode)))
+#+end_src
+
+** mustache
+
+#+begin_src emacs-lisp
+(use-package mustache-mode
+  :ensure t
+  :mode (("\\.mustache\\'" . mustache-mode))
+  :init
+  (setq mustache-basic-offset 2)
+
+  (defconst my/mustache-mode-unescape
+    (concat "\\({{&\s*" mustache-mode-mustache-token "\s*}}\\)"))
+  (font-lock-add-keywords
+   'mustache-mode
+   `((,my/mustache-mode-unescape (1 font-lock-variable-name-face))))
+  :config
+  (add-hook 'mustache-mode-hook #'evil-local-mode))
 #+end_src
 
 * markdown
