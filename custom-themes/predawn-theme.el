@@ -70,7 +70,7 @@
 
        (hi-green-bg  "#3c5444") (hi-green-fg  pale-green)
        (hi-red-bg    "#543b41") (hi-red-fg    "#eb94a1")
-       (hi-blue-bg   "#3d5559") (hi-blue-fg   blue)
+       (hi-blue-bg   "#3d5559") (hi-blue-fg   pale-blue)
        (hi-yellow-bg "#574833") (hi-yellow-fg yellow)
 
        ;; the following are copied from modus-vivendi-theme
