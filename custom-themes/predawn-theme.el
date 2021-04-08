@@ -122,10 +122,10 @@
    `(mode-line-inactive  ((t (:foreground ,grey-3 :background ,grey-6
                                           :box (:line-width 1 :color ,grey-5)))))
 
-   `(powerline-active0   ((t (:background ,grey-1 :foreground ,grey-5))))
-   `(powerline-active1   ((t (:background ,grey-1 :foreground ,grey-5))))
-   `(powerline-active2   ((t (:background ,grey-1 :foreground ,grey-5))))
-   `(powerline-inactive0 ((t (:background ,grey-3 :foreground ,grey-6))))
+   `(powerline-active0   ((t (:background ,grey-4 :foreground ,grey-1))))
+   `(powerline-active1   ((t (:background ,grey-5 :foreground ,grey-1))))
+   `(powerline-active2   ((t (:background ,grey-6 :foreground ,grey-1))))
+   `(powerline-inactive0 ((t (:background ,grey-6 :foreground ,grey-3))))
    `(powerline-inactive1 ((t (:inherit powerline-inactive0))))
    `(powerline-inactive2 ((t (:inherit powerline-inactive0))))
 

@@ -3201,23 +3201,39 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
 (use-package enh-ruby-mode
   :ensure t
-  :mode (("\\.rb\\'" . enh-ruby-mode)
+  :mode (("_spec\\.rb\\'" . ruby-rspec-mode)
+         ("\\.rb\\'" . enh-ruby-mode)
          ("Gemfile\\'" . enh-ruby-mode)
-         ("\\.rake\\'" . rake-mode)
-         ("Rakefile\\'" . rake-mode))
+         ("\\.rake\\'" . ruby-rake-mode)
+         ("Rakefile\\'" . ruby-rake-mode))
   :init
   (setq enh-ruby-indent-level 2
         enh-ruby-indent-tabs-mode nil
         enh-ruby-check-syntax nil)
 
-  (define-derived-mode rake-mode enh-ruby-mode "rake")
+  (define-derived-mode ruby-rake-mode enh-ruby-mode "ruby-rake")
+  (define-derived-mode ruby-rspec-mode enh-ruby-mode "ruby-rspec")
 
   (defface my/rake-keyword-face
     '((t (:inherit font-lock-function-name-face)))
     "Face for highlighting rake task keywords."
     :group 'my/faces)
 
+  (defface my/rspec-keyword-face
+    '((t (:inherit font-lock-function-name-face)))
+    "Face for highlighting rspec test keywords."
+    :group 'my/faces)
+
   (defvar my/rake-keywords '("namespace" "desc" "task"))
+  (defvar my/rspec-keywords
+    '(
+      "describe" "context" "it" "before"
+      "let"
+      "expect" "expect_any_instance_of"
+      "allow" "allow_any_instance_of"
+      "shared_examples" "it_behaves_like"
+      "include_context"
+      ))
   :config
   (my/add-hooks
    '(enh-ruby-mode-hook)
@@ -3229,7 +3245,10 @@ If COUNT is given, move COUNT - 1 lines downward first."
   (my/define-major-mode-key 'enh-ruby-mode "s" 'my/ruby-format-and-save)
 
   (dolist (kw my/rake-keywords)
-    (my/highlight-keyword-in-mode 'rake-mode kw nil 'my/rake-keyword-face))
+    (my/highlight-keyword-in-mode 'ruby-rake-mode kw nil 'my/rake-keyword-face))
+
+  (dolist (kw my/rspec-keywords)
+    (my/highlight-keyword-in-mode 'ruby-rspec-mode kw nil 'my/rspec-keyword-face))
   )
 
 (use-package robe
