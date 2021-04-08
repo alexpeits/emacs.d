@@ -111,8 +111,8 @@
 
    ;; Line Numbers
    ;; emacs >= 26
-   `(line-number              ((t (:foreground ,grey-1 :background ,grey-6))))
-   `(line-number-current-line ((t (:inherit line-number :background ,grey-4))))
+   `(line-number              ((t (:foreground ,grey-2 :background ,grey-6))))
+   `(line-number-current-line ((t (:inherit line-number :background ,grey-5))))
    ;; emacs < 26
    `(linum ((t (:foreground ,grey-1 :background ,grey-6))))
 
