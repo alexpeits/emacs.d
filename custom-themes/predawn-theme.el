@@ -49,7 +49,9 @@
 
        (green      "#b4d388")
        (pale-green "#d0eda7")
-       (dark-green "#809161")
+
+       (dark-green   "#809161")
+       (darker-green "#708151")
 
        (black  "#151515")
        (grey-9 "#232323")
@@ -134,8 +136,8 @@
    `(persp-selected-face ((t (:foreground ,green :weight bold))))
 
    `(isearch-fail   ((t (:foreground ,red :background ,maroon))))
-   `(isearch        ((t (:foreground ,fg :background ,dark-green :weight bold))))
-   `(lazy-highlight ((t (:foreground ,blue :background ,slate))))
+   `(isearch        ((t (:foreground ,fg :background ,darker-green :weight bold))))
+   `(lazy-highlight ((t (:foreground ,pale-blue :background ,darker-slate))))
 
    `(evil-ex-substitute-matches     ((t (:inherit hi-blue))))
    `(evil-ex-substitute-replacement ((t (:inherit hi-yellow))))
@@ -185,6 +187,9 @@
    `(enh-ruby-regexp-delimiter-face ((t (:foreground ,green))))
    `(enh-ruby-regexp-face ((t (:foreground ,predawn))))
    `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
+
+   `(web-mode-html-tag-face ((t (:foreground ,blue))))
+   `(web-mode-block-delimiter-face ((t (:foreground ,orange))))
 
    `(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
    `(sh-heredoc     ((t (:foreground ,green))))
@@ -291,7 +296,7 @@
    `(eshell-ls-symlink    ((t (:inherit dired-symlink))))
    `(eshell-ls-executable ((t (:foreground ,green :weight bold))))
 
-   `(header-line ((t (:foreground ,grey-1 :background ,grey-4))))
+   `(header-line ((t (:foreground ,grey-1 :background ,grey-5))))
 
    `(Info-quoted      ((t (:foreground ,pale-blue))))
    `(info-header-node ((t (:foreground ,grey-1 :weight bold))))
@@ -318,7 +323,7 @@
    `(flyspell-incorrect ((t (:underline (:color ,red :style wave)))))
    `(flyspell-duplicate ((t (:underline (:color ,orange :style wave)))))
 
-   `(anzu-mode-line          ((t (:foreground ,orange :weight bold))))
+   `(anzu-mode-line          ((t (:foreground ,blue :weight bold))))
    `(anzu-mode-line-no-match ((t (:foreground ,red :weight bold))))
 
    `(rainbow-delimiters-depth-1-face    ((t (:foreground ,blue))))
@@ -409,8 +414,8 @@
 
    `(elfeed-search-title-face        ((t (:inherit default))))
    `(elfeed-search-unread-title-face ((t (:inherit default :weight bold))))
-   `(elfeed-search-feed-face         ((t (:foreground ,yellow))))
-   `(elfeed-search-tag-face          ((t (:foreground ,green))))
+   `(elfeed-search-feed-face         ((t (:foreground ,pale-yellow))))
+   `(elfeed-search-tag-face          ((t (:foreground ,blue))))
 
    `(erc-timestamp-face ((t (:foreground ,grey-1 :weight bold))))
    `(erc-prompt-face    ((t (:foreground ,blue :weight bold))))
@@ -449,6 +454,13 @@
    `(term-color-white   ((t (:foreground ,grey-1))))
 
    `(projectile-tab-bar-modeline-active-face ((t (:foreground ,green :weight bold))))
+
+   `(my/elfeed-blue   ((t (:foreground ,blue))))
+   `(my/elfeed-cyan   ((t (:foreground ,pale-blue))))
+   `(my/elfeed-green  ((t (:foreground ,green))))
+   `(my/elfeed-yellow ((t (:foreground ,yellow))))
+   `(my/elfeed-red    ((t (:foreground ,red))))
+   `(my/elfeed-pink   ((t (:foreground ,orange))))
    )
 
   (custom-theme-set-variables

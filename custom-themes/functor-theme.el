@@ -251,6 +251,9 @@
    `(enh-ruby-regexp-face ((t (:foreground ,magenta))))
    `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
 
+   `(web-mode-html-tag-face ((t (:foreground ,cyan-pale))))
+   `(web-mode-block-delimiter-face ((t (:foreground ,magenta))))
+
    `(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
    `(sh-heredoc     ((t (:foreground ,magenta))))
 
@@ -514,6 +517,16 @@
    `(term-color-white   ((t (:foreground ,grey+4))))
 
    `(projectile-tab-bar-modeline-active-face ((t (:foreground ,green-alt :weight bold))))
+
+   `(my/elfeed-blue        ((t (:foreground ,blue))))
+   `(my/elfeed-cyan        ((t (:foreground ,cyan))))
+   `(my/elfeed-cyan-alt    ((t (:foreground ,cyan-pale))))
+   `(my/elfeed-green       ((t (:foreground ,green+1))))
+   `(my/elfeed-yellow      ((t (:foreground ,yellow))))
+   `(my/elfeed-magenta     ((t (:foreground ,orange))))
+   `(my/elfeed-magenta-alt ((t (:foreground ,magenta-pale))))
+   `(my/elfeed-red         ((t (:foreground ,red-1))))
+   `(my/elfeed-pink        ((t (:foreground ,beige))))
    )
 
   (custom-theme-set-variables
