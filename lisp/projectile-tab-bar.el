@@ -92,9 +92,10 @@
     res))
 
 (defun projectile-tab-bar-kill-projectile-buffers ()
-  (advice-add 'projectile-kill-buffers :around #'projectile-tab-bar--disable-y-or-n-p)
-  (projectile-kill-buffers)
-  (advice-remove 'projectile-kill-buffers #'projectile-tab-bar--disable-y-or-n-p))
+  (when (projectile-project-p)
+    (advice-add 'projectile-kill-buffers :around #'projectile-tab-bar--disable-y-or-n-p)
+    (projectile-kill-buffers)
+    (advice-remove 'projectile-kill-buffers #'projectile-tab-bar--disable-y-or-n-p)))
 
 (defun projectile-tab-bar-close-tab (name)
   (interactive
@@ -142,7 +143,7 @@
       (projectile-switch-project-by-name project-to-switch)))))
 
 (defface projectile-tab-bar-modeline-active-face
-  '((t (:inherit font-lock-function-name-face :weight bold)))
+  '((t (:inherit font-lock-variable-name-face :weight bold)))
   "Face for highlighting active projectile tab in modeline"
   :group 'projectile-tab-bar)
 

@@ -4379,7 +4379,8 @@ search started."
   (setq rg-group-result t
         rg-ignore-case 'smart)
   (setq rg-custom-type-aliases
-        '(("coq" . "*.v")))
+        '(("coq" . "*.v")
+          ("rake" . "*.rake")))
   (defalias 'rgp 'my/rg-project-or-ask)
   :config
   (rg-define-toggle "--multiline --multiline-dotall" "u")
