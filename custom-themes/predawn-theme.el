@@ -61,7 +61,7 @@
        (grey-3 "#999999")
        (grey-2 "#b0b0b0")
        (grey-1 "#dddddd")
-       (grey-0 "#f1f1f1")
+       (grey-0 "#e8e8e8")
 
        (fg grey-0)
        (bg grey-7)
@@ -97,7 +97,7 @@
    `(italic              ((t (:foreground ,pale-blue :slant italic))))
    `(hl-line             ((t (:background ,grey-6))))
    `(show-paren-match    ((t (:background ,darker-slate :foreground ,fg :weight bold))))
-   `(match               ((t (:background ,slate :foreground ,fg))))
+   `(match               ((t (:background ,dark-slate :foreground ,fg))))
    `(whitespace-trailing ((t (:background ,dark-red))))
 
    `(shadow              ((t (:foreground ,grey-3))))
@@ -407,7 +407,7 @@
    `(imenu-list-entry-face-3          ((t (:foreground ,pale-blue))))
    `(imenu-list-entry-subalist-face-3 ((t (:inherit imenu-list-entry-face-3 :weight bold))))
 
-   `(elfeed-search-title-face        ((t (:inherit default :slant italic))))
+   `(elfeed-search-title-face        ((t (:inherit default))))
    `(elfeed-search-unread-title-face ((t (:inherit default :weight bold))))
    `(elfeed-search-feed-face         ((t (:foreground ,yellow))))
    `(elfeed-search-tag-face          ((t (:foreground ,green))))
@@ -447,6 +447,8 @@
    `(term-color-magenta ((t (:foreground ,orange))))
    `(term-color-cyan    ((t (:foreground ,pale-blue))))
    `(term-color-white   ((t (:foreground ,grey-1))))
+
+   `(projectile-tab-bar-modeline-active-face ((t (:foreground ,green :weight bold))))
    )
 
   (custom-theme-set-variables

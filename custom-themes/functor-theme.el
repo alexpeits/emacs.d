@@ -472,7 +472,7 @@
    `(imenu-list-entry-face-3          ((t (:foreground ,cyan-pale+1))))
    `(imenu-list-entry-subalist-face-3 ((t (:inherit imenu-list-entry-face-3 :weight bold))))
 
-   `(elfeed-search-title-face        ((t (:inherit default :slant italic))))
+   `(elfeed-search-title-face        ((t (:inherit default))))
    `(elfeed-search-unread-title-face ((t (:inherit default :weight bold))))
    `(elfeed-search-feed-face         ((t (:foreground ,yellow))))
    `(elfeed-search-tag-face          ((t (:foreground ,olive))))
@@ -512,6 +512,8 @@
    `(term-color-magenta ((t (:foreground ,magenta))))
    `(term-color-cyan    ((t (:foreground ,cyan-2))))
    `(term-color-white   ((t (:foreground ,grey+4))))
+
+   `(projectile-tab-bar-modeline-active-face ((t (:foreground ,green-alt :weight bold))))
    )
 
   (custom-theme-set-variables
