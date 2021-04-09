@@ -91,8 +91,8 @@
   (package-install 'use-package))
 
 ;; Can be used to debug slow packages
-;; (setq use-package-minimum-reported-time 0.05
-;;       use-package-verbose t)
+(setq use-package-minimum-reported-time 0.05
+      use-package-verbose t)
 
 (eval-when-compile
   (require 'use-package))
@@ -3183,22 +3183,6 @@ If COUNT is given, move COUNT - 1 lines downward first."
 
 #+begin_src emacs-lisp
 ;; https://github.com/howardabrams/dot-files/blob/master/emacs-ruby.org
-(use-package ruby-mode
-  :disabled
-  :mode (("\\.rb\\'" . enh-ruby-mode)
-         ("\\.rake\\'" . enh-ruby-mode)
-         ("Rakefile\\'" . enh-ruby-mode)
-         ("Gemfile\\'" . enh-ruby-mode))
-  :init
-  (setq ruby-indent-level 2
-        ruby-indent-tabs-mode nil)
-  :config
-  (my/add-hooks
-   '(ruby-mode-hook)
-   (setq evil-shift-width 2)
-   (setq fill-column 120))
-  (my/define-major-mode-key 'ruby-mode "s" 'my/ruby-format-and-save))
-
 (use-package enh-ruby-mode
   :ensure t
   :mode (("_spec\\.rb\\'" . ruby-rspec-mode)
