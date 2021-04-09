@@ -36,10 +36,6 @@
        (pale-yellow "#f5f5ae")
        (yellow      "#ede480")
 
-       (red      "#cf5340")
-       (dark-red "#893121")
-       (maroon   "#55201b")
-
        (pale-blue "#bddcdc")
        (blue      "#92bfbf")
 
@@ -52,6 +48,17 @@
 
        (dark-green   "#809161")
        (darker-green "#708151")
+
+       (bright-green "#77a88c")
+
+       (red      "#cf5340")
+       (dark-red "#893121")
+       (maroon   "#55201b")
+
+       (bright-red "#eb94a1")
+
+       (magenta      "#c995b0")
+       (magenta-dark "#917b94")
 
        (black  "#151515")
        (grey-9 "#232323")
@@ -69,7 +76,7 @@
        (bg grey-7)
 
        (hi-green-bg  "#3c5444") (hi-green-fg  pale-green)
-       (hi-red-bg    "#543b41") (hi-red-fg    "#eb94a1")
+       (hi-red-bg    "#543b41") (hi-red-fg    bright-red)
        (hi-blue-bg   "#3d5559") (hi-blue-fg   pale-blue)
        (hi-yellow-bg "#574833") (hi-yellow-fg yellow)
 
@@ -190,6 +197,17 @@
 
    `(web-mode-html-tag-face ((t (:foreground ,blue))))
    `(web-mode-block-delimiter-face ((t (:foreground ,orange))))
+
+   `(js2-error                  ((t (:foreground ,red))))
+   `(js2-warning                ((t (:foreground ,predawn))))
+   `(js2-function-param         ((t (:foreground ,bright-green))))
+   `(js2-external-variable      ((t (:foreground ,green))))
+   `(js2-function-call          ((t (:foreground ,fg))))
+   `(js2-private-function-call  ((t (:foreground ,fg))))
+   `(js2-private-member         ((t (:foreground ,fg))))
+   `(js2-instance-member        ((t (:foreground ,magenta))))
+   `(js2-object-property        ((t (:foreground ,fg))))
+   `(js2-object-property-access ((t (:foreground ,fg))))
 
    `(sh-quoted-exec ((t (:inherit font-lock-preprocessor-face))))
    `(sh-heredoc     ((t (:foreground ,green))))
@@ -416,6 +434,7 @@
    `(elfeed-search-unread-title-face ((t (:inherit default :weight bold))))
    `(elfeed-search-feed-face         ((t (:foreground ,pale-yellow))))
    `(elfeed-search-tag-face          ((t (:foreground ,blue))))
+   `(elfeed-search-date-face          ((t (:foreground ,magenta-dark))))
 
    `(erc-timestamp-face ((t (:foreground ,grey-1 :weight bold))))
    `(erc-prompt-face    ((t (:foreground ,blue :weight bold))))
@@ -455,12 +474,13 @@
 
    `(projectile-tab-bar-modeline-active-face ((t (:foreground ,green :weight bold))))
 
-   `(my/elfeed-blue   ((t (:foreground ,blue))))
-   `(my/elfeed-cyan   ((t (:foreground ,pale-blue))))
-   `(my/elfeed-green  ((t (:foreground ,green))))
-   `(my/elfeed-yellow ((t (:foreground ,yellow))))
-   `(my/elfeed-red    ((t (:foreground ,red))))
-   `(my/elfeed-pink   ((t (:foreground ,orange))))
+   `(my/elfeed-blue    ((t (:foreground ,blue))))
+   `(my/elfeed-cyan    ((t (:foreground ,pale-blue))))
+   `(my/elfeed-green   ((t (:foreground ,green))))
+   `(my/elfeed-yellow  ((t (:foreground ,yellow))))
+   `(my/elfeed-red     ((t (:foreground ,red))))
+   `(my/elfeed-pink    ((t (:foreground ,orange))))
+   `(my/elfeed-magenta ((t (:foreground ,magenta))))
    )
 
   (custom-theme-set-variables

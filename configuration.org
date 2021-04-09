@@ -4046,9 +4046,10 @@ the current file."
            (link (elfeed-entry-link entry))
            (win (selected-window)))
       (with-current-buffer (get-buffer "*elfeed-search*")
-        (if horz
-            (split-window win (/ (frame-width) 3) 'right)
-          (split-window win (/ (frame-height) 3) 'below))
+        (when (null (get-buffer-window "*elfeed-entry*"))
+         (if horz
+             (split-window win (/ (frame-width) 3) 'right)
+           (split-window win (/ (frame-height) 3) 'below)))
         (other-window 1)
         (elfeed-search-show-entry entry))))
 
