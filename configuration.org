@@ -1464,6 +1464,7 @@ CWD is not in a git repo (or the git command is not found)."
                                      bg-inactive
                                      (color-darken-name fg-inactive 14)
                                      bg-dim
+                                     fg-inactive bg-inactive
                                      (color-lighten-name bg-active 12)
                                      (color-lighten-name bg-active 8)))))
          `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
@@ -1611,6 +1612,7 @@ CWD is not in a git repo (or the git command is not found)."
                                      bg-inactive
                                      (color-darken-name fg-inactive 15)
                                      bg-dim
+                                     fg-inactive bg-inactive
                                      (color-lighten-name bg-active 10)
                                      (color-lighten-name bg-active 6)))))
          `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
