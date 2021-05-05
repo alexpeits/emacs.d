@@ -1397,7 +1397,7 @@ CWD is not in a git repo (or the git command is not found)."
 ** modus themes
 *** load vendored package
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (let ((pkg (expand-file-name "modus-themes" my/vendored-pkgs-dir)))
   (add-to-list 'load-path pkg)
   (add-to-list 'custom-theme-load-path pkg))
@@ -1407,6 +1407,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 #+begin_src emacs-lisp
 (use-package modus-themes
+  :ensure t
   :defer t
   :init
   (setq modus-themes-org-blocks 'greyscale
@@ -1554,6 +1555,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 #+begin_src emacs-lisp
 (use-package modus-themes
+  :ensure t
   :defer t
   :init
   (setq modus-themes-org-blocks 'greyscale
