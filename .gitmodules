@@ -1,0 +1,3 @@
+[submodule "modus-themes"]
+	path = vendored/modus-themes
+	url = https://gitlab.com/protesilaos/modus-themes.git

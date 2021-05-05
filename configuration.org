@@ -20,6 +20,9 @@
                          path-separator
                          (getenv "PATH"))))
 
+(defvar my/vendored-pkgs-dir (expand-file-name "vendored" user-emacs-directory)
+  "Directory containing vendored packages as submodules")
+
 (defvar my/dropbox-dir (expand-file-name "~/Dropbox/")
   "Private directory synced with dropbox")
 
@@ -64,25 +67,6 @@
   (setq package-enable-at-startup nil))
 #+end_src
 
-** straight.el
-
-#+begin_src emacs-lisp
-(setq straight-recipe-repositories nil)
-(setq straight-check-for-modifications nil)
-
-(let ((straight--bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (straight--bootstrap-version 5))
-  (unless (file-exists-p straight--bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load straight--bootstrap-file nil 'nomessage))
-#+end_src
-
 ** use-package
 
 #+begin_src emacs-lisp
@@ -105,9 +89,8 @@
     (require 'cl))
 (use-package diminish :ensure t)
 
-;; `dash' is used in various places
+;; commonly used packages
 (use-package dash :ensure t)
-;; `s' as well
 (use-package s :ensure t)
 
 ;; normally the PATH in nixos contains everything we'd like (e.g. rg, direnv),
@@ -1412,13 +1395,19 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 ** modus themes
+*** load vendored package
+
+#+begin_src emacs-lisp
+(let ((pkg (expand-file-name "modus-themes" my/vendored-pkgs-dir)))
+  (add-to-list 'load-path pkg)
+  (add-to-list 'custom-theme-load-path pkg))
+#+end_src
+
 *** =modus-vivendi= (dark)
 
 #+begin_src emacs-lisp
 (use-package modus-themes
-  :ensure t
   :defer t
-  :straight (modus-themes :type git :host gitlab :repo "protesilaos/modus-themes")
   :init
   (setq modus-themes-org-blocks 'greyscale
         modus-themes-headings '((t . t))
@@ -1565,9 +1554,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 #+begin_src emacs-lisp
 (use-package modus-themes
-  :ensure t
   :defer t
-  :straight (modus-themes :type git :host gitlab :repo "protesilaos/modus-themes")
   :init
   (setq modus-themes-org-blocks 'greyscale
         modus-themes-headings '((t . t))
