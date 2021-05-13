@@ -3268,15 +3268,17 @@ If COUNT is given, move COUNT - 1 lines downward first."
     (save-buffer)))
 
 (defvar my/ruby-frozen-string-literal "# frozen_string_literal: true")
+(defvar my/ruby-do-insert-frozen-string-literal t)
 (defun my/ruby-insert-frozen-string-literal ()
   (interactive)
-  (save-excursion
-    (goto-char (point-min))
-    (unless (re-search-forward my/ruby-frozen-string-literal nil t)
-      (goto-char (point-min))
-      (newline 2)
-      (previous-line 2)
-      (insert my/ruby-frozen-string-literal))))
+  (when my/ruby-do-insert-frozen-string-literal
+      (save-excursion
+        (goto-char (point-min))
+        (unless (re-search-forward my/ruby-frozen-string-literal nil t)
+          (goto-char (point-min))
+          (newline 2)
+          (previous-line 2)
+          (insert my/ruby-frozen-string-literal)))))
 #+end_src
 
 ** clojure
