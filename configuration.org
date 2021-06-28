@@ -3584,7 +3584,7 @@ the current file."
 ** bazel
 
 #+begin_src emacs-lisp
-(use-package bazel-mode
+(use-package bazel
   :ensure t
   :mode (("\\.bazel\\'" . bazel-mode)
          ("\\.bzl\\'" . bazel-mode))
@@ -5994,6 +5994,7 @@ the minibuffer."
                (my/haskell-use-ormolu . t)
                (my/purescript-align-stuff . nil)
                (org-download-image-dir . "~/Dropbox/emacs/org/static/images/")
+               (my/ruby-do-insert-frozen-string-literal . nil)
                ))
   (add-to-list 'safe-local-variable-values val))
 #+END_SRC
