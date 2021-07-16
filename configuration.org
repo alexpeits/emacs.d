@@ -256,15 +256,15 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
       (setq window-size-fixed new-status))
     new-status))
 
-(defun my/copy-file-path (include-line-number)
-  (interactive "P")
-  (let* ((full-fp (buffer-file-name))
-         (prefix (read-directory-name "prefix to strip: " (projectile-project-root)))
-         (suffix (if include-line-number (format ":%s" (number-to-string (line-number-at-pos))) ""))
-         (fp (concat (string-remove-prefix prefix full-fp) suffix)))
-    (kill-new fp)
-    (message fp)
-    t))
+{(defun my/copy-file-path (include-line-number)
+   (interactive "P")
+   (let* ((full-fp (buffer-file-name))
+          (prefix (read-directory-name "prefix to strip: " (projectile-project-root)))
+          (suffix (if include-line-number (format ":%s" (number-to-string (line-number-at-pos))) ""))
+          (fp (concat (string-remove-prefix prefix full-fp) suffix)))
+     (kill-new fp)
+     (message fp)
+     t))}
 
 (defvar my/useful-files
   '(
@@ -277,6 +277,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     ".hlint.yaml"
     ;; python
     "requirements.txt"
+    "pyproject.toml"
     ;; ruby
     "Gemfile"
     ;; js
@@ -286,12 +287,16 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     "Dockerfile"
     ;; bazel
     "BUILD.bazel"
+    ;; writing
+    ".markdownlint.yml"
+    ".vale.ini"
     ;; generic
     "Makefile"
     ;; github repo
     "README.md"
     ;; emacs
-    ".dir-locals.el"))
+    ".dir-locals.el"
+    ))
 
 (defun my/try-open-dominating-file (other-window)
   (interactive "P")
