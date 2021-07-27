@@ -256,7 +256,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
       (setq window-size-fixed new-status))
     new-status))
 
-{(defun my/copy-file-path (include-line-number)
+(defun my/copy-file-path (include-line-number)
    (interactive "P")
    (let* ((full-fp (buffer-file-name))
           (prefix (read-directory-name "prefix to strip: " (projectile-project-root)))
@@ -264,7 +264,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
           (fp (concat (string-remove-prefix prefix full-fp) suffix)))
      (kill-new fp)
      (message fp)
-     t))}
+     t))
 
 (defvar my/useful-files
   '(
