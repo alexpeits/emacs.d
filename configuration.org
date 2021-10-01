@@ -1766,6 +1766,9 @@ CWD is not in a git repo (or the git command is not found)."
        `(coq-button-face ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+05))))
        `(coq-button-face-pressed ((t (:foreground ,zenburn-green+4 :background ,zenburn-bg+2))))
 
+       `(enh-ruby-op-face ((t nil)))
+       `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
+
        `(proof-locked-face ((t (:background ,(color-darken-name zenburn-blue-5 4)))))
        `(proof-warning-face ((t (:background ,(color-darken-name zenburn-yellow-2 35)))))
        `(proof-error-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2))))
@@ -3748,6 +3751,14 @@ the current file."
   (add-hook 'mustache-mode-hook #'evil-local-mode))
 #+end_src
 
+** editorconfig
+
+#+begin_src emacs-lisp
+(use-package editorconfig
+  :ensure t
+  :mode (("\\.editorconfig\\'" . editorconfig-conf-mode)))
+#+end_src
+
 * markdown
 
 #+BEGIN_SRC emacs-lisp
@@ -4683,6 +4694,7 @@ buffer, close it."
 
 ;; in <user emacs directory>/lisp
 (use-package projectile-tab-bar
+  :disabled
   :after projectile
   :bind (("M-N" . projectile-tab-bar-switch-to-next-tab)
          ("M-P" . projectile-tab-bar-switch-to-prev-tab)
@@ -4704,7 +4716,6 @@ buffer, close it."
           (:eval (format "[%s]" (projectile-tab-bar-current-tab))))))
 
 (use-package perspective
-  :disabled
   :ensure t
   :hook (after-init . persp-mode)
   :bind (("M-N" . persp-next)
@@ -4727,7 +4738,6 @@ buffer, close it."
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
 
 (use-package persp-projectile
-  :disabled
   :ensure t
   :after (perspective projectile))
 #+END_SRC
@@ -5890,24 +5900,24 @@ the minibuffer."
        (:eval (my/mode-line-vc))
        (:eval minor-mode-alist) " "
        (:eval (my/mode-line-server))
-       (:eval projectile-tab-bar-modeline) " "
-       ;; (:eval (frame-parameter nil 'persp--modestring)) "  "
+       ;; (:eval projectile-tab-bar-modeline) " "
+       (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if too narrow
      (quote
       ((:eval (my/mode-line-vc))
-       (:eval projectile-tab-bar-modeline) " "
-       ;; (:eval (frame-parameter nil 'persp--modestring)) "  "
+       ;; (:eval projectile-tab-bar-modeline) " "
+       (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
      ;; right if super narrow
      (quote
       (
-       (:eval projectile-tab-bar-modeline) " "
-       ;; (:eval (frame-parameter nil 'persp--modestring)) "  "
+       ;; (:eval projectile-tab-bar-modeline) " "
+       (:eval (frame-parameter nil 'persp--modestring)) "  "
        mode-line-position
        (:eval (my/mode-line-hud)) "  "
        ))
