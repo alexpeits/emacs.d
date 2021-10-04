@@ -30,6 +30,8 @@
 (defvar og/publish-static-directory
   (expand-file-name "static/" og/publish-base-directory))
 
+(setq org-roam-v2-ack t)
+
 ;; (setq org-roam-directory og/org-directory)
 ;; (setq make-backup-files nil)
 
@@ -86,7 +88,7 @@ This function will render images appropriately"
          (raw-path (org-element-property :path link))
          (type (org-element-property :type link))
          (abs-path (expand-file-name raw-path og/org-directory)))
-    (if (org-roam--org-roam-file-p abs-path)
+    (if (org-roam-file-p abs-path)
         ;; org-roam file, format as markdown [[wiki-link]]
         (format
          "[[%s]]"

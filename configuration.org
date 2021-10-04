@@ -15,7 +15,7 @@
                "~/.ghcup/bin"
                ))
 
-(add-to-list 'exec-path (expand-file-name pth))
+  (add-to-list 'exec-path (expand-file-name pth))
   (setenv "PATH" (concat (expand-file-name pth)
                          path-separator
                          (getenv "PATH"))))
@@ -257,14 +257,14 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     new-status))
 
 (defun my/copy-file-path (include-line-number)
-   (interactive "P")
-   (let* ((full-fp (buffer-file-name))
-          (prefix (read-directory-name "prefix to strip: " (projectile-project-root)))
-          (suffix (if include-line-number (format ":%s" (number-to-string (line-number-at-pos))) ""))
-          (fp (concat (string-remove-prefix prefix full-fp) suffix)))
-     (kill-new fp)
-     (message fp)
-     t))
+  (interactive "P")
+  (let* ((full-fp (buffer-file-name))
+         (prefix (read-directory-name "prefix to strip: " (projectile-project-root)))
+         (suffix (if include-line-number (format ":%s" (number-to-string (line-number-at-pos))) ""))
+         (fp (concat (string-remove-prefix prefix full-fp) suffix)))
+    (kill-new fp)
+    (message fp)
+    t))
 
 (defvar my/useful-files
   '(
@@ -1724,74 +1724,74 @@ CWD is not in a git repo (or the git command is not found)."
   (defun my/zenburn-theme ()
     (load-theme 'zenburn t)
     (zenburn-with-color-variables
-      (custom-theme-set-faces
-       'zenburn
-       `(region ((t (:background ,zenburn-bg+2))))
-       `(vertical-border ((t (:foreground "#a5a5a5"))))
-       `(fringe ((t (:background "#484848"))))
-       `(link ((t (:foreground ,zenburn-yellow :underline t))))
-       `(hl-line ((t (:background ,zenburn-bg+05))))
-       `(fill-column-indicator ((t (:foreground ,zenburn-bg+2))))
-       `(compilation-info ((t (:foreground ,zenburn-green+3 :weight bold))))
-       `(isearch ((t (:foreground ,zenburn-blue+2 :background ,zenburn-blue-5 :weight bold))))
-       `(lazy-highlight ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+2 :weight bold))))
-       `(mode-line ((t
-                     (:box
-                      (:line-width -1 :color nil :style released-button)
-                      :foreground ,zenburn-green+3 :background ,zenburn-bg+05))))
-       `(mode-line-inactive ((t
-                              (:box
-                               (:line-width -1 :color nil :style released-button)
-                               :foreground ,zenburn-green-2 :background ,zenburn-bg-05))))
-       `(mode-line-buffer-id ((t (:weight bold))))
-       `(persp-selected-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
-       `(projectile-tab-bar-modeline-active-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
+     (custom-theme-set-faces
+      'zenburn
+      `(region ((t (:background ,zenburn-bg+2))))
+      `(vertical-border ((t (:foreground "#a5a5a5"))))
+      `(fringe ((t (:background "#484848"))))
+      `(link ((t (:foreground ,zenburn-yellow :underline t))))
+      `(hl-line ((t (:background ,zenburn-bg+05))))
+      `(fill-column-indicator ((t (:foreground ,zenburn-bg+2))))
+      `(compilation-info ((t (:foreground ,zenburn-green+3 :weight bold))))
+      `(isearch ((t (:foreground ,zenburn-blue+2 :background ,zenburn-blue-5 :weight bold))))
+      `(lazy-highlight ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+2 :weight bold))))
+      `(mode-line ((t
+                    (:box
+                     (:line-width -1 :color nil :style released-button)
+                     :foreground ,zenburn-green+3 :background ,zenburn-bg+05))))
+      `(mode-line-inactive ((t
+                             (:box
+                              (:line-width -1 :color nil :style released-button)
+                              :foreground ,zenburn-green-2 :background ,zenburn-bg-05))))
+      `(mode-line-buffer-id ((t (:weight bold))))
+      `(persp-selected-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
+      `(projectile-tab-bar-modeline-active-face ((t (:foreground ,zenburn-yellow-2 :weight bold))))
 
-       `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-       `(font-lock-keyword-face ((t (:foreground ,zenburn-yellow-1 :weight bold))))
+      `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
+      `(font-lock-keyword-face ((t (:foreground ,zenburn-yellow-1 :weight bold))))
 
-       `(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
-       `(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
-       `(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
+      `(diff-hl-insert ((t (:foreground "#789c78" :background "#3c543c"))))
+      `(diff-hl-change ((t (:foreground "#79b3b5" :background "#425f61"))))
+      `(diff-hl-delete ((t (:foreground "#ab8080" :background "#694848"))))
 
-       `(diredfl-dir-name ((t (:foreground ,zenburn-blue+1 :weight bold))))
-       `(diredfl-dir-heading ((t (:foreground ,zenburn-blue-1))))
+      `(diredfl-dir-name ((t (:foreground ,zenburn-blue+1 :weight bold))))
+      `(diredfl-dir-heading ((t (:foreground ,zenburn-blue-1))))
 
-       `(org-block ((t (:background "#444444" :extend t))))
-       `(org-block-begin-line ((t (:background "#4b4b4b" :foreground ,zenburn-fg-05 :slant italic :extend t))))
-       `(org-block-end-line ((t (:inherit org-block-begin-line))))
-       `(org-roam-link ((t (:foreground ,zenburn-green+3 :background ,zenburn-bg+1 :underline t))))
+      `(org-block ((t (:background "#444444" :extend t))))
+      `(org-block-begin-line ((t (:background "#4b4b4b" :foreground ,zenburn-fg-05 :slant italic :extend t))))
+      `(org-block-end-line ((t (:inherit org-block-begin-line))))
+      `(org-roam-link ((t (:foreground ,zenburn-green+3 :background ,zenburn-bg+1 :underline t))))
 
-       `(coq-cheat-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2 :weight bold))))
-       `(coq-button-face ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+05))))
-       `(coq-button-face-pressed ((t (:foreground ,zenburn-green+4 :background ,zenburn-bg+2))))
+      `(coq-cheat-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2 :weight bold))))
+      `(coq-button-face ((t (:foreground ,zenburn-green+2 :background ,zenburn-bg+05))))
+      `(coq-button-face-pressed ((t (:foreground ,zenburn-green+4 :background ,zenburn-bg+2))))
 
-       `(enh-ruby-op-face ((t nil)))
-       `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
+      `(enh-ruby-op-face ((t nil)))
+      `(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face))))
 
-       `(proof-locked-face ((t (:background ,(color-darken-name zenburn-blue-5 4)))))
-       `(proof-warning-face ((t (:background ,(color-darken-name zenburn-yellow-2 35)))))
-       `(proof-error-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2))))
-       `(proof-tactics-name-face ((t (:inherit font-lock-constant-face))))
+      `(proof-locked-face ((t (:background ,(color-darken-name zenburn-blue-5 4)))))
+      `(proof-warning-face ((t (:background ,(color-darken-name zenburn-yellow-2 35)))))
+      `(proof-error-face ((t (:background ,zenburn-red-6 :foreground ,zenburn-red+2))))
+      `(proof-tactics-name-face ((t (:inherit font-lock-constant-face))))
 
-       `(rst-level-1 ((t (:inherit rst-adornment))))
-       `(rst-level-2 ((t (:inherit rst-level-1))))
-       `(rst-level-3 ((t (:inherit rst-level-1))))
-       `(rst-level-4 ((t (:inherit rst-level-1))))
-       `(rst-level-5 ((t (:inherit rst-level-1))))
-       `(rst-level-6 ((t (:inherit rst-level-1))))
+      `(rst-level-1 ((t (:inherit rst-adornment))))
+      `(rst-level-2 ((t (:inherit rst-level-1))))
+      `(rst-level-3 ((t (:inherit rst-level-1))))
+      `(rst-level-4 ((t (:inherit rst-level-1))))
+      `(rst-level-5 ((t (:inherit rst-level-1))))
+      `(rst-level-6 ((t (:inherit rst-level-1))))
 
-       `(my/elfeed-blue ((t (:foreground ,zenburn-blue+1))))
-       `(my/elfeed-cyan ((t (:foreground ,zenburn-blue-1))))
-       `(my/elfeed-green ((t (:foreground ,zenburn-green))))
-       `(my/elfeed-yellow ((t (:foreground ,zenburn-yellow))))
-       `(my/elfeed-magenta ((t (:foreground ,zenburn-magenta))))
-       `(my/elfeed-red ((t (:foreground ,zenburn-red))))
-       `(elfeed-search-date-face ((t (:foreground ,zenburn-orange))))
-       )
-      (custom-theme-set-variables
-       'zenburn
-       `(coq-highlighted-hyps-bg ,zenburn-bg+2)))))
+      `(my/elfeed-blue ((t (:foreground ,zenburn-blue+1))))
+      `(my/elfeed-cyan ((t (:foreground ,zenburn-blue-1))))
+      `(my/elfeed-green ((t (:foreground ,zenburn-green))))
+      `(my/elfeed-yellow ((t (:foreground ,zenburn-yellow))))
+      `(my/elfeed-magenta ((t (:foreground ,zenburn-magenta))))
+      `(my/elfeed-red ((t (:foreground ,zenburn-red))))
+      `(elfeed-search-date-face ((t (:foreground ,zenburn-orange))))
+      )
+     (custom-theme-set-variables
+      'zenburn
+      `(coq-highlighted-hyps-bg ,zenburn-bg+2)))))
 #+end_src
 
 * Fonts
@@ -3176,7 +3176,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 (use-package rust-mode
   :ensure t
   :mode (("\\.rs\\'" . rust-mode))
-  ; :hook (rust-mode . lsp)
+                                        ; :hook (rust-mode . lsp)
   )
 
 (use-package cargo
@@ -3307,13 +3307,13 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 (defun my/ruby-insert-frozen-string-literal ()
   (interactive)
   (when my/ruby-do-insert-frozen-string-literal
-      (save-excursion
+    (save-excursion
+      (goto-char (point-min))
+      (unless (re-search-forward my/ruby-frozen-string-literal nil t)
         (goto-char (point-min))
-        (unless (re-search-forward my/ruby-frozen-string-literal nil t)
-          (goto-char (point-min))
-          (newline 2)
-          (previous-line 2)
-          (insert my/ruby-frozen-string-literal)))))
+        (newline 2)
+        (previous-line 2)
+        (insert my/ruby-frozen-string-literal)))))
 #+end_src
 
 ** clojure
@@ -3898,9 +3898,9 @@ the current file."
       (when variable-pitch
         (variable-pitch-mode))
       (setq-local my/writeroom-fill-column-prev
-            (and
-             (boundp 'display-fill-column-indicator-mode)
-             display-fill-column-indicator-mode))
+                  (and
+                   (boundp 'display-fill-column-indicator-mode)
+                   display-fill-column-indicator-mode))
       (display-fill-column-indicator-mode -1))))
 
 #+end_src
@@ -4083,9 +4083,9 @@ the current file."
            (win (selected-window)))
       (with-current-buffer (get-buffer "*elfeed-search*")
         (when (null (get-buffer-window "*elfeed-entry*"))
-         (if horz
-             (split-window win (/ (frame-width) 3) 'right)
-           (split-window win (/ (frame-height) 3) 'below)))
+          (if horz
+              (split-window win (/ (frame-width) 3) 'right)
+            (split-window win (/ (frame-height) 3) 'below)))
         (other-window 1)
         (elfeed-search-show-entry entry))))
 
@@ -4532,7 +4532,7 @@ This relies on the external 'fd' executable."
 With \\[universal-argument] put the results in a `dired' buffer.
 This relies on the external 'fd' executable."
    "Files and dirs"
-    "-i" "-H" "-a" "-t" "d" "-t" "f" "-c" "never")
+   "-i" "-H" "-a" "-t" "d" "-t" "f" "-c" "never")
   )
 #+end_src
 
@@ -5177,12 +5177,12 @@ the minibuffer."
         `(("r"
            "Web link (roam)"
            entry
-           (file+headline my/org-roam-find-filename "Captured (web)")
+           (file+headline my/org-roam-node-find-filename "Captured (web)")
            "* %^{Title|%:description}\n- Source: %a\n- Date: %U\n\n%i")
           ("e"
            "Elfeed"
            entry
-           (file+headline my/org-roam-find-filename "Captured (feeds)")
+           (file+headline my/org-roam-node-find-filename "Captured (feeds)")
            ,my/elfeed-capture-template)
           ("E"
            "Elfeed (immediate)"
@@ -5190,22 +5190,7 @@ the minibuffer."
            (file my/elfeed-org-capture-default-filename)
            ,my/elfeed-capture-template
            :immediate-finish t)
-          ("i"
-           "Immediate note"
-           entry
-           (file my/org-roam-find-filename)
-           "* %^{Title}\n- Date: %U\n\n%(buffer-file-name) %i"
-           :immediate-finish t)
-          ("l"
-           "Link to file"
-           entry
-           (file my/org-roam-find-filename)
-           "* TODO %?\n%a\n\n%i")
-          ("c"
-           "Code comment"
-           entry
-           (file my/org-roam-find-filename)
-           "* TODO %?\n%a\n\n#+begin_src %^{Language}\n%i#+end_src\n\n")))
+          ))
   (add-hook 'org-capture-prepare-finalize-hook #'delete-trailing-whitespace))
 #+END_SRC
 
@@ -5391,24 +5376,20 @@ the minibuffer."
 #+BEGIN_SRC emacs-lisp
 (use-package org-roam
   :ensure t
-  :hook (after-init . org-roam-mode)
   :diminish
-  :bind (:map org-roam-mode-map
-              ("C-c n b" . org-roam-switch-to-buffer)
-              ("C-c n f" . org-roam-find-file)
-              ("C-c n g" . org-roam-graph)
-              ("C-c n j" . org-roam-dailies-today)
-              ("C-c n J" . org-roam-dailies-date)
-              ("C-c n l" . org-roam)
-              ("C-c n s" . my/org-roam-rg)
-              ("C-c n S" . my/rg-org-directory)
-              ("C-c n u" . org-roam-unlinked-references)
-              ("C-c n x" . org-roam-jump-to-index)
-              ("C-c n !" . my/org-roam-refresh)
-              :map org-mode-map
-              ("C-c n I" . org-roam-insert)
-              ("C-c n i" . org-roam-insert-immediate))
+  :bind (
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n j" . org-roam-dailies-capture-today)
+         ("C-c n J" . org-roam-dailies-capture-date)
+         ("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n s" . my/org-roam-rg)
+         ("C-c n S" . my/rg-org-directory)
+         :map org-mode-map
+         ("C-c n I" . org-roam-insert)
+         ("C-c n i" . org-roam-insert-immediate))
   :init
+  (setq org-roam-v2-ack t)
+  (setq my/org-roam-major-version (string-to-number (car (split-string (org-roam-version) "\\."))))
   (setq org-roam-directory my/org-directory
         org-roam-db-location (expand-file-name "org-roam.db" user-emacs-directory)
         org-roam-index-file "home.org"
@@ -5427,30 +5408,28 @@ the minibuffer."
            :head "#+TITLE: %<%A, %d %b %Y>\n\n- tags :: [[file:daily.org][daily notes]]\n")
           ))
   :config
-  (add-to-list 'org-refile-targets '(org-roam--list-all-files . (:maxlevel . 1)))
-  (add-hook 'org-roam-backlinks-mode-hook 'org-indent-mode)
-  (my/add-hooks
-   '(org-mode-hook)
-   (when (and (buffer-file-name)
-              (org-roam--org-roam-file-p (buffer-file-name)))
-     (add-hook 'before-save-hook #'my/org-roam-add-roam-tags-property nil :local)))
+  (org-roam-setup)
+
+  (add-to-list 'org-refile-targets '(org-roam-list-files))
+  ;; (add-hook 'org-roam-mode-hook 'org-indent-mode)
   (with-eval-after-load 'evil
-    (evil-define-key 'visual org-mode-map (kbd "[[") 'org-roam-insert-immediate))
-  ;; don't show tags in `org-roam-find-file'
-  (advice-add 'org-roam--get-title-path-completions
-              :filter-return
-              #'my/org-roam-process-title-path-completions)
+    (evil-define-key 'visual org-mode-map (kbd "[[") 'org-roam-node-insert))
   (add-to-list 'org-tempo-keywords-alist '("ra" . "ROAM_ALIAS"))
   (add-to-list 'org-tempo-keywords-alist '("rt" . "ROAM_TAGS")))
 
 (use-package org-roam-protocol
   :after org-roam)
 
-(use-package org-roam-server
+(use-package websocket
   :ensure t
-  :commands (org-roam-server-mode)
+  :after org-roam)
+
+(use-package org-roam-ui
+  :load-path "lisp/org-roam-ui"
+  :after org-roam
+  :commands (org-roam-ui-mode)
   :init
-  (setq org-roam-server-port 25002))
+  (setq org-roam-ui-port 27000))
 
 ;; this is in lisp/ for now
 (use-package my-org-roam-publish
@@ -5467,10 +5446,31 @@ the minibuffer."
               ("C-c n p G" . og/publish-all)
               ("C-c n p g" . og/publish-current-file)))
 
-(defun my/org-roam-refresh ()
-  (interactive)
-  (org-roam-db-build-cache :force)
-  (org-roam-buffer--update-maybe :redisplay))
+(defun my/org-roam-filename-from-node (node)
+  (let* ((tmpl "%<%Y%m%d%H%M%S>-${slug}.org")
+         (slug (org-roam-node-slug node))
+         (org-roam-capture--info (list (cons 'slug slug)))
+         (org-roam-capture--node node))
+    (string-trim (org-roam-capture--fill-template tmpl t))
+    ))
+
+(defun my/org-roam-node-find-filename ()
+  (let* ((node (org-roam-node-read))
+         (title (org-roam-node-title node))
+         (filename (org-roam-node-file node)))
+    (if (null filename)
+        (let* ((create-fn (my/org-roam-filename-from-node node))
+               (key (format "#+TITLE: %s\n\n" title)))
+          (setq filename (expand-file-name create-fn org-roam-directory))
+          (write-region key nil filename)))
+    filename))
+
+(defun my/org-roam-title-from-abspath (abspath)
+  (caar
+   (org-roam-db-query [:select [title]
+                               :from nodes
+                               :where (= file $s1)]
+                      abspath)))
 
 (defun my/org-roam-rg-transformer (str)
   (if (string-match "\\`\\([^:]+\\):\\([^:]+\\):" str)
@@ -5479,7 +5479,7 @@ the minibuffer."
              (line (elt parts 1))
              (match (string-join (cddr parts) ":"))
              (abspath (concat org-roam-directory path))
-             (roam-title (org-roam-db--get-title abspath)))
+             (roam-title (my/org-roam-title-from-abspath abspath)))
         (format "%s:%s:%s"
                 (propertize roam-title 'face 'ivy-grep-info)
                 (propertize line 'face 'ivy-grep-line-number)
@@ -5494,72 +5494,6 @@ the minibuffer."
   (unless (featurep 'counsel) (require 'counsel))
   (let ((ivy--display-transformers-alist '((counsel-rg . my/org-roam-rg-transformer))))
     (counsel-rg "" org-roam-directory "-g '*.org'")))
-
-(defun my/org-roam-process-title-path-completions (completions)
-  (mapc
-   '(lambda (x)
-      (let ((str (car x)))
-        (setcar x (replace-regexp-in-string "\\((.*)\\) " "" str))))
-   (copy-alist completions)))
-
-(defun my/org-roam-filename-from-title (title)
-  (let* ((tmpl "%<%Y%m%d%H%M%S>-${slug}")
-         (slug (org-roam--title-to-slug title))
-         (org-roam-capture--info (list (cons 'slug slug))))
-    (string-trim (org-roam-capture--fill-template tmpl))))
-
-(defun my/org-roam-find-filename ()
-  (let* ((completions (org-roam--get-title-path-completions))
-         (title (org-roam-completion--completing-read "File: " completions))
-         (filename (plist-get (cdr (assoc title completions)) :path)))
-    (if (null filename)
-        (let* ((create-fn (concat (my/org-roam-filename-from-title title) ".org"))
-               (key (format "#+TITLE: %s\n\n" title)))
-          (setq filename (expand-file-name create-fn org-roam-directory))
-          (write-region key nil filename)
-          (org-roam-db-build-cache :force)))
-    filename))
-
-(defun my/org-roam-extract-tags ()
-  (let ((tags nil))
-    (org-element-map (org-element-parse-buffer) 'plain-list
-      (lambda (lst)
-        (when (eq (org-element-property :type lst) 'descriptive)
-          (org-element-map lst 'item
-            (lambda (item)
-              (let* ((maybe-tag (elt (org-element-property :tag item) 0))
-                     (tag (and (stringp maybe-tag)
-                               (substring-no-properties (elt (org-element-property :tag item) 0)))))
-                (when (and tag
-                           (string-equal tag "tags"))
-                  (org-element-map item 'paragraph
-                    (lambda (par)
-                      (org-element-map par 'link
-                        (lambda (link)
-                          (add-to-list 'tags (substring-no-properties (elt link 2)))))))))))))
-      nil :first-only)
-    (reverse tags)))
-
-(defun my/org-roam-add-roam-tags-property ()
-  (let* ((tags (my/org-roam-extract-tags))
-         (tags-str ""))
-    (dolist (tag tags)
-      (setq tags-str
-            (concat tags-str
-                    (format " \"%s\"" tag))))
-    (save-excursion
-      (goto-char (point-min))
-      (if (re-search-forward "^#\\+ROAM_TAGS" nil t)
-          (progn
-            (beginning-of-line 1)
-            (kill-line))
-        (goto-char (point-min))
-        (re-search-forward "^$")
-        (newline)
-        (previous-line))
-      (if tags
-          (insert (format "#+ROAM_TAGS:%s" tags-str))
-        (kill-line)))))
 #+END_SRC
 
 * org-download
@@ -6017,6 +5951,8 @@ the minibuffer."
 (winner-mode)
 
 (run-hooks 'my/after-init-hook)
+
+(server-mode +1)
 #+END_SRC
 
 ** custom
