@@ -3697,7 +3697,12 @@ the current file."
   :ensure t
   :mode (("\\.ya?ml\\'" . yaml-mode)
          ("\\.ya?ml.tmpl\\'" . yaml-mode)
-         ("\\.ya?ml.template\\'" . yaml-mode)))
+         ("\\.ya?ml.template\\'" . yaml-mode))
+  :config
+  (my/add-hooks
+   '(yaml-mode-hook)
+   (setq evil-shift-width 2))
+  )
 
 (use-package flycheck-yamllint
   :ensure t

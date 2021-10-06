@@ -14,6 +14,8 @@
   (og/package-install 's)
   (og/package-install 'dash))
 
+(setq org-roam-v2-ack t)
+
 (require 'org)
 (require 'ox-publish)
 (require 'org-roam)
@@ -29,8 +31,6 @@
   (expand-file-name "content/notes" og/publish-base-directory))
 (defvar og/publish-static-directory
   (expand-file-name "static/" og/publish-base-directory))
-
-(setq org-roam-v2-ack t)
 
 ;; (setq org-roam-directory og/org-directory)
 ;; (setq make-backup-files nil)
@@ -85,24 +85,28 @@ INFO is a plist used as a communication channel.
 
 This function will render images appropriately"
   (let* ((raw-link (org-element-property :raw-link link))
-         (raw-path (org-element-property :path link))
-         (type (org-element-property :type link))
-         (abs-path (expand-file-name raw-path og/org-directory)))
-    (if (org-roam-file-p abs-path)
-        ;; org-roam file, format as markdown [[wiki-link]]
-        (format
-         "[[%s]]"
-         (file-name-sans-extension raw-path))
+         (path (org-element-property :path link))
+         (type (org-element-property :type link)))
+    (if (string= type "id")
+        (let* ((org-id-prop (org-id-find path))
+               (relpath (if (null org-id-prop)
+                            (error "Cannot find entry with ID '%s'" orgid)
+                          (car org-id-prop)))
+               (abspath (expand-file-name relpath))
+               (filename (file-relative-name abspath og/org-directory)))
+          ;; org-roam file, format as markdown [[wiki-link]]
+          (format
+           "[[%s]]"
+           (file-name-sans-extension filename)))
       (let* ((resolved-path
               (cond
                ;; if the path is to a file, make it treat the root directory as system
                ((string= type "file")
-                (format "/%s" (string-remove-prefix "/" raw-path)))
+                (format "/%s" (string-remove-prefix "/" path)))
                ;; if not a file, then just use the raw link itself.
                (t raw-link)))
              (desc (if desc desc resolved-path)))
-        (og/link-maybe-image desc resolved-path)
-        ))))
+        (og/link-maybe-image desc resolved-path)))))
 
 (defun og/underline (underline contents info)
   "Transcode UNDERLINE from Org to Markdown.
