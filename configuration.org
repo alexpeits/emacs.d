@@ -3657,7 +3657,11 @@ the current file."
     (interactive)
     (terraform-format-buffer)
     (save-buffer))
-  (my/define-major-mode-key 'terraform-mode "s" #'my/terraform-format-and-save))
+  (my/define-major-mode-key 'terraform-mode "s" #'my/terraform-format-and-save)
+  (my/add-hooks
+   '(terraform-mode-hook)
+   (when (executable-find "terraform")
+     (terraform-format-on-save-mode +1))))
 #+end_src
 
 ** docker
