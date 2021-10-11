@@ -1370,7 +1370,7 @@ CWD is not in a git repo (or the git command is not found)."
 (when (>= emacs-major-version 27)
   (setq custom--inhibit-theme-enable nil))
 
-(defvar my/avail-themes '(wheatgrass tango))
+(defvar my/avail-themes '(deeper-blue adwaita))
 (defvar my/current-theme 0)
 
 (defvar my/after-set-theme-hook nil
@@ -1400,14 +1400,6 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 ** modus themes
-*** load vendored package
-
-#+begin_src emacs-lisp :tangle no
-(let ((pkg (expand-file-name "modus-themes" my/vendored-pkgs-dir)))
-  (add-to-list 'load-path pkg)
-  (add-to-list 'custom-theme-load-path pkg))
-#+end_src
-
 *** =modus-vivendi= (dark)
 
 #+begin_src emacs-lisp
@@ -1423,7 +1415,8 @@ CWD is not in a git repo (or the git command is not found)."
         modus-themes-scale-3 1.0
         modus-themes-scale-2 1.0
         modus-themes-scale-1 1.0
-        modus-themes-subtle-line-numbers nil)
+        modus-themes-subtle-line-numbers nil
+        modus-themes-mode-line 'accented)
 
   (defvar my/modus-vivendi-theme-alt-colors nil)
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
@@ -1574,7 +1567,8 @@ CWD is not in a git repo (or the git command is not found)."
         modus-themes-scale-3 1.0
         modus-themes-scale-2 1.0
         modus-themes-scale-1 1.0
-        modus-themes-subtle-line-numbers nil)
+        modus-themes-subtle-line-numbers nil
+        modus-themes-mode-line 'accented)
 
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
 
@@ -2218,7 +2212,6 @@ In =vc-git-log-edit-mode=:
   :hook (evil-local-mode . evil-leader-mode)
   :ensure t
   :config
-  ;; (global-evil-leader-mode)
   (evil-leader/set-leader "<SPC>")
   (dolist (i my/leader-keys)
     (let ((k (car i))
@@ -2737,7 +2730,6 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 #+END_SRC
 
 * regex replace
-
 ** re-builder (useful for debugging)
 
 #+begin_src emacs-lisp
@@ -3768,7 +3760,8 @@ the current file."
   :mode (("\\.editorconfig\\'" . editorconfig-conf-mode)))
 #+end_src
 
-* markdown
+* WRITING
+** markdown
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/markdown-css
@@ -3862,7 +3855,6 @@ the current file."
   (defalias 'mtoc 'markdown-toc-generate-or-refresh-toc))
 #+END_SRC
 
-* other writing
 ** writeroom
 
 #+begin_src emacs-lisp
@@ -4251,52 +4243,6 @@ the current file."
 #+END_SRC
 
 * other major modes
-** erc
-
-#+BEGIN_SRC emacs-lisp
-(use-package erc
-  :defer t
-  :commands (erc my/erc-freenode)
-  :init
-  (setq erc-rename-buffers t
-        erc-prompt-for-nickserv-password nil
-        erc-autojoin-timing 'ident
-        erc-fill-function 'erc-fill-static
-        erc-fill-static-center 22
-        erc-server-reconnect-attempts 5
-        erc-server-reconnect-timeout 3
-        erc-interpret-mirc-color t
-        erc-lurker-hide-list '("JOIN" "PART" "QUIT")
-        erc-autojoin-channels-alist '(("freenode.net" "#haskell"))
-        erc-fill-column 80
-        my/erc-default-nick "runforestrun")
-  :config
-  (defun my/erc-freenode (select-nick)
-    (interactive "P")
-    (let ((nick
-           (if select-nick
-               (read-string "Nick: ")
-             my/erc-default-nick)))
-      (erc :server "irc.freenode.net" :port 6667 :nick nick)))
-
-  (defun my/erc-preprocess (string)
-    "Avoids channel flooding."
-    (string-trim (replace-regexp-in-string "\n+" " " str)))
-
-  (defun my/erc-switch-to-buffer ()
-    (interactive)
-    (let ((read-buffer-function nil))
-      (call-interactively 'erc-switch-to-buffer)))
-  (define-key erc-mode-map (kbd "C-c C-b") 'my/erc-switch-to-buffer))
-
-;; https://www.reddit.com/r/emacs/comments/8ml6na/tip_how_to_make_erc_fun_to_use/
-(use-package erc-hl-nicks
-  :ensure t
-  :after erc
-  :init
-  (setq erc-hl-nicks-skip-nicks '("so" "So" "bind" "hackage")))
-#+END_SRC
-
 ** lilypond
 
 #+begin_src emacs-lisp
@@ -5388,14 +5334,14 @@ the minibuffer."
   :diminish
   :bind (
          ("C-c n f" . org-roam-node-find)
+         ("C-c n t" . org-roam-dailies-goto-today)
+         ("C-c n T" . org-roam-dailies-goto-date)
          ("C-c n j" . org-roam-dailies-capture-today)
-         ("C-c n J" . org-roam-dailies-capture-date)
          ("C-c n l" . org-roam-buffer-toggle)
          ("C-c n s" . my/org-roam-rg)
          ("C-c n S" . my/rg-org-directory)
          :map org-mode-map
-         ("C-c n I" . org-roam-insert)
-         ("C-c n i" . org-roam-insert-immediate))
+         ("C-c n i" . org-roam-node-insert))
   :init
   (setq org-roam-v2-ack t)
   (setq my/org-roam-major-version (string-to-number (car (split-string (org-roam-version) "\\."))))
@@ -5409,17 +5355,17 @@ the minibuffer."
             (executable-find "google-chrome")
             (executable-find "firefox"))
         org-roam-graph-exclude-matcher '("index.org" "theindex.org" "home.org"))
+  (setq org-roam-dailies-directory org-roam-directory)
   (setq org-roam-dailies-capture-templates
-        '(("d" "daily" plain (function org-roam-capture--get-point)
-           ""
-           :immediate-finish t
-           :file-name "daily-%<%Y-%m-%d>"
-           :head "#+TITLE: %<%A, %d %b %Y>\n\n- tags :: [[file:daily.org][daily notes]]\n")
+        '(("d" "daily" entry
+           "* %i%?"
+           :target (file+head "daily-%<%Y-%m-%d>.org"
+                              "#+TITLE: %<%A, %d %b %Y>\n#+filetags: :daily-notes:\n\n"))
           ))
   :config
   (org-roam-setup)
 
-  (add-to-list 'org-refile-targets '(org-roam-list-files))
+  ;; (add-to-list 'org-refile-targets '((org-roam-list-files :maxlevel . 1)))
   ;; (add-hook 'org-roam-mode-hook 'org-indent-mode)
   (with-eval-after-load 'evil
     (evil-define-key 'visual org-mode-map (kbd "[[") 'org-roam-node-insert))
@@ -5519,158 +5465,6 @@ the minibuffer."
         org-download-heading-lvl nil)
   :config
   (defalias 'scrot 'org-download-screenshot))
-#+end_src
-
-* org-ref, org-noter & bibtex
-
-#+begin_src emacs-lisp
-(defvar my/dropbox-papers-dir (expand-file-name "papers/" my/dropbox-dir)
-  "Dropbox papers directory")
-
-(defvar my/dropbox-papers-bibtex (expand-file-name "papers.bib" my/dropbox-papers-dir)
-  "Dropbox bibtex bibliography file")
-
-(use-package bibtex
-  :mode (("\\.bib\\'" . bibtex-mode))
-  :bind (:map bibtex-mode-map
-              ("C-c C-c" . my/bibtex-format-and-clean-entry))
-  :init
-  (setq bibtex-autokey-year-length 4
-        bibtex-autokey-name-year-separator "-"
-        bibtex-autokey-year-title-separator "-"
-        bibtex-autokey-titleword-separator "-"
-        bibtex-autokey-titlewords 2
-        bibtex-autokey-titlewords-stretch 1
-        bibtex-autokey-titleword-length 8)
-  :config
-  (defun my/bibtex-format-and-clean-entry ()
-    (interactive)
-    (call-interactively 'bibtex-fill-entry)
-    (call-interactively 'bibtex-clean-entry)
-    (call-interactively 'org-ref-clean-bibtex-entry)))
-
-(use-package bibtex-completion
-  :ensure t
-  :after helm-bibtex
-  :init
-  (setq bibtex-completion-library-path (list my/dropbox-papers-dir)
-        bibtex-completion-pdf-field "file"
-        bibtex-completion-bibliography (list my/dropbox-papers-bibtex)
-        bibtex-completion-notes-path (expand-file-name "papers/" my/org-directory)
-        bibtex-completion-notes-template-multiple-files (string-join '("#+TITLE: [Paper] ${author-or-editor} (${year}): ${title}"
-                                                                       "#+ROAM_KEY: cite:${=key=}\n\n"
-                                                                       )
-                                                                     "\n")))
-
-(use-package biblio-core
-  :ensure t
-  :defer t
-  :bind (:map biblio-selection-mode-map
-              ("a" . my/biblio-append-bibtex-to-papers))
-  :config
-  (defun my/-biblio-append-bibtex-to-papers (bibtex entry)
-    (find-file-other-window my/dropbox-papers-bibtex)
-    (goto-char (point-max))
-    (newline)
-    (newline)
-    (insert bibtex))
-  (defun my/biblio-append-bibtex-to-papers ()
-    (interactive)
-    (biblio--selection-forward-bibtex #'my/-biblio-append-bibtex-to-papers)))
-
-(use-package helm
-  :ensure t
-  :defer t
-  :init
-  (setq helm-display-function #'display-buffer)
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*helm"
-                 (display-buffer-in-side-window)
-                 (inhibit-same-window . t)
-                 (window-height . 0.4))))
-
-(use-package helm-bibtex
-  :ensure t
-  :bind (("C-c n r" . helm-bibtex)))
-
-(use-package org-ref
-  :ensure t
-  :bind (:map org-mode-map
-              ("C-c ]" . org-ref-helm-insert-cite-link))
-  :after org
-  :init
-  (setq org-ref-default-bibliography (list my/dropbox-papers-bibtex)
-        org-ref-pdf-directory my/dropbox-papers-dir
-        org-ref-notes-function 'org-ref-notes-function-many-files
-        org-ref-cite-completion-function 'org-ref-ivy-cite))
-
-(use-package org-noter
-  :ensure t
-  :commands (org-noter)
-  :after org
-  :init
-  (setq org-noter-always-create-frame nil)
-  (setq my/org-roam-noter-heading-name "Interleaved notes")
-  (defun my/org-roam-noter ()
-    "Start org-noter for current notes file, creating the headline if not found."
-    (interactive)
-    (let ((pos (save-excursion
-                 (goto-char 0)
-                 (re-search-forward
-                  (format "^* %s" my/org-roam-noter-heading-name)
-                  nil
-                  t))))
-      (if pos
-          (progn
-            (goto-char pos)
-            (beginning-of-line 1)
-            (org-noter))
-        (let* ((ref (cdr (org-roam--extract-ref)))
-               (pdf-name (format "%s.pdf" ref))
-               (pdf-path (expand-file-name pdf-name my/dropbox-papers-dir))
-               (pdf-path-rel (file-relative-name pdf-path))
-               (props
-                (string-join `(":PROPERTIES:"
-                               ,(format ":NOTER_DOCUMENT: %s" pdf-path-rel)
-                               ":END:") "\n")))
-          (insert (format "* %s" my/org-roam-noter-heading-name))
-          (org-set-tags '("org_noter"))
-          (org-return)
-          (insert props)
-          (org-noter))))))
-#+end_src
-
-* deft
-
-#+begin_src emacs-lisp
-(use-package deft
-  :ensure t
-  :after org-roam
-  :bind (("C-c n d" . deft)
-         ("<f8>" . deft)
-         ("C-x <f8>" . deft-find-file)
-         :map deft-mode-map
-         ("C-c C-g" . my/deft-refresh))
-  :init
-  (setq deft-directory my/org-directory
-        deft-recursive t
-        deft-file-limit 50
-        deft-extensions '("org")
-        deft-ignore-file-regexp "index.org\\|theindex.org"
-        deft-use-filter-string-for-filename t
-        deft-file-naming-rules '((noslash . "_")
-                                 (nospace . "_")
-                                 (case-fn . downcase)))
-  (defun my/deft-refresh ()
-    (interactive)
-    (my/org-roam-refresh)
-    (deft-refresh))
-
-  :config
-  (advice-add
-   'deft-new-file-named
-   :filter-args
-   '(lambda (n) (mapcar 'my/org-roam-filename-from-title n))))
 #+end_src
 
 * modeline
