@@ -5365,6 +5365,16 @@ the minibuffer."
   :config
   (org-roam-setup)
 
+  (setq org-refile-targets '((org-roam-list-files . (:maxlevel . 1))))
+
+  ;; display org-roam buffer to the right
+  (add-to-list 'display-buffer-alist
+               '("\\*org-roam\\*"
+                 (display-buffer-in-direction)
+                 (direction . right)
+                 (window-width . 0.33)
+                 (window-height . fit-window-to-buffer)))
+
   ;; (add-to-list 'org-refile-targets '((org-roam-list-files :maxlevel . 1)))
   ;; (add-hook 'org-roam-mode-hook 'org-indent-mode)
   (with-eval-after-load 'evil
