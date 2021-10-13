@@ -1535,14 +1535,19 @@ CWD is not in a git repo (or the git command is not found)."
          `(markup-title-5-face ((t (:inherit modus-themes-heading-5))))
 
          `(my/elfeed-blue ((t (:foreground ,blue))))
+         `(my/elfeed-blue-alt ((t (:foreground ,blue-faint))))
          `(my/elfeed-cyan ((t (:foreground ,cyan))))
          `(my/elfeed-cyan-alt ((t (:foreground ,fg-special-cold))))
          `(my/elfeed-green ((t (:foreground ,green))))
+         `(my/elfeed-green-alt ((t (:foreground ,green-intense))))
          `(my/elfeed-yellow ((t (:foreground ,yellow))))
+         `(my/elfeed-yellow-alt ((t (:foreground ,yellow-alt-faint))))
          `(my/elfeed-magenta ((t (:foreground ,magenta-alt-other))))
-         `(my/elfeed-magenta-alt ((t (:foreground ,fg-special-calm))))
+         `(my/elfeed-magenta-alt ((t (:foreground ,purple-intense))))
          `(my/elfeed-red ((t (:foreground ,red))))
+         `(my/elfeed-red-alt ((t (:foreground ,red-intense))))
          `(my/elfeed-pink ((t (:foreground ,magenta))))
+         `(my/elfeed-pink-alt ((t (:foreground ,magenta-intense))))
          )
         (custom-theme-set-variables
          'modus-vivendi
@@ -1663,15 +1668,19 @@ CWD is not in a git repo (or the git command is not found)."
          `(markup-title-5-face ((t (:inherit modus-themes-heading-5))))
 
          `(my/elfeed-blue ((t (:foreground ,blue))))
+         `(my/elfeed-blue-alt ((t (:foreground ,blue-faint))))
          `(my/elfeed-cyan ((t (:foreground ,cyan))))
          `(my/elfeed-cyan-alt ((t (:foreground ,fg-special-cold))))
          `(my/elfeed-green ((t (:foreground ,green))))
-         `(my/elfeed-green-alt ((t (:foreground ,green-alt-other))))
+         `(my/elfeed-green-alt ((t (:foreground ,green-intense))))
          `(my/elfeed-yellow ((t (:foreground ,yellow))))
+         `(my/elfeed-yellow-alt ((t (:foreground ,yellow-alt-faint))))
          `(my/elfeed-magenta ((t (:foreground ,magenta-alt-other))))
-         `(my/elfeed-magenta-alt ((t (:foreground ,fg-special-calm))))
+         `(my/elfeed-magenta-alt ((t (:foreground ,purple-intense))))
          `(my/elfeed-red ((t (:foreground ,red))))
+         `(my/elfeed-red-alt ((t (:foreground ,red-intense))))
          `(my/elfeed-pink ((t (:foreground ,magenta))))
+         `(my/elfeed-pink-alt ((t (:foreground ,magenta-intense))))
          ))))
 
   (defun my/modus-operandi-emacs-theme ()
@@ -5326,6 +5335,44 @@ the minibuffer."
   (setq org-html-htmlize-output-type 'inline-css))
 #+END_SRC
 
+** kindle highlights to org
+
+#+begin_src emacs-lisp
+(defvar my/kindle-highlight-title-length 60)
+
+(defun my/kindle-highlight-to-org (highlight)
+  (let* ((text (gethash "text" highlight))
+         (wrapped-text (s-word-wrap 80 text))
+         (title (s-truncate my/kindle-highlight-title-length text))
+         (location-info (gethash "location" highlight))
+         (location (gethash "value" location-info))
+         (url (gethash "url" location-info)))
+    (format "* %s ([[%s][kindle url]])\n\n%s\n\n" title url wrapped-text)))
+
+(defun my/kindle-highlights-to-org (highlights)
+  (let ((all-text ""))
+    (dolist (highlight highlights)
+      (let ((text (my/kindle-highlight-to-org highlight)))
+        (setq all-text (format "%s%s" all-text text))))
+    all-text))
+
+(defun my/kindle-highlights-json-to-org (path)
+  (let* ((json-object-type 'hash-table)
+         (json-array-type 'list)
+         (json-key-type 'string)
+         (json (json-read-file path))
+         (highlights (gethash "highlights" json))
+         (authors (gethash "authors" json))
+         (title (gethash "title" json))
+         (highlights-org (my/kindle-highlights-to-org highlights)))
+    (my/kindle-highlights-to-org highlights)))
+
+(defun my/kindle-highlights-json-to-org-insert (path)
+  (interactive (list (read-file-name "Highlights json: " (expand-file-name "~/Downloads"))))
+  (setq foo path)
+  (insert (my/kindle-highlights-json-to-org path)))
+#+end_src
+
 * org-roam
 
 #+BEGIN_SRC emacs-lisp
@@ -5425,9 +5472,15 @@ the minibuffer."
          (filename (org-roam-node-file node)))
     (if (null filename)
         (let* ((create-fn (my/org-roam-filename-from-node node))
-               (key (format "#+TITLE: %s\n\n" title)))
+               (key (format "#+title: %s\n\n" title)))
           (setq filename (expand-file-name create-fn org-roam-directory))
-          (write-region key nil filename)))
+          (with-current-buffer (find-file-noselect filename)
+            (goto-char 0)
+            (insert key)
+            (goto-char 0)
+            (org-id-get-create)
+            (save-buffer))
+          ))
     filename))
 
 (defun my/org-roam-title-from-abspath (abspath)
