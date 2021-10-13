@@ -1422,6 +1422,7 @@ CWD is not in a git repo (or the git command is not found)."
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
 
   (defun my/modus-vivendi-theme ()
+    (setq modus-themes-headings '((t . (overline))))
     (load-theme 'modus-vivendi t)
     (modus-themes-with-colors
       (let* ((bg "#0d0d0d")
@@ -1578,6 +1579,7 @@ CWD is not in a git repo (or the git command is not found)."
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
 
   (defun my/modus-operandi-theme ()
+    (setq modus-themes-headings '((t . (overline background))))
     (load-theme 'modus-operandi t)
     (modus-themes-with-colors
       (let ((cyan-more-subtle-bg (color-lighten-name cyan-subtle-bg 5))
@@ -5198,7 +5200,8 @@ the minibuffer."
         org-default-notes-file (expand-file-name "notes.org" org-directory)
         org-log-done 'time
         org-confirm-babel-evaluate nil
-        org-clock-into-drawer nil
+        org-clock-into-drawer t
+        org-log-into-drawer t
         org-keep-stored-link-after-insertion t
         org-edit-src-content-indentation 0
         org-src-window-setup 'other-window
@@ -5208,9 +5211,14 @@ the minibuffer."
         org-image-actual-width nil
         org-startup-with-inline-images t
         org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
-        org-todo-keywords '((sequence "TODO" "IN PROGRESS" "|" "DONE"))
-        org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DarkOrange3" :weight bold)))
-        org-link-frame-setup '((file . find-file)))
+        org-todo-keywords '((sequence "TODO(!)" "IN PROGRESS(!)" "|" "DONE(!)" "CANCELLED(!)"))
+        org-todo-keyword-faces '(("IN PROGRESS" . (:foreground "DodgerBlue" :weight bold))
+                                 ("CANCELLED" . (:foreground "red3")))
+        org-fontify-done-headline nil
+        org-treat-insert-todo-heading-as-state-change t
+        org-link-frame-setup '((file . find-file))
+        org-habit-graph-column 50
+        org-habit-show-habits-only-for-today nil)
 
   ;; templates
   (setq org-structure-template-alist
