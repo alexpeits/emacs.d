@@ -1408,7 +1408,7 @@ CWD is not in a git repo (or the git command is not found)."
   :defer t
   :init
   (setq modus-themes-org-blocks 'greyscale
-        modus-themes-headings '((t . t))
+        modus-themes-headings '((t . (background overline)))
         modus-themes-scale-headings t
         modus-themes-scale-5 1.3
         modus-themes-scale-4 1.2
@@ -1422,7 +1422,6 @@ CWD is not in a git repo (or the git command is not found)."
   (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
 
   (defun my/modus-vivendi-theme ()
-    (setq modus-themes-headings '((t . (overline))))
     (load-theme 'modus-vivendi t)
     (modus-themes-with-colors
       (let* ((bg "#0d0d0d")
@@ -1563,7 +1562,7 @@ CWD is not in a git repo (or the git command is not found)."
   :defer t
   :init
   (setq modus-themes-org-blocks 'greyscale
-        modus-themes-headings '((t . t))
+        modus-themes-headings '((t . (background overline)))
         modus-themes-scale-headings t
         modus-themes-region 'bg-only
         modus-themes-fringes 'subtle
@@ -1579,7 +1578,6 @@ CWD is not in a git repo (or the git command is not found)."
   (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
 
   (defun my/modus-operandi-theme ()
-    (setq modus-themes-headings '((t . (overline background))))
     (load-theme 'modus-operandi t)
     (modus-themes-with-colors
       (let ((cyan-more-subtle-bg (color-lighten-name cyan-subtle-bg 5))
