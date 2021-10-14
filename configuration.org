@@ -5133,6 +5133,7 @@ the minibuffer."
 - Date: %U\n \
 - Elfeed tags: %(my/elfeed-org-capture-get-tags my/elfeed-org-capture-entry)
 ")
+(defvar my/org-fleeting-notes-filename (expand-file-name "fleeting_notes.org" my/org-directory))
 
 (use-package org-capture
   :after org
@@ -5145,6 +5146,11 @@ the minibuffer."
            entry
            (file+headline my/org-roam-node-find-filename "Captured (web)")
            "* %^{Title|%:description}\n- Source: %a\n- Date: %U\n\n%i")
+          ("n"
+           "Note"
+           entry
+           (file my/org-fleeting-notes-filename)
+           "* %U %i%?")
           ("e"
            "Elfeed"
            entry
@@ -5158,6 +5164,10 @@ the minibuffer."
            :immediate-finish t)
           ))
   (add-hook 'org-capture-prepare-finalize-hook #'delete-trailing-whitespace))
+
+(defun my/org-capture-note ()
+  (interactive)
+  (org-capture nil "n"))
 #+END_SRC
 
 ** org configuration
@@ -5395,6 +5405,7 @@ the minibuffer."
          ("C-c n l" . org-roam-buffer-toggle)
          ("C-c n s" . my/org-roam-rg)
          ("C-c n S" . my/rg-org-directory)
+         ("C-c n c" . my/org-capture-note)
          :map org-mode-map
          ("C-c n i" . org-roam-node-insert))
   :init
