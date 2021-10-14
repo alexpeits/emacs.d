@@ -3625,7 +3625,8 @@ the current file."
 (use-package bazel
   :ensure t
   :mode (("\\.bazel\\'" . bazel-mode)
-         ("\\.bzl\\'" . bazel-mode))
+         ("\\.bzl\\'" . bazel-mode)
+         ("\\.star\\'" . bazel-starlark-mode))
   :config
   (defun my/bazel-format-and-save ()
     (interactive)
