@@ -20,10 +20,25 @@
                          path-separator
                          (getenv "PATH"))))
 
+(defvar is-mac (eq system-type 'darwin)
+  "Whether emacs is running in mac or not")
+
+(defvar is-windows (eq window-system 'w32)
+  "Whether emacs is running in windows or not")
+
+(defvar is-gui (display-graphic-p)
+  "Whether emacs is running in gui mode or not")
+
+(defvar is-term (not is-gui)
+  "Whether emacs is running in a terminal or not")
+
 (defvar my/vendored-pkgs-dir (expand-file-name "vendored" user-emacs-directory)
   "Directory containing vendored packages as submodules")
 
-(defvar my/dropbox-dir (expand-file-name "~/Dropbox/")
+(defvar my/dropbox-dir
+  (if is-windows
+      "c:/Users/alexp/Dropbox"
+    (expand-file-name "~/Dropbox"))
   "Private directory synced with dropbox")
 
 (defvar my/dropbox-emacs-dir (expand-file-name "emacs/" my/dropbox-dir)
@@ -31,15 +46,6 @@
 
 (defvar my/org-directory (expand-file-name "org/" my/dropbox-emacs-dir)
   "Org directory")
-
-(defvar is-mac (eq system-type 'darwin)
-  "Whether emacs is running in mac or not")
-
-(defvar is-gui (display-graphic-p)
-  "Whether emacs is running in gui mode or not")
-
-(defvar is-term (not is-gui)
-  "Whether emacs is running in a terminal or not")
 
 (defvar my/xmonad-emacs-sp-name "emacs-sp")
 #+END_SRC

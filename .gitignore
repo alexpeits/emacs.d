@@ -26,3 +26,4 @@ network-security.data
 .dap-breakpoints
 package-quickstart.el
 straight/
+server/

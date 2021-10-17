@@ -2,3 +2,4 @@
 !.gitignore
 !init-seabeast.el
 !init-mac.el
+!init-asdf.el
