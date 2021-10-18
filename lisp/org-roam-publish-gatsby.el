@@ -17,6 +17,7 @@
 (setq org-roam-v2-ack t)
 
 (require 'org)
+(require 'ol)
 (require 'ox-publish)
 (require 'org-roam)
 (require 'ox-md)
@@ -34,6 +35,25 @@
 
 ;; (setq org-roam-directory og/org-directory)
 ;; (setq make-backup-files nil)
+
+(defun org-kindle-follow (path _)
+  "TODO"
+  nil)
+
+(defun org-kindle-export (link description format _)
+  (let ((desc (or description link)))
+      (pcase format
+        (`md (format "[%s](%s)" desc link))
+        (t (user-error "org-kindle-export: Not implemented yet")))))
+
+(defun org-kindle-store ()
+  "TODO"
+  nil)
+
+(org-link-set-parameters "kindle"
+                         :follow #'org-kindle-follow
+                         :export #'org-kindle-export
+                         :store #'org-kindle-store)
 
 (org-export-define-derived-backend 'gatsby 'md
   :filters-alist '((:filter-parse-tree . og/separate-elements))
@@ -345,7 +365,7 @@ string."
   "Creat YAML frontmatter content."
   (let ((convert-to-yaml-list
          (lambda (arg)
-           (mapconcat #'(lambda (text)(concat "\n- " text))
+           (mapconcat #'(lambda (text) (concat "\n- " text))
                       (split-string arg) " "))))
     (let* ((title (og/get-option info :title))
            (excerpt (og/get-option info :subtitle))
@@ -365,7 +385,7 @@ string."
             ))
       (concat
        "---\n"
-       (when (og/nonempty title) (format "title: %s\n" title))
+       (when (og/nonempty title) (format "title: '%s'\n" title))
        (when (og/nonempty excerpt) (format "excerpt: %s\n" excerpt))
        (when (og/nonempty date) (format "date: %s\n" date))
        (when tags "tags:\n")
