@@ -110,7 +110,7 @@ This function will render images appropriately"
     (if (string= type "id")
         (let* ((org-id-prop (org-id-find path))
                (relpath (if (null org-id-prop)
-                            (error "Cannot find entry with ID '%s'" orgid)
+                            (error "Cannot find entry with ID '%s' (%s)" org-id-prop raw-link)
                           (car org-id-prop)))
                (abspath (expand-file-name relpath))
                (filename (file-relative-name abspath og/org-directory)))
@@ -492,6 +492,7 @@ Return output file name."
         (org-roam-directory og/org-directory)
         (make-backup-files nil)
         (create-lockfiles nil))
+    (org-roam-update-org-id-locations)
     (org-publish "gatsby-all" :force)))
 
 (defun og/publish-all (force)
@@ -500,6 +501,7 @@ Return output file name."
         (org-roam-directory og/org-directory)
         (make-backup-files nil)
         (create-lockfiles nil))
+    (org-roam-update-org-id-locations)
     (org-publish "gatsby-all" force)))
 
 (defun og/publish-current-file (force)
@@ -508,6 +510,7 @@ Return output file name."
         (org-roam-directory og/org-directory)
         (make-backup-files nil)
         (create-lockfiles nil))
+    (org-roam-update-org-id-locations)
     (org-publish "gatsby-all" force)))
 
 (provide 'org-roam-publish-gatsby)
