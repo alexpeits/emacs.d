@@ -26,14 +26,14 @@
 (defvar is-windows (eq window-system 'w32)
   "Whether emacs is running in windows or not")
 
+(defvar is-linux (not (or is-mac is-windows))
+  "Whether emacs is running in linux or not")
+
 (defvar is-gui (display-graphic-p)
   "Whether emacs is running in gui mode or not")
 
 (defvar is-term (not is-gui)
   "Whether emacs is running in a terminal or not")
-
-(defvar my/vendored-pkgs-dir (expand-file-name "vendored" user-emacs-directory)
-  "Directory containing vendored packages as submodules")
 
 (defvar my/dropbox-dir
   (if is-windows
@@ -60,10 +60,6 @@
              ;; '("MELPA Stable" . "https://stable.melpa.org/packages/")
              )
 
-(when (< emacs-major-version 24)
-  ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
-
 ;; Some sort of emacs bug workaround
 (when (= emacs-major-version 26)
   (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
@@ -81,8 +77,7 @@
   (package-install 'use-package))
 
 ;; Can be used to debug slow packages
-;; (setq use-package-minimum-reported-time 0.05
-;;       use-package-verbose t)
+;; (setq use-package-minimum-reported-time 0.05 use-package-verbose t)
 
 (eval-when-compile
   (require 'use-package))
@@ -534,14 +529,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   :diminish)
 #+END_SRC
 
-** auth
-
-#+BEGIN_SRC emacs-lisp
-(use-package auth-source
-  :config
-  (add-to-list 'auth-sources (expand-file-name "authinfo.gpg" my/dropbox-dir)))
-#+END_SRC
-
 ** advise raise-frame with wmctrl (linux only)
 
 #+begin_src emacs-lisp
@@ -557,7 +544,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
            (frame-parameter fr 'outer-window-id))
         ('error nil)))))
 
-(unless is-mac
+(when is-linux
   (advice-add 'raise-frame :after 'my/wmctrl-raise-frame))
 #+end_src
 
@@ -5548,7 +5535,7 @@ the minibuffer."
   :init
   (setq org-download-method 'directory
         org-download-screenshot-method "scrot -s %s"
-        org-download-image-dir (expand-file-name "~/Pictures/org-download")
+        org-download-image-dir (expand-file-name "org-download" my/dropbox-emacs-dir)
         org-download-heading-lvl nil)
   :config
   (defalias 'scrot 'org-download-screenshot))
