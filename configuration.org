@@ -5829,7 +5829,12 @@ the minibuffer."
 
 (run-hooks 'my/after-init-hook)
 
-(server-mode +1)
+(use-package server
+  :commands (server-mode server-running-p)
+  :hook (after-init . my/maybe-server-mode)
+  :init
+  (defun my/maybe-server-mode ()
+    (unless (server-running-p) (server-mode +1))))
 #+END_SRC
 
 ** custom
