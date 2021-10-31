@@ -50,6 +50,28 @@
 (defvar my/xmonad-emacs-sp-name "emacs-sp")
 #+END_SRC
 
+* Custom
+
+#+BEGIN_SRC emacs-lisp
+(dolist (val '((eval . (setq flycheck-disabled-checkers
+                             (append flycheck-disabled-checkers
+                                     (quote
+                                      (intero)))))
+               (haskell-hoogle-command . "stack hoogle -- --count=100")
+               (projectile-tags-command . "npm run etags")
+               (projectile-tags-command . "fast-tags -e -R .")
+               (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
+               (psc-ide-output-directory . "build/")
+               (my/use-intero . t)
+               (my/haskell-align-stuff . nil)
+               (my/haskell-use-ormolu . t)
+               (my/purescript-align-stuff . nil)
+               (org-download-image-dir . "~/Dropbox/emacs/org/static/images/")
+               (my/ruby-do-insert-frozen-string-literal . nil)
+               ))
+  (add-to-list 'safe-local-variable-values val))
+#+END_SRC
+
 * Package management
 ** package.el
 
@@ -5837,26 +5859,3 @@ the minibuffer."
     (unless (server-running-p) (server-mode +1))))
 #+END_SRC
 
-** custom
-
-#+BEGIN_SRC emacs-lisp
-(dolist (val '((eval . (setq flycheck-disabled-checkers
-                             (append flycheck-disabled-checkers
-                                     (quote
-                                      (intero)))))
-               (haskell-hoogle-command . "stack hoogle -- --count=100")
-               (projectile-tags-command . "npm run etags")
-               (projectile-tags-command . "fast-tags -e -R .")
-               (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
-               (psc-ide-output-directory . "build/")
-               (my/use-intero . t)
-               (my/haskell-align-stuff . nil)
-               (my/haskell-use-ormolu . t)
-               (my/purescript-align-stuff . nil)
-               (org-download-image-dir . "~/Dropbox/emacs/org/static/images/")
-               (my/ruby-do-insert-frozen-string-literal . nil)
-               ))
-  (add-to-list 'safe-local-variable-values val))
-#+END_SRC
-
-# end of configuration.org
