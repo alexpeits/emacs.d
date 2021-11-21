@@ -3416,6 +3416,11 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
     (prettier-js)
     (save-buffer)))
 
+(use-package add-node-modules-path
+  :ensure t
+  :commands (add-node-modules-path)
+  :hook ((js-mode rjsx-mode typescript-mode web-tsx-mode) . add-node-modules-path))
+
 (use-package web-mode
   :ensure t
   :mode (("\\.html\\'" . web-html-mode)
