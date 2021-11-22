@@ -3184,6 +3184,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
+
+(add-to-list 'auto-mode-alist '("\\.flake8\\'" . conf-toml-mode))
 #+END_SRC
 
 ** rust
@@ -3828,6 +3830,17 @@ the current file."
   ;;  'markdown-mode
   ;;  '(("^::::*.*" 0 'my/markdown-pandoc-native-div-face)))
 
+  (defface my/markdown-shortcut-reference-link-face
+    '((t (:inherit markdown-link-face)))
+    "Face for highlighting shortcut reference links ([link]) in pandoc markdown."
+    :group 'my/faces)
+
+  (font-lock-add-keywords
+   'markdown-mode
+   '(("\\(\\[\\)\\([^]@][^]]*?\\)\\(\\]\\)[^[]" . ((1 markdown-markup-properties)
+                                           (2 '(face my/markdown-shortcut-reference-link-face))
+                                           (3 markdown-markup-properties)))))
+
   (defface my/markdown-citation-face
     '((t (:inherit font-lock-function-name-face)))
     "Face for highlighting citations ([@citation]) in pandoc markdown."
@@ -3913,7 +3926,7 @@ the current file."
              ((:eval (my/mode-line-input-method))
               (:eval (my/mode-line-region-info))
               mode-line-position
-              (:eval (my/mode-line-defun))
+              " "
               ))
             ))))
   (defun my/writeroom (variable-pitch)
