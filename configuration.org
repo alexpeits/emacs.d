@@ -2254,6 +2254,7 @@ In =vc-git-log-edit-mode=:
           bibtex-mode
           coq-mode easycrypt-mode phox-mode
           mermaid-mode
+          feature-mode
           conf-unix-mode
           conf-colon-mode
           conf-space-mode
@@ -3746,6 +3747,24 @@ the current file."
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env.*\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env\\.example\\'" . conf-mode))
+#+end_src
+
+** cucumber
+
+#+begin_src emacs-lisp
+(use-package feature-mode
+  :ensure t
+  :mode (("\\.feature\\'" . feature-mode))
+  :init
+  ;; add keywords
+  (dolist
+    (kw '("Example"
+          "Rule"
+          "Scenario Template"
+          ))
+  (font-lock-add-keywords
+   'feature-mode
+   `((,(format "^[ 	]*\\(%s\\):?" kw) . ((1 '(face font-lock-keyword-face))))))))
 #+end_src
 
 ** graphviz
