@@ -5269,7 +5269,7 @@ the minibuffer."
         org-adapt-indentation nil
         org-ellipsis "…"
         org-tags-column -80
-        org-image-actual-width nil
+        org-image-actual-width (list 500)
         org-startup-with-inline-images t
         org-blank-before-new-entry '((heading . nil) (plain-list-item . nil))
         org-todo-keywords '((sequence "TODO(!)" "IN PROGRESS(!)" "|" "DONE(!)" "CANCELLED(!)"))
@@ -5290,6 +5290,7 @@ the minibuffer."
           ("ht" . "export html")
           ("la" . "export latex")
           ("b" . "src bash")
+          ("sh" . "src shell")
           ("t" . "src terraform")
           ("y" . "src yaml")
           ("el" . "src emacs-lisp")
