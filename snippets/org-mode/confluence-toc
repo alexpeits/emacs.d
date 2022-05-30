@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: confluence ToC
+# key: cftoc
+# --
+{toc:maxLevel=2|include=.*}
+
+$0

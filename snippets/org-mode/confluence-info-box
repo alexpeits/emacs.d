@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: confluence info box
+# key: cfbox
+# --
+{${1:$$(yas-completing-read "Macro? " '("info" "tip" "note" "warning"))}}
+$0
+{$1}
