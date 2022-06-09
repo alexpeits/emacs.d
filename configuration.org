@@ -392,7 +392,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   :hook (after-init . global-undo-tree-mode)
   :init
   (setq undo-tree-visualizer-relative-timestamps t
-        undo-tree-visualizer-diff t))
+        undo-tree-visualizer-diff t
+        undo-tree-history-directory-alist `(("." . ,(expand-file-name "undo" user-emacs-directory)))))
 
 ;; use column width 80 to fill (e.g. with `M-q'/`gq')
 (setq-default fill-column 80)
