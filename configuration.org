@@ -849,7 +849,7 @@ Paredit keys:
 # http://ergoemacs.org/emacs/xmsi-math-symbols-input.html
 # https://github.com/roelvandijk/base-unicode-symbols/blob/master/Prelude/Unicode.hs
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package xah-math-input
   :ensure t
   :hook (after-init . global-xah-math-input-mode)
@@ -4741,6 +4741,8 @@ buffer, close it."
   :bind (("M-N" . persp-next)
          ("M-P" . persp-prev)
          ("M-J" . persp-switch))
+  :init
+  (setq persp-mode-prefix-key (kbd "C-x x"))
   :config
   ;; accidentally changing perspectives while in the minibuffer messes things up
   ;; using `ignore' (rather than nil) makes these keys do nothing
