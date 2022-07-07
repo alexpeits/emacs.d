@@ -5298,6 +5298,7 @@ the minibuffer."
           ("la" . "export latex")
           ("b" . "src bash")
           ("sh" . "src shell")
+          ("sr" . "src ruby")
           ("t" . "src terraform")
           ("y" . "src yaml")
           ("el" . "src emacs-lisp")
