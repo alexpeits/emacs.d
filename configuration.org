@@ -310,13 +310,16 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     "Dockerfile"
     ;; bazel
     "BUILD.bazel"
+    ;; drone
+    ".drone.star"
+    ".drone.yml"
+    ;; make
+    "Makefile"
+    ;; git repo
+    "README.md"
     ;; writing
     ".markdownlint.yml"
     ".vale.ini"
-    ;; generic
-    "Makefile"
-    ;; github repo
-    "README.md"
     ;; emacs
     ".dir-locals.el"
     ))
