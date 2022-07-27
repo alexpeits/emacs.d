@@ -82,10 +82,6 @@
              ;; '("MELPA Stable" . "https://stable.melpa.org/packages/")
              )
 
-;; Some sort of emacs bug workaround
-(when (= emacs-major-version 26)
-  (setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3"))
-
 (unless (bound-and-true-p package--initialized)
   (package-initialize)
   (setq package-enable-at-startup nil))
@@ -108,8 +104,6 @@
 ** load required packages
 
 #+BEGIN_SRC emacs-lisp
-(if (< emacs-major-version 27)
-    (require 'cl))
 (use-package diminish :ensure t)
 
 ;; commonly used packages
@@ -351,13 +345,11 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 
 (defun my/line-numbers (relative)
   (interactive "P")
-  (if (< emacs-major-version 26)
-      (call-interactively 'linum-mode)
-    (if display-line-numbers
-        (setq display-line-numbers nil)
-      (if relative
-          (setq display-line-numbers 'relative)
-        (setq display-line-numbers t)))))
+  (if display-line-numbers
+      (setq display-line-numbers nil)
+    (if relative
+        (setq display-line-numbers 'relative)
+      (setq display-line-numbers t))))
 
 (defun my/shell-command-on-buffer-or-region (cmd)
   (save-excursion
@@ -507,6 +499,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   :bind (("C-=" . er/expand-region)
          ("C-M-=" . er/contract-region)))
 
+;; M-x is zap-to-char
 (use-package misc
   :bind ("M-Z" . zap-up-to-char))
 
@@ -847,25 +840,6 @@ Paredit keys:
          (t 'browse-url-default-browser))))
 #+end_src
 
-** math input
-
-# http://ergoemacs.org/emacs/xmsi-math-symbols-input.html
-# https://github.com/roelvandijk/base-unicode-symbols/blob/master/Prelude/Unicode.hs
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package xah-math-input
-  :ensure t
-  :hook (after-init . global-xah-math-input-mode)
-  :commands (xah-math-input-change-to-symbol)
-  :diminish xah-math-input-mode
-  :config
-  (define-key xah-math-input-keymap (kbd "S-SPC" ) nil)
-  (define-key xah-math-input-keymap (kbd "S-C-SPC") 'xah-math-input-change-to-symbol)
-
-  (puthash "::" "∷" xah-math-input-abrvs)
-  (puthash "bottom" "⊥" xah-math-input-abrvs))
-#+END_SRC
-
 ** prettify symbols
 
 #+begin_src emacs-lisp
@@ -973,27 +947,7 @@ Paredit keys:
 
 #+begin_src emacs-lisp
 (use-package align
-  :bind ("C-c \\" . align-regexp)
-  :config
-  (add-hook 'align-load-hook
-            (lambda ()
-              (add-to-list 'align-rules-list
-                           '(haskell-types
-                             (regexp . "\\(\\s-+\\)\\(::\\|∷\\)\\s-+")
-                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
-              (add-to-list 'align-rules-list
-                           '(haskell-assignment
-                             (regexp . "\\(\\s-+\\)=\\s-+")
-                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
-              (add-to-list 'align-rules-list
-                           '(haskell-arrows
-                             (regexp . "\\(\\s-+\\)\\(->\\|→\\)\\s-+")
-                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))
-              (add-to-list 'align-rules-list
-                           '(haskell-left-arrows
-                             (regexp . "\\(\\s-+\\)\\(<-\\|←\\)\\s-+")
-                             (modes quote (haskell-mode purescript-mode literate-haskell-mode))))))
-  )
+  :bind ("C-c \\" . align-regexp))
 #+end_src
 
 ** temp project roots
@@ -1117,9 +1071,7 @@ Paredit keys:
   ;; eshell bug prevents using eshell-mode-map so this is run in the mode hook
   (defun my/eshell-define-keys ()
     (let ((map eshell-mode-map))
-      (define-key map (kbd "C-l") #'my/eshell-clear)
-      (define-key map (kbd "C-c o") #'my/eshell-put-last-output-to-buffer)
-      (define-key map (kbd "C-c h") #'my/eshell-narrow-output-highlight-regexp)))
+      (define-key map (kbd "C-l") #'my/eshell-clear)))
 
   (defalias 'eshell/x 'eshell/exit)
   (defalias 'eshell/e 'find-file)
@@ -1201,27 +1153,6 @@ directory."
                                'font-lock-keyword-face))))
       (eshell :new))
     (rename-buffer (generate-new-buffer-name bufname))))
-
-;; stolen from prot
-(defun my/eshell-narrow-output-highlight-regexp ()
-  "Narrow to last command output and highlight REGEXP."
-  (interactive)
-  (let ((regexp (read-regexp "Regexp to highlight" "nothing")))
-    (narrow-to-region (eshell-beginning-of-output)
-                      (eshell-end-of-output))
-    (goto-char (point-min))
-    (highlight-regexp regexp 'hi-black-b)))
-
-;; stolen from prot
-(defun my/eshell-put-last-output-to-buffer ()
-  "Produce a buffer with output of last `eshell' command."
-  (interactive)
-  (let ((eshell-output (kill-region (eshell-beginning-of-output)
-                                    (eshell-end-of-output))))
-    (with-current-buffer (get-buffer-create  "*last-eshell-output*")
-      (erase-buffer)
-      (yank)           ; TODO do it with `insert' and `delete-region'?
-      (switch-to-buffer-other-window (current-buffer)))))
 
 (defun my/eshell-prompt-dir (pwd)
   (interactive)
@@ -1344,10 +1275,6 @@ CWD is not in a git repo (or the git command is not found)."
 (set-window-scroll-bars (minibuffer-window) nil nil)
 (tool-bar-mode -1)
 
-(use-package linum
-  :if (< emacs-major-version 26)
-  :init (setq linum-format 'dynamic))
-
 (use-package hl-line
   ;; :hook (prog-mode . hl-line-mode)
   :commands (hl-line-mode global-hl-line-mode)
@@ -1355,7 +1282,6 @@ CWD is not in a git repo (or the git command is not found)."
   (setq hl-line-sticky-flag nil))
 
 (use-package display-fill-column-indicator
-  :if (>= emacs-major-version 27)
   :commands (display-fill-column-indicator-mode)
   :hook ((python-mode markdown-mode) . display-fill-column-indicator-mode))
 
@@ -1386,8 +1312,7 @@ CWD is not in a git repo (or the git command is not found)."
 ** theme loading
 
 #+BEGIN_SRC emacs-lisp
-(when (>= emacs-major-version 27)
-  (setq custom--inhibit-theme-enable nil))
+(setq custom--inhibit-theme-enable nil)
 
 (defvar my/avail-themes '(deeper-blue adwaita))
 (defvar my/current-theme 0)
@@ -1820,6 +1745,17 @@ TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-dem
      (custom-theme-set-variables
       'zenburn
       `(coq-highlighted-hyps-bg ,zenburn-bg+2)))))
+#+end_src
+
+** solarized-theme
+
+#+begin_src emacs-lisp
+(setq solarized-use-variable-pitch nil
+      solarized-height-minus-1 1.0
+      solarized-height-plus-4 1.2
+      solarized-height-plus-3 1.0
+      solarized-height-plus-2 1.0
+      solarized-height-plus-1 1.0)
 #+end_src
 
 * Fonts
