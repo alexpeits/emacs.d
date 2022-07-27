@@ -1416,6 +1416,10 @@ CWD is not in a git repo (or the git command is not found)."
 #+END_SRC
 
 ** modus themes
+
+TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-demo/
+
+
 *** =modus-vivendi= (dark)
 
 #+begin_src emacs-lisp
