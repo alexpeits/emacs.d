@@ -5708,7 +5708,7 @@ the minibuffer."
   (define-key my/leader-map (kbd key) func)
   (evil-leader/set-key key func))
 
-(dolist (mapping extra-key-mappings)
+(dolist (mapping my/extra-key-mappings)
   (let ((key (car mapping))
         (func (cdr mapping)))
     (my/add-key key func)))
