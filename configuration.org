@@ -1548,7 +1548,6 @@ TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-dem
          `(region ((t (:background ,bg-special-mild))))
          `(hl-line ((t (:background ,(color-darken-name bg-main 5)))))
          `(secondary-selection ((t (:inherit modus-themes-special-mild))))
-         `(fill-column-indicator ((t (:foreground ,bg-tab-bar))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
          `(vterm-color-default ((t (:inherit default))))
 
@@ -5675,6 +5674,7 @@ the minibuffer."
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/after-init-hook nil "Hook called after initialization")
+(defvar my/extra-key-mappings nil "Extra key mappings")
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -5702,6 +5702,18 @@ the minibuffer."
   (load-file host-file))
 #+END_SRC
 
+#+begin_src emacs-lisp
+;; add extra keys
+(defun my/add-key (key func)
+  (define-key my/leader-map (kbd key) func)
+  (evil-leader/set-key key func))
+
+(dolist (mapping extra-key-mappings)
+  (let ((key (car mapping))
+        (func (cdr mapping)))
+    (my/add-key key func)))
+#+end_src
+
 ** Performance
 
 #+BEGIN_SRC emacs-lisp
@@ -5722,10 +5734,6 @@ the minibuffer."
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
-(defun my/add-key (key func)
-  (define-key my/leader-map (kbd key) func)
-  (evil-leader/set-key key func))
-
 ;; make underlines show under mode-line (cleaner)
 (setq x-underline-at-descent-line t)
 
