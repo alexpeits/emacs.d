@@ -20,16 +20,13 @@
         ))
 (setq my/current-theme 0)
 
-(add-hook 'prog-mode-hook 'hl-line-mode)
-
 ;; auto mode stuff
 (add-to-list 'auto-mode-alist '("ya?ml\\.sample\\'" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\..*\\.sample\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env.sample\\'" . conf-mode))
 
-;; keys
-;; (setq mac-command-modifier 'meta)
-(global-set-key [?\A-\C-i] nil)
+(setq og/publish-base-directory
+  (expand-file-name "~/code/notes-serve/"))
 
 (setq magit-repository-directories
       '(
@@ -45,8 +42,8 @@
     (my/projectile-add-to-project-name-overrides proj name)))
 
 ;; https://github.com/hlissner/doom-emacs/issues/2156#issuecomment-567207604
-(when (display-graphic-p)
-  (add-hook 'after-init-hook
-            '(lambda ()
-               (set-frame-parameter (selected-frame) 'menu-bar-lines 1)
-               )))
+;; (when (display-graphic-p)
+;;   (add-hook 'after-init-hook
+;;             '(lambda ()
+;;                (set-frame-parameter (selected-frame) 'menu-bar-lines 1)
+;;                )))

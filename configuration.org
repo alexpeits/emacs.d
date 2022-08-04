@@ -1277,7 +1277,7 @@ CWD is not in a git repo (or the git command is not found)."
 (tool-bar-mode -1)
 
 (use-package hl-line
-  ;; :hook (prog-mode . hl-line-mode)
+  :hook (prog-mode . hl-line-mode)
   :commands (hl-line-mode global-hl-line-mode)
   :init
   (setq hl-line-sticky-flag nil))
@@ -5659,6 +5659,14 @@ the minibuffer."
 #+END_SRC
 
 * Setup
+** macos specific
+
+#+begin_src emacs-lisp
+(when is-mac
+  (setq mac-command-modifier 'meta)
+  (global-set-key [?\A-\C-i] nil))
+#+end_src
+
 ** Per-workstation setup
 
 #+BEGIN_SRC emacs-lisp

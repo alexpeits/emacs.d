@@ -21,7 +21,6 @@
 (setq my/current-theme 0)
 
 ;; hooks
-(add-hook 'prog-mode-hook 'hl-line-mode)
 (add-hook 'LaTeX-mode-hook 'hl-line-mode)
 
 ;; TODO
