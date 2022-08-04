@@ -5722,6 +5722,10 @@ the minibuffer."
 ** Global setup
 
 #+BEGIN_SRC emacs-lisp
+(defun my/add-key (key func)
+  (define-key my/leader-map (kbd key) func)
+  (evil-leader/set-key key func))
+
 ;; make underlines show under mode-line (cleaner)
 (setq x-underline-at-descent-line t)
 
