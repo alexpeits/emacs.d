@@ -4587,7 +4587,7 @@ buffer, close it."
                   (message (persp-name (persp-curr)))))
   ;; emacs window title
   (setq frame-title-format
-        '("" invocation-name "@" system-name
+        '("" invocation-name
           (:eval (when persp-mode (format "[%s]" (persp-name (persp-curr))))))))
 
 (use-package persp-projectile
