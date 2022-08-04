@@ -3558,7 +3558,8 @@ the current file."
   :ensure t
   :mode (("\\.ya?ml\\'" . yaml-mode)
          ("\\.ya?ml.tmpl\\'" . yaml-mode)
-         ("\\.ya?ml.template\\'" . yaml-mode))
+         ("\\.ya?ml.template\\'" . yaml-mode)
+         ("\\.ya?ml.sample\\'" .yaml-mode))
   :config
   (my/add-hooks
    '(yaml-mode-hook)
@@ -3579,6 +3580,8 @@ the current file."
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env.*\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("env\\.example\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\..*\\.sample\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env.sample\\'" . conf-mode))
 #+end_src
 
 ** cucumber
