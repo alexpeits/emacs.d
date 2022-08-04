@@ -69,6 +69,7 @@
                (org-download-image-dir . "~/Dropbox/emacs/org/static/images/")
                (my/ruby-do-insert-frozen-string-literal . nil)
                (flycheck-markdown-mdl-rules . nil)
+               (flycheck-markdown-mdl-style . nil)
                ))
   (add-to-list 'safe-local-variable-values val))
 #+END_SRC
