@@ -3559,7 +3559,7 @@ the current file."
   :mode (("\\.ya?ml\\'" . yaml-mode)
          ("\\.ya?ml.tmpl\\'" . yaml-mode)
          ("\\.ya?ml.template\\'" . yaml-mode)
-         ("\\.ya?ml.sample\\'" .yaml-mode))
+         ("\\.ya?ml.sample\\'" . yaml-mode))
   :config
   (my/add-hooks
    '(yaml-mode-hook)
