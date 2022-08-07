@@ -686,7 +686,8 @@ Paredit keys:
         sp-cancel-autoskip-on-backward-movement nil
         sp-highlight-pair-overlay nil
         sp-highlight-wrap-overlay nil
-        sp-highlight-wrap-tag-overlay nil)
+        sp-highlight-wrap-tag-overlay nil
+        sp-python-insert-colon-in-function-definitions nil)
 
   (my/add-hooks '(emacs-lisp-mode-hook clojure-mode-hook)
                 (smartparens-strict-mode)
@@ -3016,6 +3017,11 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   (defun my/mode-line-extra-python-mode ()
     (let ((venv pyvenv-virtual-env-name))
       (format "(%s) " (or venv "-")))))
+
+(use-package pyenv-mode
+  :ensure t
+  :after python
+  :commands (pyenv-mode pyenv-mode-set pyenv-mode-unset))
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
