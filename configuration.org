@@ -3920,7 +3920,7 @@ the current file."
               ("k" . previous-line)
               ("l" . forward-char))
   :init
-  (setq elfeed-db-directory (expand-file-name "elfeed" my/dropbox-emacs-dir)
+  (setq elfeed-db-directory (expand-file-name "~/.elfeed")
         elfeed-use-curl t
         elfeed-curl-max-connections 10
         elfeed-search-clipboard-type 'CLIPBOARD
@@ -5683,7 +5683,12 @@ the minibuffer."
 
 #+BEGIN_SRC emacs-lisp
 (defvar my/after-init-hook nil "Hook called after initialization")
+
+;; add extra keys
 (defvar my/extra-key-mappings nil "Extra key mappings")
+(defun my/add-key (key func)
+  (define-key my/leader-map (kbd key) func)
+  (evil-leader/set-key key func))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -5712,11 +5717,6 @@ the minibuffer."
 #+END_SRC
 
 #+begin_src emacs-lisp
-;; add extra keys
-(defun my/add-key (key func)
-  (define-key my/leader-map (kbd key) func)
-  (evil-leader/set-key key func))
-
 (dolist (mapping my/extra-key-mappings)
   (let ((key (car mapping))
         (func (cdr mapping)))
