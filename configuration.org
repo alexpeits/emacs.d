@@ -3023,6 +3023,21 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :after python
   :commands (pyenv-mode pyenv-mode-set pyenv-mode-unset))
 
+(defvar my/python-poetry-env-path
+  (if is-mac
+      (expand-file-name "~/Library/Caches/pypoetry/virtualenvs")))
+
+(defun my/python-poetry-venv-activate ()
+  (interactive)
+  (let* ((all-envs (directory-files my/python-poetry-env-path
+                                    nil
+                                    directory-files-no-dot-files-regexp))
+         (env (completing-read "env: "
+                               all-envs))
+         (env-path (expand-file-name env my/python-poetry-env-path)))
+    (message (format "Activating venv in %s" env-path))
+    (pyvenv-activate env-path)))
+
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
 
