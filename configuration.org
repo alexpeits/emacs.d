@@ -3300,6 +3300,9 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
    '(web-tsx-mode)
    (subword-mode 1)))
 
+(with-eval-after-load 'mhtml-mode
+  (define-key mhtml-mode-map (kbd "M-o") nil))
+
 (use-package css-mode
   :mode (("\\.css\\'" . css-mode))
   :init
