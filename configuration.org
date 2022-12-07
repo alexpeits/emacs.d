@@ -5492,7 +5492,7 @@ the minibuffer."
 
 ** Regular modeline
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 (setq-default mode-line-format
               '("%e"
                 mode-line-front-space
@@ -5522,7 +5522,7 @@ the minibuffer."
 
 ** Experimental new modeline
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle no
 ;; for the position hud
 (use-package powerline
   :ensure t
@@ -5687,6 +5687,25 @@ the minibuffer."
     (my/current-window-active-p))
   )
 #+END_SRC
+
+** doom-modeline
+
+#+begin_src emacs-lisp
+(use-package doom-modeline
+  :ensure t
+  :if is-gui
+  :hook (after-init . doom-modeline-mode)
+  :init
+  (setq doom-modeline-height 21
+        doom-modeline-hud t
+        doom-modeline-bar-width 8)
+
+  (defun my/doom-modeline--font-height ()
+    "Calculate the actual char height of the mode-line."
+    (+ (frame-char-height) 2))
+
+  (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height))
+#+end_src
 
 * Setup
 ** macos specific
