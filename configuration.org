@@ -5704,7 +5704,9 @@ the minibuffer."
     "Calculate the actual char height of the mode-line."
     (+ (frame-char-height) 2))
 
-  (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height))
+  (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height)
+  :config
+  (add-hook 'my/after-set-font-hook 'doom-modeline-refresh-font-width-cache))
 #+end_src
 
 * Setup
