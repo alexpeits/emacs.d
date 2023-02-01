@@ -1553,6 +1553,7 @@ TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-dem
          `(hl-line ((t (:background ,(color-darken-name bg-main 5)))))
          `(secondary-selection ((t (:inherit modus-themes-special-mild))))
          `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
+         `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
          `(vterm-color-default ((t (:inherit default))))
 
          `(mode-line-inactive ((t ,@(modus-themes--mode-line-attrs
@@ -3133,6 +3134,9 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 
   (dolist (kw my/rspec-keywords)
     (my/highlight-keyword-in-mode 'ruby-rspec-mode kw nil 'my/rspec-keyword-face))
+
+  (custom-set-faces '(enh-ruby-op-face ((t nil))))
+  (custom-set-faces '(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face)))))
   )
 
 (use-package robe
