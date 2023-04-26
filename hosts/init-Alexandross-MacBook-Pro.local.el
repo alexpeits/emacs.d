@@ -9,14 +9,10 @@
 
 (setq my/font-variant "small")
 
-(setq my/modus-vivendi-theme-alt-colors t
-      my/modus-vivendi-theme-haskell-distinct-constructor nil
-      my/modus-operandi-theme-haskell-distinct-constructor nil)
-
 (setq my/avail-themes
       '(
-        my/modus-vivendi-theme
-        my/modus-operandi-theme
+        modus-vivendi
+        modus-operandi
         ))
 (setq my/current-theme 0)
 

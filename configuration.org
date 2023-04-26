@@ -1351,11 +1351,6 @@ CWD is not in a git repo (or the git command is not found)."
 
 ** modus themes
 
-TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-demo/
-
-
-*** =modus-vivendi= (dark)
-
 #+begin_src emacs-lisp
 (use-package modus-themes
   :ensure t
@@ -1364,164 +1359,6 @@ TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-dem
   (setq modus-themes-org-blocks 'greyscale
         modus-themes-headings '((t . (background overline)))
         modus-themes-scale-headings t
-        modus-themes-scale-5 1.3
-        modus-themes-scale-4 1.2
-        modus-themes-scale-3 1.0
-        modus-themes-scale-2 1.0
-        modus-themes-scale-1 1.0
-        modus-themes-subtle-line-numbers nil
-        modus-themes-mode-line '(accented))
-
-  (defvar my/modus-vivendi-theme-alt-colors nil)
-  (defvar my/modus-vivendi-theme-haskell-distinct-constructor nil)
-
-  (defun my/modus-vivendi-theme ()
-    (load-theme 'modus-vivendi t)
-    (modus-themes-with-colors
-      (let* ((bg "#0d0d0d")
-             (fg "#e7e7e7")
-             (hl-line (color-darken-name bg-active 4))
-             (pink-subtle "#e8b7e8")
-             (code-block-bg "#0d1c20")
-             (type
-              (if my/modus-vivendi-theme-alt-colors
-                  cyan-refine-fg
-                cyan-alt-other))
-             (haskell-constructor
-              (if my/modus-vivendi-theme-haskell-distinct-constructor
-                  `(:foreground ,(if my/modus-vivendi-theme-alt-colors cyan-alt cyan-refine-fg))
-                `(:inherit haskell-type-face))))
-        (custom-theme-set-faces
-         'modus-vivendi
-         `(modus-themes-completion-selected ((t (:background ,(color-lighten-name bg 15) :weight bold))))
-
-         `(default ((t (:background ,bg :foreground ,fg))))
-         `(hl-line ((t (:background ,hl-line))))
-         `(region ((t (:background ,cyan-subtle-bg))))
-         `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
-         `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
-         `(term ((t (:inherit default))))
-         `(vterm-color-default ((t (:inherit default))))
-
-         `(mode-line-inactive ((t ,@(modus-themes--mode-line-attrs
-                                     (color-darken-name fg-inactive 12)
-                                     bg-inactive
-                                     (color-darken-name fg-inactive 14)
-                                     bg-dim
-                                     fg-inactive bg-inactive
-                                     (color-lighten-name bg-active 12)
-                                     (color-lighten-name bg-active 8)))))
-         `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
-
-         `(hi-green-b ((t (:inherit modus-themes-refine-green :weight bold))))
-         `(hi-blue-b((t (:inherit modus-themes-refine-blue :weight bold))))
-         `(hi-red-b ((t (:inherit modus-themes-refine-red :weight bold))))
-         `(hi-black-b ((t (:inherit modus-themes-refine-yellow :weight bold))))
-
-         `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
-         `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
-         `(flycheck-fringe-error ((t (:foreground ,fg-lang-error))))
-
-         `(elfeed-search-unread-title-face ((t (:inherit elfeed-search-title-face :weight bold))))
-
-         `(org-block ((t (:inherit fixed-pitch :foreground "#dadada" :background ,code-block-bg :extend t))))
-         `(org-block-begin-line ((t (:foreground "#0798db" :background "#003347" :extend t))))
-         `(org-block-end-line ((t (:inherit org-block-begin-line))))
-         `(org-ellipsis ((t (:underline t))))
-         `(org-roam-link ((t (:inherit modus-themes-subtle-cyan :foreground ,cyan-nuanced-fg :underline t))))
-         `(org-ref-cite-face ((t (:foreground ,green :underline t))))
-         `(org-hide ((t :foreground ,bg)))
-
-         `(font-lock-type-face ((t (:foreground ,type))))
-         `(font-lock-preprocessor-face ((t (:foreground ,red-alt))))
-         `(font-lock-builtin-face ((t (:foreground ,(color-darken-name fg-special-mild 3)))))
-         ;; `(font-lock-function-name-face ((t (:foreground ,magenta-alt-other))))
-         ;; `(font-lock-keyword-face ((t (:foreground ,magenta))))
-
-         `(highlight-numbers-number ((t (:inherit font-lock-string-face))))
-
-         `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
-         `(haskell-constructor-face ((t ,haskell-constructor)))
-
-         `(coq-solve-tactics-face ((t (:foreground ,red))))
-         `(coq-cheat-face ((t (:inherit hi-red-b))))
-         `(coq-button-face ((t (:inherit hi-green-b))))
-         `(coq-button-face-pressed ((t (:inherit hi-green-b :background "grey43"))))
-
-         `(proof-tactics-name-face ((t (:foreground ,blue-alt-other))))
-         `(proof-error-face ((t (:inherit hi-red-b))))
-         `(proof-locked-face ((t (:background "#173333"))))
-         `(proof-queue-face ((t (:background ,(color-darken-name red-subtle-bg 10)))))
-         `(proof-warning-face ((t (:background ,(color-darken-name yellow-subtle-bg 5)))))
-         `(proof-declaration-name-face ((t (:inherit font-lock-function-name-face :weight bold))))
-
-         `(js2-object-property ((t (:foreground ,cyan-nuanced-fg))))
-         `(rjsx-tag-bracket-face ((t (:foreground ,cyan-nuanced-fg))))
-
-         `(terraform--resource-type-face ((t (:foreground ,green-alt-other))))
-         `(terraform--resource-name-face ((t (:foreground ,red-alt-other-faint))))
-
-         `(markdown-header-delimiter-face ((t (:foreground ,cyan :weight bold))))
-         `(markdown-list-face ((t (:foreground ,cyan))))
-         `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
-         `(markdown-code-face ((t (:inherit fixed-pitch :background ,code-block-bg :extend t))))
-         `(markdown-footnote-text-face ((t (:inherit shadow))))
-         `(markdown-math-face ((t (:inherit fixed-pitch :foreground ,magenta-alt-other))))
-
-         `(rst-block ((t (:foreground ,cyan))))
-         `(rst-definition ((t (:foreground ,magenta))))
-         `(rst-level-1 ((t (:inherit modus-themes-heading-1))))
-         `(rst-level-2 ((t (:inherit modus-themes-heading-2))))
-         `(rst-level-3 ((t (:inherit modus-themes-heading-3))))
-         `(rst-level-4 ((t (:inherit modus-themes-heading-4))))
-         `(rst-level-5 ((t (:inherit modus-themes-heading-5))))
-         `(rst-level-6 ((t (:inherit modus-themes-heading-6))))
-         `(rst-literal ((t (:inherit fixed-pitch :foreground ,fg-special-mild))))
-         `(rst-reference ((t (:inherit link))))
-         `(rst-transition ((t (:foreground ,red))))
-
-         `(markup-reference-face ((t (:inherit link))))
-         `(markup-code-face ((t (:inherit fixed-pitch :foreground ,fg-special-mild))))
-         `(markup-secondary-text-face ((t (:foreground ,blue-refine-fg))))
-         `(markup-title-0-face ((t (:inherit modus-themes-heading-3 :height 1.6))))
-         `(markup-title-1-face ((t (:inherit modus-themes-heading-1))))
-         `(markup-title-2-face ((t (:inherit modus-themes-heading-2))))
-         `(markup-title-3-face ((t (:inherit modus-themes-heading-3))))
-         `(markup-title-4-face ((t (:inherit modus-themes-heading-4))))
-         `(markup-title-5-face ((t (:inherit modus-themes-heading-5))))
-
-         `(my/elfeed-blue ((t (:foreground ,blue))))
-         `(my/elfeed-blue-alt ((t (:foreground ,blue-faint))))
-         `(my/elfeed-cyan ((t (:foreground ,cyan))))
-         `(my/elfeed-cyan-alt ((t (:foreground ,fg-special-cold))))
-         `(my/elfeed-green ((t (:foreground ,green))))
-         `(my/elfeed-green-alt ((t (:foreground ,green-intense))))
-         `(my/elfeed-yellow ((t (:foreground ,yellow))))
-         `(my/elfeed-yellow-alt ((t (:foreground ,yellow-alt-faint))))
-         `(my/elfeed-magenta ((t (:foreground ,magenta-alt-other))))
-         `(my/elfeed-magenta-alt ((t (:foreground ,purple-intense))))
-         `(my/elfeed-red ((t (:foreground ,red))))
-         `(my/elfeed-red-alt ((t (:foreground ,red-intense))))
-         `(my/elfeed-pink ((t (:foreground ,magenta))))
-         `(my/elfeed-pink-alt ((t (:foreground ,magenta-intense))))
-         )
-        (custom-theme-set-variables
-         'modus-vivendi
-         `(coq-highlighted-hyps-bg ,green-subtle-bg))))))
-#+end_src
-
-*** =modus-operandi= (light)
-
-#+begin_src emacs-lisp
-(use-package modus-themes
-  :ensure t
-  :defer t
-  :init
-  (setq modus-themes-org-blocks 'greyscale
-        modus-themes-headings '((t . (background overline)))
-        modus-themes-scale-headings t
-        modus-themes-region '(bg-only)
-        modus-themes-fringes 'subtle
         modus-themes-intense-hl-line t
         modus-themes-scale-5 1.3
         modus-themes-scale-4 1.2
@@ -1530,138 +1367,14 @@ TODO: https://protesilaos.com/codelog/2022-07-26-modus-themes-color-override-dem
         modus-themes-scale-1 1.0
         modus-themes-subtle-line-numbers nil
         modus-themes-mode-line '(accented))
+  (setq modus-themes-common-palette-overrides
+        '((bg-mode-line-active bg-cyan-subtle)
+          (fg-mode-line-active fg-main)
+          (border-mode-line-active slate)
 
-  (defvar my/modus-operandi-theme-haskell-distinct-constructor nil)
-
-  (defun my/modus-operandi-theme ()
-    (load-theme 'modus-operandi t)
-    (modus-themes-with-colors
-      (let ((cyan-more-subtle-bg (color-lighten-name cyan-subtle-bg 5))
-            (cyan-more-intense (color-darken-name cyan-intense 5))
-            (cyan-light (color-darken-name cyan-intense-bg 13))
-            (haskell-constructor
-             (if my/modus-operandi-theme-haskell-distinct-constructor
-                 'font-lock-variable-name-face
-               'haskell-type-face))
-            (haskell-operator
-             (if my/modus-operandi-theme-haskell-distinct-constructor
-                 'font-lock-constant-face
-               'font-lock-variable-name-face)))
-        (custom-theme-set-faces
-         'modus-operandi
-         `(region ((t (:background ,bg-special-mild))))
-         `(hl-line ((t (:background ,(color-darken-name bg-main 5)))))
-         `(secondary-selection ((t (:inherit modus-themes-special-mild))))
-         `(fringe ((t (:background ,(color-lighten-name bg-inactive 3) :foreground ,fg-inactive))))
-         `(fill-column-indicator ((t (:foreground ,fg-window-divider-inner))))
-         `(vterm-color-default ((t (:inherit default))))
-
-         `(mode-line-inactive ((t ,@(modus-themes--mode-line-attrs
-                                     (color-lighten-name fg-inactive 15)
-                                     bg-inactive
-                                     (color-darken-name fg-inactive 15)
-                                     bg-dim
-                                     fg-inactive bg-inactive
-                                     (color-lighten-name bg-active 10)
-                                     (color-lighten-name bg-active 6)))))
-         `(projectile-tab-bar-modeline-active-face ((t (:foreground ,blue-active :weight bold))))
-
-         `(hi-green-b ((t (:inherit modus-themes-refine-green :weight bold))))
-         `(hi-blue-b ((t (:inherit modus-themes-refine-blue :weight bold))))
-         `(hi-red-b ((t (:inherit modus-themes-refine-red :weight bold))))
-         `(hi-black-b ((t (:inherit modus-themes-refine-yellow :weight bold))))
-
-         `(flycheck-fringe-info ((t (:foreground ,fg-lang-note))))
-         `(flycheck-fringe-warning ((t (:foreground ,fg-lang-warning))))
-         `(flycheck-fringe-error ((t (:foreground ,fg-lang-error))))
-
-         `(elfeed-search-unread-title-face ((t (:inherit elfeed-search-title-face :weight bold))))
-
-         `(org-ellipsis ((t (:underline t))))
-         `(org-roam-link ((t (:background ,cyan-more-subtle-bg :foreground ,cyan-more-intense :underline t))))
-         `(org-hide ((t :foreground ,bg-main)))
-
-         `(haskell-pragma-face ((t (:inherit font-lock-variable-name-face))))
-         `(haskell-constructor-face ((t (:inherit ,haskell-constructor))))
-         `(haskell-operator-face ((t (:inherit ,haskell-operator))))
-
-         `(coq-cheat-face ((t (:inherit hi-red-b))))
-
-         `(js2-object-property ((t (:foreground ,cyan-nuanced-fg))))
-         `(rjsx-tag-bracket-face ((t (:foreground ,cyan-nuanced-fg))))
-
-         `(terraform--resource-type-face ((t (:foreground ,green-intense))))
-         `(terraform--resource-name-face ((t (:foreground ,red-intense))))
-
-         `(markdown-header-delimiter-face ((t (:foreground ,cyan-light :weight bold))))
-         `(markdown-list-face ((t (:foreground ,cyan-light))))
-         `(markdown-pre-face ((t (:inherit markdown-code-face :foreground ,cyan))))
-         `(markdown-language-keyword-face ((t (:foreground ,green-alt-other))))
-         `(markdown-footnote-text-face ((t (:inherit shadow))))
-         `(markdown-math-face ((t (:inherit fixed-pitch :foreground ,magenta-alt-other))))
-
-         `(rst-block ((t (:foreground ,green))))
-         `(rst-definition ((t (:foreground ,magenta))))
-         `(rst-level-1 ((t (:weight bold))))
-         `(rst-level-1 ((t (:inherit modus-themes-heading-1))))
-         `(rst-level-2 ((t (:inherit modus-themes-heading-2))))
-         `(rst-level-3 ((t (:inherit modus-themes-heading-3))))
-         `(rst-level-4 ((t (:inherit modus-themes-heading-4))))
-         `(rst-level-5 ((t (:inherit modus-themes-heading-5))))
-         `(rst-level-6 ((t (:inherit modus-themes-heading-6))))
-         `(rst-literal ((t (:inherit fixed-pitch :foreground ,cyan))))
-         `(rst-reference ((t (:inherit link))))
-         `(rst-transition ((t (:foreground ,red))))
-
-         `(markup-reference-face ((t (:inherit link))))
-         `(markup-code-face ((t (:inherit fixed-pitch :foreground ,fg-special-mild))))
-         `(markup-secondary-text-face ((t (:foreground ,green-refine-fg))))
-         `(markup-title-0-face ((t (:inherit modus-themes-heading-3 :height 1.6))))
-         `(markup-title-1-face ((t (:inherit modus-themes-heading-1))))
-         `(markup-title-2-face ((t (:inherit modus-themes-heading-2))))
-         `(markup-title-3-face ((t (:inherit modus-themes-heading-3))))
-         `(markup-title-4-face ((t (:inherit modus-themes-heading-4))))
-         `(markup-title-5-face ((t (:inherit modus-themes-heading-5))))
-
-         `(my/elfeed-blue ((t (:foreground ,blue))))
-         `(my/elfeed-blue-alt ((t (:foreground ,blue-faint))))
-         `(my/elfeed-cyan ((t (:foreground ,cyan))))
-         `(my/elfeed-cyan-alt ((t (:foreground ,fg-special-cold))))
-         `(my/elfeed-green ((t (:foreground ,green))))
-         `(my/elfeed-green-alt ((t (:foreground ,green-intense))))
-         `(my/elfeed-yellow ((t (:foreground ,yellow))))
-         `(my/elfeed-yellow-alt ((t (:foreground ,yellow-alt-faint))))
-         `(my/elfeed-magenta ((t (:foreground ,magenta-alt-other))))
-         `(my/elfeed-magenta-alt ((t (:foreground ,purple-intense))))
-         `(my/elfeed-red ((t (:foreground ,red))))
-         `(my/elfeed-red-alt ((t (:foreground ,red-intense))))
-         `(my/elfeed-pink ((t (:foreground ,magenta))))
-         `(my/elfeed-pink-alt ((t (:foreground ,magenta-intense))))
-         ))))
-
-  (defun my/modus-operandi-emacs-theme ()
-    "Modus operandi theme that looks like the default emacs theme"
-    (my/modus-operandi-theme)
-    (modus-themes-with-colors
-      (custom-theme-set-faces
-       'modus-operandi
-       `(font-lock-comment-face ((t (:foreground ,cyan-intense :slant italic))))
-       `(font-lock-comment-delimiter-face ((t (:inherit font-lock-comment-face))))
-       `(font-lock-string-face ((t (:foreground ,red-faint))))
-       `(font-lock-doc-face ((t (:foreground ,red-faint))))
-       `(font-lock-variable-name-face ((t (:foreground ,orange-intense))))
-       `(font-lock-constant-face ((t (:foreground ,cyan))))
-       `(font-lock-builtin-face ((t (:foreground ,cyan-alt))))
-       `(font-lock-keyword-face ((t (:foreground ,magenta-alt))))
-       `(font-lock-function-name-face ((t (:foreground ,blue-intense))))
-       `(font-lock-type-face ((t (:foreground ,green-intense))))
-
-       `(highlight-numbers-number ((t (:inherit font-lock-constant-face))))
-
-       `(haskell-type-face ((t (:inherit font-lock-type-face))))
-       `(haskell-constructor-face ((t (:inherit font-lock-type-face))))
-       `(haskell-operator-face ((t (:inherit font-lock-variable-name-face))))
-       )))
+          (fg-region nil)
+          (bg-region bg-cyan-subtle)
+          ))
   )
 #+end_src
 
@@ -1953,8 +1666,8 @@ In =vc-git-log-edit-mode=:
 ** git modes
 
 #+begin_src emacs-lisp
-(add-to-list 'auto-mode-alist
-             (cons "/\\.gitignore\\'" 'conf-unix-mode))
+(add-to-list 'auto-mode-alist '("/\\.gitignore\\'"  . conf-unix-mode))
+(add-to-list 'auto-mode-alist '("CODEOWNERS\\'"  . conf-unix-mode))
 #+end_src
 
 ** ediff
@@ -3007,6 +2720,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
                        elpy-module-company
                        elpy-module-eldoc
                        elpy-module-pyvenv))
+  (setq eldoc-idle-delay 1)
   (setq python-shell-interpreter "ipython"
         python-shell-interpreter-args "-i --simple-prompt"))
 
