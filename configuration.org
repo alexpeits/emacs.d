@@ -4289,34 +4289,6 @@ buffer, close it."
         projectile-mode-line-function
         '(lambda () (format " P[%s]" (or (projectile-project-name) "-")))))
 
-;; tab-bar-mode is not actually needed for tabs to be enabled
-(use-package tab-bar
-  :init
-  (setq tab-bar-show nil))
-
-;; in <user emacs directory>/lisp
-(use-package projectile-tab-bar
-  :disabled
-  :after projectile
-  :bind (("M-N" . projectile-tab-bar-switch-to-next-tab)
-         ("M-P" . projectile-tab-bar-switch-to-prev-tab)
-         ("C-x x c" . projectile-tab-bar-close-tab)
-         ("C-x x r" . projectile-tab-bar-rename-tab)
-         ("C-x x s" . projectile-tab-bar-switch-or-create-tab)
-         :map projectile-command-map
-         ("p" . projectile-tab-bar-switch-project))
-  :init
-  (require 'projectile-tab-bar)
-  (projectile-tab-bar-rename-tab "main")
-  :config
-  (add-hook 'minibuffer-setup-hook
-            '(lambda ()
-               (dolist (k '("M-N" "M-P" "M-J"))
-                 (local-set-key (kbd k) 'ignore))))
-  (setq frame-title-format
-        '("" invocation-name "@" system-name
-          (:eval (format "[%s]" (projectile-tab-bar-current-tab))))))
-
 (use-package perspective
   :ensure t
   :hook (after-init . persp-mode)
