@@ -3889,18 +3889,6 @@ the current file."
               ("<backtab>" . outline-hide-sublevels)))
 #+END_SRC
 
-* other major modes
-** lilypond
-
-#+begin_src emacs-lisp
-;; on NixOS this is available when lilypond is installed
-;; TODO: make it work outside NixOs
-(use-package lilypond-mode
-  :mode ("\\.ly\\'" . LilyPond-mode)
-  :init
-  (defalias 'lilypond-mode 'LilyPond-mode))
-#+end_src
-
 * searching
 ** isearch
 
@@ -4802,7 +4790,9 @@ the minibuffer."
           ("y" . "src yaml")
           ("el" . "src emacs-lisp")
           ("h" . "src haskell")
-          ("p" . "src python")))
+          ("p" . "src python")
+          ("py" . "src python")
+          ))
 
   (setq org-tempo-keywords-alist
         '(("I" . "INDEX")
