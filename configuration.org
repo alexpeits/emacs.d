@@ -2678,7 +2678,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
    '(python-mode-hook)
    (setq-default flycheck-disabled-checkers
                  (append flycheck-disabled-checkers
-                         '(python-pycompile))))
+                         '(python-pycompile python-mypy)))
+   (setq fill-column 100))
   (defun my/python-format-and-save ()
     (interactive)
     (blacken-buffer)
@@ -2691,9 +2692,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :if (executable-find "black")
   :after python
   :commands (blacken-mode blacken-buffer)
-  :diminish
-  :init
-  (setq blacken-line-length 79))
+  :diminish)
 
 (use-package py-isort
   :ensure t
@@ -2724,7 +2723,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :init
   (setq elpy-modules '(elpy-module-sane-defaults
                        elpy-module-company
-                       elpy-module-eldoc
+                       ;; elpy-module-eldoc
                        elpy-module-pyvenv))
   (setq eldoc-idle-delay 1)
   (setq python-shell-interpreter "ipython"
@@ -2743,6 +2742,13 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :ensure t
   :after python
   :commands (pyenv-mode pyenv-mode-set pyenv-mode-unset))
+
+(use-package poetry
+  :ensure t
+  :after python
+  :commands (poetry poetry-venv-workon)
+  :config
+  (my/define-major-mode-key 'python-mode "v" 'poetry-venv-workon))
 
 (defvar my/python-poetry-env-path
   (if is-mac
