@@ -203,9 +203,10 @@ modeline)."
   (save-buffer))
 
 (defvar my/select-a-major-mode-last-selected nil)
-(defun my/select-a-major-mode ()
+(defun my/select-a-major-mode (&optional default)
   "Interactively select a major mode and return it as a string."
   (let* ((def (or
+               default
                my/select-a-major-mode-last-selected
                (symbol-name initial-major-mode)))
          (choice (completing-read "major mode: "
@@ -218,7 +219,7 @@ modeline)."
   "Create a new scratch buffer and select major mode to use.
 With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
   (interactive "P")
-  (let* ((mmode (my/select-a-major-mode))
+  (let* ((mmode (my/select-a-major-mode "markdown-mode"))
          (buf (generate-new-buffer (concat "*scratch" "-" mmode "*")))
          (switch-func (if other-window 'switch-to-buffer-other-window 'switch-to-buffer)))
     (funcall switch-func buf)
