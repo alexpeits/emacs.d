@@ -3389,7 +3389,9 @@ the current file."
   :commands (markdown-mode gfm-mode)
   :bind (:map markdown-mode-map
               ("M-a" . beginning-of-defun)
-              ("M-e" . end-of-defun))
+              ("M-e" . end-of-defun)
+              :map markdown-mode-command-map
+              ("r" . ivy-bibtex))
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)
@@ -4998,7 +5000,6 @@ the minibuffer."
   (defun my/maybe-server-mode ()
     (unless (server-running-p) (server-mode +1))))
 #+END_SRC
-
 
 ** Custom
 
