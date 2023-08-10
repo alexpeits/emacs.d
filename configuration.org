@@ -274,6 +274,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     ;; python
     "requirements.txt"
     "pyproject.toml"
+    "setup.cfg"
     ;; ruby
     "Gemfile"
     ;; js
@@ -290,6 +291,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
     "Makefile"
     ;; git repo
     "README.md"
+    ".pre-commit-config.yaml"
     ;; writing
     ".markdownlint.yml"
     ".vale.ini"
@@ -1705,36 +1707,6 @@ In =vc-git-log-edit-mode=:
     (call-interactively 'global-git-gutter+-mode)))
 #+END_SRC
 
-** Helpers
-
-#+BEGIN_SRC emacs-lisp
-(defun my/git-blame-current-line ()
-  "Runs `git blame` on the current line and
-   adds the commit id to the kill ring"
-  (interactive)
-  (let* ((line-number (save-excursion
-                        (goto-char (point-at-bol))
-                        (+ 1 (count-lines 1 (point)))))
-         (line-arg (format "%d,%d" line-number line-number))
-         (commit-buf (generate-new-buffer "*git-blame-line-commit*")))
-    (call-process "git" nil commit-buf nil
-                  "blame" (buffer-file-name) "-L" line-arg)
-    (let* ((commit-id (with-current-buffer commit-buf
-                        (buffer-substring 1 9)))
-           (log-buf (generate-new-buffer "*git-blame-line-log*")))
-      (kill-new commit-id)
-      (call-process "git" nil log-buf nil
-                    "log" "-1" "--pretty=%h   %an   %s" commit-id)
-      (with-current-buffer log-buf
-        (message "Line %d: %s"
-                 line-number
-                 (replace-regexp-in-string "\n\\'" "" (buffer-string))))
-      (kill-buffer log-buf))
-    (kill-buffer commit-buf)))
-
-(global-set-key (kbd "M-L") #'my/git-blame-current-line)
-#+END_SRC
-
 * keybindings
 ** keybind to command mapping
 
@@ -1762,7 +1734,6 @@ In =vc-git-log-edit-mode=:
         ("fs" my/create-scratch-buffer-with-mode)
 
         ;; git/vc
-        ("gb" my/git-blame-current-line)
 
         ("h"  help)
 
