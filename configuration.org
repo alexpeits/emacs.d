@@ -2619,18 +2619,21 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :init
   (setq python-shell-prompt-detect-failure-warning nil)
   :config
+  (setq-default flycheck-disabled-checkers
+                (append flycheck-disabled-checkers
+                        '(python-pycompile python-pylint python-pyright python-mypy)))
+  (flycheck-add-next-checker 'python-flake8 '(warning . python-mypy))
   (my/add-hooks
    '(python-mode-hook)
-   (setq-default flycheck-disabled-checkers
-                 (append flycheck-disabled-checkers
-                         '(python-pycompile python-mypy)))
-   (setq fill-column 100))
+   (setq fill-column 100)
+   (my/python-enable-checkers))
   (defun my/python-format-and-save ()
     (interactive)
     (blacken-buffer)
     (py-isort-before-save)
     (save-buffer))
-  (my/define-major-mode-key 'python-mode "s" 'my/python-format-and-save))
+  (my/define-major-mode-key 'python-mode "s" 'my/python-format-and-save)
+  (my/define-major-mode-key 'python-mode "v" 'my/python-poetry-venv-activate-current))
 
 (use-package blacken
   :ensure t
@@ -2707,8 +2710,25 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
          (env (completing-read "env: "
                                all-envs))
          (env-path (expand-file-name env my/python-poetry-env-path)))
-    (message (format "Activating venv in %s" env-path))
-    (pyvenv-activate env-path)))
+    (my/python-activate-venv (env-path))))
+
+(defun my/python-poetry-venv-activate-current ()
+  (interactive)
+  (let ((venv (shell-command-to-string "printf %s \"$(poetry env info --path --no-ansi)\"")))
+    (my/python-activate-venv venv)))
+
+(defun my/python-activate-venv (venv)
+  (message (format "Activating venv in %s" venv))
+  (pyvenv-activate venv)
+  (my/python-enable-checkers))
+
+(defun my/python-enable-checkers ()
+  (dolist (conf '(("mypy" . python-mypy)
+                  ("flake8" . python-flake8)))
+    (let ((exe (car conf))
+          (checker (cdr conf)))
+      (if (executable-find exe)
+          (flycheck--toggle-checker checker t)))))
 
 (defun eshell/workon (arg) (pyvenv-workon arg))
 (defun eshell/deactivate () (pyvenv-deactivate))
@@ -3440,6 +3460,7 @@ the current file."
   (my/add-hooks
    '(markdown-mode-hook)
    (setq evil-shift-width 2)
+   (setq fill-column 100)
    (auto-fill-mode 1)
    (whitespace-mode +1)
    (push '(?# . ("<!-- " . " -->")) evil-surround-pairs-alist))
@@ -4186,6 +4207,8 @@ buffer, close it."
                         '(javascript-jshint haskell-ghc haskell-stack-ghc yaml-ruby proselint)))
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
+  (flycheck-add-mode 'python-mypy 'python-mode)
+  (flycheck-add-mode 'python-flake8 'python-mode)
 
   ;; modeline stuff
   (defface modeline-flycheck-error
@@ -4748,6 +4771,7 @@ the minibuffer."
           ("sh" . "src shell")
           ("sr" . "src ruby")
           ("t" . "src terraform")
+          ("j" . "src json")
           ("y" . "src yaml")
           ("el" . "src emacs-lisp")
           ("h" . "src haskell")
