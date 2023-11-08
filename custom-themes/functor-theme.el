@@ -32,10 +32,10 @@
 
 (defvar functor-theme-less-colors nil)
 
-(let* ((bg "#181818")
+(let* ((bg "#060606")
        (fg "#dadada")
 
-       (grey-8 "#202020")
+       (grey-8 "#151515")
        (grey-7 "#242424")
        (grey-6 "#272727")
        (grey-5 "#333333")
@@ -157,8 +157,8 @@
    `(cursor  ((t (:background ,cyan-pale))))
    `(region  ((t (:background ,blue-1))))
 
-   `(fringe              ((t (:foreground ,grey+2 :background ,grey-6))))
-   `(vertical-border     ((t (:foreground ,grey))))
+   `(fringe              ((t (:foreground ,grey+2 :background ,grey-8))))
+   `(vertical-border     ((t (:foreground ,grey-1))))
    `(link                ((t (:foreground ,blue-bright :underline t))))
    `(italic              ((t (:foreground ,cyan-pale+1 :slant italic))))
    `(hl-line             ((t (:background ,grey-6))))
@@ -173,7 +173,7 @@
    `(warning             ((t (:foreground ,yellow :weight bold))))
 
    ;; emacs >= 27
-   `(fill-column-indicator ((t (:foreground ,grey-2))))
+   `(fill-column-indicator ((t (:foreground ,grey-3))))
 
    ;; Line Numbers
    ;; emacs >= 26

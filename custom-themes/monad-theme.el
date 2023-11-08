@@ -34,7 +34,7 @@
 
 (defvar monad-theme-distinct-haskell-constructor nil)
 
-(let* ((bg "#181818")
+(let* ((bg "#060606")
        (fg "#b1cbcb")
 
        (grey-7 "#242424")

@@ -2,6 +2,7 @@
 
 (setq my/fonts
       '(
+        ("vsmall" . (:fixed ("Source Code Pro" . 11) :variable ("Source Serif Pro" . 14)))
         ("small" . (:fixed ("Source Code Pro" . 13) :variable ("Source Serif Pro" . 16)))
         ("medium" . (:fixed ("Source Code Pro" . 15) :variable ("Source Serif Pro" . 18)))
         ("large" . (:fixed ("Source Code Pro" . 18) :variable ("Source Serif Pro" . 22)))
@@ -32,6 +33,7 @@
 ;; projectile overrides
 (dolist (override '(
                     ("~/code/software-foundations" . "sf")
+                    ("~/code/intervals-icu-plan" . "icu")
                     ))
   (let ((proj (expand-file-name (car override)))
         (name (cdr override)))
