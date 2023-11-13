@@ -2125,7 +2125,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
               ("C-c C-q" . my/dired-kill-all-buffers))
   :init
   ;; hide files being edited & flycheck files from dired
-  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_"
+  (setq dired-omit-files "\\`[.]?#\\|\\`.flycheck_\\|__pycache__"
         dired-omit-verbose nil)
   (setq dired-hide-details-hide-symlink-targets nil)
   :config
@@ -4456,7 +4456,8 @@ buffer, close it."
   :diminish
   :init
   (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s"
-        counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s")
+        counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s"
+        counsel-find-file-ignore-regexp "\\`.flycheck_\\|__pycache__")
   :config
   (my/ivy-reset-builders)
   (setq ivy-initial-inputs-alist nil) ;; no ^ initially
