@@ -2704,6 +2704,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 
 (defun my/python-poetry-venv-activate-current ()
   (interactive)
+  (pyvenv-deactivate)
   (let ((venv (shell-command-to-string "printf %s \"$(poetry env info --path --no-ansi)\"")))
     (my/python-activate-venv venv)))
 
