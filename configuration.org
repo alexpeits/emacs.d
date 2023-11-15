@@ -1436,6 +1436,25 @@ CWD is not in a git repo (or the git command is not found)."
       `(coq-highlighted-hyps-bg ,zenburn-bg+2)))))
 #+end_src
 
+** nord theme
+
+#+begin_src emacs-lisp
+(use-package nord-theme
+  :ensure t
+  :defer t
+  :init
+  (defun my/nord-theme ()
+    (load-theme 'nord t)
+    (custom-theme-set-faces
+     'nord
+     `(font-lock-comment-face ((t (:foreground "#72809a"))))
+     `(region ((t (:background "#4C566A"))))
+     `(org-block ((t (:background "#363f4a"))))
+     `(org-block-begin-line ((t (:foreground "#8FBCBB" :background "#434C5E" :extend t))))
+     `(org-block-end-line ((t (:foreground "#8FBCBB" :background "#434C5E" :extend t))))
+     )))
+#+end_src
+
 ** solarized-theme
 
 #+begin_src emacs-lisp
