@@ -1345,6 +1345,8 @@ CWD is not in a git repo (or the git command is not found)."
           (fg-main "#e7e7e7")
           (bg-hl-line "#272727")
           (type cyan-warmer)))
+  (setq modus-operandi-palette-overrides
+        '((bg-hl-line "#eef3f6")))
   (setq modus-operandi-palette-overrides nil))
 #+end_src
 
