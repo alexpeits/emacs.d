@@ -4903,6 +4903,7 @@ the minibuffer."
   :init
   (setq doom-modeline-height 21
         doom-modeline-hud t
+        doom-modeline-icon nil
         doom-modeline-bar-width 8)
 
   (defun my/doom-modeline--font-height ()
