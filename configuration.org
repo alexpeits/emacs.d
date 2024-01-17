@@ -1339,7 +1339,9 @@ CWD is not in a git repo (or the git command is not found)."
           (border-mode-line-active slate)
           (fg-region nil)
           (bg-region bg-cyan-subtle)
+          (fg-heading-1 green-cooler)
           ))
+  (setq modus-themes-headings '((1 . (1.2))))
   (setq modus-vivendi-palette-overrides
         '((bg-main "#090909")
           (fg-main "#e7e7e7")
