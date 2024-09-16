@@ -2667,6 +2667,20 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
     (setq racer-rust-src-path rust-src)))
 #+end_src
 
+** go
+
+#+begin_src emacs-lisp
+(use-package go-mode
+  :ensure t
+  :mode (("\\.go\\'" . go-mode))
+  :hook (go-mode . lsp-deferred)
+  :config
+  (my/add-hooks
+   '(go-mode-hook)
+   (add-hook 'before-save-hook #'gofmt nil t))
+  )
+#+end_src
+
 ** ruby
 
 #+begin_src emacs-lisp

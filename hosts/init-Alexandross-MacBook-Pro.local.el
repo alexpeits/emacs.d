@@ -13,8 +13,8 @@
 (setq my/avail-themes
       '(
         modus-vivendi
-        my/nord-theme
-        ;; modus-operandi
+        ;; my/nord-theme
+        modus-operandi
         ))
 (setq my/current-theme 0)
 
