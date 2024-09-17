@@ -1581,14 +1581,18 @@ In =vc-git-log-edit-mode=:
 (use-package diff-hl
   :ensure t
   :if is-gui
-  :hook ((after-init . global-diff-hl-mode)
-         (dired-mode . diff-hl-dired-mode))
+  :hook ((after-init . global-diff-hl-mode))
   :config
   ;; https://github.com/dgutov/diff-hl#magit
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   (defun my/toggle-git-gutters ()
     (interactive)
     (call-interactively 'global-diff-hl-mode)))
+
+(use-package diff-hl-dired
+  :after diff-hl
+  :if is-gui
+  :hook ((dired-mode . diff-hl-dired-mode)))
 
 (use-package git-gutter+
   :ensure t
