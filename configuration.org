@@ -667,7 +667,8 @@ Paredit keys:
 
   (my/add-hooks '(emacs-lisp-mode-hook clojure-mode-hook)
                 (smartparens-strict-mode)
-                (evil-smartparens-mode))
+                ;; (evil-smartparens-mode)
+                )
   (my/add-hooks '(prog-mode-hook coq-mode-hook comint-mode-hook css-mode-hook)
                 (smartparens-mode))
   :config
@@ -1330,7 +1331,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+begin_src emacs-lisp
 (use-package modus-themes
   :ensure t
-  :defer t
+  ;; :defer t
   :init
   (setq modus-themes-org-blocks 'greyscale)
   (setq modus-themes-common-palette-overrides
@@ -1571,7 +1572,7 @@ In =vc-git-log-edit-mode=:
   :config
   (add-hook
    'git-timemachine-mode-hook
-   '(lambda () (evil-local-mode -1))))
+   #'(lambda () (evil-local-mode -1))))
 #+END_SRC
 
 ** diff-hl & git-gutter+
@@ -3517,8 +3518,8 @@ the current file."
 
 * elfeed
 
-#+BEGIN_SRC emacs-lisp
-(use-package elfeed-web
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package elfeed-wb
   :ensure t
   :commands (elfeed-web-start)
   :after elfeed
@@ -4071,7 +4072,6 @@ buffer, close it."
   (setq company-backends (delete 'company-dabbrev company-backends))
   ;; (setq company-backends (delete 'company-capf company-backends))
   (add-to-list 'company-backends 'company-capf)
-  (add-to-list 'company-backends 'company-elisp)
   (add-to-list 'company-backends 'company-files))
 
 (use-package company-quickhelp
@@ -4611,9 +4611,9 @@ the minibuffer."
 ;; TODO: think of a better way
 (advice-add 'server-return-error
             :override
-            '(lambda (proc err)
-               (message "exiting client")
-               (server-delete-client proc)))
+            #'(lambda (proc err)
+                (message "exiting client")
+                (server-delete-client proc)))
 #+END_SRC
 
 ** org configuration
