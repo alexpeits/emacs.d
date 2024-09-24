@@ -1498,6 +1498,11 @@ In =vc-git-log-edit-mode=:
   (defalias 'magb 'magit-blame-addition)
   (defalias 'gl   'magit-log-buffer-file)
   (defalias 'magl 'magit-log-buffer-file)
+  ;; git-commit
+  (setq git-commit-summary-max-length 50)
+  (setq git-commit-style-convention-checks
+        '(non-empty-second-line
+          overlong-summary-line))
   :config
   (add-hook 'magit-blame-mode-hook
             (lambda ()
@@ -1511,14 +1516,6 @@ In =vc-git-log-edit-mode=:
   :after magit
   :init
   (setq magit-diff-refine-hunk t))
-
-(use-package git-commit
-  :after magit
-  :init
-  (setq git-commit-summary-max-length 50)
-  (setq git-commit-style-convention-checks
-        '(non-empty-second-line
-          overlong-summary-line)))
 
 (use-package magit-repos
   :after magit
@@ -2513,10 +2510,12 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 
 #+BEGIN_SRC emacs-lisp
 (use-package python
-  :mode ("\\.py\\'" . python-mode)
+  :mode (("\\.py\\'" . python-mode)
+         ("\\.pants\\'" . pants-mode))
   :init
   (setq python-shell-prompt-detect-failure-warning nil
         py-outline-minor-mode-p nil)
+  (define-derived-mode pants-mode python-mode "pants")
   :config
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
@@ -2565,6 +2564,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
       (remove-hook 'before-save-hook #'py-isort-before-save :local))))
 
 (use-package elpy
+  :disabled
   :ensure t
   :hook ((python-mode . elpy-enable))
   :diminish
@@ -2580,7 +2580,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 (use-package pyvenv
   :ensure t
   :after python
-  :commands (pyvenv-workon)
+  :commands (pyvenv-workon pyvenv-activate)
   :config
   (defun my/mode-line-extra-python-mode ()
     (let ((venv pyvenv-virtual-env-name))
