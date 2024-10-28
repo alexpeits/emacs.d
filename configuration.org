@@ -425,8 +425,8 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 (setq ad-redefinition-action 'accept)
 
 ;; smooth mouse scrolling
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1)) ;; one line at a time
-      mouse-wheel-progressive-speed t ;; don't accelerate scrolling
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)) ;; one line at a time
+      mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
       mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 
 ;; turn off because it causes delays in some modes (e.g. coq-mode)
@@ -845,17 +845,17 @@ Paredit keys:
 (use-package hi-lock
   :hook (after-init . global-hi-lock-mode)
   :init
-  (setq hi-lock-face-defaults
-        '(
-          "hi-black-b"
-          "hi-red-b"
-          "hi-green-b"
-          "hi-blue-b"
-          "hi-green"
-          "hi-blue"
-          "hi-pink"
-          "hi-yellow"
-          ))
+  ;; (setq hi-lock-face-defaults
+  ;;       '(
+  ;;         "hi-black-b"
+  ;;         "hi-red-b"
+  ;;         "hi-green-b"
+  ;;         "hi-blue-b"
+  ;;         "hi-green"
+  ;;         "hi-blue"
+  ;;         "hi-pink"
+  ;;         "hi-yellow"
+  ;;         ))
   (setq hi-lock-auto-select-face t)
   :config
   (define-key hi-lock-map (kbd "M-H") (lookup-key hi-lock-map (kbd "C-x w")))
@@ -1331,9 +1331,7 @@ CWD is not in a git repo (or the git command is not found)."
 #+begin_src emacs-lisp
 (use-package modus-themes
   :ensure t
-  ;; :defer t
   :init
-  (setq modus-themes-org-blocks 'greyscale)
   (setq modus-themes-common-palette-overrides
         '((bg-mode-line-active bg-cyan-subtle)
           (fg-mode-line-active fg-main)
@@ -1348,6 +1346,11 @@ CWD is not in a git repo (or the git command is not found)."
           (fg-main "#e7e7e7")
           (bg-hl-line "#272727")
           (type cyan-warmer)))
+  (setq modus-vivendi-tinted-palette-overrides
+        '((bg-region bg-added-refine)))
+  (setq modus-vivendi-tritanopia-palette-overrides
+        '((bg-main "#101010")
+          (bg-hl-line "#292929")))
   (setq modus-operandi-palette-overrides
         '((bg-hl-line "#eef3f6")))
   (setq modus-operandi-palette-overrides nil))
@@ -1590,16 +1593,6 @@ In =vc-git-log-edit-mode=:
   :after diff-hl
   :if is-gui
   :hook ((dired-mode . diff-hl-dired-mode)))
-
-(use-package git-gutter+
-  :ensure t
-  :unless is-gui
-  :diminish
-  :hook (after-init . global-git-gutter+-mode)
-  :config
-  (defun my/toggle-git-gutters ()
-    (interactive)
-    (call-interactively 'global-git-gutter+-mode)))
 #+END_SRC
 
 * keybindings
@@ -2516,16 +2509,31 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   (setq python-shell-prompt-detect-failure-warning nil
         py-outline-minor-mode-p nil)
   (define-derived-mode pants-mode python-mode "pants")
+  (setq
+   lsp-pylsp-plugins-black-enabled nil
+   lsp-pylsp-plugins-flake8-enabled nil
+   lsp-pylsp-plugins-flake8-max-line-length 100
+   lsp-pyls-plugins-flake8-max-line-length 100
+   lsp-pylsp-plugins-flake8-ignore '("F821" "W503")
+   lsp-pylsp-plugins-isort-enabled nil
+   lsp-pylsp-plugins-mypy-enabled nil
+   lsp-pylsp-plugins-ruff-enabled nil
+   lsp-ruff-server-command '("ruff" "server" "--preview")
+   lsp-pylsp-plugins-ruff-line-length 100
+   )
   :config
   (setq-default flycheck-disabled-checkers
                 (append flycheck-disabled-checkers
                         '(python-pycompile python-pylint python-pyright python-mypy)))
+  ;; (flycheck-add-next-checker 'python-flake8 '(warning . python-ruff))
   (flycheck-add-next-checker 'python-flake8 '(warning . python-mypy))
   (my/add-hooks
    '(python-mode-hook)
    (setq fill-column 100)
    (setq evil-shift-width 4)
-   (my/python-enable-checkers))
+   (my/python-enable-checkers)
+   ;; (lsp-deferred)
+   )
   (defun my/python-format-and-save ()
     (interactive)
     (blacken-buffer)
@@ -2539,7 +2547,9 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :if (executable-find "black")
   :after python
   :commands (blacken-mode blacken-buffer)
-  :diminish)
+  :diminish
+  :init
+  (setq blacken-line-length 100))
 
 (use-package py-isort
   :ensure t
@@ -2625,7 +2635,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 
 (defun my/python-enable-checkers ()
   (dolist (conf '(("mypy" . python-mypy)
-                  ("flake8" . python-flake8)))
+                  ("flake8" . python-flake8)
+                  ("ruff" . python-ruff)))
     (let ((exe (car conf))
           (checker (cdr conf)))
       (if (executable-find exe)
@@ -4283,7 +4294,8 @@ buffer, close it."
 
 (use-package swiper
   :ensure t
-  :bind (("C-c f" . my/swiper-fuzzy-or-all))
+  :bind (("C-c f" . my/swiper-fuzzy-or-all)
+         ("C-s" . swiper))
   :commands (swiper swiper-isearch swiper-all swiper-multi))
 #+END_SRC
 
@@ -4813,8 +4825,7 @@ the minibuffer."
     (+ (frame-char-height) 2))
 
   (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height)
-  :config
-  (add-hook 'my/after-set-font-hook 'doom-modeline-refresh-font-width-cache))
+  )
 #+end_src
 
 * Setup
@@ -4823,6 +4834,7 @@ the minibuffer."
 #+begin_src emacs-lisp
 (when is-mac
   (setq mac-command-modifier 'meta)
+  (setq mac-option-modifier 'super)
   (global-set-key [?\A-\C-i] nil))
 #+end_src
 
