@@ -845,17 +845,17 @@ Paredit keys:
 (use-package hi-lock
   :hook (after-init . global-hi-lock-mode)
   :init
-  ;; (setq hi-lock-face-defaults
-  ;;       '(
-  ;;         "hi-black-b"
-  ;;         "hi-red-b"
-  ;;         "hi-green-b"
-  ;;         "hi-blue-b"
-  ;;         "hi-green"
-  ;;         "hi-blue"
-  ;;         "hi-pink"
-  ;;         "hi-yellow"
-  ;;         ))
+  (setq hi-lock-face-defaults
+        '(
+          "hi-green-b"
+          "hi-red-b"
+          "hi-blue-b"
+          "hi-black-b"
+          "hi-green"
+          "hi-blue"
+          "hi-pink"
+          "hi-yellow"
+          ))
   (setq hi-lock-auto-select-face t)
   :config
   (define-key hi-lock-map (kbd "M-H") (lookup-key hi-lock-map (kbd "C-x w")))
@@ -915,6 +915,7 @@ Paredit keys:
             js2-mode
             html-mode
             python-mode
+            python-ts-mode
             idris-mode
             agda-mode
             rust-mode
@@ -996,6 +997,33 @@ Paredit keys:
     (save-excursion
       (indent-rigidly (point-min) (point-max) my/edit-indirect-dedented-amount))))
 #+END_SRC
+
+** which-function-mode
+
+#+begin_src emacs-lisp
+(use-package which-func
+  :commands (which-function-mode)
+  :hook ((after-init . which-function-mode))
+  :init
+  (setq which-func-modes '(python-mode python-ts-mode org-mode)
+        which-func-unknown "?"))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+(my/add-hooks
+ '(python-mode-hook python-ts-mode-hook)
+ (setq header-line-format
+       '(""
+         (:eval (doom-modeline--buffer-file-name buffer-file-name buffer-file-truename 'shrink))
+         " → "
+         which-func-format))
+ (setq mode-line-misc-info
+       (assq-delete-all 'which-function-mode mode-line-misc-info))
+ )
+
+(setq which-func-format '((:propertize which-func-current face which-func)))
+(setq doom-modeline-buffer-file-name-style 'file-name)
+#+end_src
 
 * term & eshell
 ** terms
@@ -1266,7 +1294,7 @@ CWD is not in a git repo (or the git command is not found)."
 
 (use-package display-fill-column-indicator
   :commands (display-fill-column-indicator-mode)
-  :hook ((python-mode markdown-mode) . display-fill-column-indicator-mode))
+  :hook ((python-mode python-ts-mode markdown-mode) . display-fill-column-indicator-mode))
 
 (use-package visual-fill-column
   :ensure t
@@ -1297,18 +1325,27 @@ CWD is not in a git repo (or the git command is not found)."
 #+BEGIN_SRC emacs-lisp
 (setq custom--inhibit-theme-enable nil)
 
-(defvar my/avail-themes '(deeper-blue adwaita))
+(setq my/avail-themes '((wombat . dark)))
 (defvar my/current-theme 0)
 
 (defvar my/after-set-theme-hook nil
   "Hook called after setting a theme")
 
 (defun my/set-theme (&optional theme)
+  "Themes can be theme-name, function, or (theme-name . dark-or-light)"
   (let ((theme (or theme (elt my/avail-themes my/current-theme))))
     (mapc 'disable-theme custom-enabled-themes)
-    (if (functionp theme)
-        (funcall theme)
-      (load-theme theme t))
+    (cond
+     ((functionp theme) (funcall theme))
+     ((listp theme) (let* ((theme-sym (car theme))
+                           (variant (cdr theme))
+                           (overrides (cond
+                                       ((eq variant 'dark) 'my/dark-theme-overrides)
+                                       ((eq variant 'light) 'my/light-theme-overrides)
+                                       (t (error (format "Unknown theme variant '%s'" (symbol-name variant)))))))
+                      (load-theme theme-sym t)
+                      (funcall overrides theme-sym)))
+     (t (load-theme theme t)))
     (run-hooks 'my/after-set-theme-hook)))
 
 (defun my/toggle-theme ()
@@ -1325,6 +1362,31 @@ CWD is not in a git repo (or the git command is not found)."
 (use-package color
   :commands (color-darken-name color-lighten-name))
 #+END_SRC
+
+** theme overrides
+
+Mostly header-line customisation
+
+#+begin_src emacs-lisp
+(defun my/dark-theme-overrides (theme)
+  (custom-theme-set-faces
+   theme
+   `(fill-column-indicator ((t :foreground "#646464")))
+   ;; `(header-line ((t :background "#303030" :box "#757575")))
+   `(header-line ((t :background "#2a123a" :box "#5c2e70")))
+   `(doom-modeline-project-dir ((t :foreground "#d38faf")))
+   `(doom-modeline-project-parent-dir ((t :foreground "#989898")))
+   `(which-func ((t :weight bold :foreground "#00bcff")))))
+
+(defun my/light-theme-overrides (theme)
+  (custom-theme-set-faces
+   theme
+   `(fill-column-indicator ((t :foreground "#c4c4c4")))
+   `(header-line ((t :background "#f5f5f5" :box "#c4c4c4")))
+   `(doom-modeline-project-dir ((t :foreground "#8f0075")))
+   `(doom-modeline-project-parent-dir ((t :foreground "#9f9f9f")))
+   `(which-func ((t :weight bold :foreground "#3548cf")))))
+#+end_src
 
 ** modus themes
 
@@ -1344,16 +1406,20 @@ CWD is not in a git repo (or the git command is not found)."
   (setq modus-vivendi-palette-overrides
         '((bg-main "#090909")
           (fg-main "#e7e7e7")
-          (bg-hl-line "#272727")
-          (type cyan-warmer)))
+          (bg-hl-line "#272727")))
   (setq modus-vivendi-tinted-palette-overrides
         '((bg-region bg-added-refine)))
-  (setq modus-vivendi-tritanopia-palette-overrides
-        '((bg-main "#101010")
-          (bg-hl-line "#292929")))
-  (setq modus-operandi-palette-overrides
-        '((bg-hl-line "#eef3f6")))
   (setq modus-operandi-palette-overrides nil))
+#+end_src
+
+** ef-themes
+
+#+begin_src emacs-lisp
+(use-package ef-themes
+  :ensure t
+  :init
+  (setq ef-night-palette-overrides
+        '((bg-region bg-cyan-subtle))))
 #+end_src
 
 * Fonts
@@ -1575,7 +1641,7 @@ In =vc-git-log-edit-mode=:
    #'(lambda () (evil-local-mode -1))))
 #+END_SRC
 
-** diff-hl & git-gutter+
+** diff-hl
 
 #+BEGIN_SRC emacs-lisp
 (use-package diff-hl
@@ -1711,21 +1777,23 @@ In =vc-git-log-edit-mode=:
 ;;         (dolist (comb (quote ,combinations))
 ;;           (define-key map (kbd (car comb)) (cdr comb)))))))
 
-(defun my/define-major-mode-key (mode key func)
-  (let* ((map-symbol (intern (format "my/%s-map" mode)))
-         (hook (intern (format "%s-hook" mode)))
-         (map
-          (if (boundp map-symbol)
-              (symbol-value map-symbol)
-            (progn
-              (let ((map- (make-sparse-keymap)))
-                (add-hook
-                 hook
-                 `(lambda ()
-                    (local-set-key (kbd ,my/major-mode-map-key) (quote ,map-))))
-                (set (intern (format "my/%s-map" mode)) map-))))))
-    (define-key map (kbd key) func)
-    (evil-leader/set-key-for-mode mode (kbd (format "m %s" key)) func)))
+(defun my/define-major-mode-key (mode-or-modes key func)
+  (let ((modes (if (listp mode-or-modes) mode-or-modes (list mode-or-modes))))
+    (dolist (mode modes)
+            (let* ((map-symbol (intern (format "my/%s-map" mode)))
+                   (hook (intern (format "%s-hook" mode)))
+                   (map
+                    (if (boundp map-symbol)
+                        (symbol-value map-symbol)
+                      (progn
+                        (let ((map- (make-sparse-keymap)))
+                          (add-hook
+                           hook
+                           `(lambda ()
+                              (local-set-key (kbd ,my/major-mode-map-key) (quote ,map-))))
+                          (set (intern (format "my/%s-map" mode)) map-))))))
+              (define-key map (kbd key) func)
+              (evil-leader/set-key-for-mode mode (kbd (format "m %s" key)) func)))))
 
 (if is-gui
     (global-set-key (kbd "<C-m>") 'my/major-mode-map)
@@ -1936,7 +2004,7 @@ If COUNT is given, move COUNT - 1 lines downward first."
 #+BEGIN_SRC emacs-lisp
 (use-package avy
   :ensure t
-  :bind (("C-c i" . avy-goto-char-timer)))
+  :bind (("C-c i" . avy-goto-word-1)))
 #+END_SRC
 
 ** ace-window
@@ -2502,13 +2570,21 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 ** python
 
 #+BEGIN_SRC emacs-lisp
+
 (use-package python
-  :mode (("\\.py\\'" . python-mode)
+  :mode (("\\.py\\'" . python-ts-mode)
          ("\\.pants\\'" . pants-mode))
   :init
+  (unless (treesit-language-available-p 'python)
+     (treesit-install-language-grammar "python"))
+  (setq my/python-mode-hooks '(python-mode-hook python-ts-mode-hook))
+  (defun my/is-python-mode ()
+    (or (eq major-mode 'python-mode) (eq major-mode 'python-ts-mode)))
+
   (setq python-shell-prompt-detect-failure-warning nil
         py-outline-minor-mode-p nil)
-  (define-derived-mode pants-mode python-mode "pants")
+  ;; (define-derived-mode pants-mode python-mode "pants")
+  (define-derived-mode pants-mode python-ts-mode "pants")
   (setq
    lsp-pylsp-plugins-black-enabled nil
    lsp-pylsp-plugins-flake8-enabled nil
@@ -2528,7 +2604,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   ;; (flycheck-add-next-checker 'python-flake8 '(warning . python-ruff))
   (flycheck-add-next-checker 'python-flake8 '(warning . python-mypy))
   (my/add-hooks
-   '(python-mode-hook)
+   my/python-mode-hooks
    (setq fill-column 100)
    (setq evil-shift-width 4)
    (my/python-enable-checkers)
@@ -2539,8 +2615,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
     (blacken-buffer)
     (py-isort-before-save)
     (save-buffer))
-  (my/define-major-mode-key 'python-mode "s" 'my/python-format-and-save)
-  (my/define-major-mode-key 'python-mode "v" 'my/python-poetry-venv-activate-current))
+  (my/define-major-mode-key '(python-mode python-ts-mode) "s" 'my/python-format-and-save)
+  (my/define-major-mode-key '(python-mode python-ts-mode) "v" 'my/python-poetry-venv-activate-current))
 
 (use-package blacken
   :ensure t
@@ -2562,7 +2638,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :lighter " pyf"
   :global nil
   (if my/python-format-on-save-mode
-      (if (eq major-mode 'python-mode)
+      (if (my/is-python-mode)
           (progn
             (blacken-mode +1)
             (add-hook 'before-save-hook #'py-isort-before-save nil :local))
@@ -2606,7 +2682,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :after python
   :commands (poetry poetry-venv-workon)
   :config
-  (my/define-major-mode-key 'python-mode "v" 'poetry-venv-workon))
+  (my/define-major-mode-key '(python-mode python-ts-mode) "v" 'poetry-venv-workon)
+  )
 
 (defvar my/python-poetry-env-path
   (if is-mac
@@ -4133,7 +4210,9 @@ buffer, close it."
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (flycheck-add-mode 'javascript-eslint 'js2-mode)
   (flycheck-add-mode 'python-mypy 'python-mode)
+  (flycheck-add-mode 'python-mypy 'python-ts-mode)
   (flycheck-add-mode 'python-flake8 'python-mode)
+  (flycheck-add-mode 'python-flake8 'python-ts-mode)
 
   ;; modeline stuff
   (defface modeline-flycheck-error
@@ -4256,9 +4335,19 @@ buffer, close it."
   :bind (:map projectile-command-map
               ("f" . counsel-projectile-find-file)
               ("s" . counsel-projectile-rg)
+              ("C-s" . my/counsel-projectile-rg-no-tests)
+              ("S" . my/counsel-projectile-rg-no-tests)
               ("b" . counsel-projectile-switch-to-buffer))
   :init
-  (setq projectile-switch-project-action 'counsel-projectile-find-file))
+  (setq projectile-switch-project-action 'counsel-projectile-find-file)
+  (setq my/counsel-projectile-rg-tests-map
+        '(
+          (python-mode . "-g !tests")
+          (python-ts-mode . "-g !tests")
+          ))
+  (defun my/counsel-projectile-rg-no-tests ()
+    (interactive)
+    (counsel-projectile-rg (cdr (assoc major-mode my/counsel-projectile-rg-tests-map)))))
 #+END_SRC
 
 ** swiper
@@ -4493,7 +4582,7 @@ the minibuffer."
           (setq text
                 (if (region-active-p)
                     (buffer-substring-no-properties (region-beginning) (region-end))
-                  (current-word t (not qual))))))
+                  (current-word t qual)))))
     (when text (insert text))))
 
 (use-package ivy
@@ -4515,6 +4604,9 @@ the minibuffer."
         ivy-initial-inputs-alist nil)
   :config
   (my/ivy-reset-builders)
+
+  ;; center thing we jumped to after confirming
+  (advice-add 'ivy-call :after #'recenter-top-bottom)
 
   ;; minibuffer actions for specific commands
   (ivy-set-actions
@@ -4818,14 +4910,15 @@ the minibuffer."
   (setq doom-modeline-height 21
         doom-modeline-hud t
         doom-modeline-icon nil
+        doom-modeline-buffer-encoding nil
+        doom-modeline-indent-info nil
         doom-modeline-bar-width 8)
 
   (defun my/doom-modeline--font-height ()
     "Calculate the actual char height of the mode-line."
     (+ (frame-char-height) 2))
 
-  (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height)
-  )
+  (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height))
 #+end_src
 
 * Setup

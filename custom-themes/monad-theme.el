@@ -177,6 +177,8 @@
 
    '(persp-selected-face ((t (:underline t :weight bold))))
 
+   `(which-func ((t (:foreground ,cyan+1))))
+
    `(isearch-fail   ((t (:foreground ,red+2 :background ,red-2))))
    `(isearch        ((t (:foreground ,fg :background ,green-bright-1 :weight bold))))
    `(lazy-highlight ((t (:foreground ,blue+2 :background ,blue-2))))

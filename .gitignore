@@ -28,3 +28,4 @@ network-security.data
 package-quickstart.el
 straight/
 server/
+tree-sitter/
