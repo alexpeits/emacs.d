@@ -4342,8 +4342,8 @@ buffer, close it."
   (setq projectile-switch-project-action 'counsel-projectile-find-file)
   (setq my/counsel-projectile-rg-tests-map
         '(
-          (python-mode . "-g !tests")
-          (python-ts-mode . "-g !tests")
+          (python-mode . "-t py -g !tests")
+          (python-ts-mode . "-t py -g !tests")
           ))
   (defun my/counsel-projectile-rg-no-tests ()
     (interactive)
@@ -4606,7 +4606,7 @@ the minibuffer."
   (my/ivy-reset-builders)
 
   ;; center thing we jumped to after confirming
-  (advice-add 'ivy-call :after #'recenter-top-bottom)
+  ;; (advice-add 'ivy-call :after #'recenter-top-bottom)
 
   ;; minibuffer actions for specific commands
   (ivy-set-actions
