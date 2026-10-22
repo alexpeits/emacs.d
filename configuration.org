@@ -87,8 +87,8 @@
   :ensure t
   :if is-mac
   :init
-  ;; login shell only, interactive (-i) is slow
-  (setq exec-path-from-shell-arguments '("-l"))
+  ;; keep the default interactive login shell (-l -i): nix adds itself to PATH
+  ;; in /etc/zshrc, which zsh only reads for interactive shells
   (exec-path-from-shell-initialize))
 #+END_SRC
 
@@ -98,12 +98,6 @@
 (defmacro my/add-hooks (hooks &rest body)
   `(dolist (hook ,hooks)
      (add-hook hook (lambda () ,@body))))
-
-(defmacro my/execute-f-with-hook (f winf)
-  `(lambda (&rest args)
-     (interactive)
-     (,winf)
-     (apply (quote ,f) args)))
 
 (defmacro my/control-function-window-split (f height width)
   `(lambda (&rest args)
@@ -301,22 +295,20 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
                  (mapcar #'(lambda (fn)
                              (cons fn (locate-dominating-file cur-file fn)))
                          my/useful-files)))
+         (max-length (apply #'max (mapcar #'length my/useful-files)))
+         (completion-extra-properties
+          (list :annotation-function
+                (lambda (fn)
+                  (concat (make-string (- (1+ max-length) (length fn)) ?\s)
+                          "(in "
+                          (propertize (cdr (assoc fn paths)) 'face 'font-lock-type-face)
+                          ")"))))
          (file (completing-read "File name: "
                                 paths
                                 nil nil nil nil nil))
          (dir (cdr (assoc file paths)))
          (find-file-func (if other-window 'find-file-other-window 'find-file)))
     (funcall find-file-func (expand-file-name file (file-name-as-directory dir)))))
-
-(with-eval-after-load 'ivy
-  (defun my/try-open-dominating-file-display-transformer (fn)
-    (let ((dir (locate-dominating-file (buffer-file-name) fn))
-          (max-length (apply 'max (mapcar 'length my/useful-files))))
-      (format (format "%%-%ds (in %%s)" max-length)
-              fn
-              (propertize dir 'face 'font-lock-type-face))))
-  (ivy-configure 'my/try-open-dominating-file
-    :display-transformer-fn #'my/try-open-dominating-file-display-transformer))
 
 (defun my/line-numbers (relative)
   (interactive "P")
@@ -1660,24 +1652,24 @@ In =vc-git-log-edit-mode=:
         ("h"  help)
 
         ;; insert
-        ("iu" counsel-unicode-char)
+        ("iu" insert-char)
 
         ;; project
-        ("pa" counsel-projectile-ag)
-        ("pr" counsel-projectile-rg)
+        ("pa" consult-grep)
+        ("pr" consult-ripgrep)
         ("ps" my/rg-project-or-ask)
 
         ;; show/display
         ("sd" pwd)
         ;; find/search
         ("sa" ag)
-        ("sca" counsel-ag)
-        ("scr" counsel-rg)
+        ("sca" consult-grep)
+        ("scr" consult-ripgrep)
         ("sr" rgrep)
 
         ;; toggle
         ("t8" display-fill-column-indicator-mode)
-        ("tc" global-company-mode)
+        ("tc" global-corfu-mode)
         ("tf" my/toggle-font)
         ("tF" my/select-font-variant)
         ("tg" my/toggle-git-gutters)
@@ -1698,7 +1690,7 @@ In =vc-git-log-edit-mode=:
         ("wd" my/window-dedicated)
 
         ;; theme
-        ("Ts" counsel-load-theme)
+        ("Ts" consult-theme)
 
         ("Q" evil-local-mode)
         ))
@@ -1851,9 +1843,9 @@ In =vc-git-log-edit-mode=:
   (define-key evil-visual-state-map (kbd ";") 'evil-ex)
   (evil-ex-define-cmd "sv" 'evil-window-split)
 
-  (define-key evil-normal-state-map (kbd "C-p") 'counsel-projectile-find-file)
+  (define-key evil-normal-state-map (kbd "C-p") 'projectile-find-file)
 
-  (define-key evil-insert-state-map (kbd "C-M-i") 'company-complete)
+  (define-key evil-insert-state-map (kbd "C-M-i") 'completion-at-point)
 
   (define-key evil-visual-state-map (kbd "<") #'(lambda ()
                                                   (interactive)
@@ -2139,7 +2131,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   (interactive)
   (let ((find-file-run-dired t)
         (fname (dired-get-file-for-visit)))
-    (my/counsel-file-jump-from-here fname)))
+    (my/file-jump-from-here fname)))
 
 (defun my/dired-kill-all-buffers ()
   (interactive)
@@ -3286,7 +3278,7 @@ the current file."
               ("M-a" . beginning-of-defun)
               ("M-e" . end-of-defun)
               :map markdown-mode-command-map
-              ("r" . ivy-bibtex))
+              ("r" . citar-insert-citation))
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
          ("\\.markdown\\'" . markdown-mode)
@@ -3461,13 +3453,16 @@ the current file."
   :commands (latex-preview-pane-mode
              latex-preview-pane-enable))
 
-(use-package ivy-bibtex
+(use-package citar
   :ensure t
-  :commands (ivy-bibtex)
-  :config
-  (defalias 'ib 'ivy-bibtex)
-  (setq bibtex-completion-cite-prompt-for-optional-arguments nil
-        ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
+  :commands (citar-insert-citation)
+  :init
+  (defalias 'ib 'citar-insert-citation)
+  ;; dir-locals set `bibtex-completion-bibliography' (from ivy-bibtex days)
+  (defun my/citar-bibliography-from-bibtex-completion ()
+    (when (bound-and-true-p bibtex-completion-bibliography)
+      (setq-local citar-bibliography bibtex-completion-bibliography)))
+  (add-hook 'hack-local-variables-hook #'my/citar-bibliography-from-bibtex-completion))
 #+END_SRC
 
 * pdf tools
@@ -3784,35 +3779,35 @@ buffer, close it."
   (setq imenu-list-size 40))
 #+END_SRC
 
-* company
+* corfu
 
 #+BEGIN_SRC emacs-lisp
-(use-package company
+(use-package corfu
   :ensure t
-  :diminish company-mode
-  :bind (("C-M-i" . company-complete)
-         :map company-active-map
-         ("C-p" . company-select-previous)
-         ("C-n" . company-select-next)
-         ("C-f" . company-show-location)
-         ("TAB" . company-complete-common-or-cycle)
-         ("<tab>" . company-complete-common-or-cycle)
-         ("<escape>" . company-abort))
-  :hook ((after-init . global-company-mode)
-         (global-company-mode . company-quickhelp-mode))
+  :hook ((after-init . global-corfu-mode)
+         (global-corfu-mode . corfu-popupinfo-mode))
+  :bind (("C-M-i" . completion-at-point)
+         :map corfu-map
+         ("C-f" . corfu-info-location)
+         ("<escape>" . corfu-quit)
+         ;; M-SPC (the default) is taken by the OS for switching layouts
+         ("C-SPC" . corfu-insert-separator))
   :init
-  (setq company-dabbrev-downcase nil
-        company-minimum-prefix-length 3
-        company-idle-delay 0.4)
+  (setq corfu-auto t
+        corfu-auto-delay 0.4
+        corfu-auto-prefix 3
+        corfu-cycle t
+        corfu-popupinfo-delay '(0.5 . 0.2))
   :config
-  (setq company-backends (delete 'company-dabbrev company-backends))
-  ;; (setq company-backends (delete 'company-capf company-backends))
-  (add-to-list 'company-backends 'company-capf)
-  (add-to-list 'company-backends 'company-files))
+  ;; don't leave the popup behind when leaving insert state with ESC
+  (with-eval-after-load 'evil
+    (add-hook 'evil-insert-state-exit-hook #'corfu-quit)))
 
-(use-package company-quickhelp
+;; complete file names everywhere (company-files)
+(use-package cape
   :ensure t
-  :after company)
+  :init
+  (add-hook 'completion-at-point-functions #'cape-file 90))
 #+END_SRC
 
 * flycheck
@@ -3867,7 +3862,8 @@ buffer, close it."
   :bind-keymap ("C-c p" . projectile-command-map)
   :diminish projectile-mode
   :init
-  (setq projectile-completion-system 'ivy
+  (setq projectile-completion-system 'default
+        projectile-switch-project-action 'projectile-find-file
         projectile-mode-line-function
         '(lambda () (format " P[%s]" (or (projectile-project-name) "-")))))
 
@@ -3931,318 +3927,296 @@ buffer, close it."
 ;;     (my/projectile-add-to-project-name-overrides proj name)))
 #+end_src
 
-* ivy/counsel/swiper
-** counsel-projectile
+* completion (vertico/consult/orderless/embark)
+** orderless, savehist, marginalia
 
 #+BEGIN_SRC emacs-lisp
-(use-package counsel-projectile
+;; space-separated words match in any order; `~foo' matches foo fuzzily (see
+;; `orderless-affix-dispatch-alist' for the other prefixes)
+(use-package orderless
   :ensure t
-  :after projectile
-  :bind (:map projectile-command-map
-              ("f" . counsel-projectile-find-file)
-              ("s" . counsel-projectile-rg)
-              ("C-s" . my/counsel-projectile-rg-no-tests)
-              ("S" . my/counsel-projectile-rg-no-tests)
-              ("b" . counsel-projectile-switch-to-buffer))
+  :demand t
   :init
-  (setq projectile-switch-project-action 'counsel-projectile-find-file)
-  (setq my/counsel-projectile-rg-tests-map
-        '(
-          (python-mode . "-t py -g !tests")
-          (python-ts-mode . "-t py -g !tests")
-          ))
-  (defun my/counsel-projectile-rg-no-tests ()
-    (interactive)
-    (counsel-projectile-rg (cdr (assoc major-mode my/counsel-projectile-rg-tests-map)))))
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles basic partial-completion orderless)))
+        orderless-matching-styles '(orderless-literal orderless-regexp orderless-initialism))
+  (defvar my/orderless-default-matching-styles orderless-matching-styles
+    "Matching styles that `my/orderless-toggle-flex' switches back to."))
+
+;; keep minibuffer history across sessions, which vertico uses to sort
+;; candidates (e.g. recently used M-x commands first)
+(use-package savehist
+  :hook (after-init . savehist-mode))
+
+(use-package marginalia
+  :ensure t
+  :hook (after-init . marginalia-mode))
 #+END_SRC
 
-** swiper
+** vertico
 
 #+BEGIN_SRC emacs-lisp
-(defun my/swiper (fuzzy)
+(defun my/minibuffer-yank-region-or-word (&optional qual)
+  "Insert the region of the window the minibuffer was invoked from, if it's
+active, otherwise the current word, into the minibuffer."
   (interactive "P")
-  (if fuzzy
-      (let ((ivy-re-builders-alist
-             (cons '(swiper . ivy--regex-fuzzy) ivy-re-builders-alist)))
-        (swiper))
-    (swiper)))
+  (when-let* ((win (minibuffer-selected-window))
+              (text (with-selected-window win
+                      (if (region-active-p)
+                          (buffer-substring-no-properties (region-beginning) (region-end))
+                        (current-word t qual)))))
+    (insert text)))
 
-(defun my/swiper-fuzzy-or-all (all)
+(defun my/orderless-toggle-flex ()
+  "Toggle fuzzy matching for the current minibuffer session."
+  (interactive)
+  (setq-local orderless-matching-styles
+              (if (equal orderless-matching-styles '(orderless-flex))
+                  my/orderless-default-matching-styles
+                '(orderless-flex)))
+  ;; force vertico to recompute the candidates
+  (setq vertico--input t)
+  ;; async consult commands (e.g. consult-ripgrep) only re-run when the input
+  ;; changes, so change it briefly and restore it before the debounce fires
+  (let ((mb (current-buffer)))
+    (save-excursion
+      (goto-char (point-max))
+      (insert " "))
+    (run-at-time 0.05 nil
+                 (lambda ()
+                   (when (buffer-live-p mb)
+                     (with-current-buffer mb
+                       (save-excursion
+                         (goto-char (point-max))
+                         (when (eq (char-before) ?\s)
+                           (delete-char -1))))))))
+  (minibuffer-message (if (equal orderless-matching-styles '(orderless-flex))
+                          "[fuzzy]"
+                        "[orderless]")))
+
+(defun my/vertico-resize (n)
+  (setq-local vertico-count (max 3 (+ vertico-count n)))
+  (setq vertico--input t))
+
+(defun my/vertico-grow ()
+  (interactive)
+  (my/vertico-resize 5))
+
+(defun my/vertico-shrink ()
+  (interactive)
+  (my/vertico-resize -5))
+
+(use-package vertico
+  :ensure t
+  :hook ((after-init . vertico-mode)
+         (minibuffer-setup . vertico-repeat-save)
+         ;; tidy up the path after typing e.g. `~/' in find-file
+         (rfn-eshadow-update-overlay . vertico-directory-tidy))
+  :bind (("C-c r" . vertico-repeat)
+         :map vertico-map
+         ("M-j" . my/minibuffer-yank-region-or-word)
+         ("M-r" . my/orderless-toggle-flex)
+         ("C-o" . my/vertico-grow)
+         ("C-S-o" . my/vertico-shrink)
+         ("RET" . vertico-directory-enter)
+         ("C-j" . vertico-directory-enter)
+         ("DEL" . vertico-directory-delete-char)
+         ("M-DEL" . vertico-directory-delete-word)))
+#+END_SRC
+
+** consult
+
+#+BEGIN_SRC emacs-lisp
+(defun my/consult-line-fuzzy ()
+  "`consult-line' with fuzzy matching (`M-r' switches back to orderless)."
+  (interactive)
+  (let ((orderless-matching-styles '(orderless-flex)))
+    (consult-line)))
+
+(defun my/consult-line-fuzzy-or-all (all)
+  "Fuzzy `consult-line', or search all buffers with a prefix argument."
   (interactive "P")
   (if all
-      (swiper-all)
-    (my/swiper :fuzzy)))
+      (consult-line-multi t)
+    (my/consult-line-fuzzy)))
 
-(defun my/swiper-isearch (fuzzy)
-  (interactive "P")
-  (if fuzzy
-      (let ((ivy-re-builders-alist
-             (cons '(swiper-isearch . ivy--regex-fuzzy) ivy-re-builders-alist)))
-        (swiper-isearch))
-    (swiper-isearch)))
-
-(use-package swiper
-  :ensure t
-  :bind (("C-c f" . my/swiper-fuzzy-or-all)
-         ("C-s" . swiper))
-  :commands (swiper swiper-isearch swiper-all swiper-multi))
-#+END_SRC
-
-** flx, amx
-
-#+BEGIN_SRC emacs-lisp
-;; better fuzzy matching
-(use-package flx
-  :ensure t
-  :after ivy)
-
-;; mostly to bring recently used M-x targets at the top
-;; (trying out instead of `smex`)
-(use-package amx
-  :ensure t
-  :after ivy
-  :init
-  (setq amx-backend 'auto
-        amx-save-file (expand-file-name "amx-items" user-emacs-directory)
-        amx-history-length 50
-        amx-show-key-bindings nil)
-  :config
-  (amx-mode +1))
-#+END_SRC
-
-** ivy, counsel
-
-#+BEGIN_SRC emacs-lisp
-(defun my/ivy-reset-builders ()
-  (setq ivy-re-builders-alist
-        '((swiper               . ivy--regex-plus)
-          (swiper-isearch       . ivy--regex-plus)
-          (ivy-bibtex           . ivy--regex-ignore-order)
-          (counsel-unicode-char . ivy--regex-ignore-order)
-          (insert-char          . ivy--regex-ignore-order)
-          (ucs-insert           . ivy--regex-ignore-order)
-          (counsel-ag           . ivy--regex-ignore-order)  ;; NOTE: testing
-          (counsel-rg           . ivy--regex-ignore-order)
-          (t                    . ivy--regex-fuzzy))))
-
-(defun my/counsel-rg-in ()
+(defun my/file-jump (&optional dir)
+  "Find a file recursively under DIR (default: `default-directory')."
   (interactive)
-  (counsel-rg nil (read-directory-name "rg in: ") ""))
+  (consult-fd (or dir default-directory)))
 
-(defun my/counsel-file-jump-temp-root (reset)
+(defun my/file-jump-from-here (path)
+  (my/file-jump (if (file-directory-p path)
+                    path
+                  (file-name-directory path))))
+
+(defun my/consult-ripgrep-in ()
+  (interactive)
+  (consult-ripgrep (read-directory-name "rg in: ")))
+
+(defun my/file-jump-temp-root (reset)
   (interactive "P")
   (my/get-or-set-temp-root reset)
-  (let ((current-prefix-arg nil))
-    (counsel-file-jump nil my/temp-project-root)))
+  (my/file-jump my/temp-project-root))
 
-(defun my/counsel-rg-temp-root (reset)
+(defun my/consult-ripgrep-temp-root (reset)
   (interactive "P")
   (my/get-or-set-temp-root reset)
-  (let ((current-prefix-arg nil))
-    (counsel-rg "" my/temp-project-root)))
+  (consult-ripgrep my/temp-project-root))
 
 (defun my/set-temp-root-and-jump (dir)
   (setq my/temp-project-root dir)
-  (my/counsel-file-jump-temp-root nil))
+  (my/file-jump-temp-root nil))
 
-(defun my/counsel-file-jump-from-here (path)
+(defvar my/consult-ripgrep-no-tests-args
+  '((python-mode . "-t py -g !tests")
+    (python-ts-mode . "-t py -g !tests"))
+  "Extra rg arguments per major mode, for `my/consult-ripgrep-no-tests'.")
+
+(defvar consult-ripgrep-args)
+
+(defun my/consult-ripgrep-no-tests ()
+  "`consult-ripgrep' in the project, excluding tests for the current major mode."
   (interactive)
-  (let ((dir (if (file-directory-p path)
-                 path
-               (file-name-directory path))))
-    (counsel-file-jump "" dir)))
+  (let ((extra (cdr (assoc major-mode my/consult-ripgrep-no-tests-args))))
+    (let ((consult-ripgrep-args
+           (cond ((null extra) consult-ripgrep-args)
+                 ((listp consult-ripgrep-args)
+                  (append consult-ripgrep-args (split-string extra)))
+                 (t (concat consult-ripgrep-args " " extra)))))
+      (consult-ripgrep))))
 
-(defun my/ivy-insert-relative (fn)
-  (let* ((trimmed-fn (ivy--trim-grep-line-number fn))
-         (curdir (file-name-directory (buffer-file-name)))
-         (rel-fn (file-relative-name trimmed-fn curdir)))
-    (insert rel-fn)))
-
-(use-package counsel
+(use-package consult
   :ensure t
-  :after ivy
-  :bind (("M-x" . counsel-M-x)
-         ("M-i" . counsel-imenu)
-         ("C-x C-f" . counsel-find-file)
-         ("C-x f" . counsel-file-jump)
-         ("C-x r b" . counsel-bookmark)
-         ("C-x C-a" . counsel-recentf)
-         ("C-c s" . my/counsel-rg-in)
-         ("C-S-p" . my/counsel-file-jump-temp-root)
-         ("C-S-s" . my/counsel-rg-temp-root)
+  :bind (("C-x b" . consult-buffer)
+         ("C-s" . my/consult-line-fuzzy)
+         ("C-c f" . my/consult-line-fuzzy-or-all)
+         ("M-i" . consult-imenu)
+         ("C-x f" . my/file-jump)
+         ("C-x r b" . consult-bookmark)
+         ("C-x C-a" . consult-recent-file)
+         ("C-c s" . my/consult-ripgrep-in)
+         ("C-S-p" . my/file-jump-temp-root)
+         ("C-S-s" . my/consult-ripgrep-temp-root)
          :map org-mode-map
-         ("M-i" . counsel-outline)
-         :map help-map
-         ("f" . counsel-describe-function)
-         ("o" . counsel-describe-symbol)
-         ("u" . counsel-describe-face)
-         ("v" . counsel-describe-variable))
-  :diminish
+         ("M-i" . consult-org-heading))
   :init
-  (setq counsel-rg-base-command "rg --with-filename --no-heading --line-number --color never -S %s"
-        counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s"
-        counsel-find-file-ignore-regexp "\\`.flycheck_\\|__pycache__")
-  :config
-  ;; counsel adds initial inputs (e.g. ^ for M-x) when it loads
-  (setq ivy-initial-inputs-alist nil)
-  ;; counsel-ag
-  ;; S-SPC doesn't work properly in counsel-ag anyway
-  ;; NOTE: this also applies to rg
-  (define-key counsel-ag-map (kbd "S-SPC") nil)
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref
+        ;; project root for consult-ripgrep, consult-buffer etc.
+        consult-project-function (lambda (_may-prompt) (projectile-project-root)))
 
   (defvar my/ripgrep-config (expand-file-name "~/.config/ripgrep/ripgreprc"))
   (when (file-exists-p my/ripgrep-config)
     (setenv "RIPGREP_CONFIG_PATH" my/ripgrep-config))
-
-  (dolist (action '(counsel-find-file counsel-file-jump counsel-recentf))
-    (ivy-set-actions
-     action
-     `(
-       ("I"
-        my/ivy-insert-relative
-        "insert relative")
-       ("s"
-        ,(my/control-function-window-split
-          find-file-other-window
-          0 nil)
-        "split horizontally")
-       ("v"
-        ,(my/control-function-window-split
-          find-file-other-window
-          nil 0)
-        "split vertically")
-       ("n"
-        ,(my/execute-f-with-hook
-          find-file
-          ace-select-window)
-        "select window")
-       ("e"
-        my/eshell
-        "eshell")
-       ("j"
-        my/counsel-file-jump-from-here
-        "jump")
-       ("J"
-        my/set-temp-root-and-jump
-        "set temp root and jump")
-       ("r"
-        (lambda (dir) (counsel-rg nil dir))
-        "counsel-rg")
-       )))
-
-  (dolist (action '(counsel-projectile-find-file projectile-recentf))
-    (ivy-set-actions
-     action
-     `(("s"
-        ,(my/control-function-window-split
-          counsel-projectile-find-file-action-other-window
-          0 nil)
-        "split horizontally")
-       ("v"
-        ,(my/control-function-window-split
-          counsel-projectile-find-file-action-other-window
-          nil 0)
-        "split vertically")
-       ("n"
-        ,(my/execute-f-with-hook
-          counsel-projectile-find-file-action
-          ace-select-window)
-        "select window")
-       ("R"
-        (lambda (f) (projectile-recentf))
-        "recent files")
-       ("e"
-        (lambda (f) (my/eshell (projectile-expand-root f)))
-        "eshell")
-       )))
-
-  ;; also applies to counsel-projectile-ag
-  (dolist (action '(counsel-ag counsel-rg))
-    (ivy-set-actions
-     action
-     '(("v"
-        (lambda (x) (split-window-right) (windmove-right) (counsel-git-grep-action x))
-        "split vertically")
-       ("s"
-        (lambda (x) (split-window-below) (windmove-down) (counsel-git-grep-action x))
-        "split horizontally")
-       ("n"
-        (lambda (x) (ace-select-window) (counsel-git-grep-action x))
-        "select window")
-       ))))
-
-(defun my/ivy-yank-current-region-or-word (&optional qual)
-  "Insert current region, if it's active, otherwise the current word,into
-the minibuffer."
-  (interactive "P")
-  (let (text)
-    (with-ivy-window
-      (unwind-protect
-          (setq text
-                (if (region-active-p)
-                    (buffer-substring-no-properties (region-beginning) (region-end))
-                  (current-word t qual)))))
-    (when text (insert text))))
-
-(use-package ivy
-  :ensure t
-  :diminish ivy-mode
-  :hook (after-init . ivy-mode)
-  :bind (("C-c r" . ivy-resume)
-         ("C-x b" . ivy-switch-buffer)
-         :map ivy-minibuffer-map
-         ("M-j" . my/ivy-yank-current-region-or-word)
-         ("M-r" . ivy-rotate-preferred-builders)
-         ("C-l" . ivy-call-and-recenter)
-         ("C-o" . ivy-minibuffer-grow)
-         ("C-S-o" . ivy-minibuffer-shrink))
-  :init
-  (setq ivy-use-virtual-buffers nil
-        ivy-count-format "(%d/%d) "
-        ivy-magic-tilde nil)
   :config
-  (my/ivy-reset-builders)
+  ;; build the regexps for consult-ripgrep etc. with orderless, so that the
+  ;; matching styles (e.g. fuzzy with `~foo' or `M-r') apply to the search too
+  (defun my/consult-orderless-regexp-compiler (input type &rest _config)
+    (let ((regexps (cdr (orderless-compile input))))
+      (cons
+       (mapcar (lambda (r) (consult--convert-regexp r type)) regexps)
+       (lambda (str) (orderless--highlight regexps t str)))))
+  (setq consult--regexp-compiler #'my/consult-orderless-regexp-compiler)
 
-  ;; center thing we jumped to after confirming
-  ;; (advice-add 'ivy-call :after #'recenter-top-bottom)
+  ;; don't open every file while moving through the candidates
+  (consult-customize
+   consult-ripgrep consult-grep consult-git-grep consult-xref
+   consult-recent-file consult-bookmark
+   :preview-key '(:debounce 0.4 any)))
 
-  ;; minibuffer actions for specific commands
-  (ivy-set-actions
-   'ivy-switch-buffer
-   `(("s"
-      ,(my/control-function-window-split
-        ivy--switch-buffer-other-window-action
-        0 nil)
-      "split horizontally")
-     ("v"
-      ,(my/control-function-window-split
-        ivy--switch-buffer-other-window-action
-        nil 0)
-      "split vertically")
-     ("n"
-      ,(my/execute-f-with-hook
-        (lambda (b) (switch-to-buffer b nil 'force-same-window))
-        ace-select-window)
-      "select window")
-     ("k" kill-buffer "kill buffer")
-     ))
+(with-eval-after-load 'projectile
+  (define-key projectile-command-map (kbd "s") #'consult-ripgrep)
+  (define-key projectile-command-map (kbd "C-s") #'my/consult-ripgrep-no-tests)
+  (define-key projectile-command-map (kbd "S") #'my/consult-ripgrep-no-tests)
+  (define-key projectile-command-map (kbd "b") #'consult-project-buffer))
+#+END_SRC
 
-  (ivy-set-actions
-   'projectile-switch-project
-   '(("d"
-      dired
-      "Open Dired in project's directory")
-     ("v"
-      projectile-vc
-      "Open project root in vc-dir or magit")
-     ("r"
-      projectile-remove-known-project
-      "Remove project(s)"))))
+** embark
 
-(use-package ivy-xref  ;; currently in lisp/ because of patches
-  :commands (ivy-xref-show-xrefs)
-  :init (setq xref-show-xrefs-function 'ivy-xref-show-xrefs)
-  :after ivy)
+Actions on the current candidate with =M-o= in the minibuffer (like ivy's
+actions), and =C-c C-o= to export the candidates to a buffer (like =ivy-occur=).
+
+| key | files                    | buffers       | grep results |
+|-----+--------------------------+---------------+--------------|
+| s   | open in split below      | split below   | split below  |
+| v   | open in split right      | split right   | split right  |
+| n   | open in ace-selected win | ace window    | ace window   |
+| e   | eshell in its directory  |               |              |
+| j   | find file from here      |               |              |
+| J   | set temp root and jump   |               |              |
+| r   | ripgrep from here        |               |              |
+| I   | insert relative path     |               |              |
+| R   | rename file              |               |              |
+| V   | vc actions               |               |              |
+| k   |                          | kill buffer   |              |
+
+Projects (=C-c p p=): =s= switch, =v= vc, =d= dired, =r=/=D= remove.
+
+#+BEGIN_SRC emacs-lisp
+(defun my/in-window (how fn)
+  "Return a function that selects a window according to HOW and calls FN.
+HOW is `below', `right' (new splits) or `ace' (select with ace-window)."
+  (lambda (target)
+    (pcase-exhaustive how
+      ('below (select-window (split-window-below)))
+      ('right (select-window (split-window-right)))
+      ('ace (ace-select-window)))
+    (funcall fn target)))
+
+(defalias 'my/find-file-below (my/in-window 'below #'find-file))
+(defalias 'my/find-file-right (my/in-window 'right #'find-file))
+(defalias 'my/find-file-ace (my/in-window 'ace #'find-file))
+(defalias 'my/switch-to-buffer-below (my/in-window 'below #'switch-to-buffer))
+(defalias 'my/switch-to-buffer-right (my/in-window 'right #'switch-to-buffer))
+(defalias 'my/switch-to-buffer-ace (my/in-window 'ace #'switch-to-buffer))
+(defalias 'my/goto-grep-below (my/in-window 'below #'embark-consult-goto-grep))
+(defalias 'my/goto-grep-right (my/in-window 'right #'embark-consult-goto-grep))
+(defalias 'my/goto-grep-ace (my/in-window 'ace #'embark-consult-goto-grep))
+
+(defun my/eshell-here (path)
+  (my/eshell (if (file-directory-p path) path (file-name-directory path))))
+
+(defun my/consult-ripgrep-here (path)
+  (consult-ripgrep (if (file-directory-p path) path (file-name-directory path))))
+
+(use-package embark
+  :ensure t
+  :bind (:map minibuffer-local-map
+              ("M-o" . embark-act)
+              ("C-c C-o" . embark-export))
+  :config
+  ;; keep the defaults that the keys below replace
+  (define-key embark-file-map (kbd "R") #'rename-file)
+  (define-key embark-file-map (kbd "V") (lookup-key embark-file-map (kbd "v")))
+
+  (define-key embark-file-map (kbd "s") #'my/find-file-below)
+  (define-key embark-file-map (kbd "v") #'my/find-file-right)
+  (define-key embark-file-map (kbd "n") #'my/find-file-ace)
+  (define-key embark-file-map (kbd "e") #'my/eshell-here)
+  (define-key embark-file-map (kbd "j") #'my/file-jump-from-here)
+  (define-key embark-file-map (kbd "J") #'my/set-temp-root-and-jump)
+  (define-key embark-file-map (kbd "r") #'my/consult-ripgrep-here)
+
+  (define-key embark-buffer-map (kbd "s") #'my/switch-to-buffer-below)
+  (define-key embark-buffer-map (kbd "v") #'my/switch-to-buffer-right)
+  (define-key embark-buffer-map (kbd "n") #'my/switch-to-buffer-ace)
+
+  (defvar-keymap my/embark-grep-map
+    :parent embark-general-map
+    "s" #'my/goto-grep-below
+    "v" #'my/goto-grep-right
+    "n" #'my/goto-grep-ace)
+  (add-to-list 'embark-keymap-alist '(consult-grep . my/embark-grep-map)))
+
+(use-package embark-consult
+  :ensure t
+  :after (embark consult))
+
+;; projectile defines the embark map for projects
+(with-eval-after-load 'projectile
+  (define-key projectile-embark-project-map (kbd "r") #'projectile-remove-known-project))
 #+END_SRC
 
 * yasnippet
@@ -4683,6 +4657,6 @@ the minibuffer."
                ))
   (add-to-list 'safe-local-variable-values val))
 
-(dolist (val '(bibtex-completion-bibliography))
+(dolist (val '(bibtex-completion-bibliography citar-bibliography))
   (put val 'safe-local-variable (lambda (_) t)))
 #+END_SRC
