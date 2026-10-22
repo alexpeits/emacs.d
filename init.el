@@ -1,28 +1,20 @@
-;; -*- lexical-binding: nil; -*-
+;; -*- lexical-binding: t; -*-
 ;; https://blog.d46.us/advanced-emacs-startup/
 ;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
 
-(require 'comp)
-(setq native-comp-driver-options (cons "-mmacosx-version-min=11" native-comp-driver-options))
-
+(defvar tmp--file-name-handler-alist file-name-handler-alist)
 
 (setq gc-cons-threshold 100000000
       gc-cons-percentage 0.6
       inhibit-compacting-font-caches t
-      tmp--file-name-handler-alist file-name-handler-alist
       file-name-handler-alist nil)
-
-(unless debug-on-error
-  (setq inhibit-redisplay t))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold 800000
                   gc-cons-percentage 0.1
                   inhibit-compacting-font-caches nil
-                  file-name-handler-alist tmp--file-name-handler-alist
-                  inhibit-redisplay nil)
-            (redisplay :force)
+                  file-name-handler-alist tmp--file-name-handler-alist)
             (makunbound 'tmp--file-name-handler-alist)
             (message "Emacs started in %s with %d garbage collections."
                      (format "%.2f seconds"

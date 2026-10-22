@@ -1,4 +1,4 @@
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+;; -*- lexical-binding: t; -*-
 
 (setq my/fonts
       '(

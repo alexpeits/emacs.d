@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; fonts
 (setq my/fonts
       '(("small" . (:fixed ("Source Code Pro" . 10.5) :variable ("Source Serif Pro" . 12)))

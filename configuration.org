@@ -1,7 +1,7 @@
 * Variables and PATH
 
 #+BEGIN_SRC emacs-lisp
-;; -*- lexical-binding: nil; -*-
+;; -*- lexical-binding: t; -*-
 (add-to-list 'load-path (expand-file-name (expand-file-name "lisp" user-emacs-directory)))
 (add-to-list 'custom-theme-load-path
              (expand-file-name (expand-file-name "custom-themes/" user-emacs-directory)))
@@ -9,20 +9,22 @@
 (setq user-full-name "Alex Peitsinis"
       user-mail-address "alexpeitsinis@gmail.com")
 
-(dolist (pth '(
-               "/usr/local/bin"
-               "~/bin"
-               "~/.local/bin"
-               "~/.ghcup/bin"
-               ))
-
-  (add-to-list 'exec-path (expand-file-name pth))
-  (setenv "PATH" (concat (expand-file-name pth)
-                         path-separator
-                         (getenv "PATH"))))
-
 (defvar is-mac (eq system-type 'darwin)
   "Whether emacs is running in mac or not")
+
+;; on mac, exec-path-from-shell (below) replaces PATH with the shell's
+(unless is-mac
+  (dolist (pth '(
+                 "/usr/local/bin"
+                 "~/bin"
+                 "~/.local/bin"
+                 "~/.ghcup/bin"
+                 ))
+
+    (add-to-list 'exec-path (expand-file-name pth))
+    (setenv "PATH" (concat (expand-file-name pth)
+                           path-separator
+                           (getenv "PATH")))))
 
 (defvar is-windows (eq window-system 'w32)
   "Whether emacs is running in windows or not")
@@ -60,24 +62,13 @@
              '("melpa" . "https://melpa.org/packages/")
              ;; '("MELPA Stable" . "https://stable.melpa.org/packages/")
              )
-
-(unless (bound-and-true-p package--initialized)
-  (package-initialize)
-  (setq package-enable-at-startup nil))
 #+end_src
 
 ** use-package
 
 #+begin_src emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
 ;; Can be used to debug slow packages
 ;; (setq use-package-minimum-reported-time 0.05 use-package-verbose t)
-
-(eval-when-compile
-  (require 'use-package))
 #+end_src
 
 ** load required packages
@@ -96,6 +87,8 @@
   :ensure t
   :if is-mac
   :init
+  ;; login shell only, interactive (-i) is slow
+  (setq exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-initialize))
 #+END_SRC
 
@@ -361,17 +354,6 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 (use-package saveplace
   :hook (after-init . save-place-mode))
 
-;; undo tree
-(use-package undo-tree
-  :ensure t
-  :bind ("C-x u" . undo-tree-visualize)
-  :diminish undo-tree-mode
-  :hook (after-init . global-undo-tree-mode)
-  :init
-  (setq undo-tree-visualizer-relative-timestamps t
-        undo-tree-visualizer-diff t
-        undo-tree-history-directory-alist `(("." . ,(expand-file-name "undo" user-emacs-directory)))))
-
 ;; use column width 80 to fill (e.g. with `M-q'/`gq')
 (setq-default fill-column 80)
 (setq fill-indent-according-to-mode t)
@@ -405,7 +387,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
 ;; (setq process-connection-type nil)
 
 ;; yesss
-(defalias 'yes-or-no-p #'y-or-n-p)
+(setopt use-short-answers t)
 
 ;; Always confirm before closing because I'm stupid
 (add-hook
@@ -543,7 +525,7 @@ With a prefix argument, open the buffer using `switch-to-buffer-other-window'."
           (call-process
            "wmctrl" nil nil nil "-i" flag
            (frame-parameter fr 'outer-window-id))
-        ('error nil)))))
+        (error nil)))))
 
 (when is-linux
   (advice-add 'raise-frame :after 'my/wmctrl-raise-frame))
@@ -923,7 +905,7 @@ Paredit keys:
             c-mode
             emacs-lisp-mode
             coq-mode
-            enh-ruby-mode
+            ruby-ts-mode
             ))
   (my/highlight-comment-keywords mode))
 #+END_SRC
@@ -962,6 +944,8 @@ Paredit keys:
   (add-hook 'edit-indirect-after-creation-hook 'my/edit-indirect-dedent)
   (add-hook 'edit-indirect-before-commit-hook 'my/edit-indirect-indent))
 
+(defvar edit-indirect-guess-mode-function)
+
 (defun my/edit-indirect-region ()
   (interactive)
   (unless (region-active-p) (user-error "No region selected"))
@@ -979,10 +963,10 @@ Paredit keys:
          (ind nil))
     (save-excursion
       (goto-char (point-min))
-      (setq ind (org-get-indentation))
+      (setq ind (current-indentation))
       (while (not (or (evil-eobp) (eobp)))
         (unless (string-match-p "\\`\\s-*$" (thing-at-point 'line))
-          (setq ind (min ind (org-get-indentation))))
+          (setq ind (min ind (current-indentation))))
         (ignore-errors (next-line))
         ))
     ind))
@@ -1010,22 +994,6 @@ Paredit keys:
         which-func-unknown "?"))
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
-(my/add-hooks
- '(python-mode-hook python-ts-mode-hook)
- (setq header-line-format
-       '(""
-         (:eval (doom-modeline--buffer-file-name buffer-file-name buffer-file-truename 'shrink))
-         " → "
-         which-func-format))
- (setq mode-line-misc-info
-       (assq-delete-all 'which-function-mode mode-line-misc-info))
- )
-
-(setq which-func-format '((:propertize which-func-current face which-func)))
-(setq doom-modeline-buffer-file-name-style 'file-name)
-#+end_src
-
 * term & eshell
 ** terms
 
@@ -1044,9 +1012,9 @@ Paredit keys:
            (proc (get-buffer-process buff)))
       (set-process-sentinel
        proc
-       `(lambda (process event)
-          (if (string= event "finished\n")
-              (kill-buffer ,buff))))))
+       (lambda (_process event)
+         (if (string= event "finished\n")
+             (kill-buffer buff))))))
   (add-hook 'term-exec-hook 'my/term-exec-hook))
 
 (use-package comint
@@ -1136,6 +1104,8 @@ Paredit keys:
   (setq eshell-where-to-jump 'begin
         eshell-review-quick-commands nil
         eshell-smart-space-goes-to-end t))
+
+(defvar eshell-banner-message)
 
 (defun my/eshell (&optional dir prompt)
   "Open up a new shell in the directory associated with the current buffer.
@@ -1559,11 +1529,11 @@ In =vc-git-log-edit-mode=:
 (use-package magit
   :ensure t
   :commands (magit-status
-             magit-dispatch-popup
+             magit-dispatch
              magit-blame-addition
              magit-log-buffer-file)
   :bind (("C-x g" . magit-status)
-         ("C-x M-g" . magit-dispatch-popup))
+         ("C-x M-g" . magit-dispatch))
   :init
   (defalias 'magb 'magit-blame-addition)
   (defalias 'gl   'magit-log-buffer-file)
@@ -1672,12 +1642,9 @@ In =vc-git-log-edit-mode=:
 
         ("a" align-regexp)
 
-        ("b" my/eww-browse-dwim)
-
         ;; dired
         ("dn" find-name-dired)
         ("dg" find-grep-dired)
-        ("dv" my/git-grep-dired)
 
         ;; errors
         ("el" my/toggle-flycheck-error-list)
@@ -1699,13 +1666,11 @@ In =vc-git-log-edit-mode=:
         ("pa" counsel-projectile-ag)
         ("pr" counsel-projectile-rg)
         ("ps" my/rg-project-or-ask)
-        ("pt" my/counsel-ag-todos-global)
 
         ;; show/display
         ("sd" pwd)
         ;; find/search
         ("sa" ag)
-        ("sr" rg)
         ("sca" counsel-ag)
         ("scr" counsel-rg)
         ("sr" rgrep)
@@ -1742,8 +1707,6 @@ In =vc-git-log-edit-mode=:
 ** setup keybindings
 
 #+begin_src emacs-lisp
-(define-prefix-command 'my/leader-map)
-
 ;; (define-key ctl-x-map "m" 'my/leader-map)
 (define-prefix-command 'my/leader-map)
 (global-set-key (kbd "C-c m") 'my/leader-map)
@@ -1837,7 +1800,9 @@ In =vc-git-log-edit-mode=:
   :init
   (setq evil-disable-insert-state-bindings t
         evil-want-C-i-jump nil
-        evil-undo-system 'undo-tree
+        evil-undo-system 'undo-redo
+        ;; $ in visual state doesn't include the EOL char
+        evil-v$-excludes-newline t
         evil-intercept-esc t
         evil-respect-visual-line-mode t
         evil-mode-line-format '(before . mode-line-front-space))
@@ -1861,13 +1826,10 @@ In =vc-git-log-edit-mode=:
   (evil-esc-mode)
 
   ;; move search result to center of the screen
-  (defadvice evil-search-next
-      (after advice-for-evil-search-next activate)
+  (defun my/evil-scroll-to-center (&rest _)
     (evil-scroll-line-to-center (line-number-at-pos)))
-
-  (defadvice evil-search-previous
-      (after advice-for-evil-search-previous activate)
-    (evil-scroll-line-to-center (line-number-at-pos)))
+  (advice-add 'evil-search-next :after #'my/evil-scroll-to-center)
+  (advice-add 'evil-search-previous :after #'my/evil-scroll-to-center)
 
   ;; this is needed to be able to use C-h
   (global-set-key (kbd "C-h") 'help)
@@ -1904,23 +1866,6 @@ In =vc-git-log-edit-mode=:
                                                   (progn
                                                     (call-interactively 'evil-shift-right)
                                                     (execute-kbd-macro "gv"))))
-
-  ;; redefine so that $ doesn't include the EOL char
-  (setq my/evil-$-include-eol nil)
-  (evil-define-motion evil-end-of-line (count)
-    "Move the cursor to the end of the current line.
-
-If COUNT is given, move COUNT - 1 lines downward first."
-    :type inclusive
-    (move-end-of-line count)
-    (when evil-track-eol
-      (setq temporary-goal-column most-positive-fixnum
-            this-command 'next-line))
-    (unless (and (evil-visual-state-p) my/evil-$-include-eol)
-      (evil-adjust-cursor)
-      (when (eolp)
-        ;; prevent "c$" and "d$" from deleting blank lines
-        (setq evil-this-type 'exclusive))))
 
   ;; https://github.com/emacs-evil/evil-surround/issues/141
   (defmacro my/evil-define-text-object (name key start-regex end-regex)
@@ -2119,12 +2064,11 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
                (when current-prefix-arg
                  (propertize "NOT " 'face 'warning))
                "matching PATTERN: ")
-       nil 'prot-dired--limit-hist)
+       nil 'my/dired-limit-hist)
       current-prefix-arg))
     (dired-mark-files-regexp regexp)
     (unless omit (dired-toggle-marks))
-    (dired-do-kill-lines)
-    (add-to-history 'my/dired-limit-hist regexp))
+    (dired-do-kill-lines))
 
 
   (define-key dired-mode-map
@@ -2504,20 +2448,6 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
       (error "No TAGS file found in ghc source directory"))))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package dante
-  :ensure t
-  :after haskell-mode
-  :commands (dante-mode)
-  :hook (haskell-mode . dante-mode)
-  :init
-  (setq dante-methods '(new-impure-nix))
-  (add-hook 'dante-mode-hook
-            '(lambda () (flycheck-add-next-checker
-                         'haskell-dante
-                         '(warning . haskell-hlint)))))
-#+END_SRC
-
 ** coq (proof-general)
 
 #+BEGIN_SRC emacs-lisp
@@ -2555,14 +2485,12 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
    '(coq-mode-hook)
    (setq evil-shift-width 2)
    (push '(?# . ("(* " . " *)")) evil-surround-pairs-alist)
-   (undo-tree-mode 1)
    (whitespace-mode 1))
 
   (defun my/coq-browse-stdlib ()
     (interactive)
     (browse-url "https://coq.inria.fr/library/"))
 
-  (my/define-major-mode-key 'coq-mode "t" 'engine/search-coq-tactics)
   (my/define-major-mode-key 'coq-mode "i" 'my/coq-browse-stdlib)
   ;; use yas-expand instead
   (define-key coq-mode-map (kbd "<C-return>") nil))
@@ -2585,7 +2513,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
            (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
            (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
            (just       "https://github.com/IndianBoy42/tree-sitter-just")
-           (rust       "https://github.com/tree-sitter/tree-sitter-rust")))
+           (rust       "https://github.com/tree-sitter/tree-sitter-rust")
+           (ruby       "https://github.com/tree-sitter/tree-sitter-ruby")))
   (add-to-list 'treesit-language-source-alist source))
   (unless (treesit-language-available-p 'python)
      (treesit-install-language-grammar "python"))
@@ -2620,14 +2549,13 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
    (setq fill-column 100)
    (setq evil-shift-width 4)
    (my/python-enable-checkers)
-   (tab-bar-mode -1)
    (my/context-tab-line)
    ;; (lsp-deferred)
    )
   (defun my/python-format-and-save ()
     (interactive)
     (blacken-buffer)
-    (py-isort-before-save)
+    (my/python-isort-buffer)
     (save-buffer))
   (my/define-major-mode-key '(python-mode python-ts-mode) "s" 'my/python-format-and-save)
   (my/define-major-mode-key '(python-mode python-ts-mode) "v" 'my/python-poetry-venv-activate-current))
@@ -2645,7 +2573,13 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :ensure t
   :if (executable-find "isort")
   :after python
-  :commands (py-isort-buffer py-isort-before-save))
+  :commands (py-isort-buffer))
+
+(defun my/python-isort-buffer ()
+  "Run isort on the buffer, without aborting a save if it fails."
+  (interactive)
+  (condition-case err (py-isort-buffer)
+    (error (message "%s" (error-message-string err)))))
 
 (define-minor-mode my/python-format-on-save-mode
   "Minor mode for autoformatting python buffers on save."
@@ -2655,36 +2589,18 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
       (if (my/is-python-mode)
           (progn
             (blacken-mode +1)
-            (add-hook 'before-save-hook #'py-isort-before-save nil :local))
+            (add-hook 'before-save-hook #'my/python-isort-buffer nil :local))
         (progn
           (setq my/python-format-on-save-mode nil)
           (user-error "Not a python-mode buffer")))
     (progn
       (blacken-mode -1)
-      (remove-hook 'before-save-hook #'py-isort-before-save :local))))
-
-(use-package elpy
-  :disabled
-  :ensure t
-  :hook ((python-mode . elpy-enable))
-  :diminish
-  :init
-  (setq elpy-modules '(elpy-module-sane-defaults
-                       elpy-module-company
-                       ;; elpy-module-eldoc
-                       elpy-module-pyvenv))
-  (setq eldoc-idle-delay 1)
-  (setq python-shell-interpreter "ipython"
-        python-shell-interpreter-args "-i --simple-prompt"))
+      (remove-hook 'before-save-hook #'my/python-isort-buffer :local))))
 
 (use-package pyvenv
   :ensure t
   :after python
-  :commands (pyvenv-workon pyvenv-activate)
-  :config
-  (defun my/mode-line-extra-python-mode ()
-    (let ((venv pyvenv-virtual-env-name))
-      (format "(%s) " (or venv "-")))))
+  :commands (pyvenv-workon pyvenv-activate))
 
 (use-package pyenv-mode
   :ensure t
@@ -2700,8 +2616,10 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   )
 
 (defvar my/python-poetry-env-path
-  (if is-mac
-      (expand-file-name "~/Library/Caches/pypoetry/virtualenvs")))
+  (expand-file-name
+   (if is-mac
+       "~/Library/Caches/pypoetry/virtualenvs"
+     "~/.cache/pypoetry/virtualenvs")))
 
 (defun my/python-poetry-venv-activate ()
   (interactive)
@@ -2711,7 +2629,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
          (env (completing-read "env: "
                                all-envs))
          (env-path (expand-file-name env my/python-poetry-env-path)))
-    (my/python-activate-venv (env-path))))
+    (my/python-activate-venv env-path)))
 
 (defun my/python-poetry-venv-activate-current ()
   (interactive)
@@ -2745,8 +2663,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 (use-package rust-mode
   :ensure t
   :mode (("\\.rs\\'" . rust-mode))
-                                        ; :hook (rust-mode . lsp)
-  )
+  ;; needs rust-analyzer
+  :hook (rust-mode . lsp-deferred))
 
 (use-package cargo
   :ensure t
@@ -2760,18 +2678,6 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :init
   (with-eval-after-load 'rust-mode
     (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)))
-
-(use-package racer
-  :ensure t
-  :after rust-mode
-  :hook (rust-mode . racer-mode)
-  :diminish racer-mode
-  :init
-  :config
-  (let* ((root (string-trim
-                (shell-command-to-string "rustc --print sysroot")))
-         (rust-src (expand-file-name "lib/rustlib/src/rust/library/" root)))
-    (setq racer-rust-src-path rust-src)))
 #+end_src
 
 ** go
@@ -2791,21 +2697,16 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 ** ruby
 
 #+begin_src emacs-lisp
-;; https://github.com/howardabrams/dot-files/blob/master/emacs-ruby.org
-(use-package enh-ruby-mode
-  :ensure t
-  :mode (("_spec\\.rb\\'" . ruby-rspec-mode)
-         ("\\.rb\\'" . enh-ruby-mode)
-         ("Gemfile\\'" . enh-ruby-mode)
+(use-package ruby-ts-mode
+  ;; entries are prepended, so more specific ones go last
+  :mode (("\\.rb\\'" . ruby-ts-mode)
+         ("Gemfile\\'" . ruby-ts-mode)
+         ("_spec\\.rb\\'" . ruby-rspec-mode)
          ("\\.rake\\'" . ruby-rake-mode)
          ("Rakefile\\'" . ruby-rake-mode))
   :init
-  (setq enh-ruby-indent-level 2
-        enh-ruby-indent-tabs-mode nil
-        enh-ruby-check-syntax nil)
-
-  (define-derived-mode ruby-rake-mode enh-ruby-mode "ruby-rake")
-  (define-derived-mode ruby-rspec-mode enh-ruby-mode "ruby-rspec")
+  (define-derived-mode ruby-rake-mode ruby-ts-mode "ruby-rake")
+  (define-derived-mode ruby-rspec-mode ruby-ts-mode "ruby-rspec")
 
   (defface my/rake-keyword-face
     '((t (:inherit font-lock-function-name-face)))
@@ -2828,42 +2729,40 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
       "include_context"
       ))
   :config
+  (unless (treesit-language-available-p 'ruby)
+    (treesit-install-language-grammar 'ruby))
+
+  ;; also runs for ruby-rake-mode and ruby-rspec-mode
   (my/add-hooks
-   '(enh-ruby-mode-hook)
+   '(ruby-ts-mode-hook)
    (setq evil-shift-width 2)
    (setq fill-column 120)
    (when (buffer-file-name)
      (add-hook 'before-save-hook #'my/ruby-insert-frozen-string-literal nil :local)))
 
-  (my/define-major-mode-key 'enh-ruby-mode "s" 'my/ruby-format-and-save)
+  (my/define-major-mode-key 'ruby-ts-mode "s" 'my/ruby-format-and-save)
 
   (dolist (kw my/rake-keywords)
     (my/highlight-keyword-in-mode 'ruby-rake-mode kw nil 'my/rake-keyword-face))
 
   (dolist (kw my/rspec-keywords)
-    (my/highlight-keyword-in-mode 'ruby-rspec-mode kw nil 'my/rspec-keyword-face))
-
-  (custom-set-faces '(enh-ruby-op-face ((t nil))))
-  (custom-set-faces '(enh-ruby-string-delimiter-face ((t (:inherit font-lock-string-face)))))
-  )
+    (my/highlight-keyword-in-mode 'ruby-rspec-mode kw nil 'my/rspec-keyword-face)))
 
 (use-package robe
   :ensure t
-  :after enh-ruby-mode
-  :hook (enh-ruby-mode . robe-mode)
+  :after ruby-ts-mode
+  :hook (ruby-ts-mode . robe-mode)
   :diminish)
 
 (use-package rbenv
   :ensure t
-  :after enh-ruby-mode
+  :after ruby-ts-mode
   :commands (rbenv--locate-file rbenv-use-corresponding)
-  ;; :hook (enh-ruby-mode . rbenv-use-corresponding)
   :init
-  ;; testing this, runs on every buffer switch so might add overhead
   (defvar my/rbenv-current-version-file nil)
   (defun my/rbenv-use-corresponding ()
     (interactive)
-    (when (eq major-mode 'enh-ruby-mode)
+    (when (derived-mode-p 'ruby-ts-mode)
       (let ((version-file-path (or (rbenv--locate-file ".ruby-version")
                                    (rbenv--locate-file ".rbenv-version"))))
         (when (and version-file-path
@@ -2872,15 +2771,17 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
           (setq my/rbenv-current-version-file version-file-path)
           (rbenv-use-corresponding)))))
 
-  (add-hook 'buffer-list-update-hook 'my/rbenv-use-corresponding)
-  :config
-  (defun my/mode-line-extra-enh-ruby-mode ()
-    (let ((version (rbenv--active-ruby-version)))
-      (format "(%s) " (or version "-")))))
+  (defun my/rbenv-use-corresponding-in-selected-window (&rest _)
+    (with-current-buffer (window-buffer (selected-window))
+      (my/rbenv-use-corresponding)))
+
+  ;; only when the selected window or its buffer changes
+  (add-hook 'window-buffer-change-functions #'my/rbenv-use-corresponding-in-selected-window)
+  (add-hook 'window-selection-change-functions #'my/rbenv-use-corresponding-in-selected-window))
 
 (use-package rubocopfmt
   :ensure t
-  :after enh-ruby-mode
+  :after ruby-ts-mode
   :commands (rubocopfmt rubocopfmt-mode)
   :init
   (defun my/ruby-format-and-save ()
@@ -2960,7 +2861,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :commands (nvm-use nvm-use-for nvm-use-for-buffer)
   :init
   (defun my/nvm-auto-use ()
-    (when (locate-dominating-file (buffer-file-name) ".nvmrc")
+    (when (and (buffer-file-name)
+               (locate-dominating-file (buffer-file-name) ".nvmrc"))
       (nvm-use-for-buffer)))
   (defun my/nvm ()
     (interactive)
@@ -3009,7 +2911,7 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   (custom-set-faces
    '(web-mode-keyword-face ((t (:inherit font-lock-keyword-face)))))
   (my/add-hooks
-   '(web-tsx-mode)
+   '(web-tsx-mode-hook)
    (subword-mode 1)))
 
 (with-eval-after-load 'mhtml-mode
@@ -3024,13 +2926,15 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
 (use-package emmet-mode
   :ensure t
   :commands (emmet-expand-line)
-  :bind (:map web-html-mode-map
-              ("<C-return>" . emmet-expand-line)
-              :map html-mode-map
-              ("<C-return>" . emmet-expand-line)
-              :map css-mode-map
-              ("<C-return>" . emmet-expand-line))
-  :hook ((web-html-mode html-mode css-mode) . emmet-mode))
+  :hook ((web-html-mode html-mode css-mode) . emmet-mode)
+  :init
+  ;; the maps might not exist yet when emmet loads, so bind as each one appears
+  (with-eval-after-load 'web-mode
+    (define-key web-html-mode-map (kbd "<C-return>") #'emmet-expand-line))
+  (with-eval-after-load 'sgml-mode
+    (define-key html-mode-map (kbd "<C-return>") #'emmet-expand-line))
+  (with-eval-after-load 'css-mode
+    (define-key css-mode-map (kbd "<C-return>") #'emmet-expand-line)))
 #+END_SRC
 
 ** purescript
@@ -3046,7 +2950,6 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   (my/define-major-mode-key 'purescript-mode "a" 'my/purescript-sort-and-align-imports)
   (my/define-major-mode-key 'purescript-mode "i" 'purescript-navigate-imports)
   (my/define-major-mode-key 'purescript-mode "s" 'my/purescript-format-and-save)
-  (my/define-major-mode-key 'purescript-mode "/" 'engine/search-pursuit)
   (add-hook
    'purescript-mode-hook
    (lambda ()
@@ -3084,26 +2987,10 @@ the current file."
   (save-buffer))
 #+END_SRC
 
-** all lisps
-
-#+BEGIN_SRC emacs-lisp
-;; expand macros in another window
-(define-key
-  lisp-mode-map
-  (kbd "C-c C-m")
-  #'(lambda () (interactive) (macrostep-expand t)))
-
-(my/add-hooks
- '(lisp-mode-hook emacs-lisp-mode-hook lisp-interaction-mode-hook)
- (eldoc-mode))
-#+END_SRC
-
 ** emacs lisp
 
 #+BEGIN_SRC emacs-lisp
 (use-package elisp-mode
-  :mode (("\\.el\\'" . emacs-lisp-mode)
-         ("\\.elc\\'" . elisp-byte-code-mode))
   :config
   (defun my/emacs-lisp-format-and-save ()
     (interactive)
@@ -3505,25 +3392,9 @@ the current file."
         writeroom-maximize-window nil
         writeroom-width 100
         writeroom-header-line nil
-        my/writeroom-fill-column-prev nil)
-  (setq writeroom-mode-line
-        '((:eval
-           (my/split-mode-line-render
-            ;; left
-            (quote
-             ("%e" " "
-              mode-line-modified "  "
-              mode-line-buffer-identification " "
-              (:eval (my/mode-line-major-mode-extra))
-              ))
-            ;; right
-            (quote
-             ((:eval (my/mode-line-input-method))
-              (:eval (my/mode-line-region-info))
-              mode-line-position
-              " "
-              ))
-            ))))
+        ;; keep the regular mode-line
+        writeroom-mode-line t)
+  (defvar-local my/writeroom-fill-column-prev nil)
   (defun my/writeroom (variable-pitch)
     (interactive "P")
     (if (and (boundp 'writeroom-mode) writeroom-mode)
@@ -3575,15 +3446,6 @@ the current file."
   :ensure auctex
   :mode (("\\.tex\\'" . latex-mode))
   :init
-  (defvar-local my/texcount nil)
-  (defun my/texcount-update ()
-    (let ((fname (buffer-file-name)))
-      (when (and (eq major-mode 'latex-mode)
-                 (not (null fname)))
-        (setq-local my/texcount
-                    (string-trim
-                     (shell-command-to-string
-                      (format "texcount -sum -brief -total %s" fname)))))))
   (setq TeX-brace-indent-level 0
         LaTeX-item-indent 0
         LaTeX-indent-level 2)
@@ -3591,21 +3453,7 @@ the current file."
   (my/add-hooks
    '(LaTeX-mode-hook)
    (smartparens-mode)
-   (whitespace-mode)
-   (when (executable-find "texcount")
-     (my/texcount-update)
-     (add-hook 'after-save-hook #'my/texcount-update nil t)))
-
-  (defun my/mode-line-extra-latex-mode ()
-    (if (null my/texcount)
-        "(-)"
-      (let ((face (if (buffer-modified-p)
-                      'compilation-warning
-                    'compilation-info)))
-        (format "(%s)"
-                (propertize my/texcount
-                            'face
-                            face))))))
+   (whitespace-mode)))
 
 (use-package latex-preview-pane
   :ensure t
@@ -3620,218 +3468,6 @@ the current file."
   (defalias 'ib 'ivy-bibtex)
   (setq bibtex-completion-cite-prompt-for-optional-arguments nil
         ivy-bibtex-default-action 'ivy-bibtex-insert-citation))
-#+END_SRC
-
-* elfeed
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package elfeed-wb
-  :ensure t
-  :commands (elfeed-web-start)
-  :after elfeed
-  :config
-  (defun my/elfeed-web-browse ()
-    (interactive)
-    (browse-url "http://localhost:8080/elfeed/")))
-
-(use-package elfeed
-  :ensure t
-  :commands (elfeed)
-  :bind (:map elfeed-search-mode-map
-              ("U" . elfeed-update)
-              ("o" . my/elfeed-search-other-window)
-              ("t" . my/elfeed-filter-in-tag)
-              ("T" . my/elfeed-filter-out-tag)
-              ("f" . my/elfeed-filter-in-feed)
-              ("q" . my/elfeed-kill-buffer-close-window-dwim)
-              ("e" . my/elfeed-show-eww)
-              ("x" . my/elfeed-search-org-capture)
-              ("h" . backward-char)
-              ("j" . next-line)
-              ("k" . previous-line)
-              ("l" . forward-char)
-              :map elfeed-show-mode-map
-              ("i" . my/elfeed-hide-images)
-              ("e" . my/elfeed-show-eww)
-              ("q" . my/elfeed-kill-buffer-close-window-dwim)
-              ("b" . my/elfeed-show-browse-url)
-              ("x" . my/elfeed-show-org-capture)
-              ("h" . backward-char)
-              ("j" . next-line)
-              ("k" . previous-line)
-              ("l" . forward-char))
-  :init
-  (setq elfeed-db-directory (expand-file-name "~/.elfeed")
-        elfeed-use-curl t
-        elfeed-curl-max-connections 10
-        elfeed-search-clipboard-type 'CLIPBOARD
-        elfeed-search-filter "@5-days-ago +unread "
-        elfeed-search-title-max-width 100
-        elfeed-search-title-min-width 30
-        elfeed-search-trailing-width 30)
-  (setq my/elfeed-org-capture-default-filename (expand-file-name "saved-elfeed-posts.org" my/org-directory))
-  :config
-  (defun my/elfeed-hide-images (tog)
-    (interactive "P")
-    (let ((shr-inhibit-images (not tog)))
-      (elfeed-show-refresh)))
-
-  (defun my/elfeed-all-visible-feeds ()
-    "Return an alist (name -> feed struct) of all currently shown feeds"
-    ;; `-compare-fn' is used internally by `-distinct', to remove duplicate
-    ;; feeds by name (`car')
-    (let ((-compare-fn (-on 'eq 'car)))
-      (-distinct
-       (-annotate 'elfeed-feed-title
-                  (mapcar 'elfeed-entry-feed elfeed-search-entries)))))
-
-  (defun my/elfeed-filter-in-feed ()
-    (interactive)
-    (call-interactively 'elfeed-search-clear-filter)
-    (let* ((feeds (my/elfeed-all-visible-feeds))
-           (old-filter elfeed-search-filter)
-           (selection (completing-read "Feed: " feeds nil :require-match))
-           (feed (cdr (assoc selection feeds)))
-           (feed-url (elfeed-feed-url feed))
-           (new-filter (format "%s =%s" old-filter feed-url)))
-      (elfeed-search-set-filter new-filter)))
-
-  (defun my/elfeed-all-visible-tags ()
-    "Return a list of all currently shown tags"
-    (-distinct
-     (apply #'append
-            (mapcar #'elfeed-entry-tags elfeed-search-entries))))
-
-  (defun my/elfeed-filter-tag (clear inverse)
-    (when clear
-      (call-interactively 'elfeed-search-clear-filter))
-    (let* ((tags (my/elfeed-all-visible-tags))
-           (old-filter elfeed-search-filter)
-           (selection (completing-read "Tag: " tags nil :require-match))
-           (op (if inverse "-" "+"))
-           (new-filter (format "%s %s%s" old-filter op selection)))
-      (elfeed-search-set-filter new-filter)))
-
-  (defun my/elfeed-filter-in-tag (clear)
-    (interactive "P")
-    (my/elfeed-filter-tag clear nil))
-
-  (defun my/elfeed-filter-out-tag (clear)
-    (interactive "P")
-    (my/elfeed-filter-tag clear t))
-
-  ;; prot
-  (defun my/elfeed-search-other-window (&optional horz)
-    (interactive "P")
-    (let* ((entry (if (eq major-mode 'elfeed-show-mode)
-                      elfeed-show-entry
-                    (elfeed-search-selected :ignore-region)))
-           (link (elfeed-entry-link entry))
-           (win (selected-window)))
-      (with-current-buffer (get-buffer "*elfeed-search*")
-        (when (null (get-buffer-window "*elfeed-entry*"))
-          (if horz
-              (split-window win (/ (frame-width) 3) 'right)
-            (split-window win (/ (frame-height) 3) 'below)))
-        (other-window 1)
-        (elfeed-search-show-entry entry))))
-
-  (defun my/elfeed-show-eww (&optional link)
-    (interactive)
-    (let* ((entry (if (eq major-mode 'elfeed-show-mode)
-                      elfeed-show-entry
-                    (elfeed-search-selected :ignore-region)))
-           (link (if link link (elfeed-entry-link entry))))
-      (eww link)
-      (add-hook 'eww-after-render-hook 'eww-readable nil t)))
-
-  (defun my/elfeed-show-browse-url ()
-    (interactive)
-    (browse-url (elfeed-entry-link elfeed-show-entry)))
-
-  (defun my/elfeed-kill-buffer-close-window-dwim ()
-    (interactive)
-    (let ((win (selected-window)))
-      (cond ((eq major-mode 'elfeed-show-mode)
-             (elfeed-kill-buffer)
-             (unless (one-window-p) (delete-window win))
-             (switch-to-buffer "*elfeed-search*"))
-            ((eq major-mode 'elfeed-search-mode)
-             (if (one-window-p)
-                 (elfeed-search-quit-window)
-               (delete-other-windows win))))))
-
-  (defun my/elfeed-org-capture-get-tags (entry)
-    (let* ((all-tags (elfeed-entry-tags entry))
-           (tags (seq-filter #'(lambda (tag) (not (eq tag 'unread))) all-tags))
-           (tags-str (mapcar #'(lambda (tag) (format "%s" tag)) tags)))
-      (if (null tags)
-          ""
-        (string-join tags-str ", "))))
-
-  (defvar my/elfeed-org-capture-entry nil)
-
-  (defun my/elfeed-org-capture (entry immediate)
-    (let ((my/elfeed-org-capture-entry entry)
-          (template (if immediate "E" "e")))
-      (org-capture nil template)))
-
-  (defun my/elfeed-search-org-capture (immediate)
-    (interactive "P")
-    (my/elfeed-org-capture (elfeed-search-selected :ignore-region) immediate))
-
-  (defun my/elfeed-show-org-capture (immediate)
-    (interactive "P")
-    (my/elfeed-org-capture elfeed-show-entry immediate))
-
-  (add-hook 'elfeed-show-mode-hook #'(lambda () (setq-local shr-width 100)))
-
-  (add-hook 'elfeed-new-entry-hook
-            (elfeed-make-tagger :before "2 weeks ago"
-                                :remove 'unread))
-
-  ;; (add-hook 'elfeed-search-update-hook #'elfeed-db-save)
-  (add-hook 'elfeed-update-init-hooks #'elfeed-db-save)
-
-  (defface my/elfeed-important
-    '((t (:foreground "salmon")))
-    "Elfeed unread"
-    :group 'my/faces)
-  (push '(important my/elfeed-important) elfeed-search-face-alist)
-
-  (defun my/elfeed-export-opml-feedly (file)
-    "Export all feeds to FILE, categorized for import in feedly."
-    (interactive "FOutput OPML file: ")
-    (with-temp-file file
-      (let ((standard-output (current-buffer))
-            (categorized (-group-by 'cadr elfeed-feeds)))
-        (princ "<?xml version=\"1.0\"?>\n")
-        (xml-print
-         `((opml ((version . "1.0"))
-                 (head () (title () "Elfeed Export"))
-                 (body ()
-                       ,@(cl-loop
-                          for group in (-group-by 'cadr elfeed-feeds)
-                          for category = (car group)
-                          for feeds = (cdr group)
-                          collect `(outline
-                                    ((text . ,(format "%s" category))
-                                     (title . ,(format "%s" category)))
-                                    ,@(cl-loop
-                                       for feed in feeds
-                                       for url = (car feed)
-                                       for elfeed-feed = (elfeed-db-get-feed url)
-                                       for maybe-title = (elfeed-feed-title elfeed-feed)
-                                       for title = (if (or (null maybe-title)
-                                                           (string-empty-p maybe-title))
-                                                       (url-host (url-generic-parse-url url))
-                                                     maybe-title)
-                                       collect `(outline
-                                                 ((xmlUrl . ,url)
-                                                  (title . ,title)))))))))))))
-
-  ;; get feeds from personal dir
-  (load-file (expand-file-name "lisp/elfeed-feeds.el" my/dropbox-emacs-dir)))
 #+END_SRC
 
 * pdf tools
@@ -3861,12 +3497,6 @@ the current file."
   (setq image-cache-eviction-delay 15)
   :config
   (pdf-tools-install :no-query)
-
-  (defun my/mode-line-extra-pdf-view-mode ()
-    (let ((cur (number-to-string (pdf-view-current-page)))
-          (tot (or (ignore-errors (number-to-string (pdf-cache-number-of-pages)))
-                   "???")))
-      (format "(%s/%s)" cur tot)))
 
   (define-minor-mode my/pdf-view-remove-margins-mode
     "Minor mode for removing margins from every pdf page."
@@ -4104,8 +3734,8 @@ executable, each of which is a string."
                 (completing-read (format "Items matching %s (%s): "
                                          (propertize regexp 'face 'success)
                                          (length names))
-                                 names nil t))))
-         (user-error (format "No matches for « %s » in %s" regexp dir)))))
+                                 names nil t)))
+           (user-error (format "No matches for « %s » in %s" regexp dir))))))
 
   (my/dired-fd
    my/dired-fd-dirs
@@ -4188,8 +3818,6 @@ buffer, close it."
 * flycheck
 
 #+BEGIN_SRC emacs-lisp
-(defun my/mode-line-flycheck ())
-
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
@@ -4226,43 +3854,7 @@ buffer, close it."
   (flycheck-add-mode 'python-mypy 'python-mode)
   (flycheck-add-mode 'python-mypy 'python-ts-mode)
   (flycheck-add-mode 'python-flake8 'python-mode)
-  (flycheck-add-mode 'python-flake8 'python-ts-mode)
-
-  ;; modeline stuff
-  (defface modeline-flycheck-error
-    '((t (:foreground "#e05e5e" :distant-foreground "#e05e5e")))
-    "Face for flycheck error feedback in the modeline."
-    :group 'modeline-flycheck)
-  (defface modeline-flycheck-warning
-    '((t (:foreground "#bfb03d" :distant-foreground "#bfb03d")))
-    "Face for flycheck warning feedback in the modeline."
-    :group 'modeline-flycheck)
-  (defface modeline-flycheck-info
-    '((t (:foreground "DeepSkyBlue3" :distant-foreground "DeepSkyBlue3")))
-    "Face for flycheck info feedback in the modeline."
-    :group 'modeline-flycheck)
-  (defface modeline-flycheck-ok
-    '((t (:foreground "SeaGreen3" :distant-foreground "SeaGreen3")))
-    "Face for flycheck ok feedback in the modeline."
-    :group 'modeline-flycheck)
-
-  (defvar modeline-flycheck-bullet "•%s")
-
-  (defun my/mode-line-flycheck-state (state)
-    (let* ((counts (flycheck-count-errors flycheck-current-errors))
-           (errorp (flycheck-has-current-errors-p state))
-           (err (or (cdr (assq state counts)) "?"))
-           (running (eq 'running flycheck-last-status-change))
-           (face (intern (format "modeline-flycheck-%S" state))))
-      (if (or errorp running)
-          (propertize (format modeline-flycheck-bullet err) 'face face))))
-
-  (defun my/mode-line-flycheck ()
-    (let* ((ml-error (my/mode-line-flycheck-state 'error))
-           (ml-warning (my/mode-line-flycheck-state 'warning))
-           (ml-info (my/mode-line-flycheck-state 'info))
-           (ml-status (concat ml-error ml-warning ml-info)))
-      (if (null ml-status) "" (concat " " ml-status " ")))))
+  (flycheck-add-mode 'python-flake8 'python-ts-mode))
 #+END_SRC
 
 * projectile
@@ -4370,11 +3962,8 @@ buffer, close it."
 (defun my/swiper (fuzzy)
   (interactive "P")
   (if fuzzy
-      (let* ((temp-builders
-              (copy-alist ivy-re-builders-alist))
-             (ivy-re-builders-alist
-              (add-to-list 'temp-builders
-                           '(swiper . ivy--regex-fuzzy))))
+      (let ((ivy-re-builders-alist
+             (cons '(swiper . ivy--regex-fuzzy) ivy-re-builders-alist)))
         (swiper))
     (swiper)))
 
@@ -4387,11 +3976,8 @@ buffer, close it."
 (defun my/swiper-isearch (fuzzy)
   (interactive "P")
   (if fuzzy
-      (let* ((temp-builders
-              (copy-alist ivy-re-builders-alist))
-             (ivy-re-builders-alist
-              (add-to-list 'temp-builders
-                           '(swiper-isearch . ivy--regex-fuzzy))))
+      (let ((ivy-re-builders-alist
+             (cons '(swiper-isearch . ivy--regex-fuzzy) ivy-re-builders-alist)))
         (swiper-isearch))
     (swiper-isearch)))
 
@@ -4435,7 +4021,6 @@ buffer, close it."
           (counsel-unicode-char . ivy--regex-ignore-order)
           (insert-char          . ivy--regex-ignore-order)
           (ucs-insert           . ivy--regex-ignore-order)
-          (counsel-unicode-char . ivy--regex-ignore-order)
           (counsel-ag           . ivy--regex-ignore-order)  ;; NOTE: testing
           (counsel-rg           . ivy--regex-ignore-order)
           (t                    . ivy--regex-fuzzy))))
@@ -4498,8 +4083,8 @@ buffer, close it."
         counsel-ag-base-command "ag --vimgrep --nocolor --nogroup %s"
         counsel-find-file-ignore-regexp "\\`.flycheck_\\|__pycache__")
   :config
-  (my/ivy-reset-builders)
-  (setq ivy-initial-inputs-alist nil) ;; no ^ initially
+  ;; counsel adds initial inputs (e.g. ^ for M-x) when it loads
+  (setq ivy-initial-inputs-alist nil)
   ;; counsel-ag
   ;; S-SPC doesn't work properly in counsel-ag anyway
   ;; NOTE: this also applies to rg
@@ -4614,8 +4199,7 @@ the minibuffer."
   :init
   (setq ivy-use-virtual-buffers nil
         ivy-count-format "(%d/%d) "
-        ivy-magic-tilde nil
-        ivy-initial-inputs-alist nil)
+        ivy-magic-tilde nil)
   :config
   (my/ivy-reset-builders)
 
@@ -4774,9 +4358,8 @@ the minibuffer."
         org-confirm-babel-evaluate nil
         org-clock-into-drawer t
         org-log-into-drawer t
-        org-keep-stored-link-after-insertion t
-        org-edit-src-content-indentation 0
-        org-src-window-setup 'other-window
+        org-link-keep-stored-after-insertion t
+        org-src-content-indentation 0
         org-adapt-indentation nil
         org-ellipsis "…"
         org-tags-column -80
@@ -4822,10 +4405,9 @@ the minibuffer."
   (setq org-refile-targets '((nil . (:maxlevel . 1)))
         org-refile-use-outline-path 'file
         org-outline-path-complete-in-steps nil)
-  ;; format string used when creating CLOCKSUM lines and when generating a
-  ;; time duration (avoid showing days)
-  (setq org-time-clocksum-format
-        '(:hours "%d" :require-hours t :minutes ":%02d" :require-minutes t))
+  ;; format used when creating CLOCKSUM lines and when generating a time
+  ;; duration (avoid showing days)
+  (setq org-duration-format 'h:mm)
 
   :config
   (require 'org-tempo nil :noerror)
@@ -4869,6 +4451,11 @@ the minibuffer."
   (interactive)
   (setq org-hide-emphasis-markers (not org-hide-emphasis-markers))
   (font-lock-fontify-buffer :interactively))
+
+(defvar org-export-with-toc)
+(defvar org-export-with-section-numbers)
+(defvar org-html-htmlize-output-type)
+(defvar org-html-head-extra)
 
 (defun my/org-export-conf ()
   (interactive)
@@ -4977,9 +4564,6 @@ the minibuffer."
   (add-hook hook #'my/context-tab-line))
 #+end_src
 
-#+RESULTS:
-: #[nil ((face-remap-add-relative 'tab-line :underline (list :color (face-foreground 'shadow nil t) :position t)) (setq-local tab-line-format '(" " (:eval (let* ((f (or buffer-file-name (buffer-name))) (proj (and buffer-file-name (project-current))) (rel (if proj (file-relative-name f (project-root proj)) (abbreviate-file-name f))) (parts (split-string rel "/" t)) (n (length parts)) (dirs (seq-map-indexed (lambda (p i) (if (< i (- n 2)) (substring p 0 1) p)) (butlast parts)))) (concat (propertize (concat (if (string-prefix-p "/" rel) "/" "") (mapconcat (lambda (d) (concat d "/")) dirs "")) 'face 'font-lock-function-call-face) (propertize (car (last parts)) 'face '(bold font-lock-constant-face))))) (:eval (when-let* ((fn (which-function))) (propertize (concat " -> " fn) 'face 'font-lock-function-name-face))) (:eval (propertize " " 'display '(space :align-to right)))))) nil]
-
 * Setup
 ** macos specific
 
@@ -5006,6 +4590,8 @@ the minibuffer."
 ;; these have to be paths to projects that projectile recognizes (e.g. git)
 (defvar my/start-up-projects '())
 
+(defvar projectile-switch-project-action)
+
 (defun my/open-start-up-projects ()
   (unless (null my/start-up-projects)
     (let ((projectile-switch-project-action 'projectile-dired))
@@ -5022,9 +4608,10 @@ the minibuffer."
 #+BEGIN_SRC emacs-lisp
 ;; https://nicolas.petton.fr/blog/per-computer-emacs-settings.html
 (defvar my/hosts-dir (expand-file-name (expand-file-name "hosts/" user-emacs-directory)))
-(defvar my/hostname (substring (shell-command-to-string "hostname") 0 -1))
-(let* ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
-  (load-file host-file))
+(defvar my/hostname (string-remove-suffix "\n" (shell-command-to-string "hostname")))
+(let ((host-file (concat my/hosts-dir "init-" my/hostname ".el")))
+  (unless (load host-file :noerror)
+    (display-warning 'init (format "No host file found at %s" host-file))))
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -5079,16 +4666,10 @@ the minibuffer."
 ** Custom
 
 #+BEGIN_SRC emacs-lisp
-(dolist (val '((eval . (setq flycheck-disabled-checkers
-                             (append flycheck-disabled-checkers
-                                     (quote
-                                      (intero)))))
-               (haskell-hoogle-command . "stack hoogle -- --count=100")
+(dolist (val '((haskell-hoogle-command . "stack hoogle -- --count=100")
                (projectile-tags-command . "npm run etags")
                (projectile-tags-command . "fast-tags -e -R .")
                (projectile-tags-command . "fast-tags -e -R -o %s --exclude=\"%s\" \"%s\"")
-               (psc-ide-output-directory . "build/")
-               (my/use-intero . t)
                (my/haskell-align-stuff . nil)
                (my/haskell-use-ormolu . t)
                (my/purescript-align-stuff . nil)
