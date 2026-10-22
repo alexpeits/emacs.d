@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; functor-theme.el --- A dark theme inspired by vim-lucius
 ;;;
 ;;; Author: Alex Peitsinis <alexpeitsinis@gmail.com>

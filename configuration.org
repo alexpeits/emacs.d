@@ -1,6 +1,7 @@
 * Variables and PATH
 
 #+BEGIN_SRC emacs-lisp
+;; -*- lexical-binding: nil; -*-
 (add-to-list 'load-path (expand-file-name (expand-file-name "lisp" user-emacs-directory)))
 (add-to-list 'custom-theme-load-path
              (expand-file-name (expand-file-name "custom-themes/" user-emacs-directory)))
@@ -2575,6 +2576,17 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
   :mode (("\\.py\\'" . python-ts-mode)
          ("\\.pants\\'" . pants-mode))
   :init
+  (dolist (source
+         '((python     "https://github.com/tree-sitter/tree-sitter-python")
+           (json       "https://github.com/tree-sitter/tree-sitter-json")
+           (yaml       "https://github.com/ikatyang/tree-sitter-yaml")
+           (toml       "https://github.com/ikatyang/tree-sitter-toml")
+           (go         "https://github.com/tree-sitter/tree-sitter-go")
+           (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+           (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+           (just       "https://github.com/IndianBoy42/tree-sitter-just")
+           (rust       "https://github.com/tree-sitter/tree-sitter-rust")))
+  (add-to-list 'treesit-language-source-alist source))
   (unless (treesit-language-available-p 'python)
      (treesit-install-language-grammar "python"))
   (setq my/python-mode-hooks '(python-mode-hook python-ts-mode-hook))
@@ -2608,6 +2620,8 @@ Restore the buffer with \\<dired-mode-map>`\\[revert-buffer]'."
    (setq fill-column 100)
    (setq evil-shift-width 4)
    (my/python-enable-checkers)
+   (tab-bar-mode -1)
+   (my/context-tab-line)
    ;; (lsp-deferred)
    )
   (defun my/python-format-and-save ()
@@ -4904,7 +4918,6 @@ the minibuffer."
 #+begin_src emacs-lisp
 (use-package doom-modeline
   :ensure t
-  :if is-gui
   :hook (after-init . doom-modeline-mode)
   :init
   (setq doom-modeline-height 21
@@ -4920,6 +4933,52 @@ the minibuffer."
 
   (advice-add #'doom-modeline--font-height :override #'my/doom-modeline--font-height))
 #+end_src
+
+* tabline
+
+#+begin_src emacs-lisp
+(defun my/context-tab-line--ul (str &rest faces)
+  "Return STR with FACES plus a subtle underline."
+  (propertize str 'face
+              (cons (list :underline (list :color (face-foreground 'shadow nil t)
+                                           :position t))
+                    faces)))
+
+(defun my/context-tab-line ()
+  "Show path -> function/class at point in this buffer's tab line."
+  (setq-local
+   tab-line-format
+   '(" "
+     ;; path, relative to project root; dirs 2+ levels above the file shortened
+     (:eval
+      (let* ((f (or buffer-file-name (buffer-name)))
+             (proj (and buffer-file-name (project-current)))
+             (rel (if proj
+                      (file-relative-name f (project-root proj))
+                    (abbreviate-file-name f)))
+             (parts (split-string rel "/" t))
+             (n (length parts))
+             (dirs (seq-map-indexed
+                    (lambda (p i) (if (< i (- n 2)) (substring p 0 1) p))
+                    (butlast parts)))
+             (dir (concat (if (string-prefix-p "/" rel) "/" "")
+                          (mapconcat (lambda (d) (concat d "/")) dirs ""))))
+        (concat
+         (unless (string-empty-p dir)
+           (my/context-tab-line--ul dir 'font-lock-function-call-face))
+         (my/context-tab-line--ul (car (last parts)) 'bold 'font-lock-constant-face))))
+     ;; enclosing function/class, or nothing
+     (:eval
+      (when-let* ((fn (which-function)))
+        (concat (my/context-tab-line--ul " -> " 'font-lock-function-name-face)
+                (my/context-tab-line--ul fn 'italic 'font-lock-function-name-face)))))))
+
+(dolist (hook '(python-base-mode-hook))
+  (add-hook hook #'my/context-tab-line))
+#+end_src
+
+#+RESULTS:
+: #[nil ((face-remap-add-relative 'tab-line :underline (list :color (face-foreground 'shadow nil t) :position t)) (setq-local tab-line-format '(" " (:eval (let* ((f (or buffer-file-name (buffer-name))) (proj (and buffer-file-name (project-current))) (rel (if proj (file-relative-name f (project-root proj)) (abbreviate-file-name f))) (parts (split-string rel "/" t)) (n (length parts)) (dirs (seq-map-indexed (lambda (p i) (if (< i (- n 2)) (substring p 0 1) p)) (butlast parts)))) (concat (propertize (concat (if (string-prefix-p "/" rel) "/" "") (mapconcat (lambda (d) (concat d "/")) dirs "")) 'face 'font-lock-function-call-face) (propertize (car (last parts)) 'face '(bold font-lock-constant-face))))) (:eval (when-let* ((fn (which-function))) (propertize (concat " -> " fn) 'face 'font-lock-function-name-face))) (:eval (propertize " " 'display '(space :align-to right)))))) nil]
 
 * Setup
 ** macos specific

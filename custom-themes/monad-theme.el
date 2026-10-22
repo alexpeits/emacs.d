@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; monad-theme.el --- A dark theme
 ;;;
 ;;; Author: Alex Peitsinis <alexpeitsinis@gmail.com>

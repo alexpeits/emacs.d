@@ -4,14 +4,18 @@ custom.el
 configuration.el
 session*
 bookmarks
+bookmarks.eld
 eshell/
 elpa/
 places
+places.eld
 tramp
 projectile-bookmarks.eld
+projectile-frecency.eld
 projectile.cache
 projects
 recentf
+recentf.eld
 amx-items
 smex-items
 transient/
@@ -29,3 +33,4 @@ package-quickstart.el
 straight/
 server/
 tree-sitter/
+eln-cache/

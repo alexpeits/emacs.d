@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; foldable-theme --- Default light emacs theme with a twist
 
 ;; Copyright (C) 2018 Alex Peitsinis

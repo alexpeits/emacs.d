@@ -1,5 +1,11 @@
+;; -*- lexical-binding: nil; -*-
 ;; https://blog.d46.us/advanced-emacs-startup/
 ;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#how-does-doom-start-up-so-quickly
+
+(require 'comp)
+(setq native-comp-driver-options (cons "-mmacosx-version-min=11" native-comp-driver-options))
+
+
 (setq gc-cons-threshold 100000000
       gc-cons-percentage 0.6
       inhibit-compacting-font-caches t

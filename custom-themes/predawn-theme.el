@@ -1,3 +1,4 @@
+;; -*- lexical-binding: nil; -*-
 ;;; predawn-theme.el --- predawn
 ;;;
 ;;; Author: Alex Peitsinis <alexpeitsinis@gmail.com>
