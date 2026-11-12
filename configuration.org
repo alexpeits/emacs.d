@@ -3944,6 +3944,41 @@ buffer, close it."
   (defvar my/orderless-default-matching-styles orderless-matching-styles
     "Matching styles that `my/orderless-toggle-flex' switches back to."))
 
+(defvar my/fuzzy-completion-categories
+  '(command                 ; M-x
+    ;; buffer               ; switch-to-buffer, consult-buffer
+    ;; file                 ; find-file, consult-fd
+    ;; project-file         ; project-find-file
+    ;; function             ; describe-function
+    ;; variable             ; describe-variable, set-variable
+    ;; symbol               ; describe-symbol
+    ;; face                 ; describe-face, customize-face
+    ;; library              ; find-library
+    ;; package              ; describe-package, package-install
+    ;; bookmark             ; bookmark-jump
+    ;; theme                ; consult-theme, load-theme
+    ;; imenu                ; consult-imenu
+    ;; consult-location     ; consult-line, consult-outline
+    ;; consult-grep         ; consult-ripgrep (filters on the results)
+    ;; xref-location        ; xref-find-definitions with several matches
+    ;; minor-mode           ; consult-minor-mode-menu
+    ;; info-menu            ; info-display-manual, Info-menu
+    ;; unicode-name         ; insert-char
+    ;; environment-variable ; getenv, setenv
+    )
+  "Completion categories whose prompts start with fuzzy matching.
+`M-r' still toggles between fuzzy and orderless in any prompt.")
+
+(defun my/fuzzy-by-default-maybe ()
+  (when-let* ((table minibuffer-completion-table)
+              (category (completion-metadata-get
+                         (completion-metadata "" table minibuffer-completion-predicate)
+                         'category)))
+    (when (memq category my/fuzzy-completion-categories)
+      (setq-local orderless-matching-styles '(orderless-flex)))))
+
+(add-hook 'minibuffer-setup-hook #'my/fuzzy-by-default-maybe)
+
 ;; keep minibuffer history across sessions, which vertico uses to sort
 ;; candidates (e.g. recently used M-x commands first)
 (use-package savehist
